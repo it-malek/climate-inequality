@@ -1,0 +1,48 @@
+Climate Crisis: Analyzing Earth Surface Temperature and Visualizing the Regions
+with the Highest Temperature Change Caused by Global Warming
+Introduction
+In comparison to the natural variations in climate that have happened throughout Earth's history, the global climate continues to change precipitously nowadays. Since the 1800s, human industrial activity mostly to the use of fossil fuels such as coal, oil, and gas and thence the emission of greenhouse gases has been the primary cause of climate change (National Geographic, 2022).
+While many believe that the consequences of climate change are not present, but rather will occur in the distant future, this is simply not true. The ramifications of climate change are observed already. Such consequences, due to the drastically rising temperatures, include melting glaciers, shifting precipitation patterns, and disrupting biomes at large, endangering many species (e.g., Davis et al., 2021; National Geographic, 2022).
+Nonetheless, this does not mean that the rate of global warming a key component of climate change is constant universally. In fact, global warming is notoriously affecting certain geographical regions (e.g., Walsh et al., 2014) more than others a striking example of extreme changes is the melting icebergs at the poles.
+There are still several uncertain elements that may direct us to where the world is going climate-wise, but with the rising emissions of carbon dioxide (CO2), scientists remain skeptical that despite the Paris Agreement's 195 signatories the goal of keeping global warming at bay with the 1.5 °C (2.7 °F) goal will not be feasible (see Rogelj et al., 2017; Smith et al., 2019; Tollefson, 2022). This, of course, raises the question: Is it possible to identify the regions with
+the most critical temperature changes due to climate change?
+Objectives
+With this project, I aim to shed light on climate inequality-the concept that the consequences of climate change are neither symmetric nor proportional to the amount of greenhouse emission per country-by visualizing the map of the Earth over time using the Berkeley Earth temperature dataset obtained from Kaggle (which is also available on their website). A secondary objective would be to examine the greenhouse gas emissions of select countries and compare them to the temperature variance over recent years, quantifying as well as visualizing the relationship between greenhouse gas emissions and temperature increases. This data will be gathered from another Kaggle dataset, whose source is Our World in Data.
+Approach
+To answer my research questions, I first must delve into Barkley's dataset and determine the best way to utilize it. Then. My next step will be to visualize my data as maps using Python modules Plotly, geopandas, and Folium. I plan on analyze spatial temperature changes over time, e.g., in a specific month over several years. Since the data only includes temperatures in certain cities, I will be utilizing ML for spatial data analysis: I will employ interpolation to predict the temperature at a certain time between the known points to create heatmaps (Analytics Vidhya, 2021). Moreover, if time permits, I will create a dashboard to host the heatmaps aforementioned, with the aim of creating an interactive, user-friendly, and easy-to-use tool to depict one vital aspect of climate change.
+
+Preparation
+
+Python will be the programming language used in this project. I am familiar with Python, as I have taken Computer Science I (CSCI 112) at the College. In addition, I have worked with Prof. Bousquet last summer for my Richter research on Twitter Natural Language Processing (NLP) utilizing libraries such as requests, os, pandas, matplotlib, and nltk. Furthermore, I have worked on campus with the Office of Development and Alumni Relations where I used Python to automate systems and compare the College's Slate dataset to external CSV files. Finally, I am currently taking Computer Science II (CSCI 212), which, while focusing on Java, allows me to understand coding on a more fundamental level using object-oriented programming. These techniques can be easily applied to Python code. Moreover, I have a rather strong background in mathematics as I have completed Calculus III (MATH 210) and will have completed Differential Equations (MATH 210) and Introduction to Statistical Programming (MATH 250) before summer starts. Recently, I accustomed myself with creating simple maps using R for a class project.
+Work Plan
+Week 1: Deconstructing the city and country temperature dataset and filtering data.
+Weeks 2-3: Focusing on ML, learning to utilize it for spatial analysis, and visualizing maps.
+Week 4: Analyzing a sample from the dataset and creating a map for a single point in time this
+will serve as a main check point.
+Weeks 5-7: Interpolating the temperature dataset and visualizing it over time.
+
+Week 8: Deconstructing the pollution map, selecting certain countries/regions, and plotting over
+time.
+Week 9: Creating the dashboard and host the code troubleshooting any user issues.
+Week 10: Drawing conclusions and outlining any significant results.
+Datasets to Use
+1. Berkeley Earth: Climate Change-Earth Surface Temperature Data
+https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-
+temperature-data
+2. Our World in Data: CO2 and GHG Emission Data
+https://www.kaggle.com/datasets/srikantsahu/co2-and-ghg-emission-data
+References
+Davis, T. R., Champion, C., & Coleman, M. A. (2021). Ecological interactions mediate projected
+loss of kelp biomass under climate change. Diversity and Distributions, 28(2), 306–317. https://doi.org/10.1111/ddi.13462
+National Geographic. (2022, February 16). Causes and effects of climate change. Global warming and climate change effects: Information and facts. Retrieved March 21, 2022, from https://www.nationalgeographic.com/environment/article/global-warming-effects
+rendyk. (2021, March 20). Introducing machine learning for spatial data analysis. Analytics Vidhya. Retrieved March 29, 2022, from 
+https://www.analyticsvidhya.com/blog/2021/03/introducing-machine-learning-for-spatial-
+data-analysis/
+Rogelj, J., Fricko, O., Meinshausen, M., Krey, V., Zilliacus, J. J., & Riahi, K. (2017).
+Understanding the origin of Paris agreement emission uncertainties. Nature
+Communications, 8(1), 1-12. https://doi.org/10.1038/ncomms15748
+Smith, C. J., Forster, P. M., Allen, M., Fuglestvedt, J., Millar, R. J., Rogelj, J., & Zickfeld, K. (2019). Current fossil fuel infrastructure does not yet commit us to 1.5 °C warming. Nature Communications, 10(1), 1-10. https://doi.org/10.1038/s41467-018-07999-w
+Tollefson, J. (2022, February 28). Climate change is hitting the planet faster than scientists
+originally thought. Nature. Retrieved March 21, 2022, from
+https://www.nature.com/articles/d41586-022-00585-7
+Walsh, J., Wuebbles, D., Hayhoe, K., Kossin, J., Kunkel, K., Stephens, G., Thorne, P., Vose, R., Wehner, M., Willis, J., Anderson, D., Doney, S., Feely, R., Hennon, P., Kharin, V., Knutson, T., Landerer, F., Lenton, T., Kennedy, J., & Somerville, R. (2014). Ch. 2: Our Changing Climate. Climate change impacts in the United States: The third national climate assessment. Global Change Research Program, 19-67. https://doi.org/10.7930/j0kw5cxt
