@@ -96,3 +96,29 @@ class TestCoverage:
         keep = dict(zip(out["City"], out["keep"]))
         assert keep["A"] is True or keep["A"] == True  # noqa: E712
         assert not keep["B"]
+
+    def test_group_keys_split_same_named_cities(self):
+        # Same (City, Country) at two grid coordinates: one fully covered
+        # location, one with 1 of 3 months.
+        df = pd.DataFrame(
+            {
+                "City": ["A"] * 4,
+                "Country": ["X"] * 4,
+                "Latitude": [30.0, 30.0, 30.0, 45.0],
+                "Longitude": [-90.0] * 4,
+                "AverageTemperature": [1.0, 2.0, 3.0, 1.0],
+            }
+        )
+        kwargs = dict(min_fraction=0.9, start="2000-01-01", end="2000-03-01")
+        pooled = coverage_by_city(df, **kwargs)
+        assert len(pooled) == 1
+        assert pooled["coverage"].iloc[0] == pytest.approx(4 / 3)  # inflated
+
+        per_location = coverage_by_city(
+            df,
+            group_keys=("City", "Country", "Latitude", "Longitude"),
+            **kwargs,
+        )
+        assert len(per_location) == 2
+        keep = dict(zip(per_location["Latitude"], per_location["keep"]))
+        assert keep[30.0] and not keep[45.0]

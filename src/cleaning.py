@@ -82,16 +82,23 @@ def coverage_by_city(
     min_fraction: float = 0.9,
     start: str = DEFAULT_START,
     end: str = DEFAULT_END,
+    group_keys: tuple[str, ...] = ("City", "Country"),
 ) -> pd.DataFrame:
     """Per-city observation coverage within the window.
 
-    Returns one row per (City, Country) with `n_obs`, `n_possible`,
-    `coverage`, and a boolean `keep` flag for cities meeting
+    Returns one row per `group_keys` with `n_obs`, `n_possible`,
+    `coverage`, and a boolean `keep` flag for groups meeting
     `min_fraction` non-null monthly coverage. Use this to decide which
     cities are eligible for trend fitting (Phase 2).
+
+    Note: (City, Country) alone is not a unique city identifier — 18
+    same-named pairs sit at 2-3 grid coordinates each, which pools and
+    inflates their apparent coverage. Pass
+    ``group_keys=("City", "Country", "Latitude", "Longitude")`` for true
+    per-location coverage (what trend fitting uses).
     """
     n_possible = len(pd.period_range(start, end, freq="M"))
-    grp = df.groupby(["City", "Country"], as_index=False).agg(
+    grp = df.groupby(list(group_keys), as_index=False, observed=True).agg(
         n_obs=(temp_col, "count")
     )
     grp["n_possible"] = n_possible
