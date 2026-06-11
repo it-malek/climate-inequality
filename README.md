@@ -3,8 +3,9 @@
 > Which regions are warming fastest — and is warming proportional to
 > emissions responsibility?
 
-**Status:** 🚧 In progress — Phase 1 (data layer). See `README` for the
-full project plan.
+**Status:** 🚧 In progress — Phases 1–2 complete (data layer; per-city
+trend fitting). Next: Phase 3 (spatial interpolation). See `README`
+for the full project plan.
 
 *Originally proposed as an undergraduate research fellowship project (2022);
 rebuilt and substantially upgraded in 2026.*
@@ -43,10 +44,19 @@ interpolation, grid-snapped coordinates -->
 ## Reproducing
 
 ```bash
-uv sync          # or: pip install -e ".[dev]"
-# Kaggle credentials required for data download — see docs/setup.md
-pytest
+uv sync --extra dev
+uv run pytest    # no data needed — tests run on synthetic fixtures
+
+# Build the data layer (public Kaggle datasets, no credentials needed):
+uv run python -c "from src.data_io import download_raw_data; download_raw_data()"
+uv run python -c "from src.data_io import load_city_temperatures, city_csv_path; load_city_temperatures(city_csv_path())"
+
+# Fit per-city warming trends (writes data/processed/city_trends.parquet
+# and prints the sanity checks):
+uv run python -m src.trends
 ```
+
+On a fresh machine, start with `docs/new_machine_setup.md`.
 
 ## Data
 
