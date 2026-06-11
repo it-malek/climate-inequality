@@ -288,6 +288,7 @@ def leave_one_out_cv(
     k: int = DEFAULT_K_NEIGHBORS,
     idw_power: float = 2.0,
     variogram_model: str = DEFAULT_VARIOGRAM_MODEL,
+    exclude_same_coordinate: bool = True,
 ) -> pd.DataFrame:
     """Leave-one-out CV RMSE/MAE for IDW vs. ordinary kriging.
 
@@ -295,18 +296,26 @@ def leave_one_out_cv(
     :func:`idw_interpolate` and :func:`ordinary_kriging_interpolate` with a
     single globally-fit variogram (see module docstring for why).
 
-    On the real city_trends data, IDW wins this comparison by a wide margin
-    (RMSE 0.0057 vs. 0.0160 °C/decade), but largely because 677 of the 3,510
-    locations share grid-snapped coordinates with another location and have
-    a bit-identical `value` -- IDW's exact-match handling reproduces these
-    perfectly in each other's leave-one-out fold, while kriging's fitted
-    nugget does not. Interpret the gap with that in mind.
+    By default each fold is leave-*location*-out: Berkeley Earth city
+    coordinates are grid-snapped, so 677 coordinate groups (2,821 of the
+    3,510 locations) hold 2+ cities with bit-identical coordinates and
+    near-identical trend values. With plain leave-one-row-out, a held-out
+    point's same-coordinate twin stays in the neighborhood and leaks the
+    answer -- IDW's exact-match handling then reproduces it perfectly
+    while kriging's fitted nugget does not, which is a property of the
+    duplicates, not of the interpolators. Excluding the whole coordinate
+    group per fold removes that leak; set `exclude_same_coordinate=False`
+    for the classic per-row variant.
 
     Args:
         lon, lat, value: 1D arrays of equal length (one per location).
-        k: Neighborhood size for both methods.
+        k: Neighborhood size for both methods. With exclusion enabled, k is
+            clamped to n minus the largest coordinate-group size so every
+            fold still gets a full neighborhood.
         idw_power: IDW distance exponent.
         variogram_model: pykrige variogram model name.
+        exclude_same_coordinate: Exclude all points at the held-out point's
+            exact coordinates (not just the point itself) from its fold.
 
     Returns:
         DataFrame with one row per method ("idw", "kriging") and columns
@@ -316,9 +325,20 @@ def leave_one_out_cv(
     lat = np.asarray(lat, dtype=float)
     value = np.asarray(value, dtype=float)
     n = len(lon)
-    k_eff = min(k, n - 1)
 
-    neighbor_idx = _knn_indices(lon, lat, lon, lat, k_eff + 1)
+    _, group_id, group_sizes = np.unique(
+        np.column_stack([lon, lat]), axis=0, return_inverse=True, return_counts=True
+    )
+    group_id = group_id.reshape(-1)
+    max_excluded = int(group_sizes.max()) if exclude_same_coordinate else 1
+    k_eff = min(k, n - max_excluded)
+    if k_eff < 1:
+        raise ValueError(
+            f"no neighbors left to predict from: n={n}, "
+            f"largest coordinate group={max_excluded}"
+        )
+
+    neighbor_idx = _knn_indices(lon, lat, lon, lat, k_eff + max_excluded)
     variogram_parameters = fit_variogram_parameters(
         lon, lat, value, variogram_model=variogram_model
     )
@@ -326,7 +346,12 @@ def leave_one_out_cv(
     idw_pred = np.empty(n)
     ok_pred = np.empty(n)
     for i in range(n):
-        neighbors = neighbor_idx[i][neighbor_idx[i] != i][:k_eff]
+        candidates = neighbor_idx[i]
+        if exclude_same_coordinate:
+            kept = candidates[group_id[candidates] != group_id[i]]
+        else:
+            kept = candidates[candidates != i]
+        neighbors = kept[:k_eff]
         idw_pred[i] = idw_interpolate(
             lon[neighbors], lat[neighbors], value[neighbors], lon[i], lat[i], power=idw_power
         )[0]
@@ -480,8 +505,11 @@ def build_interpolated_surface(
 ) -> dict:
     """Run the Phase 3 pipeline: LOO-CV, pick a winner, render its surface.
 
-    Land cells are interpolated with the LOO-CV winner (lower RMSE) and
-    written as an HTML heatmap to `out_dir`; ocean cells are left NaN.
+    The winner is the method with lower leave-location-out CV RMSE (see
+    :func:`leave_one_out_cv`); the classic leave-row-out CV is computed
+    alongside to show how much the grid-snapped duplicates inflate it.
+    Land cells are interpolated with the winner and written as an HTML
+    heatmap to `out_dir`; ocean cells are left NaN.
 
     Args:
         trends_path: Parquet file from :func:`src.trends.build_city_trends`.
@@ -491,8 +519,10 @@ def build_interpolated_surface(
         resolution: Grid spacing in degrees (see :func:`build_grid`).
 
     Returns:
-        Dict with keys `cv` (DataFrame), `winner` (str), `figure_path`
-        (Path), `grid_lon`, `grid_lat`, `surface` (the masked 2D array).
+        Dict with keys `cv` (leave-location-out DataFrame, used to pick the
+        winner), `cv_leave_row_out` (DataFrame), `winner` (str),
+        `figure_path` (Path), `grid_lon`, `grid_lat`, `surface` (the
+        masked 2D array).
     """
     trends = pd.read_parquet(trends_path)
     lon = trends["Longitude"].to_numpy()
@@ -500,9 +530,17 @@ def build_interpolated_surface(
     value = trends[value_col].to_numpy()
 
     cv = leave_one_out_cv(lon, lat, value, k=k)
+    cv_row = leave_one_out_cv(lon, lat, value, k=k, exclude_same_coordinate=False)
     winner = cv.loc[cv["rmse"].idxmin(), "method"]
-    logger.info("LOO-CV RMSE: %s", dict(zip(cv["method"], cv["rmse"], strict=True)))
-    logger.info("winner: %s", winner)
+    logger.info(
+        "leave-location-out RMSE: %s",
+        dict(zip(cv["method"], cv["rmse"], strict=True)),
+    )
+    logger.info(
+        "leave-row-out RMSE (inflated by duplicate leak): %s",
+        dict(zip(cv_row["method"], cv_row["rmse"], strict=True)),
+    )
+    logger.info("winner (leave-location-out): %s", winner)
 
     grid_lon_1d, grid_lat_1d = build_grid(resolution=resolution)
     grid_lon, grid_lat = np.meshgrid(grid_lon_1d, grid_lat_1d)
@@ -540,6 +578,7 @@ def build_interpolated_surface(
 
     return {
         "cv": cv,
+        "cv_leave_row_out": cv_row,
         "winner": winner,
         "figure_path": figure_path,
         "grid_lon": grid_lon_1d,
@@ -552,8 +591,11 @@ def main() -> None:
     """Run the Phase 3 pipeline and print the LOO-CV comparison."""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     result = build_interpolated_surface()
+    print("leave-location-out CV (winner selection):")
     print(result["cv"].to_string(index=False))
-    print(f"winner (lower LOO-CV RMSE): {result['winner']}")
+    print("leave-row-out CV (inflated by grid-snapped duplicate leak):")
+    print(result["cv_leave_row_out"].to_string(index=False))
+    print(f"winner (lower leave-location-out RMSE): {result['winner']}")
     print(f"figure written to: {result['figure_path']}")
 
 
