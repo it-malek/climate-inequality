@@ -12,6 +12,7 @@ dependencies = [
     "pykrige>=1.7",
     "streamlit>=1.35",
     "kagglehub>=0.3",
+    "requests>=2.31",
 ]
 
 [project.optional-dependencies]
