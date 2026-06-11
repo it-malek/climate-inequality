@@ -125,6 +125,52 @@ class TestLeaveOneOutCV:
         span = value.max() - value.min()
         assert (out["rmse"] < 0.25 * span).all()
 
+    @staticmethod
+    def duplicate_points():
+        """Two coincident points with an outlier value amid a ring of zeros."""
+        lon = np.array([10.0, 10.0, 0.0, 20.0, 0.0, 20.0, 10.0, 0.0])
+        lat = np.array([10.0, 10.0, 0.0, 0.0, 20.0, 20.0, 0.0, 10.0])
+        value = np.array([99.0, 99.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        return lon, lat, value
+
+    def test_same_coordinate_twin_excluded_from_fold(self):
+        lon, lat, value = self.duplicate_points()
+        fair = leave_one_out_cv(lon, lat, value, k=3).set_index("method")
+        naive = leave_one_out_cv(
+            lon, lat, value, k=3, exclude_same_coordinate=False
+        ).set_index("method")
+        # Per row, the duplicate's twin leaks the held-out value, so both
+        # methods look much better than they should; IDW becomes exact.
+        assert (fair["rmse"] >= naive["rmse"] - 1e-12).all()
+        # Folds of unique-coordinate points are identical in both modes, so
+        # the gap is exactly the two duplicate folds: error 0 per row when
+        # the twin leaks (IDW exact match), error 99 when excluded.
+        n = len(lon)
+        assert fair.loc["idw", "rmse"] ** 2 - naive.loc["idw", "rmse"] ** 2 == (
+            pytest.approx(2 * 99.0**2 / n, rel=1e-9)
+        )
+        assert fair["rmse"].min() > 1.0
+
+    def test_fair_equals_naive_without_duplicates(self):
+        lon, lat, value = grid_points(n_per_side=4)
+        fair = leave_one_out_cv(lon, lat, value, k=4)
+        naive = leave_one_out_cv(lon, lat, value, k=4, exclude_same_coordinate=False)
+        assert fair["rmse"].to_numpy() == pytest.approx(naive["rmse"].to_numpy())
+        assert fair["mae"].to_numpy() == pytest.approx(naive["mae"].to_numpy())
+
+    def test_k_clamps_to_points_outside_coordinate_group(self):
+        lon, lat, value = self.duplicate_points()
+        out = leave_one_out_cv(lon, lat, value, k=100)
+        assert np.isfinite(out["rmse"]).all()
+        assert (out["n"] == len(lon)).all()
+
+    def test_all_points_coincident_raises(self):
+        lon = np.zeros(3)
+        lat = np.zeros(3)
+        value = np.array([1.0, 2.0, 3.0])
+        with pytest.raises(ValueError, match="no neighbors"):
+            leave_one_out_cv(lon, lat, value, k=2)
+
 
 class TestBuildGrid:
     def test_axes_within_bounds_and_spaced(self):
