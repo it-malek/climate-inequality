@@ -4,9 +4,11 @@
 > emissions responsibility?
 
 **Status:** ✅ Phases 1–5 complete (data layer; trend fitting; spatial
-interpolation; emissions join; dashboard; findings writeup). Remaining:
-the Community Cloud deploy click; stretch goal is validating the fitted
-trends against post-2013 observations (see `docs/future_work.md`).
+interpolation; emissions join; dashboard; findings writeup) and
+**deployed: [climate-inequality.streamlit.app](https://climate-inequality.streamlit.app/)**.
+Next up: validating the fitted trends against post-2013 observations and
+hunting explanatory variables (`docs/handdown_phase6_7.md`); the broader
+roadmap is in `docs/future_work.md`.
 
 *Originally proposed as an undergraduate research fellowship project (2022);
 rebuilt and substantially upgraded in 2026.*
@@ -105,6 +107,8 @@ vs 0.0099); IDW still wins, but narrowly and for honest reasons.
 
 ## Dashboard
 
+**Live at [climate-inequality.streamlit.app](https://climate-inequality.streamlit.app/).**
+
 Three-page Streamlit app: an interpolated warming map with a city-station
 layer toggle, a city explorer showing any location's anomaly series with
 its fitted trend, and the country-level inequality scatter.
@@ -117,14 +121,11 @@ The app reads only the committed `app/data/` bundle (~5 MB, built by
 `uv run python -m src.app_assets`), so it runs identically on a fresh
 clone and on Streamlit Community Cloud — no raw-data download needed.
 
-**Deploying to Community Cloud:** push to GitHub, then at
-[share.streamlit.io](https://share.streamlit.io) create an app from
-`it-malek/climate-inequality`, branch `main`, main file path
-`app/streamlit_app.py`, Python 3.11. The cloud environment installs
-`app/requirements.txt` (the dependency file in the entrypoint's directory
-takes precedence over root-level files).
-
-<!-- TODO: Streamlit Community Cloud link -->
+**Deployment:** the app is deployed from `it-malek/climate-inequality`,
+branch `main`, main file path `app/streamlit_app.py`, Python 3.11. The
+cloud environment installs `app/requirements.txt` (the dependency file in
+the entrypoint's directory takes precedence over root-level files) and
+redeploys automatically on push to `main`.
 
 ## Limitations
 
