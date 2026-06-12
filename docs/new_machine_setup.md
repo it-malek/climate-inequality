@@ -3,48 +3,60 @@
 GitHub is the single sync channel between machines:
 `https://github.com/it-malek/climate-inequality`
 
-Two working copies exist:
+Both machines work from normal git clones:
 
-- **PC — WSL (recommended pattern): a normal git clone.** Section A.
-- **Mac — the iCloud-synced copy.** Needs special care. Section B.
+- **PC — WSL: a clone in the Linux filesystem.** Section A.
+- **Mac — a clone in a local folder outside iCloud.** Section A.
+  (The old iCloud-synced copy is retired; Section B is kept only in
+  case it ever needs recovering.)
 
-## A. Fresh clone (WSL / Linux / any normal filesystem)
+## A. Fresh clone (WSL / Linux / macOS — any normal filesystem)
 
 In WSL, keep the repo in the Linux filesystem (e.g. `~/projects/`),
 never under `/mnt/c/...` — the Windows mount is slow and breaks the
 filesystem semantics dev tools expect.
+
+On the Mac, clone somewhere iCloud does not touch — `~/projects/` is
+safe; `~/Documents/` and `~/Desktop/` are NOT if "Desktop & Documents"
+iCloud sync is on.
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh   # uv (macOS: brew install uv)
 git clone https://github.com/it-malek/climate-inequality.git
 cd climate-inequality
 uv sync --extra dev      # uv installs Python 3.11+ itself if needed
-uv run pytest -q         # expect all green (49 tests as of phase-2)
+uv run pytest -q         # expect all green (92 tests as of phase-4)
 uv run ruff check src tests
 ```
 
-Rebuild the gitignored data layer — public Kaggle datasets, no
-credentials needed:
+Rebuild the gitignored data layer — public Kaggle datasets plus OWID
+pulls, no credentials needed:
 
 ```bash
 uv run python -c "from src.data_io import download_raw_data; download_raw_data()"
 uv run python -c "from src.data_io import load_city_temperatures, city_csv_path; print(load_city_temperatures(city_csv_path()))"
-uv run python -m src.trends
+uv run python -m src.trends       # phase-2 artifact: city_trends.parquet
+uv run python -m src.emissions    # phase-4 artifacts: country_inequality.parquet + scatter
+uv run python -m src.interpolate  # phase-3 artifact: trend_surface.html (~20 s)
 ```
 
-Expected from the last command (README sanity checks): ~3,510
-city-locations; global mean ≈ 0.146 °C/decade; >60°N ≈ 0.228
-(ratio ≈ 1.56×).
+Expected (README sanity checks): `src.trends` → ~3,510
+city-locations, global mean ≈ 0.146 °C/decade, >60°N ≈ 0.228 (ratio
+≈ 1.56×). `src.emissions` → 157 countries, Spearman ρ ≈ +0.36,
+continent-FE OLS ≈ +0.029 °C/decade per 10× emissions.
+`src.interpolate` → IDW wins leave-location-out CV 0.0083 vs 0.0099.
+The Kaggle download is ~500 MB and the DuckDB load takes a few
+minutes; don't kill slow-looking steps.
 
 Line endings are normalized to LF by `.gitattributes`; no autocrlf
 configuration is needed on any platform.
 
-## B. The Mac's iCloud copy (special care)
+## B. The retired iCloud copy (recovery notes only)
 
-The Mac working copy lives inside iCloud Drive, which has corrupted
-`.git` here before (HEAD/config/index/objects silently vanished) and
-makes the first run of the day glacial while evicted files re-download
-— don't kill slow-looking commands.
+The Mac previously worked from a copy inside iCloud Drive, which
+corrupted `.git` more than once (HEAD/config/index/objects silently
+vanished) and made the first run of the day glacial while evicted
+files re-downloaded. That copy is retired — do not run sessions in it.
 
 If git reports corruption or "not a git repository" even though `.git/`
 exists, do NOT `git init` or `reset --hard`. Recovery that worked
