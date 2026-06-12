@@ -6,7 +6,10 @@ monkeypatched and st.cache_data cleared around every test so nothing
 leaks between bundles (or into the real committed one).
 """
 
+import shutil
+
 import numpy as np
+import pandas as pd
 import pytest
 import streamlit as st
 from streamlit.testing.v1 import AppTest
@@ -64,6 +67,25 @@ class TestLoaders:
 
     def test_window_years(self):
         assert loaders.window_years("1950-01-01..2013-09-01") == "1950–2013"
+
+    def test_window_years_rejects_malformed(self):
+        with pytest.raises(ValueError):
+            loaders.window_years("1950-01-01")
+
+    def test_stale_bundle_missing_column_raises(
+        self, bundle_dir, tmp_path, monkeypatch
+    ):
+        # The session bundle is read-only; break a copy of it instead.
+        broken = tmp_path / "broken_bundle"
+        shutil.copytree(bundle_dir, broken)
+        trends = pd.read_parquet(broken / "city_trends.parquet")
+        trends.drop(columns=["intercept"]).to_parquet(
+            broken / "city_trends.parquet", index=False
+        )
+        monkeypatch.setattr(loaders, "APP_DATA_DIR", broken)
+        st.cache_data.clear()
+        with pytest.raises(ValueError, match="intercept"):
+            loaders.load_city_trends()
 
 
 class TestTrendMapPage:

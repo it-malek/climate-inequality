@@ -28,13 +28,20 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
-import duckdb
 import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
 from scipy import stats
+from statsmodels.regression.linear_model import RegressionResultsWrapper
 
-from src.data_io import OUTPUTS_DIR, PROCESSED_DIR, RAW_DIR, download_file
+from src.cleaning import parse_window
+from src.data_io import (
+    OUTPUTS_DIR,
+    PROCESSED_DIR,
+    RAW_DIR,
+    download_file,
+    write_typed_parquet,
+)
 from src.figures import render_inequality_scatter
 from src.trends import DEFAULT_TRENDS_PATH
 
@@ -66,16 +73,18 @@ BERKELEY_TO_OWID = {
     "Swaziland": "Eswatini",
 }
 
-INEQUALITY_COLUMNS = [
-    "Country",
-    "owid_country",
-    "continent",
-    "n_cities",
-    "trend_c_per_decade",
-    "cumulative_co2_mt",
-    "population",
-    "cum_co2_t_per_capita",
-]
+# On-disk schema of country_inequality.parquet (DuckDB types), in order.
+INEQUALITY_SCHEMA = {
+    "Country": "VARCHAR",
+    "owid_country": "VARCHAR",
+    "continent": "VARCHAR",
+    "n_cities": "BIGINT",
+    "trend_c_per_decade": "DOUBLE",
+    "cumulative_co2_mt": "DOUBLE",
+    "population": "BIGINT",
+    "cum_co2_t_per_capita": "DOUBLE",
+}
+INEQUALITY_COLUMNS = list(INEQUALITY_SCHEMA)
 
 
 def load_owid_co2(csv_path: Path = OWID_CO2_PATH) -> pd.DataFrame:
@@ -266,7 +275,9 @@ class InequalityResult:
     ols_fe: OLSFit
 
 
-def _extract_fit(fit, term: str = "log10_emissions") -> OLSFit:
+def _extract_fit(
+    fit: RegressionResultsWrapper, term: str = "log10_emissions"
+) -> OLSFit:
     """Pull `term`'s effect size and uncertainty out of a statsmodels fit."""
     ci_low, ci_high = fit.conf_int().loc[term]
     return OLSFit(
@@ -331,36 +342,6 @@ def quantify_inequality(
     )
 
 
-def _write_inequality_parquet(table: pd.DataFrame, out_path: Path) -> None:
-    """Overwrite `out_path` with an explicitly-typed parquet file."""
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    con = duckdb.connect()
-    try:
-        con.register("_inequality", table)
-        # COPY targets cannot take prepared parameters; inline the path as
-        # an escaped SQL string literal (same approach as data_io).
-        out_literal = str(out_path).replace("'", "''")
-        con.execute(
-            f"""
-            COPY (
-                SELECT
-                    Country::VARCHAR AS Country,
-                    owid_country::VARCHAR AS owid_country,
-                    continent::VARCHAR AS continent,
-                    n_cities::BIGINT AS n_cities,
-                    trend_c_per_decade::DOUBLE AS trend_c_per_decade,
-                    cumulative_co2_mt::DOUBLE AS cumulative_co2_mt,
-                    population::BIGINT AS population,
-                    cum_co2_t_per_capita::DOUBLE AS cum_co2_t_per_capita
-                FROM _inequality
-                ORDER BY continent, Country
-            ) TO '{out_literal}' (FORMAT PARQUET)
-            """
-        )
-    finally:
-        con.close()
-
-
 def build_inequality_analysis(
     trends_path: Path = DEFAULT_TRENDS_PATH,
     co2_path: Path = OWID_CO2_PATH,
@@ -394,7 +375,7 @@ def build_inequality_analysis(
 
     trends = pd.read_parquet(trends_path)
     if cutoff_year is None:
-        window_end = trends["analysis_window"].iloc[0].split("..")[1]
+        _, window_end = parse_window(trends["analysis_window"].iloc[0])
         cutoff_year = int(window_end[:4])
         logger.info("cutoff year %d derived from analysis_window", cutoff_year)
 
@@ -409,7 +390,9 @@ def build_inequality_analysis(
     out_dir.mkdir(parents=True, exist_ok=True)
     figure_path = out_dir / "inequality_scatter.html"
     fig.write_html(figure_path)
-    _write_inequality_parquet(table, table_path)
+    write_typed_parquet(
+        table, table_path, INEQUALITY_SCHEMA, order_by=("continent", "Country")
+    )
     logger.info("wrote %s and %s", table_path, figure_path)
 
     return {

@@ -12,6 +12,7 @@ from __future__ import annotations
 import logging
 import re
 import shutil
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
@@ -36,6 +37,53 @@ EMISSIONS_DATASET = "srikantsahu/co2-and-ghg-emission-data"
 CITY_CSV_NAME = "GlobalLandTemperaturesByCity.csv"
 
 CITY_TABLE = "city_temps"
+
+
+def safe_identifier(name: str) -> str:
+    """Validate `name` as a plain SQL identifier safe to interpolate."""
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name):
+        raise ValueError(f"invalid SQL identifier: {name!r}")
+    return name
+
+
+def write_typed_parquet(
+    df: pd.DataFrame,
+    out_path: Path,
+    schema: Mapping[str, str],
+    order_by: Sequence[str],
+) -> None:
+    """Overwrite `out_path` with a parquet file of explicitly-typed columns.
+
+    Shared writer for the phase output tables (trends, inequality):
+    casting every column to a declared DuckDB type keeps the on-disk
+    schema stable across pandas/duckdb upgrades, and the deterministic
+    ORDER BY makes re-runs reproduce the same file.
+
+    Args:
+        df: Frame containing at least the columns in `schema`.
+        out_path: Destination parquet file; parents created if missing.
+        schema: Ordered mapping of column name -> DuckDB type
+            (e.g. ``{"Country": "VARCHAR", "population": "BIGINT"}``).
+        order_by: Columns (from `schema`) defining the row order.
+    """
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    select = ", ".join(
+        f"{safe_identifier(col)}::{safe_identifier(dtype)} AS {col}"
+        for col, dtype in schema.items()
+    )
+    order = ", ".join(safe_identifier(col) for col in order_by)
+    con = duckdb.connect()
+    try:
+        con.register("_df", df)
+        # COPY targets cannot take prepared parameters; inline the path as
+        # an escaped SQL string literal (same approach as ingestion below).
+        out_literal = str(out_path).replace("'", "''")
+        con.execute(
+            f"COPY (SELECT {select} FROM _df ORDER BY {order}) "
+            f"TO '{out_literal}' (FORMAT PARQUET)"
+        )
+    finally:
+        con.close()
 
 
 @dataclass(frozen=True)
@@ -189,8 +237,7 @@ def load_city_temperatures(
     """
     if not csv_path.exists():
         raise FileNotFoundError(f"no such CSV: {csv_path}")
-    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", table):
-        raise ValueError(f"invalid table name: {table!r}")
+    safe_identifier(table)
     db_path.parent.mkdir(parents=True, exist_ok=True)
 
     con = duckdb.connect(str(db_path))

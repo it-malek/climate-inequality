@@ -45,7 +45,7 @@ import pandas as pd
 from scipy import stats
 from shapely import Geometry
 
-from src.cleaning import to_decimal_decades
+from src.cleaning import parse_window, to_decimal_decades
 from src.data_io import DEFAULT_DB_PATH, OUTPUTS_DIR, PROJECT_ROOT
 from src.emissions import DEFAULT_INEQUALITY_PATH, quantify_inequality
 from src.interpolate import (
@@ -267,8 +267,8 @@ def build_app_assets(
         result) for inspection.
     """
     trends = pd.read_parquet(trends_path)
-    baseline_start, baseline_end = trends["baseline_window"].iloc[0].split("..")
-    start, end = trends["analysis_window"].iloc[0].split("..")
+    baseline_start, baseline_end = parse_window(trends["baseline_window"].iloc[0])
+    start, end = parse_window(trends["analysis_window"].iloc[0])
     cutoff_year = int(end[:4])
 
     logger.info("recomputing anomalies for %d locations ...", len(trends))

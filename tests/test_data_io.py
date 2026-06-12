@@ -5,6 +5,7 @@ CSV is a small synthetic fixture mimicking GlobalLandTemperaturesByCity.csv.
 """
 
 import duckdb
+import pandas as pd
 import pytest
 
 from src import data_io
@@ -14,6 +15,8 @@ from src.data_io import (
     city_csv_path,
     download_raw_data,
     load_city_temperatures,
+    safe_identifier,
+    write_typed_parquet,
 )
 
 HEADER = (
@@ -112,7 +115,7 @@ class TestLoadCityTemperatures:
             load_city_temperatures(tmp_path / "nope.csv", db_path)
 
     def test_bad_table_name_raises(self, csv_path, db_path):
-        with pytest.raises(ValueError, match="table name"):
+        with pytest.raises(ValueError, match="identifier"):
             load_city_temperatures(csv_path, db_path, table="bad; DROP TABLE x")
 
     def test_bad_hemisphere_suffix_raises(self, tmp_path, db_path):
@@ -130,6 +133,49 @@ class TestLoadCityTemperatures:
         )
         with pytest.raises(ValueError, match="exceed"):
             load_city_temperatures(csv, db_path)
+
+
+class TestSafeIdentifier:
+    @pytest.mark.parametrize("name", ["city_temps", "_df", "Table1", "DOUBLE"])
+    def test_valid_passes_through(self, name):
+        assert safe_identifier(name) == name
+
+    @pytest.mark.parametrize("name", ["", "1abc", "a-b", "x; DROP TABLE y", "a b"])
+    def test_invalid_raises(self, name):
+        with pytest.raises(ValueError, match="identifier"):
+            safe_identifier(name)
+
+
+class TestWriteTypedParquet:
+    SCHEMA = {"name": "VARCHAR", "value": "DOUBLE", "count": "BIGINT"}
+
+    def _df(self):
+        return pd.DataFrame(
+            {"name": ["b", "a"], "value": [2, 1], "count": [20.0, 10.0]}
+        )
+
+    def test_casts_types_and_orders_rows(self, tmp_path):
+        out = tmp_path / "out.parquet"
+        write_typed_parquet(self._df(), out, self.SCHEMA, order_by=("name",))
+        back = pd.read_parquet(out)
+        assert back.columns.tolist() == list(self.SCHEMA)
+        assert back["name"].tolist() == ["a", "b"]  # sorted, not input order
+        assert back["value"].dtype == "float64"  # int input cast to DOUBLE
+        assert back["count"].dtype == "int64"  # float input cast to BIGINT
+
+    def test_overwrites_deterministically(self, tmp_path):
+        out = tmp_path / "out.parquet"
+        write_typed_parquet(self._df(), out, self.SCHEMA, order_by=("name",))
+        first = out.read_bytes()
+        write_typed_parquet(self._df(), out, self.SCHEMA, order_by=("name",))
+        assert out.read_bytes() == first
+
+    def test_rejects_unsafe_column_name(self, tmp_path):
+        df = self._df().rename(columns={"name": "name; DROP"})
+        with pytest.raises(ValueError, match="identifier"):
+            write_typed_parquet(
+                df, tmp_path / "x.parquet", {"name; DROP": "VARCHAR"}, ("value",)
+            )
 
 
 class TestSyncTree:

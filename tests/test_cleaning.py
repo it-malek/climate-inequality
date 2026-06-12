@@ -9,6 +9,7 @@ from src.cleaning import (
     filter_window,
     parse_coordinate,
     parse_coordinates,
+    parse_window,
     to_decimal_decades,
 )
 
@@ -94,6 +95,26 @@ class TestToDecimalDecades:
     def test_accepts_datetime_series(self):
         out = to_decimal_decades(pd.Series(pd.to_datetime(["2000-01-01"])))
         assert out.iloc[0] == pytest.approx((2000 + 0.5 / 12) / 10)
+
+
+class TestParseWindow:
+    def test_round_trips_the_stored_form(self):
+        window = "1950-01-01..2013-09-01"
+        assert parse_window(window) == ("1950-01-01", "2013-09-01")
+
+    @pytest.mark.parametrize(
+        "bad",
+        [
+            "1950-01-01",  # no separator
+            "1950-01-01..2000-01-01..2013-09-01",  # too many parts
+            "not-a-date..2013-09-01",
+            "2013-09-01..1950-01-01",  # reversed
+            "1950-01-01..1950-01-01",  # empty window
+        ],
+    )
+    def test_invalid_raises(self, bad):
+        with pytest.raises(ValueError):
+            parse_window(bad)
 
 
 class TestCoverage:
