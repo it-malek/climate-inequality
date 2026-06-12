@@ -22,6 +22,8 @@ dev = [
     "pytest-cov>=5.0",
     "ruff>=0.4",
     "jupyter",
+    "xarray>=2026.4.0",
+    "netcdf4>=1.7.4",
 ]
 
 [tool.pytest.ini_options]
