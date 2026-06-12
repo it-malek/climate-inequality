@@ -26,6 +26,7 @@ MAP_MODES = ("surface", "cities", "both")
 _MONTHLY_COLOR = "rgba(135, 135, 135, 0.45)"
 _ROLLING_COLOR = "#0072B2"
 _FIT_COLOR = "#D55E00"
+_GATED_COLOR = "rgba(150, 150, 150, 0.4)"
 
 
 def render_trend_surface(
@@ -239,6 +240,176 @@ def render_city_anomaly_series(
         title=title,
         xaxis_title="Year",
         yaxis_title="Anomaly vs monthly climatology (°C)",
+        legend={"orientation": "h", "yanchor": "bottom", "y": 1.02},
+        height=440,
+    )
+    return fig
+
+
+def render_residual_map(
+    df: pd.DataFrame,
+    value_col: str = "mean_residual",
+    gate_col: str = "gate_pass",
+    title: str = "Out-of-sample forecast residuals, 2014-present (°C)",
+) -> go.Figure:
+    """Map of per-city mean forecast residuals (observed − predicted).
+
+    Gate-passing cities are colored on the symmetric RdBu_r scale
+    centered at zero (red = the stored trend underpredicted, i.e.
+    observed warming ran ahead of the fit); gate-failing cities are
+    faint grey context markers with their overlap r in the hover.
+
+    Args:
+        df: One row per city-location with Latitude, Longitude, City,
+            Country, `value_col`, `gate_col`, overlap_r.
+        value_col: Residual column to color by (°C).
+        gate_col: Boolean agreement-gate column.
+        title: Figure title.
+
+    Returns:
+        A `plotly.graph_objects.Figure`.
+    """
+    passed = df.loc[df[gate_col]]
+    failed = df.loc[~df[gate_col]]
+    vmax = float(passed[value_col].abs().max())
+
+    fig = go.Figure()
+    if len(failed):
+        fig.add_trace(
+            go.Scatter(
+                x=failed["Longitude"],
+                y=failed["Latitude"],
+                mode="markers",
+                marker={"color": _GATED_COLOR, "size": 4, "symbol": "x"},
+                name="gated out",
+                customdata=np.column_stack(
+                    [failed["City"], failed["Country"], failed["overlap_r"]]
+                ),
+                hovertemplate=(
+                    "<b>%{customdata[0]}, %{customdata[1]}</b><br>"
+                    "gated out (overlap r = %{customdata[2]:.2f})"
+                    "<extra></extra>"
+                ),
+            )
+        )
+    fig.add_trace(
+        go.Scatter(
+            x=passed["Longitude"],
+            y=passed["Latitude"],
+            mode="markers",
+            marker={
+                "color": passed[value_col],
+                "colorscale": TREND_COLORSCALE,
+                "cmid": 0.0,
+                "cmin": -vmax,
+                "cmax": vmax,
+                "size": 5,
+                "colorbar": {"title": "°C"},
+                "line": {"width": 0.4, "color": "rgba(60, 60, 60, 0.6)"},
+            },
+            name="cities",
+            customdata=np.column_stack(
+                [passed["City"], passed["Country"], passed[value_col]]
+            ),
+            hovertemplate=(
+                "<b>%{customdata[0]}, %{customdata[1]}</b><br>"
+                "mean residual %{customdata[2]:.3f} °C<extra></extra>"
+            ),
+        )
+    )
+    fig.update_layout(
+        title=title,
+        xaxis_title="Longitude",
+        yaxis_title="Latitude",
+        showlegend=False,
+        height=520,
+    )
+    return fig
+
+
+def render_validation_series(
+    df: pd.DataFrame,
+    forecast_start: str,
+    date_col: str = "dt",
+    observed_col: str = "observed",
+    predicted_col: str = "predicted",
+    rolling_months: int = 12,
+    title: str = "Observed land anomaly vs the extrapolated stored trend",
+) -> go.Figure:
+    """Global mean observed anomalies against the extrapolated stored fit.
+
+    Same three-trace style as :func:`render_city_anomaly_series`
+    (monthly faint, rolling mean, fitted line); right of the
+    `forecast_start` marker the prediction is genuinely out of sample.
+
+    Args:
+        df: One row per month with `date_col`, `observed_col`,
+            `predicted_col`.
+        forecast_start: First out-of-sample month, drawn as a vertical
+            cutoff line.
+        date_col: Date column name.
+        observed_col: Observed global-mean anomaly column (°C).
+        predicted_col: Extrapolated-prediction column (°C).
+        rolling_months: Window for the centered rolling mean.
+        title: Figure title.
+
+    Returns:
+        A `plotly.graph_objects.Figure`.
+    """
+    work = df.sort_values(date_col)
+    dates = pd.to_datetime(work[date_col])
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=dates,
+            y=work[observed_col],
+            mode="lines",
+            line={"color": _MONTHLY_COLOR, "width": 1},
+            name="Observed monthly mean",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=dates,
+            y=work[observed_col].rolling(rolling_months, center=True).mean(),
+            mode="lines",
+            line={"color": _ROLLING_COLOR, "width": 2},
+            name=f"{rolling_months}-month mean",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=dates,
+            y=work[predicted_col],
+            mode="lines",
+            line={"color": _FIT_COLOR, "width": 2, "dash": "dash"},
+            name="Stored fit (extrapolated)",
+        )
+    )
+    cutoff = pd.Timestamp(forecast_start)
+    fig.add_shape(
+        type="line",
+        x0=cutoff,
+        x1=cutoff,
+        y0=0,
+        y1=1,
+        yref="paper",
+        line={"color": "rgba(60, 60, 60, 0.7)", "dash": "dot", "width": 1.5},
+    )
+    fig.add_annotation(
+        x=cutoff,
+        y=1.0,
+        yref="paper",
+        text="out of sample →",
+        showarrow=False,
+        xanchor="left",
+        font={"size": 11, "color": "rgba(60, 60, 60, 0.9)"},
+    )
+    fig.update_layout(
+        title=title,
+        xaxis_title="Year",
+        yaxis_title="Anomaly vs 1951–1980 (°C)",
         legend={"orientation": "h", "yanchor": "bottom", "y": 1.02},
         height=440,
     )

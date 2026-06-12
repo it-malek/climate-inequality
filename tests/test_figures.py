@@ -19,7 +19,9 @@ from src.figures import (
     build_trend_map,
     render_city_anomaly_series,
     render_inequality_scatter,
+    render_residual_map,
     render_trend_surface,
+    render_validation_series,
 )
 
 
@@ -170,6 +172,75 @@ class TestRenderCityAnomalySeries:
         # Centered 12-month window: NaN at the edges, values in the middle.
         assert np.isnan(rolling[0])
         assert np.isfinite(rolling[len(rolling) // 2])
+
+
+def make_validation_frame():
+    """Minimal per-city validation frame for the residual map."""
+    return pd.DataFrame(
+        {
+            "City": ["A", "B", "C"],
+            "Country": ["X", "X", "Y"],
+            "Latitude": [10.0, 20.0, -30.0],
+            "Longitude": [5.0, 15.0, 40.0],
+            "mean_residual": [0.3, -0.1, np.nan],
+            "overlap_r": [0.95, 0.9, 0.2],
+            "gate_pass": [True, True, False],
+        }
+    )
+
+
+class TestRenderResidualMap:
+    def test_symmetric_scale_with_gated_context_trace(self):
+        fig = render_residual_map(make_validation_frame())
+        assert len(fig.data) == 2
+        gated, scored = fig.data
+        assert isinstance(gated.marker.color, str)  # neutral grey context
+        # Colored by residual, symmetric around zero: max |residual| = 0.3.
+        assert scored.marker.cmid == 0.0
+        assert scored.marker.cmax == pytest.approx(0.3)
+        assert scored.marker.cmin == pytest.approx(-0.3)
+        assert np.asarray(scored.customdata).shape == (2, 3)
+
+    def test_all_passing_gives_single_trace(self):
+        df = make_validation_frame()
+        df["gate_pass"] = True
+        df["mean_residual"] = [0.3, -0.1, 0.2]
+        fig = render_residual_map(df)
+        assert len(fig.data) == 1
+
+
+class TestRenderValidationSeries:
+    FORECAST_START = "2013-10-01"
+
+    def make_series(self):
+        months = pd.date_range("2000-01-01", "2020-12-01", freq="MS")
+        decades = to_decimal_decades(pd.Series(months))
+        predicted = 0.15 * decades - 29.0
+        return pd.DataFrame(
+            {"dt": months, "observed": predicted + 0.2, "predicted": predicted}
+        )
+
+    def test_three_traces_and_cutoff_marker(self):
+        fig = render_validation_series(
+            self.make_series(), forecast_start=self.FORECAST_START
+        )
+        assert len(fig.data) == 3
+        assert len(fig.layout.shapes) == 1
+        cutoff = pd.Timestamp(fig.layout.shapes[0].x0)
+        assert cutoff == pd.Timestamp(self.FORECAST_START)
+
+    def test_prediction_trace_is_the_predicted_column(self):
+        series = self.make_series()
+        fig = render_validation_series(series, forecast_start=self.FORECAST_START)
+        assert np.asarray(fig.data[2].y) == pytest.approx(
+            series["predicted"].to_numpy()
+        )
+
+    def test_sorts_unordered_input(self):
+        shuffled = self.make_series().sample(frac=1.0, random_state=0)
+        fig = render_validation_series(shuffled, forecast_start=self.FORECAST_START)
+        x = pd.to_datetime(np.asarray(fig.data[0].x))
+        assert (x.sort_values() == x).all()
 
 
 class TestRenderInequalityScatter:
