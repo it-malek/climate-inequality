@@ -16,6 +16,10 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
+# src.cleaning is pandas-only, safe for the deployed environment (the app
+# already imports src.figures, which depends on it).
+from src.cleaning import parse_window
+
 # Must equal src.app_assets.APP_DATA_DIR (tests assert agreement); the app
 # cannot import src.app_assets because its pipeline dependencies are absent
 # from the deployed environment. Tests monkeypatch this to a synthetic
@@ -23,16 +27,42 @@ import streamlit as st
 APP_DATA_DIR = Path(__file__).resolve().parent / "data"
 
 
+def _read_bundle_parquet(name: str, required: tuple[str, ...]) -> pd.DataFrame:
+    """Read one bundle parquet, failing loudly if expected columns are gone.
+
+    The pages dereference these columns far from the read; checking here
+    turns a stale or hand-edited bundle into one clear error.
+    """
+    path = APP_DATA_DIR / name
+    df = pd.read_parquet(path)
+    missing = sorted(set(required) - set(df.columns))
+    if missing:
+        raise ValueError(
+            f"{path} is missing column(s) {missing}; the bundle is stale — "
+            "rebuild it (python -m src.app_assets)"
+        )
+    return df
+
+
 @st.cache_data
 def load_city_trends() -> pd.DataFrame:
     """Per-city-location trends with ``city_id``, ``label``, ``intercept``."""
-    return pd.read_parquet(APP_DATA_DIR / "city_trends.parquet")
+    return _read_bundle_parquet(
+        "city_trends.parquet",
+        required=(
+            "City", "Country", "Latitude", "Longitude", "n_obs", "coverage",
+            "slope_c_per_decade", "ci_low", "ci_high", "ols_slope",
+            "city_id", "label", "intercept",
+        ),
+    )
 
 
 @st.cache_data
 def load_anomalies() -> pd.DataFrame:
     """All monthly anomalies, keyed by ``city_id``."""
-    return pd.read_parquet(APP_DATA_DIR / "city_anomalies.parquet")
+    return _read_bundle_parquet(
+        "city_anomalies.parquet", required=("city_id", "dt", "anomaly")
+    )
 
 
 @st.cache_data
@@ -50,7 +80,9 @@ def load_surface() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     Pivots the long-form parquet back to the 2D grid; NaN cells are ocean
     (land-masked upstream).
     """
-    long_form = pd.read_parquet(APP_DATA_DIR / "trend_surface.parquet")
+    long_form = _read_bundle_parquet(
+        "trend_surface.parquet", required=("lat", "lon", "value")
+    )
     wide = (
         long_form.pivot(index="lat", columns="lon", values="value")
         .sort_index()
@@ -66,7 +98,13 @@ def load_surface() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
 @st.cache_data
 def load_inequality() -> pd.DataFrame:
     """The country-level inequality table (one row per matched country)."""
-    return pd.read_parquet(APP_DATA_DIR / "country_inequality.parquet")
+    return _read_bundle_parquet(
+        "country_inequality.parquet",
+        required=(
+            "Country", "continent", "n_cities",
+            "trend_c_per_decade", "cum_co2_t_per_capita",
+        ),
+    )
 
 
 @st.cache_data
@@ -77,5 +115,5 @@ def load_stats() -> dict:
 
 def window_years(window: str) -> str:
     """Render a stored window like ``1950-01-01..2013-09-01`` as ``1950–2013``."""
-    start, end = window.split("..")
+    start, end = parse_window(window)
     return f"{start[:4]}–{end[:4]}"

@@ -166,7 +166,7 @@ class TestComputeClimatology:
         assert out["climatology"].to_numpy() == pytest.approx(expected, abs=1e-9)
 
     def test_bad_table_name_raises(self, con):
-        with pytest.raises(ValueError, match="table name"):
+        with pytest.raises(ValueError, match="identifier"):
             compute_climatology(con, table="bad; DROP TABLE x")
 
 

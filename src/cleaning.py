@@ -71,6 +71,37 @@ def to_decimal_decades(dates: pd.Series) -> pd.Series:
     return (parsed.dt.year + (parsed.dt.month - 0.5) / 12) / 10
 
 
+def parse_window(window: str) -> tuple[str, str]:
+    """Split a stored window string like ``1950-01-01..2013-09-01``.
+
+    Phase outputs persist their analysis and baseline windows in this
+    ``start..end`` form (:func:`src.trends.build_city_trends`); downstream
+    consumers parse them back through here so a malformed or reversed
+    window fails loudly instead of silently mis-slicing.
+
+    Args:
+        window: ``"<start>..<end>"`` with parseable dates on both sides.
+
+    Returns:
+        (start, end) as the original date strings.
+
+    Raises:
+        ValueError: if the string is not two ``..``-separated parseable
+            dates, or if start does not precede end.
+    """
+    parts = window.split("..")
+    if len(parts) != 2:
+        raise ValueError(f"expected a 'start..end' window, got {window!r}")
+    start, end = parts
+    try:
+        start_ts, end_ts = pd.Timestamp(start), pd.Timestamp(end)
+    except ValueError as exc:
+        raise ValueError(f"unparseable date in window {window!r}") from exc
+    if not start_ts < end_ts:
+        raise ValueError(f"window start must precede end: {window!r}")
+    return start, end
+
+
 def add_date_parts(df: pd.DataFrame, date_col: str = "dt") -> pd.DataFrame:
     """Parse the date column and add Year / Month integer columns."""
     out = df.copy()

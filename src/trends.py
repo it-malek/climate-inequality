@@ -15,7 +15,6 @@ here uses the full (City, Country, Latitude, Longitude) key.
 from __future__ import annotations
 
 import logging
-import re
 from pathlib import Path
 
 import duckdb
@@ -28,11 +27,22 @@ from src.cleaning import (
     coverage_by_city,
     to_decimal_decades,
 )
-from src.data_io import CITY_TABLE, DEFAULT_DB_PATH, PROCESSED_DIR
+from src.data_io import (
+    CITY_TABLE,
+    DEFAULT_DB_PATH,
+    PROCESSED_DIR,
+    safe_identifier,
+    write_typed_parquet,
+)
 
 logger = logging.getLogger(__name__)
 
-# Climatology baseline — see README "Known dataset quirks"
+# Climatology baseline — see README "Known dataset quirks". 1951–1980 is
+# the conventional 30-year reference period (GISTEMP's standard), densely
+# covered inside the analysis window. Unlike the analysis window it is a
+# constant, not a pipeline parameter: the baseline only anchors anomaly
+# *levels* (each location-month gets a constant offset), so the fitted
+# trends are insensitive to the choice.
 BASELINE_START = "1951-01-01"
 BASELINE_END = "1980-12-01"
 DEFAULT_MIN_COVERAGE = 0.9
@@ -41,24 +51,22 @@ DEFAULT_TRENDS_PATH = PROCESSED_DIR / "city_trends.parquet"
 # Full per-location identity; (City, Country) alone is ambiguous (see above).
 CITY_KEYS = ["City", "Country", "Latitude", "Longitude"]
 
-TRENDS_COLUMNS = [
-    *CITY_KEYS,
-    "n_obs",
-    "coverage",
-    "slope_c_per_decade",
-    "ci_low",
-    "ci_high",
-    "ols_slope",
-    "baseline_window",
-    "analysis_window",
-]
-
-
-def _safe_table(table: str) -> str:
-    """Validate `table` as a plain SQL identifier safe to interpolate."""
-    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", table):
-        raise ValueError(f"invalid table name: {table!r}")
-    return table
+# On-disk schema of city_trends.parquet (DuckDB types), in column order.
+TRENDS_SCHEMA = {
+    "City": "VARCHAR",
+    "Country": "VARCHAR",
+    "Latitude": "DOUBLE",
+    "Longitude": "DOUBLE",
+    "n_obs": "BIGINT",
+    "coverage": "DOUBLE",
+    "slope_c_per_decade": "DOUBLE",
+    "ci_low": "DOUBLE",
+    "ci_high": "DOUBLE",
+    "ols_slope": "DOUBLE",
+    "baseline_window": "VARCHAR",
+    "analysis_window": "VARCHAR",
+}
+TRENDS_COLUMNS = list(TRENDS_SCHEMA)
 
 
 def compute_climatology(
@@ -89,7 +97,7 @@ def compute_climatology(
             Longitude,
             month(dt) AS Month,
             avg(AverageTemperature) AS climatology
-        FROM {_safe_table(table)}
+        FROM {safe_identifier(table)}
         WHERE dt BETWEEN CAST(? AS DATE) AND CAST(? AS DATE)
           AND AverageTemperature IS NOT NULL
         GROUP BY City, Country, Latitude, Longitude, Month
@@ -141,7 +149,7 @@ def compute_anomalies(
             t.dt,
             t.AverageTemperature,
             t.AverageTemperature - c.climatology AS anomaly
-        FROM {_safe_table(table)} t
+        FROM {safe_identifier(table)} t
         LEFT JOIN _climatology c
             ON t.City = c.City
             AND t.Country = c.Country
@@ -236,40 +244,6 @@ def fit_city_trends(
     )
 
 
-def _write_trends_parquet(trends: pd.DataFrame, out_path: Path) -> None:
-    """Overwrite `out_path` with an explicitly-typed parquet file."""
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    con = duckdb.connect()
-    try:
-        con.register("_trends", trends)
-        # COPY targets cannot take prepared parameters; inline the path as
-        # an escaped SQL string literal (same approach as data_io).
-        out_literal = str(out_path).replace("'", "''")
-        con.execute(
-            f"""
-            COPY (
-                SELECT
-                    City::VARCHAR AS City,
-                    Country::VARCHAR AS Country,
-                    Latitude::DOUBLE AS Latitude,
-                    Longitude::DOUBLE AS Longitude,
-                    n_obs::BIGINT AS n_obs,
-                    coverage::DOUBLE AS coverage,
-                    slope_c_per_decade::DOUBLE AS slope_c_per_decade,
-                    ci_low::DOUBLE AS ci_low,
-                    ci_high::DOUBLE AS ci_high,
-                    ols_slope::DOUBLE AS ols_slope,
-                    baseline_window::VARCHAR AS baseline_window,
-                    analysis_window::VARCHAR AS analysis_window
-                FROM _trends
-                ORDER BY Country, City, Latitude, Longitude
-            ) TO '{out_literal}' (FORMAT PARQUET)
-            """
-        )
-    finally:
-        con.close()
-
-
 def build_city_trends(
     db_path: Path = DEFAULT_DB_PATH,
     out_path: Path = DEFAULT_TRENDS_PATH,
@@ -321,7 +295,10 @@ def build_city_trends(
     trends["analysis_window"] = f"{start}..{end}"
     trends = trends[TRENDS_COLUMNS]
 
-    _write_trends_parquet(trends, out_path)
+    write_typed_parquet(
+        trends, out_path, TRENDS_SCHEMA,
+        order_by=("Country", "City", "Latitude", "Longitude"),
+    )
     logger.info("wrote %d city-location trends to %s", len(trends), out_path)
     return trends
 
