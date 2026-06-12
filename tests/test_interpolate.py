@@ -15,7 +15,6 @@ from src.interpolate import (
     leave_one_out_cv,
     mask_to_land,
     ordinary_kriging_interpolate,
-    render_trend_surface,
 )
 
 
@@ -202,16 +201,3 @@ class TestMaskToLand:
         values = np.array([[1.0, 2.0], [3.0, 4.0]])
         mask_to_land(grid_lon, grid_lat, values, land)
         assert not np.isnan(values).any()
-
-
-class TestRenderTrendSurface:
-    def test_returns_figure_with_diverging_colorscale(self):
-        lons = np.array([0.0, 1.0])
-        lats = np.array([0.0, 1.0])
-        values = np.array([[-1.0, 2.0], [np.nan, 0.5]])
-        fig = render_trend_surface(lons, lats, values)
-        heatmap = fig.data[0]
-        assert heatmap.colorscale is not None
-        assert heatmap.zmid == 0.0
-        assert heatmap.zmax == pytest.approx(2.0)
-        assert heatmap.zmin == pytest.approx(-2.0)

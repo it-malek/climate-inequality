@@ -35,13 +35,13 @@ from pathlib import Path
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
 from pykrige.ok import OrdinaryKriging
 from scipy.linalg import LinAlgWarning
 from scipy.spatial import cKDTree
 from shapely import Geometry, contains_xy
 
 from src.data_io import OUTPUTS_DIR, RAW_DIR, download_file
+from src.figures import render_trend_surface
 from src.trends import DEFAULT_TRENDS_PATH
 
 logger = logging.getLogger(__name__)
@@ -448,49 +448,13 @@ def mask_to_land(
     return out
 
 
-def render_trend_surface(
-    grid_lon: np.ndarray,
-    grid_lat: np.ndarray,
-    values: np.ndarray,
-    title: str = "Warming trend (°C/decade)",
-) -> go.Figure:
-    """Plotly heatmap of an interpolated trend surface.
-
-    Uses a diverging RdBu_r colorscale centered at zero (warming positive
-    in red, cooling negative in blue), per README plotting conventions.
-
-    Args:
-        grid_lon, grid_lat: 1D axes of grid-cell centers, in degrees.
-        values: 2D array of shape (len(grid_lat), len(grid_lon)); NaN
-            cells (e.g. ocean, masked by :func:`mask_to_land`) render blank.
-        title: Figure title.
-
-    Returns:
-        A `plotly.graph_objects.Figure`.
-    """
-    vmax = float(np.nanmax(np.abs(values)))
-    fig = go.Figure(
-        data=go.Heatmap(
-            x=grid_lon,
-            y=grid_lat,
-            z=values,
-            colorscale="RdBu_r",
-            zmid=0.0,
-            zmin=-vmax,
-            zmax=vmax,
-            colorbar={"title": "°C/decade"},
-        )
-    )
-    fig.update_layout(title=title, xaxis_title="Longitude", yaxis_title="Latitude")
-    return fig
-
-
 def build_interpolated_surface(
     trends_path: Path = DEFAULT_TRENDS_PATH,
     out_dir: Path = OUTPUTS_DIR,
     value_col: str = DEFAULT_VALUE_COL,
     k: int = DEFAULT_K_NEIGHBORS,
     resolution: float = DEFAULT_GRID_RESOLUTION,
+    land: Geometry | None = None,
 ) -> dict:
     """Run the Phase 3 pipeline: LOO-CV, pick a winner, render its surface.
 
@@ -506,6 +470,8 @@ def build_interpolated_surface(
         value_col: Column of `trends_path` to interpolate.
         k: Neighborhood size for both LOO-CV and the rendered surface.
         resolution: Grid spacing in degrees (see :func:`build_grid`).
+        land: Land (multi)polygon to mask to; None downloads and loads the
+            Natural Earth polygons (tests inject a synthetic geometry).
 
     Returns:
         Dict with keys `cv` (leave-location-out DataFrame, used to pick the
@@ -534,8 +500,9 @@ def build_interpolated_surface(
     grid_lon_1d, grid_lat_1d = build_grid(resolution=resolution)
     grid_lon, grid_lat = np.meshgrid(grid_lon_1d, grid_lat_1d)
 
-    download_land_polygons()
-    land = load_land_geometry()
+    if land is None:
+        download_land_polygons()
+        land = load_land_geometry()
     on_land = contains_xy(land, grid_lon, grid_lat)
 
     flat_values = np.full(grid_lon.size, np.nan)

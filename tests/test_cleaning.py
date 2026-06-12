@@ -9,6 +9,7 @@ from src.cleaning import (
     filter_window,
     parse_coordinate,
     parse_coordinates,
+    to_decimal_decades,
 )
 
 
@@ -78,6 +79,21 @@ class TestDatesAndWindow:
     def test_filter_window_default(self):
         out = filter_window(self._df())
         assert len(out) == 2  # 1950-01 and 2000-06 survive
+
+
+class TestToDecimalDecades:
+    def test_midmonth_values(self):
+        out = to_decimal_decades(pd.Series(["1950-01-01", "2013-09-01"]))
+        assert out.iloc[0] == pytest.approx((1950 + 0.5 / 12) / 10)
+        assert out.iloc[1] == pytest.approx((2013 + 8.5 / 12) / 10)
+
+    def test_same_month_a_decade_apart_differs_by_one(self):
+        out = to_decimal_decades(pd.Series(["1950-06-01", "1960-06-01"]))
+        assert out.iloc[1] - out.iloc[0] == pytest.approx(1.0)
+
+    def test_accepts_datetime_series(self):
+        out = to_decimal_decades(pd.Series(pd.to_datetime(["2000-01-01"])))
+        assert out.iloc[0] == pytest.approx((2000 + 0.5 / 12) / 10)
 
 
 class TestCoverage:

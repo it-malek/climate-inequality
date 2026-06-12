@@ -52,6 +52,25 @@ def parse_coordinates(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def to_decimal_decades(dates: pd.Series) -> pd.Series:
+    """Convert a date series to decimal decades, the trend-fitting time axis.
+
+    Months sit at their midpoint ((month - 0.5) / 12), so slopes fit against
+    this axis read directly in °C/decade. Trend fitting
+    (:func:`src.trends.fit_city_trends`) and the dashboard's fitted-trend
+    lines must share this exact definition, which is why it lives here in
+    the dependency-light cleaning module.
+
+    Args:
+        dates: Series of datetimes or parseable date strings.
+
+    Returns:
+        Float series, e.g. 1950-01 -> (1950 + 0.5/12) / 10.
+    """
+    parsed = pd.to_datetime(dates)
+    return (parsed.dt.year + (parsed.dt.month - 0.5) / 12) / 10
+
+
 def add_date_parts(df: pd.DataFrame, date_col: str = "dt") -> pd.DataFrame:
     """Parse the date column and add Year / Month integer columns."""
     out = df.copy()

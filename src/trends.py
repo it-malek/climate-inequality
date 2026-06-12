@@ -22,7 +22,12 @@ import duckdb
 import pandas as pd
 from scipy import stats
 
-from src.cleaning import DEFAULT_END, DEFAULT_START, coverage_by_city
+from src.cleaning import (
+    DEFAULT_END,
+    DEFAULT_START,
+    coverage_by_city,
+    to_decimal_decades,
+)
 from src.data_io import CITY_TABLE, DEFAULT_DB_PATH, PROCESSED_DIR
 
 logger = logging.getLogger(__name__)
@@ -207,9 +212,7 @@ def fit_city_trends(
         One row per (City, Country, Latitude, Longitude) with n_obs,
         slope_c_per_decade, ci_low, ci_high, ols_slope.
     """
-    dates = pd.to_datetime(anomalies[date_col])
-    decades = (dates.dt.year + (dates.dt.month - 0.5) / 12) / 10
-    work = anomalies.assign(_decades=decades)
+    work = anomalies.assign(_decades=to_decimal_decades(anomalies[date_col]))
 
     rows = []
     for keys, grp in work.groupby(CITY_KEYS, observed=True, sort=True):

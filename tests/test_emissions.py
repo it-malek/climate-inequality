@@ -21,7 +21,6 @@ from src.emissions import (
     join_country_data,
     load_continents,
     quantify_inequality,
-    render_inequality_scatter,
 )
 
 SLOPE = 0.05  # injected °C/decade per 10x emissions
@@ -244,16 +243,6 @@ class TestQuantifyInequality:
             result = quantify_inequality(frame)
         assert result.n_countries == 7
         assert "non-positive" in caplog.text
-
-
-class TestRenderInequalityScatter:
-    def test_figure_log_axis_and_trendline(self):
-        fig = render_inequality_scatter(make_inequality_frame())
-        assert fig.layout.xaxis.type == "log"
-        modes = [trace.mode for trace in fig.data]
-        assert any(mode == "lines" for mode in modes)  # pooled trendline
-        # One marker trace per continent plus the trendline.
-        assert len(fig.data) == 3
 
 
 class TestBuildInequalityAnalysis:
