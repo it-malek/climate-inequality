@@ -31,12 +31,11 @@ from pathlib import Path
 import duckdb
 import numpy as np
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
 import statsmodels.formula.api as smf
 from scipy import stats
 
 from src.data_io import OUTPUTS_DIR, PROCESSED_DIR, RAW_DIR, download_file
+from src.figures import render_inequality_scatter
 from src.trends import DEFAULT_TRENDS_PATH
 
 logger = logging.getLogger(__name__)
@@ -329,51 +328,6 @@ def quantify_inequality(
         spearman_p=float(rho_p),
         ols_pooled=_extract_fit(pooled),
         ols_fe=_extract_fit(fe),
-    )
-
-
-def render_inequality_scatter(
-    df: pd.DataFrame,
-    x_col: str = "cum_co2_t_per_capita",
-    y_col: str = "trend_c_per_decade",
-    title: str = "Warming rate vs cumulative emissions responsibility",
-) -> go.Figure:
-    """Scatter of country warming trends against per-capita emissions.
-
-    Log x-axis, colorblind-safe qualitative palette per continent (the
-    categorical counterpart of the README diverging-map convention),
-    marker area by the number of city-locations behind each country mean,
-    and one pooled OLS trendline fit on log10(x).
-
-    Args:
-        df: One row per country (see :func:`join_country_data`).
-        x_col, y_col: Axis columns.
-        title: Figure title.
-
-    Returns:
-        A plotly Figure.
-    """
-    return px.scatter(
-        df,
-        x=x_col,
-        y=y_col,
-        color="continent",
-        size="n_cities",
-        size_max=18,
-        hover_name="Country",
-        log_x=True,
-        trendline="ols",
-        trendline_options={"log_x": True},
-        trendline_scope="overall",
-        trendline_color_override="gray",
-        color_discrete_sequence=px.colors.qualitative.Safe,
-        labels={
-            x_col: "Cumulative CO₂ per capita (t/person, log scale)",
-            y_col: "Warming trend (°C/decade)",
-            "continent": "Continent",
-            "n_cities": "city-locations",
-        },
-        title=title,
     )
 
 

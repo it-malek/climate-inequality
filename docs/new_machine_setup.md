@@ -25,8 +25,15 @@ curl -LsSf https://astral.sh/uv/install.sh | sh   # uv (macOS: brew install uv)
 git clone https://github.com/it-malek/climate-inequality.git
 cd climate-inequality
 uv sync --extra dev      # uv installs Python 3.11+ itself if needed
-uv run pytest -q         # expect all green (92 tests as of phase-4)
-uv run ruff check src tests
+uv run pytest -q         # expect all green (128 tests as of phase-5)
+uv run ruff check src tests app
+```
+
+The dashboard works immediately on a fresh clone — it reads only the
+committed `app/data/` bundle, no data rebuild required:
+
+```bash
+uv run streamlit run app/streamlit_app.py
 ```
 
 Rebuild the gitignored data layer — public Kaggle datasets plus OWID
@@ -38,6 +45,9 @@ uv run python -c "from src.data_io import load_city_temperatures, city_csv_path;
 uv run python -m src.trends       # phase-2 artifact: city_trends.parquet
 uv run python -m src.emissions    # phase-4 artifacts: country_inequality.parquet + scatter
 uv run python -m src.interpolate  # phase-3 artifact: trend_surface.html (~20 s)
+uv run python -m src.app_assets   # phase-5: regenerates the committed
+                                  # app/data/ bundle — only needed after a
+                                  # pipeline change (commit the result)
 ```
 
 Expected (README sanity checks): `src.trends` → ~3,510

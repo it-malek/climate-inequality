@@ -1,0 +1,8 @@
+# Dashboard configuration (used locally and by Streamlit Community Cloud).
+# Light base theme so the RdBu_r diverging maps read as intended.
+
+[theme]
+base = "light"
+
+[browser]
+gatherUsageStats = false
