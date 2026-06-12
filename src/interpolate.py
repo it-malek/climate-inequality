@@ -36,18 +36,15 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-import requests
 from pykrige.ok import OrdinaryKriging
 from scipy.linalg import LinAlgWarning
 from scipy.spatial import cKDTree
 from shapely import Geometry, contains_xy
 
-from src.data_io import PROJECT_ROOT, RAW_DIR
+from src.data_io import OUTPUTS_DIR, RAW_DIR, download_file
 from src.trends import DEFAULT_TRENDS_PATH
 
 logger = logging.getLogger(__name__)
-
-OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 
 EARTH_RADIUS_KM = 6371.0088
 DEFAULT_VALUE_COL = "slope_c_per_decade"
@@ -413,15 +410,7 @@ def download_land_polygons(dest: Path = LAND_ZIP_PATH, url: str = LAND_URL) -> P
     Returns:
         `dest`.
     """
-    if dest.exists():
-        logger.info("up to date: %s", dest.name)
-        return dest
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    response = requests.get(url, timeout=30)
-    response.raise_for_status()
-    dest.write_bytes(response.content)
-    logger.info("downloaded %s (%d bytes)", dest.name, len(response.content))
-    return dest
+    return download_file(url, dest, timeout=30)
 
 
 def load_land_geometry(zip_path: Path = LAND_ZIP_PATH) -> Geometry:

@@ -19,6 +19,7 @@ from pathlib import Path
 import duckdb
 import kagglehub
 import pandas as pd
+import requests
 
 from src.cleaning import parse_coordinate
 
@@ -27,6 +28,7 @@ logger = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 RAW_DIR = PROJECT_ROOT / "data" / "raw"
 PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
+OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 DEFAULT_DB_PATH = PROCESSED_DIR / "climate.duckdb"
 
 TEMPERATURE_DATASET = "berkeleyearth/climate-change-earth-surface-temperature-data"
@@ -71,6 +73,35 @@ def _sync_tree(src_dir: Path, dest_dir: Path) -> Path:
         shutil.copy2(src, dest)
         logger.info("copied: %s (%d bytes)", dest.name, dest.stat().st_size)
     return dest_dir
+
+
+def download_file(url: str, dest: Path, timeout: int = 60) -> Path:
+    """Download `url` to `dest` unless it already exists (idempotent).
+
+    Streams to a `.part` file first so an interrupted download never
+    leaves a half-written file at `dest`.
+
+    Args:
+        url: Source URL.
+        dest: Destination path; parent directories are created if missing.
+        timeout: Connect/read timeout in seconds.
+
+    Returns:
+        `dest`.
+    """
+    if dest.exists():
+        logger.info("up to date: %s", dest.name)
+        return dest
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    partial = dest.with_suffix(dest.suffix + ".part")
+    with requests.get(url, stream=True, timeout=timeout) as response:
+        response.raise_for_status()
+        with open(partial, "wb") as handle:
+            for chunk in response.iter_content(chunk_size=1 << 20):
+                handle.write(chunk)
+    partial.replace(dest)
+    logger.info("downloaded %s (%d bytes)", dest.name, dest.stat().st_size)
+    return dest
 
 
 def download_raw_data(
