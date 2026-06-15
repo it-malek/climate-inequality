@@ -55,6 +55,7 @@ from src.data_io import (
     write_typed_parquet,
 )
 from src.figures import render_residual_map, render_validation_series
+from src.grids import nearest_cell_indices
 from src.trends import CITY_KEYS
 
 logger = logging.getLogger(__name__)
@@ -199,11 +200,9 @@ def sample_grid_series(
         months = decode_fractional_years(ds["time"].to_numpy())
         lat_index = pd.Index(ds["latitude"].to_numpy().astype(float))
         lon_index = pd.Index(ds["longitude"].to_numpy().astype(float))
-        lat_pos = lat_index.get_indexer(
-            trends["Latitude"].to_numpy(), method="nearest"
-        )
-        lon_pos = lon_index.get_indexer(
-            trends["Longitude"].to_numpy(), method="nearest"
+        lat_pos, lon_pos = nearest_cell_indices(
+            lat_index, lon_index,
+            trends["Latitude"].to_numpy(), trends["Longitude"].to_numpy(),
         )
 
         first = int(months.searchsorted(pd.Timestamp(start))) if start else 0
