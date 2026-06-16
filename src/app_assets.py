@@ -247,6 +247,24 @@ def _sanity_stats(trends: pd.DataFrame) -> dict:
     }
 
 
+def _copy_findings_parquet(src: Path, dest: Path, required: tuple[str, ...]) -> None:
+    """Copy a slim findings parquet into the bundle, failing loud on schema drift.
+
+    The bundle build is the integrity checkpoint (matching this module's
+    fail-loud stance elsewhere): a source parquet whose columns have drifted
+    from its schema must raise here, not get silently copied and break the
+    app's loader at runtime.
+    """
+    frame = pd.read_parquet(src)
+    missing = [c for c in required if c not in frame.columns]
+    if missing:
+        raise RuntimeError(
+            f"{src} is missing required column(s) {missing}; "
+            "re-run the phase that writes it to rebuild the bundle"
+        )
+    frame.to_parquet(dest, index=False, compression="zstd")
+
+
 def _merge_optional_findings(
     stats_payload: dict,
     out_dir: Path,
@@ -268,7 +286,16 @@ def _merge_optional_findings(
     that phase (the resulting bundle is a graceful 3-page bundle). If only
     one of the pair exists, raises RuntimeError to flag a stale pipeline.
     """
-    for phase, summary_path, bundle_path, global_path, asset, global_asset, key in (
+    # Schemas are the source of truth for the slim parquet columns; lazy-import
+    # so the (circular) validation/explain modules stay out of app_assets's
+    # module scope, matching the re-declared path constants above.
+    from src.explain import EXPLAIN_BUNDLE_SCHEMA
+    from src.validation import VALIDATION_BUNDLE_SCHEMA, VALIDATION_GLOBAL_SCHEMA
+
+    for (
+        phase, summary_path, bundle_path, global_path,
+        asset, global_asset, key, bundle_cols, global_cols,
+    ) in (
         (
             "validation",
             validation_summary_path,
@@ -277,6 +304,8 @@ def _merge_optional_findings(
             VALIDATION_ASSET,
             VALIDATION_GLOBAL_ASSET,
             "validation",
+            tuple(VALIDATION_BUNDLE_SCHEMA),
+            tuple(VALIDATION_GLOBAL_SCHEMA),
         ),
         (
             "explain",
@@ -286,6 +315,8 @@ def _merge_optional_findings(
             EXPLAIN_FEATURES_ASSET,
             None,
             "explain",
+            tuple(EXPLAIN_BUNDLE_SCHEMA),
+            None,
         ),
     ):
         present = [p for p in (summary_path, bundle_path) if p is not None and p.exists()]
@@ -306,7 +337,7 @@ def _merge_optional_findings(
 
         stats_payload[key] = json.loads(summary_path.read_text(encoding="utf-8"))
         bundle_dest = out_dir / asset
-        pd.read_parquet(bundle_path).to_parquet(bundle_dest, index=False, compression="zstd")
+        _copy_findings_parquet(bundle_path, bundle_dest, bundle_cols)
         paths[asset] = bundle_dest
 
         if global_path is not None and global_asset is not None:
@@ -316,7 +347,7 @@ def _merge_optional_findings(
                     "re-run python -m src.validation to rebuild all"
                 )
             global_dest = out_dir / global_asset
-            pd.read_parquet(global_path).to_parquet(global_dest, index=False, compression="zstd")
+            _copy_findings_parquet(global_path, global_dest, global_cols)
             paths[global_asset] = global_dest
 
         logger.info("merged %s findings into bundle", phase)

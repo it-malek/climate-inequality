@@ -146,10 +146,16 @@ class TestValidationPage:
     def test_renders_metrics_and_title(self, bundle_dir):
         at = run_page("app.views.validation")
         assert at.title[0].value == "Did the 1950–2013 trends hold out of sample?"
-        labels = [m.label for m in at.metric]
-        assert "Overlap agreement (median r)" in labels
-        assert "Mean forecast residual" in labels
-        assert "Slope: full record vs stored" in labels
+        v = loaders.load_stats()["validation"]
+        metrics = {m.label: m.value for m in at.metric}
+        # Values must match the underlying stats with the view's formatting --
+        # guards against field mis-mapping (e.g. residual vs overlap r) or a
+        # dropped unit/precision, which a label-only check would miss.
+        assert metrics["Overlap agreement (median r)"] == f"{v['median_overlap_r']:.2f}"
+        assert metrics["Mean forecast residual"] == f"{v['mean_residual']:+.2f} °C"
+        assert metrics["Slope: full record vs stored"] == (
+            f"{v['mean_slope_full']:.3f} vs {v['mean_slope_stored']:.3f} °C/decade"
+        )
 
     def test_graceful_degradation_without_bundle(self, bundle_dir, tmp_path, monkeypatch):
         empty = tmp_path / "empty_bundle"
@@ -175,8 +181,24 @@ class TestExplainPage:
         assert at.title[0].value == "What explains where warming is fast?"
         # Two subheaders: coefficient stability + city geography.
         assert len(at.subheader) == 2
-        # Three metrics for pooled / continent_fe / lat_continent specs.
-        assert len(at.metric) >= 3
+        # Three country metrics (pooled/continent_fe/lat_continent) + three
+        # city R² metrics (baseline/full/interaction).
+        assert len(at.metric) == 6
+
+        e = loaders.load_stats()["explain"]
+        metrics = {m.label: m.value for m in at.metric}
+        country = {s["spec_name"]: s for s in e["country_model"]["specs"]}
+        assert metrics["Pooled effect"] == f"{country['pooled']['emissions']['coef']:+.3f}"
+        assert metrics["Within-continent (FE)"] == (
+            f"{country['continent_fe']['emissions']['coef']:+.3f}"
+        )
+        assert metrics["+ mean |latitude| control"] == (
+            f"{country['lat_continent']['emissions']['coef']:+.3f}"
+        )
+        city = {s["spec_name"]: s for s in e["city_model"]["specs"]}
+        assert metrics["Baseline R² (|latitude| only)"] == f"{city['baseline']['r2']:.3f}"
+        assert metrics["Full model R²"] == f"{city['full']['r2']:.3f}"
+        assert metrics["Interaction R²"] == f"{city['interaction']['r2']:.3f}"
 
     def test_graceful_degradation_without_bundle(self, bundle_dir, tmp_path, monkeypatch):
         empty = tmp_path / "empty_explain_bundle"
