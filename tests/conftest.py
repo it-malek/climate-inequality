@@ -23,6 +23,7 @@ from src.app_assets import build_app_assets
 from src.explain import (
     compare_city_specs,
     fit_country_model,
+    write_explain_summary,
     write_typed_parquet,
 )
 from src.trends import build_city_trends
@@ -139,29 +140,25 @@ def _make_synthetic_validation_artifacts(processed: Path) -> dict[str, Path]:
 
 
 def _make_synthetic_explain_artifacts(processed: Path) -> dict[str, Path]:
-    """Write minimal Phase 7 summary artifacts under `processed/`."""
+    """Write minimal Phase 7 summary artifacts under `processed/`.
+
+    Routes through the real write_explain_summary so the AppTest bundle
+    exercises the production serializer (schema, float32 casts, full-key
+    ordering) rather than a hand-rolled copy that could drift from it.
+    """
     features = make_synthetic_city_features()
     country_table = make_synthetic_country_table()
     city_results = compare_city_specs(features)
     country_results = fit_country_model(country_table)
 
     processed.mkdir(parents=True, exist_ok=True)
-    summary_path = processed / "explain_summary.json"
-    from src.explain import build_explain_summary as _build
-
-    summary = _build(city_results, country_results)
-    summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-
-    # Slim city-features parquet.
-    from src.explain import EXPLAIN_BUNDLE_SCHEMA
-
-    slim = features[["City", "Country", "abs_latitude", "slope_c_per_decade", "koppen"]].copy()
-    slim["abs_latitude"] = slim["abs_latitude"].astype("float32")
-    slim["slope_c_per_decade"] = slim["slope_c_per_decade"].astype("float32")
-    bundle_path = processed / "explain_features.parquet"
-    write_typed_parquet(slim, bundle_path, EXPLAIN_BUNDLE_SCHEMA, order_by=("City", "Country"))
-
-    return {"summary": summary_path, "bundle": bundle_path}
+    return write_explain_summary(
+        city_results,
+        country_results,
+        features,
+        summary_path=processed / "explain_summary.json",
+        bundle_path=processed / "explain_features.parquet",
+    )
 
 
 def build_synthetic_bundle(root: Path) -> dict:

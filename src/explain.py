@@ -109,10 +109,15 @@ DEFAULT_FEATURES_PATH = PROCESSED_DIR / "city_features.parquet"
 DEFAULT_EXPLAIN_SUMMARY_PATH = PROCESSED_DIR / "explain_summary.json"
 DEFAULT_EXPLAIN_BUNDLE_PATH = PROCESSED_DIR / "explain_features.parquet"
 
-# Slim city-features schema for the app bundle (5 columns, float32 numerics).
+# Slim city-features schema for the app bundle (float32 numerics). Latitude/
+# Longitude are carried so the committed parquet can be ordered by the full
+# (City, Country, Latitude, Longitude) identity -- same-named city pairs sit at
+# multiple coordinates, so (City, Country) alone is not a deterministic key.
 EXPLAIN_BUNDLE_SCHEMA = {
     "City": "VARCHAR",
     "Country": "VARCHAR",
+    "Latitude": "FLOAT",
+    "Longitude": "FLOAT",
     "abs_latitude": "FLOAT",
     "slope_c_per_decade": "FLOAT",
     "koppen": "VARCHAR",
@@ -1411,7 +1416,7 @@ def write_explain_summary(
         country_results: From :func:`fit_country_model`.
         features: From :func:`build_city_features`.
         summary_path: Destination for the JSON stats blob.
-        bundle_path: Destination for the 5-column features parquet.
+        bundle_path: Destination for the 7-column features parquet.
 
     Returns:
         Dict mapping ``"summary"`` and ``"bundle"`` to their written paths.
@@ -1421,10 +1426,12 @@ def write_explain_summary(
     summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
 
     slim = features[list(EXPLAIN_BUNDLE_SCHEMA)].copy()
+    slim["Latitude"] = slim["Latitude"].astype("float32")
+    slim["Longitude"] = slim["Longitude"].astype("float32")
     slim["abs_latitude"] = slim["abs_latitude"].astype("float32")
     slim["slope_c_per_decade"] = slim["slope_c_per_decade"].astype("float32")
     write_typed_parquet(
-        slim, bundle_path, EXPLAIN_BUNDLE_SCHEMA, order_by=tuple(CITY_KEYS[:2]),
+        slim, bundle_path, EXPLAIN_BUNDLE_SCHEMA, order_by=tuple(CITY_KEYS),
     )
 
     return {"summary": summary_path, "bundle": bundle_path}
@@ -1443,6 +1450,16 @@ def main() -> None:
     geo + data integrity preflight).
     """
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+
+    # Fetch every external input before the preflight reads them:
+    # run_geo_preflight opens ETOPO + Koeppen (orientation/sampling) and the
+    # World Bank income table (country-join check), but ETOPO/Koeppen are
+    # otherwise downloaded only lazily inside build_city_features and the income
+    # table not at all, so a clean machine would crash at the preflight.
+    # (Mirrors validation.main()'s download-then-run pattern.)
+    download_file(ETOPO_URL, ETOPO_PATH, timeout=600)
+    prepare_koppen_grid()
+    download_file(INCOME_URL, INCOME_PATH, timeout=120)
 
     if not run_geo_preflight():
         raise SystemExit("geo + data integrity preflight FAILED -- see report above")

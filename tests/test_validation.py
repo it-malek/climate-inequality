@@ -352,6 +352,11 @@ def validation_run(synthetic_bundle, tmp_path_factory):
         bundle_dir=synthetic_bundle["bundle_dir"],
         out_path=root / "validation.parquet",
         figures_dir=root / "figs",
+        # Keep the summary artifacts in tmp; the defaults point at the real
+        # data/processed/ and would clobber a dev's committed-source artifacts.
+        summary_path=root / "validation_summary.json",
+        bundle_path=root / "validation_bundle.parquet",
+        global_path=root / "validation_global.parquet",
     )
     out["out_path"] = root / "validation.parquet"
     out["figures_dir"] = root / "figs"
