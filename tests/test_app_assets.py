@@ -292,3 +292,41 @@ class TestOptionalFindingsMerge:
         assert (bundle_dir / VALIDATION_ASSET).exists()
         assert (bundle_dir / VALIDATION_GLOBAL_ASSET).exists()
         assert (bundle_dir / EXPLAIN_FEATURES_ASSET).exists()
+
+    def test_stale_schema_bundle_raises_at_build(self, tmp_path):
+        # Summary + global present, but the residual-map parquet is missing a
+        # required column (gate_pass) -- the build is the integrity checkpoint,
+        # so this must fail here rather than silently copy and break the app.
+        inputs = make_synthetic_inputs(tmp_path)
+        summary_path = tmp_path / "validation_summary.json"
+        summary_path.write_text(json.dumps({"n_locations": 1}) + "\n", encoding="utf-8")
+        bad_bundle = tmp_path / "validation_bundle.parquet"
+        pd.DataFrame(
+            {
+                "City": ["A"], "Country": ["X"],
+                "Latitude": [1.0], "Longitude": [2.0],
+                "mean_residual": [0.1], "overlap_r": [0.9],
+                # gate_pass deliberately omitted
+            }
+        ).to_parquet(bad_bundle, index=False)
+        global_path = tmp_path / "validation_global.parquet"
+        pd.DataFrame(
+            {
+                "dt": pd.to_datetime(["2014-01-01"]),
+                "observed": [0.1], "predicted": [0.1],
+            }
+        ).to_parquet(global_path, index=False)
+        with pytest.raises(RuntimeError, match="missing required column"):
+            build_app_assets(
+                **inputs,
+                out_dir=tmp_path / "bundle",
+                surface_out_dir=tmp_path / "outputs",
+                k=3,
+                resolution=15.0,
+                land=SYNTHETIC_LAND,
+                validation_summary_path=summary_path,
+                validation_bundle_path=bad_bundle,
+                validation_global_path=global_path,
+                explain_summary_path=tmp_path / "absent_explain.json",
+                explain_bundle_path=tmp_path / "absent_explain.parquet",
+            )
