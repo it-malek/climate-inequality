@@ -19,7 +19,7 @@ if _ROOT not in sys.path:
 
 import streamlit as st  # noqa: E402
 
-from app.views import city_explorer, inequality, trend_map  # noqa: E402
+from app.views import city_explorer, explain, inequality, trend_map, validation  # noqa: E402
 
 st.set_page_config(
     page_title="Climate Inequality",
@@ -38,6 +38,18 @@ navigation = st.navigation(
             title="Climate inequality",
             icon="⚖️",
             url_path="inequality",
+        ),
+        st.Page(
+            validation.render,
+            title="Did the trends hold?",
+            icon="🔭",
+            url_path="validation",
+        ),
+        st.Page(
+            explain.render,
+            title="What drives warming?",
+            icon="🧭",
+            url_path="drivers",
         ),
     ]
 )

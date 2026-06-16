@@ -142,6 +142,59 @@ class TestEntryPoint:
         assert at.title[0].value == "Where has land warmed fastest?"
 
 
+class TestValidationPage:
+    def test_renders_metrics_and_title(self, bundle_dir):
+        at = run_page("app.views.validation")
+        assert at.title[0].value == "Did the 1950–2013 trends hold out of sample?"
+        labels = [m.label for m in at.metric]
+        assert "Overlap agreement (median r)" in labels
+        assert "Mean forecast residual" in labels
+        assert "Slope: full record vs stored" in labels
+
+    def test_graceful_degradation_without_bundle(self, bundle_dir, tmp_path, monkeypatch):
+        empty = tmp_path / "empty_bundle"
+        import shutil
+        shutil.copytree(bundle_dir, empty)
+        # Write a stats.json without the "validation" key.
+        import json
+        stats_path = empty / "stats.json"
+        payload = json.loads(stats_path.read_text(encoding="utf-8"))
+        payload.pop("validation", None)
+        stats_path.write_text(json.dumps(payload), encoding="utf-8")
+        monkeypatch.setattr(loaders, "APP_DATA_DIR", empty)
+        st.cache_data.clear()
+        at = run_page("app.views.validation")
+        assert not at.exception
+        assert at.info[0].value.startswith("The validation bundle has not been built")
+        st.cache_data.clear()
+
+
+class TestExplainPage:
+    def test_renders_sections(self, bundle_dir):
+        at = run_page("app.views.explain")
+        assert at.title[0].value == "What explains where warming is fast?"
+        # Two subheaders: coefficient stability + city geography.
+        assert len(at.subheader) == 2
+        # Three metrics for pooled / continent_fe / lat_continent specs.
+        assert len(at.metric) >= 3
+
+    def test_graceful_degradation_without_bundle(self, bundle_dir, tmp_path, monkeypatch):
+        empty = tmp_path / "empty_explain_bundle"
+        import shutil
+        shutil.copytree(bundle_dir, empty)
+        import json
+        stats_path = empty / "stats.json"
+        payload = json.loads(stats_path.read_text(encoding="utf-8"))
+        payload.pop("explain", None)
+        stats_path.write_text(json.dumps(payload), encoding="utf-8")
+        monkeypatch.setattr(loaders, "APP_DATA_DIR", empty)
+        st.cache_data.clear()
+        at = run_page("app.views.explain")
+        assert not at.exception
+        assert at.info[0].value.startswith("The explanatory-variables bundle has not been built")
+        st.cache_data.clear()
+
+
 class TestSeriesFigureConsistency:
     def test_fitted_line_matches_stored_slope_and_intercept(self, bundle_dir):
         from src.cleaning import to_decimal_decades

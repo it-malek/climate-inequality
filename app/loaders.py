@@ -113,6 +113,33 @@ def load_stats() -> dict:
     return json.loads((APP_DATA_DIR / "stats.json").read_text(encoding="utf-8"))
 
 
+@st.cache_data
+def load_validation_frame() -> pd.DataFrame:
+    """Per-city residual-map data from Phase 6 validation."""
+    return _read_bundle_parquet(
+        "validation.parquet",
+        required=("City", "Country", "Latitude", "Longitude",
+                  "mean_residual", "overlap_r", "gate_pass"),
+    )
+
+
+@st.cache_data
+def load_validation_global() -> pd.DataFrame:
+    """Monthly global observed vs predicted anomalies from Phase 6."""
+    return _read_bundle_parquet(
+        "validation_global.parquet", required=("dt", "observed", "predicted")
+    )
+
+
+@st.cache_data
+def load_explain_features() -> pd.DataFrame:
+    """Slim city-features table from Phase 7 (for the drivers scatter)."""
+    return _read_bundle_parquet(
+        "explain_features.parquet",
+        required=("City", "Country", "abs_latitude", "slope_c_per_decade", "koppen"),
+    )
+
+
 def window_years(window: str) -> str:
     """Render a stored window like ``1950-01-01..2013-09-01`` as ``1950–2013``."""
     start, end = parse_window(window)

@@ -9,6 +9,7 @@ exists() checks.
 
 from __future__ import annotations
 
+import json
 import logging
 
 import numpy as np
@@ -22,6 +23,7 @@ from src.explain import (
     CITY_MODEL_SPECS,
     CITY_PARTIAL_R2_GROUPS,
     COUNTRY_MODEL_SPECS,
+    EXPLAIN_BUNDLE_SCHEMA,
     FEATURES_COLUMNS,
     aggregate_features_by_country,
     add_coast_distance,
@@ -30,6 +32,7 @@ from src.explain import (
     attach_income_group,
     build_city_features,
     build_country_table,
+    build_explain_summary,
     check_coordinate_orientation,
     check_country_join,
     check_nan_rate,
@@ -43,6 +46,8 @@ from src.explain import (
     normalize_longitudes,
     print_city_sanity_checks,
     sample_static_grid,
+    term_to_dict,
+    write_explain_summary,
 )
 from src.interpolate import haversine_km
 from src.trends import CITY_KEYS
@@ -598,3 +603,82 @@ class TestCountryModel:
         lat_continent = next(r for r in results if r.spec_name == "lat_continent")
         term = next(t for t in lat_continent.terms if t.term == "log10_emissions")
         assert term.ci_low < 0.03 < term.ci_high
+
+
+class TestExplainSerializers:
+    def test_term_to_dict_fields(self):
+        features = make_synthetic_city_features(seed=0)
+        city_results = compare_city_specs(features)
+        baseline = next(r for r in city_results if r.spec_name == "baseline")
+        t = baseline.terms[0]
+        d = term_to_dict(t)
+        assert set(d) == {"term", "coef", "se", "ci_low", "ci_high", "p_value"}
+        assert isinstance(d["coef"], float)
+        assert d["ci_low"] <= d["coef"] <= d["ci_high"]
+
+    def test_build_explain_summary_structure(self):
+        features = make_synthetic_city_features(seed=1)
+        country_table = make_synthetic_country_table(seed=1)
+        city_results = compare_city_specs(features)
+        country_results = fit_country_model(country_table)
+        summary = build_explain_summary(city_results, country_results)
+        assert "city_model" in summary
+        assert "country_model" in summary
+        city = summary["city_model"]
+        assert "specs" in city
+        assert len(city["specs"]) == len(CITY_MODEL_SPECS)
+        country = summary["country_model"]
+        assert "specs" in country
+        for spec in country["specs"]:
+            assert "emissions" in spec
+            if spec["emissions"] is not None:
+                em = spec["emissions"]
+                assert {"coef", "se", "ci_low", "ci_high", "p_value"} <= set(em)
+
+    def test_build_explain_summary_json_serializable(self):
+        features = make_synthetic_city_features(seed=2)
+        country_table = make_synthetic_country_table(seed=2)
+        city_results = compare_city_specs(features)
+        country_results = fit_country_model(country_table)
+        summary = build_explain_summary(city_results, country_results)
+        # Must not raise TypeError on any Python-native float/int/bool/None.
+        raw = json.dumps(summary)
+        recovered = json.loads(raw)
+        assert "city_model" in recovered
+        assert "country_model" in recovered
+
+    def test_write_explain_summary_files_written(self, tmp_path):
+        features = make_synthetic_city_features(seed=3)
+        country_table = make_synthetic_country_table(seed=3)
+        city_results = compare_city_specs(features)
+        country_results = fit_country_model(country_table)
+        summary_path = tmp_path / "explain_summary.json"
+        bundle_path = tmp_path / "explain_features.parquet"
+        paths = write_explain_summary(
+            city_results,
+            country_results,
+            features,
+            summary_path=summary_path,
+            bundle_path=bundle_path,
+        )
+        assert set(paths) == {"summary", "bundle"}
+        assert summary_path.exists()
+        assert bundle_path.exists()
+
+    def test_write_explain_summary_bundle_schema(self, tmp_path):
+        features = make_synthetic_city_features(seed=4)
+        country_table = make_synthetic_country_table(seed=4)
+        city_results = compare_city_specs(features)
+        country_results = fit_country_model(country_table)
+        bundle_path = tmp_path / "explain_features.parquet"
+        write_explain_summary(
+            city_results,
+            country_results,
+            features,
+            summary_path=tmp_path / "explain_summary.json",
+            bundle_path=bundle_path,
+        )
+        df = pd.read_parquet(bundle_path)
+        assert list(df.columns) == list(EXPLAIN_BUNDLE_SCHEMA)
+        assert str(df["abs_latitude"].dtype) == "float32"
+        assert str(df["slope_c_per_decade"].dtype) == "float32"

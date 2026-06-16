@@ -35,6 +35,7 @@ Sections, in execution order:
 from __future__ import annotations
 
 import io
+import json
 import logging
 import zipfile
 from dataclasses import dataclass, field
@@ -103,6 +104,19 @@ INCOME_URL = (
 INCOME_PATH = RAW_DIR / "worldbank" / "world-bank-income-groups.csv"
 
 DEFAULT_FEATURES_PATH = PROCESSED_DIR / "city_features.parquet"
+
+# Committed summary artifacts (small, merged into the app bundle by app_assets).
+DEFAULT_EXPLAIN_SUMMARY_PATH = PROCESSED_DIR / "explain_summary.json"
+DEFAULT_EXPLAIN_BUNDLE_PATH = PROCESSED_DIR / "explain_features.parquet"
+
+# Slim city-features schema for the app bundle (5 columns, float32 numerics).
+EXPLAIN_BUNDLE_SCHEMA = {
+    "City": "VARCHAR",
+    "Country": "VARCHAR",
+    "abs_latitude": "FLOAT",
+    "slope_c_per_decade": "FLOAT",
+    "koppen": "VARCHAR",
+}
 
 # On-disk schema of city_features.parquet (DuckDB types), in column order.
 FEATURES_SCHEMA = {
@@ -1279,7 +1293,145 @@ def fit_country_model(
 
 
 # ---------------------------------------------------------------------
-# 7. main()
+# 7. Serialization helpers (for the app bundle)
+# ---------------------------------------------------------------------
+
+
+def term_to_dict(t: TermFit) -> dict:
+    """Serialize a :class:`TermFit` to a JSON-safe dict."""
+    return {
+        "term": t.term,
+        "coef": t.coef,
+        "se": t.se,
+        "ci_low": t.ci_low,
+        "ci_high": t.ci_high,
+        "p_value": t.p_value,
+    }
+
+
+def city_result_to_dict(r: CityModelResult) -> dict:
+    """Serialize a :class:`CityModelResult` to a JSON-safe dict."""
+    return {
+        "spec_name": r.spec_name,
+        "formula": r.formula,
+        "n": r.n,
+        "r2": r.r2,
+        "terms": [term_to_dict(t) for t in r.terms],
+        "partial_r2": dict(r.partial_r2),
+        "moran_i": r.moran_i,
+        "moran_p": r.moran_p,
+    }
+
+
+def country_result_to_dict(
+    r: CountryModelResult, emissions_term: str = "log10_emissions"
+) -> dict:
+    """Serialize a :class:`CountryModelResult`, extracting the emissions term.
+
+    The ``emissions`` key is a pre-shaped flat dict (coef, se, CI, p) so
+    the coefficient-stability view does not need to hunt through ``terms``
+    at render time.
+    """
+    emissions = next(
+        (term_to_dict(t) for t in r.terms if t.term == emissions_term), None
+    )
+    return {
+        "spec_name": r.spec_name,
+        "formula": r.formula,
+        "n": r.n,
+        "r2": r.r2,
+        "terms": [term_to_dict(t) for t in r.terms],
+        "emissions": emissions,
+    }
+
+
+def build_explain_summary(
+    city_results: list[CityModelResult],
+    country_results: list[CountryModelResult],
+) -> dict:
+    """Build the ``explain`` stats sub-dict for ``stats.json``.
+
+    Derives convenience scalars so the views do not need to search term
+    lists at render time.
+
+    Args:
+        city_results: From :func:`compare_city_specs`.
+        country_results: From :func:`fit_country_model`.
+
+    Returns:
+        Dict with ``city_model`` and ``country_model`` sub-structures.
+    """
+    city_specs = [city_result_to_dict(r) for r in city_results]
+
+    baseline = next((r for r in city_results if r.spec_name == "baseline"), city_results[0])
+    abs_lat_term = next((t for t in baseline.terms if t.term == "abs_latitude"), None)
+    abs_lat_baseline = term_to_dict(abs_lat_term) if abs_lat_term else None
+
+    full = next((r for r in city_results if r.spec_name == "full"), None)
+    koppen_b: dict | None = None
+    moran_i_full: float | None = None
+    moran_p_full: float | None = None
+    if full is not None:
+        koppen_b_term = next((t for t in full.terms if t.term == "C(koppen)[T.B]"), None)
+        koppen_b = term_to_dict(koppen_b_term) if koppen_b_term else None
+        moran_i_full = full.moran_i
+        moran_p_full = full.moran_p
+
+    country_specs = [country_result_to_dict(r) for r in country_results]
+
+    return {
+        "city_model": {
+            "specs": city_specs,
+            "abs_latitude_baseline": abs_lat_baseline,
+            "koppen_b_full": koppen_b,
+            "moran_i_full": moran_i_full,
+            "moran_p_full": moran_p_full,
+        },
+        "country_model": {
+            "specs": country_specs,
+        },
+    }
+
+
+def write_explain_summary(
+    city_results: list[CityModelResult],
+    country_results: list[CountryModelResult],
+    features: pd.DataFrame,
+    summary_path: Path = DEFAULT_EXPLAIN_SUMMARY_PATH,
+    bundle_path: Path = DEFAULT_EXPLAIN_BUNDLE_PATH,
+) -> dict[str, Path]:
+    """Serialize model results and a slim feature parquet for the app bundle.
+
+    The two output files are read by :mod:`src.app_assets` (if present)
+    and merged into the committed ``app/data/`` bundle without requiring
+    ETOPO or Koeppen downloads at bundle-build time.
+
+    Args:
+        city_results: From :func:`compare_city_specs`.
+        country_results: From :func:`fit_country_model`.
+        features: From :func:`build_city_features`.
+        summary_path: Destination for the JSON stats blob.
+        bundle_path: Destination for the 5-column features parquet.
+
+    Returns:
+        Dict mapping ``"summary"`` and ``"bundle"`` to their written paths.
+    """
+    summary = build_explain_summary(city_results, country_results)
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
+
+    slim = features[list(EXPLAIN_BUNDLE_SCHEMA)].copy()
+    slim["abs_latitude"] = slim["abs_latitude"].astype("float32")
+    slim["slope_c_per_decade"] = slim["slope_c_per_decade"].astype("float32")
+    write_typed_parquet(
+        slim, bundle_path, EXPLAIN_BUNDLE_SCHEMA, order_by=tuple(CITY_KEYS[:2]),
+    )
+
+    return {"summary": summary_path, "bundle": bundle_path}
+
+
+# ---------------------------------------------------------------------
+# 8. main()
 # ---------------------------------------------------------------------
 
 
@@ -1345,6 +1497,9 @@ def main() -> None:
         )
 
     print(f"\nwrote {DEFAULT_FEATURES_PATH}")
+    summary_paths = write_explain_summary(city_results, country_results, features)
+    print(f"summary: {summary_paths['summary']}")
+    print(f"bundle:  {summary_paths['bundle']}")
 
 
 if __name__ == "__main__":

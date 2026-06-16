@@ -7,6 +7,8 @@ there is no land. The end-to-end test drives the full sample → gate →
 residual → acceleration path against the conftest synthetic bundle.
 """
 
+import json
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -14,13 +16,16 @@ import xarray as xr
 
 from src.cleaning import to_decimal_decades
 from src.validation import (
+    VALIDATION_BUNDLE_SCHEMA,
     VALIDATION_COLUMNS,
+    VALIDATION_GLOBAL_SCHEMA,
     acceleration,
     decode_fractional_years,
     forecast_residuals,
     overlap_agreement,
     run_validation,
     sample_grid_series,
+    write_validation_summary,
 )
 
 
@@ -396,3 +401,123 @@ class TestRunValidation:
                 out_path=tmp_path / "out.parquet",
                 figures_dir=tmp_path,
             )
+
+
+def _make_stub_frame(n: int = 5) -> pd.DataFrame:
+    """Minimal per-city validation frame matching VALIDATION_COLUMNS."""
+    return pd.DataFrame(
+        {
+            "City": [f"City{i}" for i in range(n)],
+            "Country": ["X"] * n,
+            "Latitude": np.linspace(-10.0, 10.0, n),
+            "Longitude": np.linspace(20.0, 30.0, n),
+            "city_id": list(range(n)),
+            "grid_lat": np.linspace(-10.0, 10.0, n),
+            "grid_lon": np.linspace(20.0, 30.0, n),
+            "n_overlap": [768] * n,
+            "overlap_r": [0.95] * n,
+            "overlap_rmse": [0.1] * n,
+            "overlap_bias": [0.0] * n,
+            "gate_pass": [True] * n,
+            "n_forecast": [135] * n,
+            "mean_residual": [0.3] * n,
+            "mean_residual_pre2023": [0.25] * n,
+            "slope_c_per_decade": [0.146] * n,
+            "slope_full": [0.200] * n,
+            "slope_full_ci_low": [0.180] * n,
+            "slope_full_ci_high": [0.220] * n,
+            "slope_overlap_grid": [0.142] * n,
+            "slope_delta": [0.054] * n,
+            "forecast_start": ["2013-10-01"] * n,
+            "record_end": ["2024-12-01"] * n,
+        }
+    )
+
+
+def _make_stub_global(n_months: int = 60) -> pd.DataFrame:
+    months = pd.date_range("2013-10-01", periods=n_months, freq="MS")
+    return pd.DataFrame(
+        {
+            "dt": months,
+            "observed": np.linspace(0.5, 1.2, n_months),
+            "predicted": np.linspace(0.4, 1.0, n_months),
+        }
+    )
+
+
+_STUB_STATS = {
+    "n_locations": 5,
+    "n_no_grid": 0,
+    "n_gate_pass": 5,
+    "median_overlap_r": 0.95,
+    "forecast_start": "2013-10-01",
+    "record_end": "2024-12-01",
+    "n_forecast_months": 135,
+    "mean_residual": 0.30,
+    "mean_residual_pre2023": 0.25,
+    "mean_slope_stored": 0.146,
+    "mean_slope_overlap_grid": 0.142,
+    "mean_slope_full": 0.200,
+    "mean_slope_delta": 0.054,
+    "slope_delta_ci_low": 0.040,
+    "slope_delta_ci_high": 0.068,
+}
+
+
+class TestWriteValidationSummary:
+    def test_json_round_trips_stats(self, tmp_path):
+        summary_path = tmp_path / "summary.json"
+        write_validation_summary(
+            _STUB_STATS,
+            _make_stub_frame(),
+            _make_stub_global(),
+            summary_path=summary_path,
+            bundle_path=tmp_path / "bundle.parquet",
+            global_path=tmp_path / "global.parquet",
+        )
+        payload = json.loads(summary_path.read_text(encoding="utf-8"))
+        assert payload == _STUB_STATS
+        assert payload["n_gate_pass"] == 5
+
+    def test_bundle_parquet_schema(self, tmp_path):
+        bundle_path = tmp_path / "bundle.parquet"
+        write_validation_summary(
+            _STUB_STATS,
+            _make_stub_frame(),
+            _make_stub_global(),
+            summary_path=tmp_path / "summary.json",
+            bundle_path=bundle_path,
+            global_path=tmp_path / "global.parquet",
+        )
+        df = pd.read_parquet(bundle_path)
+        assert list(df.columns) == list(VALIDATION_BUNDLE_SCHEMA)
+        assert str(df["Latitude"].dtype) == "float32"
+        assert str(df["gate_pass"].dtype) == "bool"
+
+    def test_global_parquet_schema(self, tmp_path):
+        global_path = tmp_path / "global.parquet"
+        write_validation_summary(
+            _STUB_STATS,
+            _make_stub_frame(),
+            _make_stub_global(),
+            summary_path=tmp_path / "summary.json",
+            bundle_path=tmp_path / "bundle.parquet",
+            global_path=global_path,
+        )
+        df = pd.read_parquet(global_path)
+        assert list(df.columns) == list(VALIDATION_GLOBAL_SCHEMA)
+        assert str(df["observed"].dtype) == "float32"
+        # DATE columns stored as Python date objects or datetime64 (parquet engine varies).
+        assert df["dt"].dtype == object or pd.api.types.is_datetime64_any_dtype(df["dt"])
+
+    def test_returns_path_dict(self, tmp_path):
+        paths = write_validation_summary(
+            _STUB_STATS,
+            _make_stub_frame(),
+            _make_stub_global(),
+            summary_path=tmp_path / "summary.json",
+            bundle_path=tmp_path / "bundle.parquet",
+            global_path=tmp_path / "global.parquet",
+        )
+        assert set(paths) == {"summary", "bundle", "global"}
+        assert all(p.exists() for p in paths.values())
