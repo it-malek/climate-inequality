@@ -416,6 +416,127 @@ def render_validation_series(
     return fig
 
 
+def render_coefficient_stability(
+    specs: list[dict],
+    emissions_key: str = "emissions",
+    title: str = "Emissions coefficient across model specifications",
+) -> go.Figure:
+    """Horizontal forest plot of the log10_emissions coefficient per spec.
+
+    Each row is one country-level model spec; the x-axis is the
+    log10_emissions coefficient with its 95% CI as error bars. A dotted
+    vertical line at x=0 and significance coloring (CI excludes zero vs
+    not) make the attenuation story readable at a glance.
+
+    Args:
+        specs: List of country-model spec dicts, each with ``spec_name``
+            and an ``emissions`` sub-dict (``coef``, ``ci_low``,
+            ``ci_high``, ``p_value``). From
+            ``stats["explain"]["country_model"]["specs"]``.
+        emissions_key: Key in each spec dict for the emissions effect.
+        title: Figure title.
+
+    Returns:
+        A `plotly.graph_objects.Figure`.
+    """
+    names, coefs, err_plus, err_minus, colors, hovers = [], [], [], [], [], []
+    for spec in specs:
+        em = spec.get(emissions_key)
+        if em is None:
+            continue
+        coef = em["coef"]
+        ci_low, ci_high = em["ci_low"], em["ci_high"]
+        sig = ci_low > 0 or ci_high < 0
+        names.append(spec["spec_name"])
+        coefs.append(coef)
+        err_plus.append(ci_high - coef)
+        err_minus.append(coef - ci_low)
+        colors.append(_ROLLING_COLOR if sig else _GATED_COLOR)
+        hovers.append(
+            f"{spec['spec_name']}: {coef:+.4f} [{ci_low:+.4f}, {ci_high:+.4f}]"
+            f"  p={em['p_value']:.3g}"
+        )
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=coefs,
+            y=names,
+            mode="markers",
+            marker={
+                "size": 10,
+                "color": colors,
+                "line": {"width": 1.2, "color": "rgba(40,40,40,0.6)"},
+            },
+            error_x={
+                "type": "data",
+                "array": err_plus,
+                "arrayminus": err_minus,
+                "thickness": 1.8,
+                "width": 6,
+                "color": "rgba(80,80,80,0.7)",
+            },
+            text=hovers,
+            hoverinfo="text",
+            showlegend=False,
+        )
+    )
+    fig.add_shape(
+        type="line",
+        x0=0, x1=0, y0=-0.5, y1=len(names) - 0.5,
+        line={"color": "rgba(60,60,60,0.6)", "dash": "dot", "width": 1.5},
+    )
+    fig.update_layout(
+        title=title,
+        xaxis_title="°C/decade per 10× cumulative per-capita CO₂",
+        yaxis={"autorange": "reversed"},
+        height=360,
+    )
+    return fig
+
+
+def render_partial_effect_scatter(
+    features: pd.DataFrame,
+    x_col: str = "abs_latitude",
+    y_col: str = "slope_c_per_decade",
+    color_col: str = "koppen",
+    title: str = "Warming rate vs |latitude|, by climate class",
+) -> go.Figure:
+    """Scatter of warming trend vs absolute latitude, colored by Köppen class.
+
+    Mirrors the :func:`render_inequality_scatter` pattern: colorblind-safe
+    qualitative palette, overall OLS trendline (statsmodels backend via
+    plotly express), hover on city names.
+
+    Args:
+        features: Slim city-features frame with ``City``, ``Country``,
+            ``abs_latitude``, ``slope_c_per_decade``, ``koppen``.
+        x_col, y_col, color_col: Axis and color columns.
+        title: Figure title.
+
+    Returns:
+        A plotly Figure.
+    """
+    return px.scatter(
+        features,
+        x=x_col,
+        y=y_col,
+        color=color_col,
+        hover_name="City",
+        hover_data={"Country": True},
+        trendline="ols",
+        trendline_scope="overall",
+        trendline_color_override="gray",
+        color_discrete_sequence=px.colors.qualitative.Safe,
+        labels={
+            x_col: "|Latitude| (degrees)",
+            y_col: "Warming trend (°C/decade)",
+            color_col: "Köppen class",
+        },
+        title=title,
+    )
+
+
 def render_inequality_scatter(
     df: pd.DataFrame,
     x_col: str = "cum_co2_t_per_capita",

@@ -3,12 +3,11 @@
 > Which regions are warming fastest — and is warming proportional to
 > emissions responsibility?
 
-**Status:** ✅ Phases 1–5 complete (data layer; trend fitting; spatial
-interpolation; emissions join; dashboard; findings writeup) and
+**Status:** ✅ Phases 1–8 complete (data layer; trend fitting; spatial
+interpolation; emissions join; dashboard; out-of-sample validation; explanatory
+variables; Phase 6 & 7 surfaced in the live app) and
 **deployed: [climate-inequality.streamlit.app](https://climate-inequality.streamlit.app/)**.
-Next up: validating the fitted trends against post-2013 observations and
-hunting explanatory variables (`docs/handdown_phase6_7.md`); the broader
-roadmap is in `docs/future_work.md`.
+The broader roadmap is in `docs/future_work.md`.
 
 *Originally proposed as an undergraduate research fellowship project (2022);
 rebuilt and substantially upgraded in 2026.*
@@ -109,9 +108,11 @@ vs 0.0099); IDW still wins, but narrowly and for honest reasons.
 
 **Live at [climate-inequality.streamlit.app](https://climate-inequality.streamlit.app/).**
 
-Three-page Streamlit app: an interpolated warming map with a city-station
-layer toggle, a city explorer showing any location's anomaly series with
-its fitted trend, and the country-level inequality scatter.
+Five-page Streamlit app: an interpolated warming map with a city-station
+layer toggle; a city explorer showing any location's anomaly series with
+its fitted trend; the country-level inequality scatter; an out-of-sample
+validation page (did the 1950–2013 trends hold post-2013?); and a drivers
+page (what explains where warming is fastest?).
 
 ```bash
 uv run streamlit run app/streamlit_app.py
@@ -135,11 +136,11 @@ redeploys automatically on push to `main`.
   are unweighted across city-locations — station-weighted, not area- or
   population-weighted — because the project datasets carry no city
   populations.
-- **Land-only, ending September 2013.** Ocean warming is absent (which is
-  also why the Arctic ratio reads 1.56× rather than the canonical ~2×),
-  and everything after 2013 — including the record 2015–16 and 2023–24
-  El Niño years — is invisible. Validating the fitted trends against
-  post-2013 observations is the planned Phase 6.
+- **Land-only, ending September 2013 (analysis window).** Ocean warming is
+  absent (which is also why the Arctic ratio reads 1.56× rather than the
+  canonical ~2×). Post-2013 Berkeley Earth gridded data is used in Phase 6
+  to validate the fitted trends; warming has accelerated beyond what the
+  1950–2013 lines forecast (see the "Did the trends hold?" dashboard page).
 - **Grid-snapped coordinates.** Multiple cities share identical lat/lon,
   and (City, Country) is not a unique key; the pipeline keys on the full
   coordinate identity and the CV holds out whole coordinate groups, but
@@ -166,10 +167,10 @@ redeploys automatically on push to `main`.
 ## Future work
 
 A prioritized roadmap lives in [`docs/future_work.md`](docs/future_work.md):
-validating the fitted trends against post-2013 observations (the planned
-Phase 6), switching to Berkeley Earth's gridded product, population-weighted
+switching to Berkeley Earth's gridded product, population-weighted
 exposure, consumption-based emissions and Lorenz/Gini inequality framings,
-and extreme-heat (rather than mean) warming inequality.
+gradient-boosted trees + SHAP vs the Phase 7 OLS, and extreme-heat
+(rather than mean) warming inequality using GHCN-Daily data.
 
 ## Reproducing
 
@@ -186,6 +187,8 @@ uv run python -c "from src.data_io import load_city_temperatures, city_csv_path;
 uv run python -m src.trends       # city_trends.parquet
 uv run python -m src.interpolate  # outputs/trend_surface.html
 uv run python -m src.emissions    # country_inequality.parquet + scatter
+uv run python -m src.validation   # data/processed/validation_*.{json,parquet}
+uv run python -m src.explain      # data/processed/explain_*.{json,parquet}
 uv run python -m src.app_assets   # app/data/ dashboard bundle (committed)
 
 uv run streamlit run app/streamlit_app.py

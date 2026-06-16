@@ -36,6 +36,7 @@ the pipeline also works in anomaly space on the same baseline.
 
 from __future__ import annotations
 
+import json
 import logging
 from collections.abc import Sequence
 from pathlib import Path
@@ -68,6 +69,29 @@ GRIDDED_URL = (
 )
 DEFAULT_GRIDDED_PATH = RAW_DIR / "berkeley_gridded" / "Complete_TAVG_LatLong1.nc"
 DEFAULT_VALIDATION_PATH = PROCESSED_DIR / "validation.parquet"
+
+# Committed summary artifacts (small, merged into the app bundle by app_assets).
+DEFAULT_VALIDATION_SUMMARY_PATH = PROCESSED_DIR / "validation_summary.json"
+DEFAULT_VALIDATION_BUNDLE_PATH = PROCESSED_DIR / "validation_bundle.parquet"
+DEFAULT_VALIDATION_GLOBAL_PATH = PROCESSED_DIR / "validation_global.parquet"
+
+# Slim residual-map schema for the app bundle (7 columns, float32 numerics).
+VALIDATION_BUNDLE_SCHEMA = {
+    "City": "VARCHAR",
+    "Country": "VARCHAR",
+    "Latitude": "FLOAT",
+    "Longitude": "FLOAT",
+    "mean_residual": "FLOAT",
+    "overlap_r": "FLOAT",
+    "gate_pass": "BOOLEAN",
+}
+
+# Global monthly schema for the app bundle (3 columns).
+VALIDATION_GLOBAL_SCHEMA = {
+    "dt": "DATE",
+    "observed": "FLOAT",
+    "predicted": "FLOAT",
+}
 
 # First out-of-sample month: the stored analysis window ends 2013-09.
 DEFAULT_FORECAST_START = "2013-10-01"
@@ -114,6 +138,55 @@ VALIDATION_SCHEMA = {
     "record_end": "VARCHAR",
 }
 VALIDATION_COLUMNS = list(VALIDATION_SCHEMA)
+
+
+def write_validation_summary(
+    stats: dict,
+    frame: pd.DataFrame,
+    global_monthly: pd.DataFrame,
+    summary_path: Path = DEFAULT_VALIDATION_SUMMARY_PATH,
+    bundle_path: Path = DEFAULT_VALIDATION_BUNDLE_PATH,
+    global_path: Path = DEFAULT_VALIDATION_GLOBAL_PATH,
+) -> dict[str, Path]:
+    """Serialize headline stats and slim parquets for the app bundle.
+
+    The three output files are read by :mod:`src.app_assets` (if present)
+    and merged into the committed ``app/data/`` bundle without requiring
+    the heavy Berkeley Earth NetCDF to be downloaded at bundle-build time.
+
+    Args:
+        stats: Scoring aggregates returned by :func:`run_validation`.
+        frame: Full per-city validation parquet (23 columns).
+        global_monthly: Monthly observed/predicted series.
+        summary_path: Destination for the JSON stats blob.
+        bundle_path: Destination for the 7-column residual-map parquet.
+        global_path: Destination for the 3-column global-series parquet.
+
+    Returns:
+        Dict mapping ``"summary"``, ``"bundle"``, ``"global"`` to their
+        written paths.
+    """
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text(json.dumps(stats, indent=2) + "\n", encoding="utf-8")
+
+    slim = frame[list(VALIDATION_BUNDLE_SCHEMA)].copy()
+    slim["Latitude"] = slim["Latitude"].astype("float32")
+    slim["Longitude"] = slim["Longitude"].astype("float32")
+    slim["mean_residual"] = slim["mean_residual"].astype("float32")
+    slim["overlap_r"] = slim["overlap_r"].astype("float32")
+    write_typed_parquet(
+        slim, bundle_path, VALIDATION_BUNDLE_SCHEMA,
+        order_by=("Country", "City", "Latitude", "Longitude"),
+    )
+
+    global_slim = global_monthly[["dt", "observed", "predicted"]].copy()
+    global_slim["observed"] = global_slim["observed"].astype("float32")
+    global_slim["predicted"] = global_slim["predicted"].astype("float32")
+    write_typed_parquet(
+        global_slim, global_path, VALIDATION_GLOBAL_SCHEMA, order_by=("dt",),
+    )
+
+    return {"summary": summary_path, "bundle": bundle_path, "global": global_path}
 
 
 def decode_fractional_years(values: Sequence[float] | np.ndarray) -> pd.DatetimeIndex:
@@ -466,6 +539,9 @@ def run_validation(
     figures_dir: Path = OUTPUTS_DIR,
     forecast_start: str = DEFAULT_FORECAST_START,
     min_overlap_r: float = DEFAULT_MIN_OVERLAP_R,
+    summary_path: Path = DEFAULT_VALIDATION_SUMMARY_PATH,
+    bundle_path: Path = DEFAULT_VALIDATION_BUNDLE_PATH,
+    global_path: Path = DEFAULT_VALIDATION_GLOBAL_PATH,
 ) -> dict:
     """Run the Phase 6 validation end to end and write its outputs.
 
@@ -597,6 +673,14 @@ def run_validation(
         "slope_delta_ci_low": float(delta.mean() - ci_half),
         "slope_delta_ci_high": float(delta.mean() + ci_half),
     }
+    summary_paths = write_validation_summary(
+        stats_out, frame, global_monthly,
+        summary_path=summary_path,
+        bundle_path=bundle_path,
+        global_path=global_path,
+    )
+    paths.update(summary_paths)
+
     return {
         "frame": frame,
         "global_monthly": global_monthly,
@@ -645,6 +729,9 @@ def main() -> None:
     print(f"table:   {out['paths']['table']}")
     print(f"figures: {out['paths']['residual_map']}")
     print(f"         {out['paths']['global_series']}")
+    print(f"summary: {out['paths']['summary']}")
+    print(f"bundle:  {out['paths']['bundle']}")
+    print(f"global:  {out['paths']['global']}")
 
 
 if __name__ == "__main__":

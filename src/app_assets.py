@@ -46,7 +46,7 @@ from scipy import stats
 from shapely import Geometry
 
 from src.cleaning import parse_window, to_decimal_decades
-from src.data_io import DEFAULT_DB_PATH, OUTPUTS_DIR, PROJECT_ROOT
+from src.data_io import DEFAULT_DB_PATH, OUTPUTS_DIR, PROCESSED_DIR, PROJECT_ROOT
 from src.emissions import DEFAULT_INEQUALITY_PATH, quantify_inequality
 from src.interpolate import (
     DEFAULT_GRID_RESOLUTION,
@@ -77,6 +77,23 @@ ANOMALIES_ASSET = "city_anomalies.parquet"
 SURFACE_ASSET = "trend_surface.parquet"
 INEQUALITY_ASSET = "country_inequality.parquet"
 STATS_ASSET = "stats.json"
+
+# Phase 6/7 optional bundle assets (present only when the heavy pipeline has run).
+VALIDATION_ASSET = "validation.parquet"
+VALIDATION_GLOBAL_ASSET = "validation_global.parquet"
+EXPLAIN_FEATURES_ASSET = "explain_features.parquet"
+
+# Source paths for the slim summary artifacts written by src.validation /
+# src.explain. Defined here (not imported from those modules) to avoid a
+# circular import: validation.py imports app_assets, so app_assets must not
+# import validation/explain at module scope. Tests that assert agreement
+# between these constants and the source-of-truth constants in validation.py /
+# explain.py live in tests/test_app_assets.py.
+_VALIDATION_SUMMARY_PATH = PROCESSED_DIR / "validation_summary.json"
+_VALIDATION_BUNDLE_PATH = PROCESSED_DIR / "validation_bundle.parquet"
+_VALIDATION_GLOBAL_PATH = PROCESSED_DIR / "validation_global.parquet"
+_EXPLAIN_SUMMARY_PATH = PROCESSED_DIR / "explain_summary.json"
+_EXPLAIN_BUNDLE_PATH = PROCESSED_DIR / "explain_features.parquet"
 
 
 def disambiguate_labels(trends: pd.DataFrame) -> pd.Series:
@@ -230,6 +247,81 @@ def _sanity_stats(trends: pd.DataFrame) -> dict:
     }
 
 
+def _merge_optional_findings(
+    stats_payload: dict,
+    out_dir: Path,
+    paths: dict,
+    validation_summary_path: Path,
+    validation_bundle_path: Path,
+    validation_global_path: Path,
+    explain_summary_path: Path,
+    explain_bundle_path: Path,
+) -> None:
+    """Merge Phase 6/7 summary artifacts into the bundle, if present.
+
+    Reads the small JSON + parquet artifacts written by
+    ``python -m src.validation`` and ``python -m src.explain``, and:
+    - adds ``stats_payload["validation"]`` / ``["explain"]`` keys;
+    - copies the slim parquets into `out_dir`.
+
+    If both artifacts for a phase are absent, logs a warning and skips
+    that phase (the resulting bundle is a graceful 3-page bundle). If only
+    one of the pair exists, raises RuntimeError to flag a stale pipeline.
+    """
+    for phase, summary_path, bundle_path, global_path, asset, global_asset, key in (
+        (
+            "validation",
+            validation_summary_path,
+            validation_bundle_path,
+            validation_global_path,
+            VALIDATION_ASSET,
+            VALIDATION_GLOBAL_ASSET,
+            "validation",
+        ),
+        (
+            "explain",
+            explain_summary_path,
+            explain_bundle_path,
+            None,
+            EXPLAIN_FEATURES_ASSET,
+            None,
+            "explain",
+        ),
+    ):
+        present = [p for p in (summary_path, bundle_path) if p is not None and p.exists()]
+        expected = [p for p in (summary_path, bundle_path) if p is not None]
+        if len(present) == 0:
+            logger.warning(
+                "%s summaries not found; bundle will omit the Phase %s pages -- "
+                "run python -m src.%s first",
+                phase, "6" if phase == "validation" else "7", phase,
+            )
+            continue
+        if len(present) < len(expected):
+            missing = [str(p) for p in expected if not p.exists()]
+            raise RuntimeError(
+                f"partial {phase} findings: some summary artifacts exist but "
+                f"{missing} do not; re-run python -m src.{phase} to rebuild all"
+            )
+
+        stats_payload[key] = json.loads(summary_path.read_text(encoding="utf-8"))
+        bundle_dest = out_dir / asset
+        pd.read_parquet(bundle_path).to_parquet(bundle_dest, index=False, compression="zstd")
+        paths[asset] = bundle_dest
+
+        if global_path is not None and global_asset is not None:
+            if not global_path.exists():
+                raise RuntimeError(
+                    f"partial validation findings: {global_path} missing; "
+                    "re-run python -m src.validation to rebuild all"
+                )
+            global_dest = out_dir / global_asset
+            pd.read_parquet(global_path).to_parquet(global_dest, index=False, compression="zstd")
+            paths[global_asset] = global_dest
+
+        logger.info("merged %s findings into bundle", phase)
+
+
 def build_app_assets(
     db_path: Path = DEFAULT_DB_PATH,
     trends_path: Path = DEFAULT_TRENDS_PATH,
@@ -240,6 +332,11 @@ def build_app_assets(
     resolution: float = DEFAULT_GRID_RESOLUTION,
     min_coverage: float = DEFAULT_MIN_COVERAGE,
     land: Geometry | None = None,
+    validation_summary_path: Path = _VALIDATION_SUMMARY_PATH,
+    validation_bundle_path: Path = _VALIDATION_BUNDLE_PATH,
+    validation_global_path: Path = _VALIDATION_GLOBAL_PATH,
+    explain_summary_path: Path = _EXPLAIN_SUMMARY_PATH,
+    explain_bundle_path: Path = _EXPLAIN_BUNDLE_PATH,
 ) -> dict:
     """Build the dashboard asset bundle from the phase 1-4 outputs.
 
@@ -342,6 +439,16 @@ def build_app_assets(
         surface_result["surface"],
     ).to_parquet(paths[SURFACE_ASSET], index=False, compression="zstd")
     inequality.to_parquet(paths[INEQUALITY_ASSET], index=False, compression="zstd")
+
+    _merge_optional_findings(
+        stats_payload, out_dir, paths,
+        validation_summary_path=validation_summary_path,
+        validation_bundle_path=validation_bundle_path,
+        validation_global_path=validation_global_path,
+        explain_summary_path=explain_summary_path,
+        explain_bundle_path=explain_bundle_path,
+    )
+
     paths[STATS_ASSET].write_text(
         json.dumps(stats_payload, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -389,6 +496,24 @@ def main() -> None:
         f"[95% CI {fe['ci_low']:+.4f}, {fe['ci_high']:+.4f}], "
         f"p={fe['p_value']:.2g}, R²={fe['r2']:.3f}"
     )
+    if "validation" in out["stats"]:
+        v = out["stats"]["validation"]
+        print(
+            f"validation: mean residual {v['mean_residual']:+.3f} °C "
+            f"(excl 2023+: {v['mean_residual_pre2023']:+.3f}); "
+            f"full-record slope {v['mean_slope_full']:.3f} vs "
+            f"stored {v['mean_slope_stored']:.3f} °C/decade"
+        )
+    if "explain" in out["stats"]:
+        country_specs = out["stats"]["explain"]["country_model"]["specs"]
+        lat_cont = next((s for s in country_specs if s["spec_name"] == "lat_continent"), None)
+        if lat_cont and lat_cont["emissions"]:
+            em = lat_cont["emissions"]
+            print(
+                f"explain (lat_continent): log10_emissions {em['coef']:+.4f} "
+                f"[{em['ci_low']:+.4f}, {em['ci_high']:+.4f}] p={em['p_value']:.3g}"
+            )
+
     total_kb = sum(p.stat().st_size for p in out["paths"].values()) / 1024
     print(f"bundle: {len(out['paths'])} files, {total_kb:,.0f} KB total")
     for name, path in out["paths"].items():

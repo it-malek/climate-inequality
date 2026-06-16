@@ -15,10 +15,18 @@ from scipy import stats
 from src.app_assets import (
     ANOMALIES_ASSET,
     APP_DATA_DIR,
+    EXPLAIN_FEATURES_ASSET,
     INEQUALITY_ASSET,
     STATS_ASSET,
     SURFACE_ASSET,
     TRENDS_ASSET,
+    VALIDATION_ASSET,
+    VALIDATION_GLOBAL_ASSET,
+    _EXPLAIN_BUNDLE_PATH,
+    _EXPLAIN_SUMMARY_PATH,
+    _VALIDATION_BUNDLE_PATH,
+    _VALIDATION_GLOBAL_PATH,
+    _VALIDATION_SUMMARY_PATH,
     build_app_assets,
     disambiguate_labels,
     theil_sen_intercepts,
@@ -147,6 +155,7 @@ class TestBundleContents:
         )
         assert set(payload) == {
             "generated_at", "trends", "interpolation", "inequality",
+            "validation", "explain",
         }
         trends = payload["trends"]
         assert trends["n_locations"] == len(SYNTHETIC_CITIES)
@@ -198,3 +207,88 @@ class TestIntegrityChecks:
                 resolution=15.0,
                 land=SYNTHETIC_LAND,
             )
+
+
+class TestOptionalFindingsConstants:
+    """app_assets re-declares validation/explain path constants from PROCESSED_DIR
+    to avoid a circular import; these tests verify that the re-declared copies
+    stay in sync with the source-of-truth constants in validation.py / explain.py.
+    """
+
+    def test_validation_summary_path_matches_source(self):
+        from src.validation import DEFAULT_VALIDATION_SUMMARY_PATH
+        assert _VALIDATION_SUMMARY_PATH == DEFAULT_VALIDATION_SUMMARY_PATH
+
+    def test_validation_bundle_path_matches_source(self):
+        from src.validation import DEFAULT_VALIDATION_BUNDLE_PATH
+        assert _VALIDATION_BUNDLE_PATH == DEFAULT_VALIDATION_BUNDLE_PATH
+
+    def test_validation_global_path_matches_source(self):
+        from src.validation import DEFAULT_VALIDATION_GLOBAL_PATH
+        assert _VALIDATION_GLOBAL_PATH == DEFAULT_VALIDATION_GLOBAL_PATH
+
+    def test_explain_summary_path_matches_source(self):
+        from src.explain import DEFAULT_EXPLAIN_SUMMARY_PATH
+        assert _EXPLAIN_SUMMARY_PATH == DEFAULT_EXPLAIN_SUMMARY_PATH
+
+    def test_explain_bundle_path_matches_source(self):
+        from src.explain import DEFAULT_EXPLAIN_BUNDLE_PATH
+        assert _EXPLAIN_BUNDLE_PATH == DEFAULT_EXPLAIN_BUNDLE_PATH
+
+
+class TestOptionalFindingsMerge:
+    """_merge_optional_findings: absent warns+skips; half-present raises; present merges."""
+
+    def _build_no_findings(self, root):
+        inputs = make_synthetic_inputs(root)
+        return build_app_assets(
+            **inputs,
+            out_dir=root / "bundle",
+            surface_out_dir=root / "outputs",
+            k=3,
+            resolution=15.0,
+            land=SYNTHETIC_LAND,
+            validation_summary_path=root / "missing_summary.json",
+            validation_bundle_path=root / "missing_bundle.parquet",
+            validation_global_path=root / "missing_global.parquet",
+            explain_summary_path=root / "missing_explain.json",
+            explain_bundle_path=root / "missing_explain.parquet",
+        )
+
+    def test_absent_artifacts_skipped_gracefully(self, tmp_path, caplog):
+        import logging
+        with caplog.at_level(logging.WARNING, logger="src.app_assets"):
+            result = self._build_no_findings(tmp_path)
+        payload = json.loads(
+            result["paths"][STATS_ASSET].read_text(encoding="utf-8")
+        )
+        assert "validation" not in payload
+        assert "explain" not in payload
+        # Builder should have logged at least one warning about missing summaries.
+        assert any("validation" in r.message.lower() or "explain" in r.message.lower()
+                   for r in caplog.records)
+
+    def test_half_present_raises(self, tmp_path):
+        inputs = make_synthetic_inputs(tmp_path)
+        summary_path = tmp_path / "validation_summary.json"
+        summary_path.write_text(json.dumps({"n_locations": 1}) + "\n", encoding="utf-8")
+        with pytest.raises(RuntimeError, match="partial validation findings"):
+            build_app_assets(
+                **inputs,
+                out_dir=tmp_path / "bundle",
+                surface_out_dir=tmp_path / "outputs",
+                k=3,
+                resolution=15.0,
+                land=SYNTHETIC_LAND,
+                validation_summary_path=summary_path,
+                validation_bundle_path=tmp_path / "missing_bundle.parquet",
+                validation_global_path=tmp_path / "missing_global.parquet",
+                explain_summary_path=tmp_path / "missing_explain.json",
+                explain_bundle_path=tmp_path / "missing_explain.parquet",
+            )
+
+    def test_new_parquet_assets_written(self, synthetic_bundle):
+        bundle_dir = synthetic_bundle["bundle_dir"]
+        assert (bundle_dir / VALIDATION_ASSET).exists()
+        assert (bundle_dir / VALIDATION_GLOBAL_ASSET).exists()
+        assert (bundle_dir / EXPLAIN_FEATURES_ASSET).exists()
