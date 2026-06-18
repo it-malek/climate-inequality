@@ -1,0 +1,41 @@
+{
+  "interpretation": "Descriptive structural decomposition of observed warming trends across countries. Shapley/LMG group shares are a variance attribution only -- they are NOT physical or causal climate attribution, and a country's emissions share does not mean its emissions caused its warming.",
+  "outcome": "warming_trend",
+  "schema_version": "v1",
+  "n": 154,
+  "total_r2": 0.6306936568351258,
+  "residual_share": 0.3693063431648742,
+  "shares": {
+    "emissions": 0.08409736784540633,
+    "geography": 0.45518526897681655,
+    "socioeconomic": 0.05581862833482362,
+    "population": 0.03559239167807927
+  },
+  "univariate_r2": {
+    "emissions": 0.13233814217277273,
+    "geography": 0.5801801672605702,
+    "socioeconomic": 0.0799549235383532,
+    "population": 0.04882725993749182
+  },
+  "group_features": {
+    "emissions": [
+      "cum_co2_per_capita",
+      "cum_co2_total"
+    ],
+    "geography": [
+      "abs_latitude",
+      "elevation",
+      "continentality",
+      "climate_zone",
+      "hemisphere",
+      "spatial_block"
+    ],
+    "socioeconomic": [
+      "income_group"
+    ],
+    "population": [
+      "population",
+      "station_density"
+    ]
+  }
+}
