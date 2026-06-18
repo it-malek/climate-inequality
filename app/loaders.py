@@ -113,6 +113,57 @@ def load_stats() -> dict:
     return json.loads((APP_DATA_DIR / "stats.json").read_text(encoding="utf-8"))
 
 
+def _load_optional_json(name: str) -> dict | None:
+    """Read an optional bundle JSON, returning None when it is absent.
+
+    The decomposition/inequality/stability summaries are produced by separate
+    pipeline steps; a page degrades to a 'not built yet' state rather than
+    erroring when its summary has not been copied into the bundle.
+    """
+    path = APP_DATA_DIR / name
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+@st.cache_data
+def load_inequality_summary() -> dict | None:
+    """Descriptive warming-inequality metrics (``inequality_summary.json``)."""
+    return _load_optional_json("inequality_summary.json")
+
+
+@st.cache_data
+def load_decomposition_summary() -> dict | None:
+    """Group LMG/Shapley variance shares (``decomposition_summary.json``)."""
+    return _load_optional_json("decomposition_summary.json")
+
+
+@st.cache_data
+def load_stability_summary() -> dict | None:
+    """Decomposition/coefficient sensitivity diagnostics, if present.
+
+    Returns ``None`` until a ``stability_summary.json`` is added to the
+    bundle (the stability layer is a deferred pipeline step), so the
+    sensitivity page renders an explicit pending state rather than failing.
+    """
+    return _load_optional_json("stability_summary.json")
+
+
+@st.cache_data
+def load_country_latitudes() -> pd.DataFrame:
+    """Mean signed latitude per country, aggregated from the city features.
+
+    Derived in the app layer (no new statistical artifact) so the country map
+    can show a latitude in its hover. One row per ``Country``.
+    """
+    features = load_explain_features()
+    return (
+        features.groupby("Country", as_index=False)["Latitude"]
+        .mean()
+        .rename(columns={"Latitude": "mean_latitude"})
+    )
+
+
 @st.cache_data
 def load_validation_frame() -> pd.DataFrame:
     """Per-city residual-map data from Phase 6 validation."""
