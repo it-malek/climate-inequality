@@ -19,7 +19,17 @@ if _ROOT not in sys.path:
 
 import streamlit as st  # noqa: E402
 
-from app.views import city_explorer, explain, inequality, trend_map, validation  # noqa: E402
+from app import theme  # noqa: E402
+from app.views import (  # noqa: E402
+    city_explorer,
+    decomposition,
+    explain,
+    inequality,
+    sensitivity,
+    trend_map,
+    validation,
+    world_map,
+)
 
 st.set_page_config(
     page_title="Climate Inequality",
@@ -27,34 +37,58 @@ st.set_page_config(
     layout="wide",
 )
 
+# Grouped navigation: the decomposition framework is the headline; the upstream
+# data/methods pages are kept as "Foundations".
 navigation = st.navigation(
-    [
-        st.Page(trend_map.render, title="Warming map", icon="🗺️", default=True),
-        st.Page(
-            city_explorer.render, title="City explorer", icon="🏙️", url_path="cities"
-        ),
-        st.Page(
-            inequality.render,
-            title="Climate inequality",
-            icon="⚖️",
-            url_path="inequality",
-        ),
-        st.Page(
-            validation.render,
-            title="Did the trends hold?",
-            icon="🔭",
-            url_path="validation",
-        ),
-        st.Page(
-            explain.render,
-            title="What drives warming?",
-            icon="🧭",
-            url_path="drivers",
-        ),
-    ]
+    {
+        "Decomposition": [
+            st.Page(
+                decomposition.render,
+                title="Inequality decomposition",
+                icon="⚖️",
+                url_path="decomposition",
+                default=True,
+            ),
+            st.Page(
+                world_map.render, title="Warming map", icon="🗺️", url_path="map"
+            ),
+            st.Page(
+                sensitivity.render,
+                title="How confident are we?",
+                icon="🎯",
+                url_path="sensitivity",
+            ),
+        ],
+        "Foundations": [
+            st.Page(
+                trend_map.render, title="Interpolated surface", icon="🌍",
+                url_path="surface",
+            ),
+            st.Page(
+                city_explorer.render, title="City explorer", icon="🏙️",
+                url_path="cities",
+            ),
+            st.Page(
+                inequality.render, title="Emissions vs warming", icon="📈",
+                url_path="emissions",
+            ),
+            st.Page(
+                validation.render, title="Did the trends hold?", icon="🔭",
+                url_path="validation",
+            ),
+            st.Page(
+                explain.render, title="What drives warming?", icon="🧭",
+                url_path="drivers",
+            ),
+        ],
+    }
 )
 st.sidebar.caption(
     "Berkeley Earth city temperatures (1950–2013) × OWID cumulative CO₂. "
     "Reads the committed app/data bundle; methods in the README."
 )
+
+# The interpretation boundary is shown at the top of every page (rendered here,
+# before the selected page's body).
+theme.interpretation_banner()
 navigation.run()

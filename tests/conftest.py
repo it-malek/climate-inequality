@@ -20,14 +20,19 @@ import pytest
 from shapely.geometry import box
 
 from src.app_assets import build_app_assets
+from src.decomposition import group_lmg_shares
+from src.decomposition import summary_payload as decomp_payload
 from src.explain import (
     compare_city_specs,
     fit_country_model,
     write_explain_summary,
     write_typed_parquet,
 )
+from src.inequality import country_warming_inequality
+from src.inequality import summary_payload as ineq_payload
 from src.trends import build_city_trends
 from src.validation import VALIDATION_BUNDLE_SCHEMA, VALIDATION_GLOBAL_SCHEMA
+from tests.test_decomposition import make_country_design
 from tests.test_emissions import make_inequality_frame
 from tests.test_explain import make_synthetic_city_features, make_synthetic_country_table
 from tests.test_trends import make_city_frame, make_db
@@ -161,6 +166,23 @@ def _make_synthetic_explain_artifacts(processed: Path) -> dict[str, Path]:
     )
 
 
+def _make_synthetic_decomposition_artifacts(bundle_dir: Path) -> None:
+    """Write synthetic inequality/decomposition summaries into the bundle.
+
+    Routed through the production serializers (``summary_payload``) so the
+    decomposition dashboard's AppTest exercises real bundle JSON, including the
+    ``interpretation`` disclaimer, rather than a hand-rolled stand-in.
+    """
+    ineq = country_warming_inequality(make_inequality_frame())
+    (bundle_dir / "inequality_summary.json").write_text(
+        json.dumps(ineq_payload(ineq), indent=2) + "\n", encoding="utf-8"
+    )
+    decomp = group_lmg_shares(make_country_design(n=120))
+    (bundle_dir / "decomposition_summary.json").write_text(
+        json.dumps(decomp_payload(decomp), indent=2) + "\n", encoding="utf-8"
+    )
+
+
 def build_synthetic_bundle(root: Path) -> dict:
     """Run build_app_assets end to end on synthetic inputs under `root`."""
     inputs = make_synthetic_inputs(root)
@@ -180,6 +202,7 @@ def build_synthetic_bundle(root: Path) -> dict:
         explain_summary_path=exp_paths["summary"],
         explain_bundle_path=exp_paths["bundle"],
     )
+    _make_synthetic_decomposition_artifacts(root / "bundle")
     result["bundle_dir"] = root / "bundle"
     return result
 

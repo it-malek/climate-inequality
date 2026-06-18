@@ -139,7 +139,89 @@ class TestEntryPoint:
         at = AppTest.from_file("app/streamlit_app.py", default_timeout=10)
         at.run()
         assert not at.exception, at.exception
-        assert at.title[0].value == "Where has land warmed fastest?"
+        # Default page is now the decomposition dashboard.
+        assert at.title[0].value == "Global Warming Inequality Decomposition"
+
+    def test_interpretation_banner_on_entry(self, bundle_dir):
+        at = AppTest.from_file("app/streamlit_app.py", default_timeout=10)
+        at.run()
+        from app.theme import BANNER_TEXT
+
+        assert any(BANNER_TEXT in (m.value or "") for m in at.markdown), (
+            "interpretation banner must render on the entry page"
+        )
+
+
+class TestDecompositionPage:
+    def test_renders_metrics_and_shares(self, bundle_dir):
+        at = run_page("app.views.decomposition")
+        assert at.title[0].value == "Global Warming Inequality Decomposition"
+        labels = [m.label for m in at.metric]
+        assert "Gini of warming" in labels
+        assert "Residual (unexplained)" in labels
+        subheaders = [s.value for s in at.subheader]
+        assert "How the inequality decomposes" in subheaders
+        assert "Decomposition explorer" in subheaders
+        assert at.radio[0].value == "Emissions only"
+
+    def test_explorer_toggle_switches_view(self, bundle_dir):
+        at = run_page("app.views.decomposition")
+        at.radio[0].set_value("Full model").run()
+        assert not at.exception
+        assert "Variance explained" in [m.label for m in at.metric]
+
+    def test_pending_state_without_summaries(self, tmp_path, monkeypatch):
+        # Point loaders at an empty dir: the page must degrade, not crash.
+        monkeypatch.setattr(loaders, "APP_DATA_DIR", tmp_path)
+        st.cache_data.clear()
+        at = run_page("app.views.decomposition")
+        assert not at.exception
+        assert len(at.info) == 1
+        st.cache_data.clear()
+
+
+class TestWorldMapPage:
+    def test_renders_choropleth(self, bundle_dir):
+        at = run_page("app.views.world_map")
+        assert at.title[0].value == "Where warming is fastest"
+        # Caption reports the country count and trend range; presence ⇒ rendered.
+        assert any("countries" in (c.value or "") for c in at.caption)
+
+
+class TestSensitivityPage:
+    def test_pending_state_by_default(self, bundle_dir):
+        # No stability_summary.json in the synthetic bundle -> pending state.
+        at = run_page("app.views.sensitivity")
+        assert at.title[0].value == "How confident are we?"
+        assert len(at.info) == 1
+        assert len(at.subheader) == 0  # no diagnostic sections rendered
+
+    def test_renders_when_summary_present(self, bundle_dir, tmp_path, monkeypatch):
+        import json
+
+        populated = tmp_path / "stab_bundle"
+        shutil.copytree(bundle_dir, populated)
+        summary = {
+            "interpretation": "descriptive only",
+            "df_sensitivity": [
+                {"df": 4, "coef": 0.03, "ci_low": 0.01, "ci_high": 0.05},
+                {"df": 6, "coef": 0.028, "ci_low": 0.008, "ci_high": 0.048},
+                {"df": 8, "coef": 0.026, "ci_low": 0.004, "ci_high": 0.048},
+            ],
+            "uncertainty": [
+                {"method": "HC1", "coef": 0.03, "ci_low": 0.015, "ci_high": 0.045},
+                {"method": "Conley HAC", "coef": 0.03, "ci_low": -0.005, "ci_high": 0.065},
+            ],
+            "influence": {"spec": "lat_continent", "top_dfbeta": [["Russia", 0.012], ["Canada", -0.008]]},
+        }
+        (populated / "stability_summary.json").write_text(json.dumps(summary))
+        monkeypatch.setattr(loaders, "APP_DATA_DIR", populated)
+        st.cache_data.clear()
+        at = run_page("app.views.sensitivity")
+        assert not at.exception
+        assert not at.info  # no pending banner
+        assert len(at.subheader) == 3  # df-sensitivity, uncertainty, influence
+        st.cache_data.clear()
 
 
 class TestValidationPage:
