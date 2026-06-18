@@ -15,12 +15,16 @@ import pytest
 from src.robustness import (
     EMISSIONS_TERM,
     HIGH_LATITUDE_LEVERAGE,
+    MIN_CLUSTERS_FOR_VALID_BOOTSTRAP,
     compare_latitude_controls,
+    conley_hac_se,
     continent_cluster_bootstrap_se,
     country_centroids,
     country_residual_morans_i,
     fit_country_gam,
     fit_country_robust,
+    gam_latitude_df_sensitivity,
+    influence_diagnostics,
     jackknife_emissions_coef,
     robustness_summary_to_dict,
     run_robustness_suite,
@@ -117,6 +121,26 @@ class TestLatitudeControls:
         assert fit.smooth_df == 5
         assert "s(mean_abs_lat, df=5" in fit.formula
 
+    def test_controls_share_sample_when_continent_missing(self):
+        # A2 carries C(continent); a missing continent must not silently shrink
+        # A2's sample below A0/A1. All three should sit on the same n.
+        table = make_nonlinear_latitude_table()
+        table.loc[table.index[:3], "continent"] = np.nan
+        controls = compare_latitude_controls(table)
+        assert {c.n for c in controls} == {len(table) - 3}
+
+    def test_gam_df_sensitivity_sweeps_basis_sizes(self):
+        table = make_nonlinear_latitude_table()
+        fits = gam_latitude_df_sensitivity(table, dfs=(4, 6, 8))
+        # A1 + A2 at each of the three df values.
+        assert len(fits) == 6
+        assert {f.smooth_df for f in fits} == {4, 6, 8}
+        names = {f.spec_name for f in fits}
+        assert "A1_gam_lat_df4" in names
+        assert "A2_gam_lat_continent_df8" in names
+        # All fit the same complete-case sample.
+        assert {f.n for f in fits} == {len(table)}
+
 
 class TestSpatialInference:
     """Upgrade B: residual Moran's I and the continent-cluster bootstrap."""
@@ -165,11 +189,34 @@ class TestSpatialInference:
         cents = country_centroids(features)
         assert set(cents.columns) == {"Country", "cen_lon", "cen_lat"}
         assert len(cents) == 4
-        # Centroid is the mean of that country's city coordinates.
+        # Centroid is the unit-vector (spherical) mean of the city coordinates.
         c0 = features[features["Country"] == "Country0"]
+        lon = np.radians(c0["Longitude"].to_numpy(dtype=float))
+        lat = np.radians(c0["Latitude"].to_numpy(dtype=float))
+        x = (np.cos(lat) * np.cos(lon)).mean()
+        y = (np.cos(lat) * np.sin(lon)).mean()
+        z = np.sin(lat).mean()
+        exp_lon = np.degrees(np.arctan2(y, x))
+        exp_lat = np.degrees(np.arctan2(z, np.hypot(x, y)))
         got = cents[cents["Country"] == "Country0"].iloc[0]
-        assert got["cen_lat"] == pytest.approx(c0["Latitude"].mean())
-        assert got["cen_lon"] == pytest.approx(c0["Longitude"].mean())
+        assert got["cen_lat"] == pytest.approx(exp_lat)
+        assert got["cen_lon"] == pytest.approx(exp_lon)
+
+    def test_country_centroids_antimeridian_safe(self):
+        # Cities straddling +/-179 deg longitude: the arithmetic mean collapses
+        # to ~0 (wrong hemisphere); the spherical mean stays near +/-180.
+        features = pd.DataFrame(
+            {
+                "Country": ["Fiji"] * 4,
+                "Longitude": [179.0, 178.5, -179.0, -178.5],
+                "Latitude": [-17.0, -18.0, -17.5, -18.5],
+            }
+        )
+        cents = country_centroids(features)
+        cen_lon = cents.iloc[0]["cen_lon"]
+        # Near the antimeridian, not collapsed toward the prime meridian.
+        assert abs(cen_lon) > 170.0
+        assert cents.iloc[0]["cen_lat"] == pytest.approx(-17.75, abs=0.3)
 
     def test_morans_i_detects_clustering(self):
         table, centroids = self.make_clustered_table()
@@ -222,6 +269,25 @@ class TestSpatialInference:
         assert a.boot_ci_low == b.boot_ci_low
         assert a.boot_ci_high == b.boot_ci_high
 
+    def test_cluster_bootstrap_flags_insufficient_clusters(self):
+        # 6 clusters is far below the validity threshold: the result must mark
+        # itself as not a valid CI so the render layer cannot present it as one.
+        table, _ = self.make_clustered_table(n_clusters=6)
+        res = continent_cluster_bootstrap_se(table, "pooled", n_boot=100)
+        assert res.n_clusters == 6
+        assert res.n_clusters < MIN_CLUSTERS_FOR_VALID_BOOTSTRAP
+        assert res.clusters_sufficient is False
+
+    def test_conley_hac_inflates_se_under_spatial_dependence(self):
+        # Spatially clustered residuals -> Conley HAC SE should exceed the
+        # naive HC1 SE, since near pairs carry positive residual covariance.
+        table, centroids = self.make_clustered_table()
+        res = conley_hac_se(table, centroids, spec_name="pooled", cutoff_km=1000.0)
+        assert res.emissions.term == EMISSIONS_TERM
+        assert np.isfinite(res.emissions.se)
+        assert res.emissions.ci_low < res.emissions.coef < res.emissions.ci_high
+        assert res.emissions.se > res.hc1.se
+
 
 class TestEstimatorPlurality:
     """Upgrade C: RLM, jackknife, weighting."""
@@ -273,6 +339,19 @@ class TestEstimatorPlurality:
         assert "Russia" in jk.drop_set_present
         assert jk.drop_set_coef is not None
         assert abs(jk.drop_set_coef - 0.01) < abs(jk.full_coef - 0.01)
+
+    def test_influence_flags_leverage_point_by_dfbeta(self):
+        # The planted "Russia" outlier should surface as a top-DFBETA country,
+        # and dropping the top-k by |DFBETA| should pull the coefficient toward
+        # the true 0.01 -- the design-matrix leverage tool RLM is not.
+        table = self.make_leverage_table()
+        inf = influence_diagnostics(table, spec_name="lat_continent", k=3)
+        top_countries = [c for c, _ in inf.top_dfbeta]
+        assert "Russia" in top_countries
+        assert "Russia" in inf.drop_top_dfbeta
+        assert inf.drop_top_dfbeta_coef is not None
+        assert abs(inf.drop_top_dfbeta_coef - 0.01) < abs(inf.full_coef - 0.01)
+        assert len(inf.top_cooks) == 3
 
     def test_jackknife_empty_drop_set_when_absent(self):
         rng = np.random.default_rng(0)
@@ -333,8 +412,11 @@ class TestRunSuite:
             table, features, spec_name="lat_continent", n_boot=120, seed=0
         )
         assert len(summary.latitude_controls) == 3
+        assert len(summary.gam_df_sensitivity) == 6  # A1+A2 at df 4/6/8
         assert len(summary.residual_moran) == 2
+        assert summary.conley.emissions.term == EMISSIONS_TERM
         assert summary.estimator.spec_name == "lat_continent"
+        assert summary.influence.spec_name == "lat_continent"
         assert len(summary.weighted) == 1  # n_cities present
 
         blob = robustness_summary_to_dict(summary)
@@ -343,7 +425,11 @@ class TestRunSuite:
 
         json.loads(json.dumps(blob))
         assert blob["cluster_bootstrap"]["hc1"]["term"] == EMISSIONS_TERM
+        assert blob["cluster_bootstrap"]["clusters_sufficient"] in (True, False)
+        assert blob["conley"]["emissions"]["term"] == EMISSIONS_TERM
         assert blob["latitude_controls"][0]["spec_name"] == "A0_linear_lat"
+        assert len(blob["gam_df_sensitivity"]) == 6
+        assert "top_dfbeta" in blob["influence"]
 
     def test_suite_skips_absent_weight_columns(self):
         table = make_nonlinear_latitude_table().drop(columns=["n_cities"])
