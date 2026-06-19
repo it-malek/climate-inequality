@@ -84,6 +84,7 @@ STATS_ASSET = "stats.json"
 # `python -m src.app_assets` regenerates the entire committed bundle.
 INEQUALITY_SUMMARY_ASSET = "inequality_summary.json"
 DECOMPOSITION_SUMMARY_ASSET = "decomposition_summary.json"
+STABILITY_SUMMARY_ASSET = "stability_summary.json"
 
 # Phase 6/7 optional bundle assets (present only when the heavy pipeline has run).
 VALIDATION_ASSET = "validation.parquet"
@@ -101,6 +102,7 @@ _VALIDATION_BUNDLE_PATH = PROCESSED_DIR / "validation_bundle.parquet"
 _VALIDATION_GLOBAL_PATH = PROCESSED_DIR / "validation_global.parquet"
 _EXPLAIN_SUMMARY_PATH = PROCESSED_DIR / "explain_summary.json"
 _EXPLAIN_BUNDLE_PATH = PROCESSED_DIR / "explain_features.parquet"
+_STABILITY_SUMMARY_PATH = PROCESSED_DIR / "stability_summary.json"
 
 
 def disambiguate_labels(trends: pd.DataFrame) -> pd.Series:
@@ -588,6 +590,86 @@ def build_decomposition_summaries(
     return written
 
 
+def build_stability_summary_asset(
+    inequality_path: Path = DEFAULT_INEQUALITY_PATH,
+    out_dir: Path = APP_DATA_DIR,
+    *,
+    city_features_path: Path | None = None,
+    income_path: Path | None = None,
+    n_boot: int | None = None,
+    seed: int = 0,
+) -> dict[str, Path]:
+    """Write the decomposition's perturbation-stability summary into the bundle.
+
+    Mirrors :func:`build_decomposition_summaries`: it needs the Phase-7 city
+    features (for the design *and* the country centroids the residual Moran's I
+    uses) and the World Bank income groups; when either is absent it is skipped
+    with a warning and the sensitivity page keeps its explicit pending state. The
+    country/continent bootstraps run here, offline, so the deployed app gains no
+    runtime dependency -- only the small JSON ships (``docs/stability_roadmap.md``
+    §2, §9). Floats are rounded at serialization so the committed summary is
+    byte-stable.
+
+    Args:
+        inequality_path: Phase 4 ``country_inequality.parquet``.
+        out_dir: Bundle destination, normally the committed ``app/data/``.
+        city_features_path: Phase 7 ``city_features.parquet`` override (tests);
+            ``None`` uses ``src.explain.DEFAULT_FEATURES_PATH``.
+        income_path: World Bank income-groups CSV override (tests); ``None`` uses
+            ``src.explain.INCOME_PATH``.
+        n_boot: bootstrap resamples; ``None`` uses the stability-module default.
+        seed: base RNG seed for reproducible resamples.
+
+    Returns:
+        ``{STABILITY_SUMMARY_ASSET: path}`` when written, else ``{}``.
+    """
+    # Lazy imports mirror build_decomposition_summaries: keep the decomposition /
+    # stability stack out of this module's import graph (build_app_assets is the
+    # heavy entry point) and avoid a circular import.
+    from src.decomposition import COUNTRY_COL, build_country_design
+    from src.explain import DEFAULT_FEATURES_PATH, INCOME_PATH, load_income_groups
+    from src.stability import DEFAULT_N_BOOT, build_stability_summary
+    from src.stability import summary_payload as stability_payload
+
+    city_features_path = city_features_path or DEFAULT_FEATURES_PATH
+    income_path = income_path or INCOME_PATH
+    out_dir.mkdir(parents=True, exist_ok=True)
+    written: dict[str, Path] = {}
+
+    if not city_features_path.exists() or not income_path.exists():
+        logger.warning(
+            "stability inputs missing (city_features present=%s, income present=%s); "
+            "bundle will omit the stability summary -- run python -m src.explain to "
+            "build the city features",
+            city_features_path.exists(), income_path.exists(),
+        )
+        return written
+
+    inequality = pd.read_parquet(inequality_path)
+    city_features = pd.read_parquet(city_features_path)
+    income = load_income_groups(income_path)
+    design = build_country_design(inequality, city_features, income)
+    centroids = (
+        city_features.groupby(COUNTRY_COL, as_index=False)[["Longitude", "Latitude"]]
+        .mean()
+    )
+
+    result = build_stability_summary(
+        design, centroids, n_boot=n_boot or DEFAULT_N_BOOT, seed=seed
+    )
+    dest = out_dir / STABILITY_SUMMARY_ASSET
+    dest.write_text(
+        json.dumps(stability_payload(result), indent=2) + "\n", encoding="utf-8"
+    )
+    written[STABILITY_SUMMARY_ASSET] = dest
+    logger.info(
+        "wrote %s (n=%d, B=%d, P(geo largest)=%s)",
+        dest, result.n_countries, result.n_boot,
+        result.share_stability.get("p_geography_largest"),
+    )
+    return written
+
+
 def main() -> None:
     """Build the default bundle and print the README sanity checks."""
     logging.basicConfig(
@@ -595,6 +677,7 @@ def main() -> None:
     )
     out = build_app_assets()
     summaries = build_decomposition_summaries()
+    stability = build_stability_summary_asset()
     trends = out["stats"]["trends"]
     interp = out["stats"]["interpolation"]
     ineq = out["stats"]["inequality"]
@@ -652,7 +735,22 @@ def main() -> None:
     else:
         print("decomposition: skipped (city features / income not built)")
 
-    all_paths = {**out["paths"], **summaries}
+    if STABILITY_SUMMARY_ASSET in stability:
+        stab = json.loads(
+            stability[STABILITY_SUMMARY_ASSET].read_text(encoding="utf-8")
+        )
+        ss = stab["share_stability"]
+        rs = stab["residual_spatial"]
+        print(
+            f"stability: P(geography largest) {ss['p_geography_largest']}, "
+            f"P(emissions>0) {ss['p_emissions_positive']}, "
+            f"residual Moran's I {rs['morans_i']} (p={rs['p_value']}) "
+            "(descriptive, non-causal)"
+        )
+    else:
+        print("stability: skipped (city features / income not built)")
+
+    all_paths = {**out["paths"], **summaries, **stability}
     total_kb = sum(p.stat().st_size for p in all_paths.values()) / 1024
     print(f"bundle: {len(all_paths)} files, {total_kb:,.0f} KB total")
     for name, path in all_paths.items():

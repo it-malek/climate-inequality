@@ -19,6 +19,7 @@ from src.app_assets import (
     EXPLAIN_FEATURES_ASSET,
     INEQUALITY_ASSET,
     INEQUALITY_SUMMARY_ASSET,
+    STABILITY_SUMMARY_ASSET,
     STATS_ASSET,
     SURFACE_ASSET,
     TRENDS_ASSET,
@@ -26,11 +27,13 @@ from src.app_assets import (
     VALIDATION_GLOBAL_ASSET,
     _EXPLAIN_BUNDLE_PATH,
     _EXPLAIN_SUMMARY_PATH,
+    _STABILITY_SUMMARY_PATH,
     _VALIDATION_BUNDLE_PATH,
     _VALIDATION_GLOBAL_PATH,
     _VALIDATION_SUMMARY_PATH,
     build_app_assets,
     build_decomposition_summaries,
+    build_stability_summary_asset,
     disambiguate_labels,
     theil_sen_intercepts,
 )
@@ -239,6 +242,10 @@ class TestOptionalFindingsConstants:
         from src.explain import DEFAULT_EXPLAIN_BUNDLE_PATH
         assert _EXPLAIN_BUNDLE_PATH == DEFAULT_EXPLAIN_BUNDLE_PATH
 
+    def test_stability_summary_path_matches_source(self):
+        from src.stability import DEFAULT_SUMMARY_PATH
+        assert _STABILITY_SUMMARY_PATH == DEFAULT_SUMMARY_PATH
+
 
 class TestOptionalFindingsMerge:
     """_merge_optional_findings: absent warns+skips; half-present raises; present merges."""
@@ -373,3 +380,24 @@ class TestDecompositionSummaries:
             city_features_path=tmp_path / "x", income_path=tmp_path / "y",
         )[INEQUALITY_SUMMARY_ASSET].read_text("utf-8")
         assert first == second
+
+
+class TestStabilitySummaryAsset:
+    """build_stability_summary_asset wires the robustness layer into the bundle."""
+
+    def test_absent_inputs_skipped_gracefully(self, tmp_path):
+        # Without the Phase-7 city features / income table the stability summary
+        # is omitted (the sensitivity page keeps its pending state), not an error.
+        inequality_path = tmp_path / "country_inequality.parquet"
+        make_inequality_frame().to_parquet(inequality_path, index=False)
+        out_dir = tmp_path / "bundle"
+
+        written = build_stability_summary_asset(
+            inequality_path=inequality_path,
+            out_dir=out_dir,
+            city_features_path=tmp_path / "absent_features.parquet",
+            income_path=tmp_path / "absent_income.csv",
+        )
+
+        assert written == {}
+        assert not (out_dir / STABILITY_SUMMARY_ASSET).exists()

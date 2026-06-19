@@ -1,0 +1,260 @@
+{
+  "interpretation": "Descriptive structural decomposition of observed warming trends across countries. Shapley/LMG group shares are a variance attribution only -- they are NOT physical or causal climate attribution, and a country's emissions share does not mean its emissions caused its warming.",
+  "schema_version": "v1",
+  "n_countries": 154,
+  "n_boot": 2000,
+  "seed": 0,
+  "share_stability": {
+    "method": "country_bootstrap",
+    "n_boot": 2000,
+    "n_failed": 0,
+    "groups": {
+      "emissions": {
+        "point": 0.084097367845,
+        "mean": 0.088858044963,
+        "std": 0.020470151122,
+        "ci_low": 0.050663244272,
+        "ci_high": 0.132124878167
+      },
+      "geography": {
+        "point": 0.455185268977,
+        "mean": 0.479765247148,
+        "std": 0.043556350722,
+        "ci_low": 0.39224796824,
+        "ci_high": 0.562693969185,
+        "p_largest": 1.0
+      },
+      "socioeconomic": {
+        "point": 0.055818628335,
+        "mean": 0.067147999619,
+        "std": 0.02017199034,
+        "ci_low": 0.034321471284,
+        "ci_high": 0.114091670156
+      },
+      "population": {
+        "point": 0.035592391678,
+        "mean": 0.040104272626,
+        "std": 0.016365979433,
+        "ci_low": 0.01274344141,
+        "ci_high": 0.076046352475
+      },
+      "residual": {
+        "point": 0.369306343165,
+        "mean": 0.324124435643,
+        "std": 0.038078111691,
+        "ci_low": 0.251368671092,
+        "ci_high": 0.40383740332
+      }
+    },
+    "p_geography_largest": 1.0,
+    "p_emissions_positive": 1.0,
+    "block_bootstrap": {
+      "by": "spatial_block",
+      "n_boot": 2000,
+      "n_failed": 0,
+      "groups": {
+        "emissions": {
+          "ci_low": 0.028243390433,
+          "ci_high": 0.18885941423
+        },
+        "geography": {
+          "ci_low": 0.414429556354,
+          "ci_high": 0.573137538165
+        },
+        "socioeconomic": {
+          "ci_low": 0.029332971748,
+          "ci_high": 0.123165992571
+        },
+        "population": {
+          "ci_low": 0.003189097713,
+          "ci_high": 0.079846321099
+        },
+        "residual": {
+          "ci_low": 0.180865531313,
+          "ci_high": 0.432703581353
+        }
+      }
+    }
+  },
+  "influence": {
+    "method": "leave_one_country_out",
+    "by_group": {
+      "emissions": [
+        [
+          "Afghanistan",
+          -0.007661654006
+        ],
+        [
+          "Bangladesh",
+          0.005906117539
+        ],
+        [
+          "Syria",
+          -0.005293393462
+        ],
+        [
+          "Nepal",
+          0.004952692578
+        ],
+        [
+          "Uzbekistan",
+          0.00469337173
+        ],
+        [
+          "Niger",
+          -0.004416110609
+        ],
+        [
+          "Qatar",
+          0.004270620123
+        ],
+        [
+          "Estonia",
+          0.003954896289
+        ],
+        [
+          "Ethiopia",
+          -0.003801677574
+        ],
+        [
+          "New Zealand",
+          -0.003760273075
+        ]
+      ],
+      "geography": [
+        [
+          "Mongolia",
+          0.017820640539
+        ],
+        [
+          "Botswana",
+          -0.017015030227
+        ],
+        [
+          "Bangladesh",
+          -0.012734474097
+        ],
+        [
+          "Egypt",
+          -0.012032869148
+        ],
+        [
+          "Afghanistan",
+          0.010262094456
+        ],
+        [
+          "Brazil",
+          -0.010152521812
+        ],
+        [
+          "Uzbekistan",
+          0.008532254197
+        ],
+        [
+          "Qatar",
+          -0.007880265284
+        ],
+        [
+          "Laos",
+          -0.007623869694
+        ],
+        [
+          "United Arab Emirates",
+          -0.00693451684
+        ]
+      ],
+      "socioeconomic": [
+        [
+          "Hong Kong",
+          -0.006612264199
+        ],
+        [
+          "Syria",
+          -0.005529907287
+        ],
+        [
+          "Tajikistan",
+          -0.004805380414
+        ],
+        [
+          "Laos",
+          0.004731708147
+        ],
+        [
+          "Uzbekistan",
+          -0.004563899895
+        ],
+        [
+          "New Zealand",
+          -0.004386835862
+        ],
+        [
+          "Bangladesh",
+          0.004025780204
+        ],
+        [
+          "Mongolia",
+          -0.003961076938
+        ],
+        [
+          "Turkmenistan",
+          -0.003857603654
+        ],
+        [
+          "Cambodia",
+          0.003499200506
+        ]
+      ],
+      "population": [
+        [
+          "Netherlands",
+          -0.008628358251
+        ],
+        [
+          "Hong Kong",
+          0.004465228731
+        ],
+        [
+          "Philippines",
+          0.004258785938
+        ],
+        [
+          "Bangladesh",
+          0.004163970952
+        ],
+        [
+          "Japan",
+          0.003928727649
+        ],
+        [
+          "Laos",
+          -0.003641000632
+        ],
+        [
+          "Taiwan",
+          0.00305453211
+        ],
+        [
+          "Brazil",
+          -0.002484586596
+        ],
+        [
+          "Cambodia",
+          -0.002373424625
+        ],
+        [
+          "Germany",
+          -0.002301133655
+        ]
+      ]
+    }
+  },
+  "residual_spatial": {
+    "morans_i": 0.326779995251,
+    "p_value": 0.005,
+    "n_permutations": 199,
+    "k_neighbors": 8,
+    "method": "centroid kNN",
+    "n": 154
+  }
+}

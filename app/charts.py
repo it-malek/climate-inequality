@@ -187,6 +187,101 @@ def coef_ci_chart(
     return theme.apply_base_layout(fig)
 
 
+def share_ci_chart(
+    groups: dict[str, dict],
+    block_groups: dict[str, dict] | None = None,
+) -> go.Figure:
+    """Bootstrap 95% CI of each variance *share* (one row per group).
+
+    ``groups`` maps a group key to a dict with ``point``, ``ci_low`` and
+    ``ci_high`` (the country-bootstrap interval). When ``block_groups`` is given,
+    the wider continent-block-bootstrap interval is drawn as a faint band behind
+    each point, so the gap between the two reads as the spatial-dependence
+    correction. Rows follow :data:`app.theme.GROUP_ORDER` and use the fixed
+    per-group palette. These are *shares*, not coefficients — the axis is a
+    percentage of total variance, and the chart shows the stability of the
+    decomposition, never a significance or causal claim.
+    """
+    keys = [k for k in theme.GROUP_ORDER if k in groups]
+    labels = [theme.GROUP_LABELS[k] for k in keys]
+    points = [float(groups[k]["point"]) for k in keys]
+    lo = [float(groups[k]["ci_low"]) for k in keys]
+    hi = [float(groups[k]["ci_high"]) for k in keys]
+    colors = [theme.group_color(k) for k in keys]
+
+    fig = go.Figure()
+    if block_groups:
+        bl = [float(block_groups.get(k, groups[k])["ci_low"]) for k in keys]
+        bh = [float(block_groups.get(k, groups[k])["ci_high"]) for k in keys]
+        fig.add_trace(
+            go.Scatter(
+                x=points, y=labels, mode="markers", name="continent block bootstrap",
+                marker={"color": "rgba(0,0,0,0)", "size": 1},
+                error_x={
+                    "type": "data", "symmetric": False,
+                    "array": [h - p for h, p in zip(bh, points)],
+                    "arrayminus": [p - low for p, low in zip(points, bl)],
+                    "color": "rgba(150,150,150,0.5)", "thickness": 11, "width": 0,
+                },
+                hoverinfo="skip",
+            )
+        )
+    fig.add_trace(
+        go.Scatter(
+            x=points, y=labels, mode="markers", name="country bootstrap",
+            marker={"color": colors, "size": 11, "line": {"color": "#fff", "width": 1}},
+            error_x={
+                "type": "data", "symmetric": False,
+                "array": [h - p for h, p in zip(hi, points)],
+                "arrayminus": [p - low for p, low in zip(points, lo)],
+                "color": "#555", "thickness": 2,
+            },
+            customdata=np.stack([lo, hi], axis=-1),
+            hovertemplate="<b>%{y}</b><br>share %{x:.1%}"
+            "<br>95% CI [%{customdata[0]:.1%}, %{customdata[1]:.1%}]<extra></extra>",
+        )
+    )
+    fig.update_layout(
+        title="Bootstrap 95% CI of each variance share",
+        xaxis={"title": "Share of total cross-country variance", "tickformat": ".0%"},
+        yaxis={"autorange": "reversed"},
+        height=90 + 46 * max(len(keys), 1),
+        showlegend=bool(block_groups),
+    )
+    return theme.apply_base_layout(fig)
+
+
+def influence_bar(
+    items: list[tuple[str, float]],
+    title: str,
+    color: str | None = None,
+    value_label: str = "Δ share (leave-one-out)",
+) -> go.Figure:
+    """Horizontal bar of the most influential countries by |Δ share|.
+
+    The share-level analogue of :func:`dfbeta_bar`: one bar per country, signed
+    by how the named share moves when that country is dropped.
+    """
+    names = [str(n) for n, _ in items]
+    vals = [float(v) for _, v in items]
+    fig = go.Figure(
+        go.Bar(
+            x=vals, y=names, orientation="h",
+            marker={"color": color or theme.group_color("emissions")},
+            hovertemplate="<b>%{y}</b><br>" + value_label + " %{x:+.4f}<extra></extra>",
+        )
+    )
+    fig.add_vline(x=0.0, line={"dash": "dot", "color": "#aaa"})
+    fig.update_layout(
+        title=title,
+        xaxis={"title": value_label},
+        yaxis={"autorange": "reversed"},
+        height=70 + 30 * max(len(names), 1),
+        showlegend=False,
+    )
+    return theme.apply_base_layout(fig)
+
+
 def dfbeta_bar(top_dfbeta: list[tuple[str, float]]) -> go.Figure:
     """Horizontal bar of the most influential countries by |DFBETA|."""
     names = [str(n) for n, _ in top_dfbeta]
