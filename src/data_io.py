@@ -86,6 +86,29 @@ def write_typed_parquet(
         con.close()
 
 
+def round_floats(obj: object, ndigits: int = 12) -> object:
+    """Recursively round every float in a JSON-serializable structure.
+
+    Counterpart to :func:`write_typed_parquet` for the project's committed
+    *JSON* artifacts (the inequality and Shapley/LMG decomposition summaries).
+    ``numpy.linalg.lstsq`` and the BLAS beneath it differ in their last bits
+    across platforms and library versions, so an unrounded Shapley share like
+    ``0.08409736784540636`` reproduces as ``...633`` on a rebuild elsewhere --
+    a spurious diff in a file that is meant to be regenerated deterministically.
+    Rounding to `ndigits` (far finer than the ~3 significant figures these
+    shares actually carry, and invisible to the dashboard's ``.0%`` formatting)
+    makes the serialized artifact byte-stable across environments. Strings,
+    ints and bools pass through untouched.
+    """
+    if isinstance(obj, float):
+        return round(obj, ndigits)
+    if isinstance(obj, dict):
+        return {k: round_floats(v, ndigits) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [round_floats(v, ndigits) for v in obj]
+    return obj
+
+
 @dataclass(frozen=True)
 class IngestResult:
     """Summary of one DuckDB ingestion run."""

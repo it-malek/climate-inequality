@@ -15,8 +15,10 @@ from scipy import stats
 from src.app_assets import (
     ANOMALIES_ASSET,
     APP_DATA_DIR,
+    DECOMPOSITION_SUMMARY_ASSET,
     EXPLAIN_FEATURES_ASSET,
     INEQUALITY_ASSET,
+    INEQUALITY_SUMMARY_ASSET,
     STATS_ASSET,
     SURFACE_ASSET,
     TRENDS_ASSET,
@@ -28,11 +30,13 @@ from src.app_assets import (
     _VALIDATION_GLOBAL_PATH,
     _VALIDATION_SUMMARY_PATH,
     build_app_assets,
+    build_decomposition_summaries,
     disambiguate_labels,
     theil_sen_intercepts,
 )
 from src.cleaning import to_decimal_decades
 from tests.conftest import SYNTHETIC_CITIES, SYNTHETIC_LAND, make_synthetic_inputs
+from tests.test_emissions import make_inequality_frame
 
 
 class TestDisambiguateLabels:
@@ -330,3 +334,42 @@ class TestOptionalFindingsMerge:
                 explain_summary_path=tmp_path / "absent_explain.json",
                 explain_bundle_path=tmp_path / "absent_explain.parquet",
             )
+
+
+class TestDecompositionSummaries:
+    """build_decomposition_summaries wires the headline page into the bundle."""
+
+    def test_writes_inequality_summary_always(self, tmp_path):
+        inequality_path = tmp_path / "country_inequality.parquet"
+        make_inequality_frame().to_parquet(inequality_path, index=False)
+        out_dir = tmp_path / "bundle"
+
+        written = build_decomposition_summaries(
+            inequality_path=inequality_path,
+            out_dir=out_dir,
+            city_features_path=tmp_path / "absent_features.parquet",
+            income_path=tmp_path / "absent_income.csv",
+        )
+
+        # Inequality needs only the country table, so it is always produced.
+        assert INEQUALITY_SUMMARY_ASSET in written
+        # Decomposition inputs are absent: it degrades gracefully (the page
+        # renders its 'not built yet' state), not an error.
+        assert DECOMPOSITION_SUMMARY_ASSET not in written
+        payload = json.loads(written[INEQUALITY_SUMMARY_ASSET].read_text("utf-8"))
+        assert payload["interpretation"]  # the scope disclaimer travels along
+        assert "gini" in payload and "theil_t" in payload
+
+    def test_inequality_summary_json_is_byte_stable(self, tmp_path):
+        # Rebuilding the same inputs must reproduce the file exactly (round_floats).
+        inequality_path = tmp_path / "country_inequality.parquet"
+        make_inequality_frame().to_parquet(inequality_path, index=False)
+        first = build_decomposition_summaries(
+            inequality_path=inequality_path, out_dir=tmp_path / "b1",
+            city_features_path=tmp_path / "x", income_path=tmp_path / "y",
+        )[INEQUALITY_SUMMARY_ASSET].read_text("utf-8")
+        second = build_decomposition_summaries(
+            inequality_path=inequality_path, out_dir=tmp_path / "b2",
+            city_features_path=tmp_path / "x", income_path=tmp_path / "y",
+        )[INEQUALITY_SUMMARY_ASSET].read_text("utf-8")
+        assert first == second

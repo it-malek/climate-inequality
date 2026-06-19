@@ -108,7 +108,9 @@ def test_summary_payload_carries_interpretation():
     result = group_lmg_shares(make_country_design())
     payload = summary_payload(result)
     assert payload["interpretation"] == INTERPRETATION_NOTE
-    assert payload["shares"] == result.shares
+    # Shares are rounded for byte-stable JSON (src.data_io.round_floats), so the
+    # payload matches the in-memory result only to within that rounding.
+    assert payload["shares"] == pytest.approx(result.shares, abs=1e-11)
 
 
 def test_out_of_schema_column_rejected():

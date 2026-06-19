@@ -84,8 +84,10 @@ navigation = st.navigation(
     }
 )
 st.sidebar.caption(
-    "Berkeley Earth city temperatures (1950–2013) × OWID cumulative CO₂. "
-    "Reads the committed app/data bundle; methods in the README."
+    "**Decomposition** is the main story; **Foundations** shows how the "
+    "warming, emissions and geography inputs were built.  \n"
+    "Data: Berkeley Earth city temperatures (1950–2013) × OWID cumulative CO₂. "
+    "Reads the committed `app/data` bundle; methods in the README."
 )
 
 # The interpretation boundary is shown at the top of every page (rendered here,

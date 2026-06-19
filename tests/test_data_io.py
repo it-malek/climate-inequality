@@ -15,9 +15,26 @@ from src.data_io import (
     city_csv_path,
     download_raw_data,
     load_city_temperatures,
+    round_floats,
     safe_identifier,
     write_typed_parquet,
 )
+
+class TestRoundFloats:
+    def test_collapses_last_ulp_drift_to_identical_output(self):
+        # The two inputs differ only in their last bit -- the exact BLAS/lstsq
+        # noise that made decomposition_summary.json non-reproducible.
+        a = {"x": 0.08409736784540636, "nested": {"y": [0.05581862833482365, "keep"]}}
+        b = {"x": 0.08409736784540633, "nested": {"y": [0.05581862833482362, "keep"]}}
+        assert round_floats(a) == round_floats(b)
+
+    def test_preserves_non_float_types_and_strings(self):
+        out = round_floats({"n": 154, "name": "geography", "flag": True, "xs": [1, "a"]})
+        assert out == {"n": 154, "name": "geography", "flag": True, "xs": [1, "a"]}
+
+    def test_does_not_perturb_displayed_precision(self):
+        assert round_floats(0.6306936568351258) == pytest.approx(0.6306936568351258)
+
 
 HEADER = (
     "dt,AverageTemperature,AverageTemperatureUncertainty,"
