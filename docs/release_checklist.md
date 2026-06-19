@@ -55,7 +55,7 @@ we?" page honestly shows a pending state pointing to `docs/stability_roadmap.md`
 
 | # | Item | Severity | Notes |
 |---|------|:---:|-------|
-| 1 | Verify the new CI workflow's **first remote run** | Low | Commands verified locally; the GitHub Actions run should be confirmed green after push (pin `astral-sh/setup-uv` if the major tag drifts) |
+| 1 | ~~Verify the new CI workflow's first remote run~~ | — | ✅ Confirmed green on PR #3 (push + pull_request, ~30s). Pin `astral-sh/setup-uv` if the major tag ever drifts |
 | 2 | Plotly `locationmode="ISO-3"` migration | Low | `app/charts.py:117` emits a `country names` deprecation warning; needs a vetted country→ISO-3 map (mind the Réunion/Puerto Rico edge cases) |
 | 3 | Notebook outputs are committed | Low | Now documented as exploratory (`notebooks/README.md`); optionally strip with `nbstripout` |
 | 4 | `app/requirements.txt` ↔ `uv.lock` drift | Low | Keep the pinned cloud stack in step with the lock on dependency bumps (already noted in the file) |
@@ -75,9 +75,10 @@ None blocks a v1.0 tag.
 
 ## Sign-off steps for a tagged v1.0
 
-1. ✅ Merge this branch's reproducibility + docs + dashboard work to `main`.
-2. ⏳ Confirm the CI run is green on the PR.
+1. ⏳ Merge this branch's reproducibility + docs + dashboard work to `main`
+   (PR #3).
+2. ✅ CI run green on the PR (push + pull_request).
 3. ⏳ Confirm the Streamlit Cloud redeploy from `main` renders the updated
    landing page.
-4. ⏳ (Optional) Tag `v1.0` once #2–#3 are confirmed and address remaining
+4. ⏳ (Optional) Tag `v1.0` once #3 is confirmed and address remaining
    item #2 if desired before tagging.
