@@ -1,0 +1,83 @@
+# Release checklist — v1.0
+
+**Verdict: release-candidate ready.** The repository is reproducible, tested,
+documented, and deployed, with a clearly-scoped roadmap for the next research
+phase. The remaining items are non-blocking polish/infrastructure, listed below.
+
+Assessed 2026-06-19 on branch `schema/x-schema-v1`.
+
+## Readiness gates (all green)
+
+| Gate | Status | Evidence |
+|------|:---:|----------|
+| Tests pass | ✅ | `pytest` 312 passed (synthetic fixtures, no data, no network) |
+| Lint clean | ✅ | `ruff check src tests app` clean |
+| Builds from clean clone | ✅ | dashboard reads committed `app/data/`; tests need no data — `docs/reproducibility.md` §1 |
+| Bundle is reproducible | ✅ | `python -m src.app_assets` regenerates the full bundle **deterministically** (byte-stable JSON via `round_floats`) |
+| Single build command | ✅ | `src.app_assets` now folds in the headline inequality + decomposition summaries (was a manual copy) |
+| CI configured | ✅ (new) | `.github/workflows/ci.yml` runs ruff + pytest on push/PR, pinned to the 3.11 deploy target |
+| Scope boundary enforced in code | ✅ | `SCHEMA_V1` contract + `validate_design_matrix`; `INTERPRETATION_NOTE` travels with every summary |
+| Deployed & live | ✅ | climate-inequality.streamlit.app, auto-redeploys on push to `main` |
+
+## Publication-readiness assessment
+
+**Ready, as a descriptive cross-sectional study.** Strengths:
+
+- The scientific framing is honest and enforced: a structural *variance
+  attribution*, never causal/physical attribution, with the boundary stated in
+  the design memo, the dashboard banner, and every JSON artifact.
+- Methods are reproducible end to end (`docs/reproducibility.md`) with built-in
+  integrity checks (build-time trend consistency, schema enforcement,
+  deterministic serialization).
+- The narrative is complete: `docs/research_summary.md` (the study),
+  `docs/key_findings.md` (the numbers), `docs/decomposition_design_memo.md`
+  (rationale + pre-registration), `docs/project_audit.md` (this pass).
+- Pre-registered hypotheses (H1–H5) are stated *and* the results reported against
+  them — geography dominant, emissions small-but-nonzero, residual substantial.
+
+The honest framing of what the project **cannot** claim (impact/injustice
+inequality, causality, within-country structure) is a publication strength, not a
+weakness — it is stated prominently rather than buried.
+
+## Dashboard-readiness assessment
+
+**Ready.** The landing (decomposition) page now answers all four first-visit
+questions above the fold — *what was measured*, *how unequal*, *what explains it*,
+and *what it can/cannot claim* (a dedicated panel) — grounded in the real
+country-level spread. Strengths: centralized colorblind-safe visual language
+(`app/theme.py`), an always-on interpretation banner, rich chart hovers and
+per-chart captions, graceful "not built yet" states for deferred pages, and a
+two-section nav (Decomposition / Foundations) with sidebar orientation. Streamlit
+API usage is consistent (`width="stretch"` throughout). The "How confident are
+we?" page honestly shows a pending state pointing to `docs/stability_roadmap.md`.
+
+## Remaining issues (non-blocking)
+
+| # | Item | Severity | Notes |
+|---|------|:---:|-------|
+| 1 | Verify the new CI workflow's **first remote run** | Low | Commands verified locally; the GitHub Actions run should be confirmed green after push (pin `astral-sh/setup-uv` if the major tag drifts) |
+| 2 | Plotly `locationmode="ISO-3"` migration | Low | `app/charts.py:117` emits a `country names` deprecation warning; needs a vetted country→ISO-3 map (mind the Réunion/Puerto Rico edge cases) |
+| 3 | Notebook outputs are committed | Low | Now documented as exploratory (`notebooks/README.md`); optionally strip with `nbstripout` |
+| 4 | `app/requirements.txt` ↔ `uv.lock` drift | Low | Keep the pinned cloud stack in step with the lock on dependency bumps (already noted in the file) |
+
+None blocks a v1.0 tag.
+
+## Recommended future work
+
+- **Next research phase: the stability layer** — `docs/stability_roadmap.md`. This
+  is the highest-value next step: bootstrap CIs on the Shapley shares, Moran's I
+  on the country residual, construction-sensitivity, and spatial robustness. The
+  dashboard already scaffolds it.
+- **Substantive extensions** — `docs/future_work.md`: gridded/area-weighted
+  warming, population-weighted *exposure* and a Lorenz/Gini injustice framing,
+  consumption-based emissions, extreme-heat (vs mean) inequality. These address
+  the project's main external-validity gap (outcome ≠ impact).
+
+## Sign-off steps for a tagged v1.0
+
+1. ✅ Merge this branch's reproducibility + docs + dashboard work to `main`.
+2. ⏳ Confirm the CI run is green on the PR.
+3. ⏳ Confirm the Streamlit Cloud redeploy from `main` renders the updated
+   landing page.
+4. ⏳ (Optional) Tag `v1.0` once #2–#3 are confirmed and address remaining
+   item #2 if desired before tagging.

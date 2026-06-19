@@ -51,10 +51,14 @@ def render() -> None:
         return
 
     st.markdown(
-        "Country warming over 1950–2013 is universal but uneven. This page "
-        "measures **how unequal** it is and **how that inequality is "
-        "structured** across emissions, geography, socioeconomic development "
-        "and population — with an explicit unexplained residual."
+        "**What you're looking at.** Every country's average warming rate over "
+        "1950–2013, measured from 3,510 Berkeley Earth city weather stations. "
+        "Warming is universal — every country warmed — but uneven: the "
+        "fastest-warming countries warmed about **three times faster** than the "
+        "slowest. This page answers two questions — *how unequal* is that "
+        "warming (the metrics), and *how is the inequality structured* across "
+        "emissions, physical geography, socioeconomic development and population "
+        "(the bar), with an explicit unexplained residual."
     )
 
     # --- Headline inequality + fit metrics --------------------------------
@@ -138,6 +142,23 @@ def render() -> None:
                 f"- **{theme.GROUP_LABELS[key]}** — {theme.GROUP_GLOSS[key]} "
                 f"· features used: `{', '.join(decomp['group_features'].get(key, []))}`"
             )
+
+    with st.expander("✅ What this can say · ❌ what it cannot"):
+        st.markdown(
+            "**It can say** how unequally observed warming is distributed across "
+            "countries, and how much that inequality *aligns* with each kind of "
+            "structure — here, that the warming ranking tracks physical "
+            "geography far more than it tracks emissions, and that the two "
+            "overlap heavily (so a raw emissions–warming correlation mostly "
+            "reflects *where* high emitters sit).\n\n"
+            "**It cannot say** that emissions *caused* a country's warming: CO₂ "
+            "is well-mixed, so a country's own emissions do not preferentially "
+            "heat its territory. Nor is this a map of climate *impact* — the "
+            "outcome is average warming in °C/decade, which understates the "
+            "burden on low-emitting tropical countries that are most exposed to "
+            "heat and least able to adapt. The shares are a **descriptive "
+            "variance attribution, not causal climate attribution.**"
+        )
 
 
 def _headline_sentence(decomp: dict) -> str:

@@ -25,7 +25,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh   # uv (macOS: brew install uv)
 git clone https://github.com/it-malek/climate-inequality.git
 cd climate-inequality
 uv sync --extra dev      # uv installs Python 3.11+ itself if needed
-uv run pytest -q         # expect all green (128 tests as of phase-5)
+uv run pytest -q         # expect all green (312 tests; synthetic fixtures, no data)
 uv run ruff check src tests app
 ```
 

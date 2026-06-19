@@ -42,7 +42,7 @@ import numpy as np
 import pandas as pd
 
 from src import feature_schema as fs
-from src.data_io import PROCESSED_DIR
+from src.data_io import PROCESSED_DIR, round_floats
 from src.emissions import DEFAULT_INEQUALITY_PATH
 from src.feature_schema import INTERPRETATION_NOTE, SCHEMA_V1, FeatureSchema
 
@@ -235,9 +235,11 @@ def summary_payload(result: DecompositionResult) -> dict:
 
     The ``interpretation`` key carries
     :data:`src.feature_schema.INTERPRETATION_NOTE` so the shares cannot be lifted
-    into a consumer without the variance-attribution-only boundary.
+    into a consumer without the variance-attribution-only boundary. Floats are
+    rounded (:func:`src.data_io.round_floats`) so the committed JSON is
+    byte-stable across the BLAS/platform noise in the LMG ``lstsq`` solves.
     """
-    return {"interpretation": INTERPRETATION_NOTE, **result_to_dict(result)}
+    return round_floats({"interpretation": INTERPRETATION_NOTE, **result_to_dict(result)})
 
 
 # ---------------------------------------------------------------------

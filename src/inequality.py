@@ -36,7 +36,7 @@ from dataclasses import asdict, dataclass, field
 import numpy as np
 import pandas as pd
 
-from src.data_io import PROCESSED_DIR
+from src.data_io import PROCESSED_DIR, round_floats
 from src.emissions import DEFAULT_INEQUALITY_PATH
 from src.feature_schema import INTERPRETATION_NOTE
 
@@ -333,9 +333,11 @@ def summary_payload(summary: InequalitySummary) -> dict:
 
     The ``interpretation`` key carries
     :data:`src.feature_schema.INTERPRETATION_NOTE` so the descriptive,
-    non-attribution boundary travels with the numbers into any consumer.
+    non-attribution boundary travels with the numbers into any consumer. Floats
+    are rounded (:func:`src.data_io.round_floats`) so the committed JSON is
+    byte-stable across platforms.
     """
-    return {"interpretation": INTERPRETATION_NOTE, **summary_to_dict(summary)}
+    return round_floats({"interpretation": INTERPRETATION_NOTE, **summary_to_dict(summary)})
 
 
 def main() -> None:
