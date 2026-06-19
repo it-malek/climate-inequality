@@ -223,6 +223,63 @@ class TestSensitivityPage:
         assert len(at.subheader) == 3  # df-sensitivity, uncertainty, influence
         st.cache_data.clear()
 
+    def test_renders_share_stability_blocks(self, bundle_dir, tmp_path, monkeypatch):
+        # The stability layer's own schema (bootstrap share CIs, leave-one-out
+        # influence, residual Moran's I) lights up the three new sections.
+        import json
+
+        populated = tmp_path / "share_bundle"
+        shutil.copytree(bundle_dir, populated)
+        groups = {
+            "emissions": {"point": 0.08, "mean": 0.08, "std": 0.02, "ci_low": 0.03, "ci_high": 0.15},
+            "geography": {"point": 0.45, "mean": 0.45, "std": 0.04, "ci_low": 0.35, "ci_high": 0.55, "p_largest": 0.99},
+            "socioeconomic": {"point": 0.05, "mean": 0.05, "std": 0.01, "ci_low": 0.02, "ci_high": 0.09},
+            "population": {"point": 0.04, "mean": 0.04, "std": 0.01, "ci_low": 0.01, "ci_high": 0.08},
+            "residual": {"point": 0.38, "mean": 0.38, "std": 0.03, "ci_low": 0.30, "ci_high": 0.46},
+        }
+        summary = {
+            "interpretation": "descriptive only",
+            "share_stability": {
+                "method": "country_bootstrap", "n_boot": 100, "n_failed": 0,
+                "groups": groups,
+                "p_geography_largest": 0.99, "p_emissions_positive": 0.97,
+                "block_bootstrap": {
+                    "by": "spatial_block", "n_boot": 100, "n_failed": 0,
+                    "groups": {
+                        "emissions": {"ci_low": 0.01, "ci_high": 0.18},
+                        "geography": {"ci_low": 0.30, "ci_high": 0.60},
+                        "residual": {"ci_low": 0.25, "ci_high": 0.50},
+                    },
+                },
+            },
+            "influence": {
+                "method": "leave_one_country_out",
+                "by_group": {
+                    "emissions": [["China", 0.02], ["United States", -0.01]],
+                    "geography": [["Russia", 0.03], ["Canada", -0.02]],
+                    "socioeconomic": [["India", 0.01]],
+                    "population": [["Brazil", 0.01]],
+                },
+            },
+            "residual_spatial": {
+                "morans_i": 0.21, "p_value": 0.01, "n_permutations": 199,
+                "k_neighbors": 8, "method": "centroid kNN", "n": 150,
+            },
+        }
+        (populated / "stability_summary.json").write_text(json.dumps(summary))
+        monkeypatch.setattr(loaders, "APP_DATA_DIR", populated)
+        st.cache_data.clear()
+        at = run_page("app.views.sensitivity")
+        assert not at.exception
+        assert not at.info  # no pending banner
+        subheaders = [s.value for s in at.subheader]
+        assert subheaders == [
+            "Stability of the variance shares",
+            "Most influential countries",
+            "Spatial structure of the residual",
+        ]
+        st.cache_data.clear()
+
 
 class TestValidationPage:
     def test_renders_metrics_and_title(self, bundle_dir):
