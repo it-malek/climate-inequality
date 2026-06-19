@@ -3,19 +3,19 @@
   "outcome": "warming_trend",
   "schema_version": "v1",
   "n": 154,
-  "total_r2": 0.6306936568351258,
-  "residual_share": 0.3693063431648742,
+  "total_r2": 0.630693656835,
+  "residual_share": 0.369306343165,
   "shares": {
-    "emissions": 0.08409736784540633,
-    "geography": 0.45518526897681655,
-    "socioeconomic": 0.05581862833482362,
-    "population": 0.03559239167807927
+    "emissions": 0.084097367845,
+    "geography": 0.455185268977,
+    "socioeconomic": 0.055818628335,
+    "population": 0.035592391678
   },
   "univariate_r2": {
-    "emissions": 0.13233814217277273,
-    "geography": 0.5801801672605702,
-    "socioeconomic": 0.0799549235383532,
-    "population": 0.04882725993749182
+    "emissions": 0.132338142173,
+    "geography": 0.580180167261,
+    "socioeconomic": 0.079954923538,
+    "population": 0.048827259937
   },
   "group_features": {
     "emissions": [

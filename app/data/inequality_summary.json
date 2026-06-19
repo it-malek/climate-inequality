@@ -1,20 +1,20 @@
 {
   "interpretation": "Descriptive structural decomposition of observed warming trends across countries. Shapley/LMG group shares are a variance attribution only -- they are NOT physical or causal climate attribution, and a country's emissions share does not mean its emissions caused its warming.",
   "n": 157,
-  "mean": 0.1611346922882908,
-  "variance": 0.0025522708853327764,
-  "coefficient_of_variation": 0.3135265540023227,
-  "gini": 0.17523945321206727,
-  "theil_t": 0.04957645354273783,
-  "theil_between": 0.008762489262538945,
-  "theil_within": 0.04081396428019868,
-  "theil_between_share": 0.17674699653506198,
+  "mean": 0.161134692288,
+  "variance": 0.002552270885,
+  "coefficient_of_variation": 0.313526554002,
+  "gini": 0.175239453212,
+  "theil_t": 0.049576453543,
+  "theil_between": 0.008762489263,
+  "theil_within": 0.04081396428,
+  "theil_between_share": 0.176746996535,
   "theil_within_by_group": {
-    "Africa": 0.004002302291463853,
-    "Asia": 0.029677290758351144,
-    "Europe": 0.004773514753296699,
-    "North America": 0.0011216285827079784,
-    "Oceania": 0.0005891139876092147,
-    "South America": 0.0006501139067697884
+    "Africa": 0.004002302291,
+    "Asia": 0.029677290758,
+    "Europe": 0.004773514753,
+    "North America": 0.001121628583,
+    "Oceania": 0.000589113988,
+    "South America": 0.000650113907
   }
 }

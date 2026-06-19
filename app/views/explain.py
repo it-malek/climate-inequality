@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pandas as pd
 import streamlit as st
 
 from app import loaders
@@ -82,7 +83,7 @@ def render() -> None:
         )
 
     fig_stability = render_coefficient_stability(country_specs, title="")
-    st.plotly_chart(fig_stability, use_container_width=True)
+    st.plotly_chart(fig_stability, width="stretch")
     st.caption(
         "Each row is one model specification. The x-axis is the log₁₀(emissions) "
         "coefficient (°C/decade per 10× cumulative per-capita CO₂) with its 95% CI. "
@@ -131,7 +132,7 @@ def render() -> None:
 
     features = loaders.load_explain_features()
     fig_scatter = render_partial_effect_scatter(features, title="")
-    st.plotly_chart(fig_scatter, use_container_width=True)
+    st.plotly_chart(fig_scatter, width="stretch")
 
     abs_lat_info = city.get("abs_latitude_baseline")
     koppen_b_info = city.get("koppen_b_full")
@@ -165,8 +166,6 @@ def render() -> None:
         for spec in city_specs:
             st.markdown(f"**{spec['spec_name']}** (n={spec['n']}, R²={spec['r2']:.3f})")
             if spec["terms"]:
-                import pandas as pd
-
                 term_df = pd.DataFrame(
                     [
                         {
@@ -179,7 +178,7 @@ def render() -> None:
                         for t in spec["terms"]
                     ]
                 )
-                st.dataframe(term_df, hide_index=True, use_container_width=True)
+                st.dataframe(term_df, hide_index=True, width="stretch")
             if spec.get("partial_r2"):
                 st.caption(
                     "Partial R²: "
