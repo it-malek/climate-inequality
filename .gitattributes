@@ -1,3 +1,4 @@
 # Normalize all text files to LF in the repo and on checkout —
-# the working tree is iCloud-synced between macOS and Windows.
+# the repo is cloned and worked on across WSL/Linux and macOS (synced only
+# through git, see docs/new_machine_setup.md), so pin line endings to LF.
 * text=auto eol=lf

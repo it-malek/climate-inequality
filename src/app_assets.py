@@ -78,6 +78,13 @@ SURFACE_ASSET = "trend_surface.parquet"
 INEQUALITY_ASSET = "country_inequality.parquet"
 STATS_ASSET = "stats.json"
 
+# Headline decomposition-page summaries. Built by build_decomposition_summaries
+# (not build_app_assets) because the LMG/Shapley decomposition needs the Phase-7
+# city features and the income table; main() runs both so a single
+# `python -m src.app_assets` regenerates the entire committed bundle.
+INEQUALITY_SUMMARY_ASSET = "inequality_summary.json"
+DECOMPOSITION_SUMMARY_ASSET = "decomposition_summary.json"
+
 # Phase 6/7 optional bundle assets (present only when the heavy pipeline has run).
 VALIDATION_ASSET = "validation.parquet"
 VALIDATION_GLOBAL_ASSET = "validation_global.parquet"
@@ -496,12 +503,98 @@ def build_app_assets(
     }
 
 
+def build_decomposition_summaries(
+    inequality_path: Path = DEFAULT_INEQUALITY_PATH,
+    out_dir: Path = APP_DATA_DIR,
+    *,
+    city_features_path: Path | None = None,
+    income_path: Path | None = None,
+) -> dict[str, Path]:
+    """Write the headline inequality + LMG/Shapley summaries into the bundle.
+
+    These two JSON artifacts power the dashboard's headline *decomposition* page
+    but are deliberately not produced by :func:`build_app_assets`: the
+    decomposition consumes the Phase-7 city-feature table and the World Bank
+    income groups, neither of which ships to the cloud. Wiring them here means a
+    single ``python -m src.app_assets`` regenerates the *entire* committed
+    bundle deterministically, replacing the old manual copy from
+    ``data/processed/``.
+
+    ``inequality_summary.json`` needs only the country table, so it is always
+    written. ``decomposition_summary.json`` additionally needs the city features
+    and income groups; when either input is absent it is skipped with a warning
+    and the dashboard renders its explicit "not built yet" state. Both summaries
+    are float-rounded at serialization (:func:`src.data_io.round_floats`) so the
+    committed JSON is byte-stable across platforms.
+
+    Args:
+        inequality_path: Phase 4 ``country_inequality.parquet``.
+        out_dir: Bundle destination, normally the committed ``app/data/``.
+        city_features_path: Phase 7 ``city_features.parquet`` override (tests);
+            ``None`` uses ``src.explain.DEFAULT_FEATURES_PATH``.
+        income_path: World Bank income-groups CSV override (tests); ``None``
+            uses ``src.explain.INCOME_PATH``.
+
+    Returns:
+        Dict of asset-name -> written Path (omits the decomposition summary when
+        its inputs are missing).
+    """
+    # Lazy imports: keep the decomposition/inequality/explain stack out of this
+    # module's import graph (build_app_assets is the heavy entry point) and
+    # mirror the existing _merge_optional_findings discipline.
+    from src.decomposition import build_country_design, group_lmg_shares
+    from src.decomposition import summary_payload as decomp_payload
+    from src.explain import DEFAULT_FEATURES_PATH, INCOME_PATH, load_income_groups
+    from src.inequality import country_warming_inequality
+    from src.inequality import summary_payload as ineq_payload
+
+    city_features_path = city_features_path or DEFAULT_FEATURES_PATH
+    income_path = income_path or INCOME_PATH
+
+    inequality = pd.read_parquet(inequality_path)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    written: dict[str, Path] = {}
+
+    ineq_summary = country_warming_inequality(inequality)
+    ineq_dest = out_dir / INEQUALITY_SUMMARY_ASSET
+    ineq_dest.write_text(
+        json.dumps(ineq_payload(ineq_summary), indent=2) + "\n", encoding="utf-8"
+    )
+    written[INEQUALITY_SUMMARY_ASSET] = ineq_dest
+    logger.info("wrote %s (n=%d)", ineq_dest, ineq_summary.n)
+
+    if not city_features_path.exists() or not income_path.exists():
+        logger.warning(
+            "decomposition inputs missing (city_features present=%s, income "
+            "present=%s); bundle will omit the decomposition summary -- run "
+            "python -m src.explain to build the city features",
+            city_features_path.exists(), income_path.exists(),
+        )
+        return written
+
+    city_features = pd.read_parquet(city_features_path)
+    income = load_income_groups(income_path)
+    design = build_country_design(inequality, city_features, income)
+    result = group_lmg_shares(design)
+    decomp_dest = out_dir / DECOMPOSITION_SUMMARY_ASSET
+    decomp_dest.write_text(
+        json.dumps(decomp_payload(result), indent=2) + "\n", encoding="utf-8"
+    )
+    written[DECOMPOSITION_SUMMARY_ASSET] = decomp_dest
+    logger.info(
+        "wrote %s (n=%d, R^2=%.3f, residual=%.3f)",
+        decomp_dest, result.n, result.total_r2, result.residual_share,
+    )
+    return written
+
+
 def main() -> None:
     """Build the default bundle and print the README sanity checks."""
     logging.basicConfig(
         level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
     )
     out = build_app_assets()
+    summaries = build_decomposition_summaries()
     trends = out["stats"]["trends"]
     interp = out["stats"]["interpolation"]
     ineq = out["stats"]["inequality"]
@@ -545,9 +638,24 @@ def main() -> None:
                 f"[{em['ci_low']:+.4f}, {em['ci_high']:+.4f}] p={em['p_value']:.3g}"
             )
 
-    total_kb = sum(p.stat().st_size for p in out["paths"].values()) / 1024
-    print(f"bundle: {len(out['paths'])} files, {total_kb:,.0f} KB total")
-    for name, path in out["paths"].items():
+    if DECOMPOSITION_SUMMARY_ASSET in summaries:
+        decomp = json.loads(
+            summaries[DECOMPOSITION_SUMMARY_ASSET].read_text(encoding="utf-8")
+        )
+        shares = decomp["shares"]
+        top = max(shares, key=shares.get)
+        print(
+            f"decomposition: total R^2 {decomp['total_r2']:.3f}, residual "
+            f"{decomp['residual_share']:.3f}; largest axis {top} "
+            f"{shares[top]:.3f} (descriptive, non-causal)"
+        )
+    else:
+        print("decomposition: skipped (city features / income not built)")
+
+    all_paths = {**out["paths"], **summaries}
+    total_kb = sum(p.stat().st_size for p in all_paths.values()) / 1024
+    print(f"bundle: {len(all_paths)} files, {total_kb:,.0f} KB total")
+    for name, path in all_paths.items():
         print(f"  {name}: {path.stat().st_size / 1024:,.1f} KB")
 
 

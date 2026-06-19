@@ -67,7 +67,7 @@ def render() -> None:
         forecast_start=v["forecast_start"],
         title="",
     )
-    st.plotly_chart(fig_series, use_container_width=True)
+    st.plotly_chart(fig_series, width="stretch")
     st.caption(
         "Global mean land anomaly (gate-passing cities) vs the extrapolated "
         "stored Theil–Sen fit. The dotted line marks the out-of-sample boundary "
@@ -77,7 +77,7 @@ def render() -> None:
 
     frame = loaders.load_validation_frame()
     fig_map = render_residual_map(frame, title="")
-    st.plotly_chart(fig_map, use_container_width=True)
+    st.plotly_chart(fig_map, width="stretch")
     st.caption(
         "Per-city mean forecast residual (observed − predicted). "
         "Red = the stored trend underpredicted observed warming; "
@@ -88,7 +88,7 @@ def render() -> None:
     )
 
     with st.expander("Per-city validation table"):
-        st.dataframe(frame, use_container_width=True, hide_index=True)
+        st.dataframe(frame, width="stretch", hide_index=True)
         st.download_button(
             "Download CSV",
             frame.to_csv(index=False).encode("utf-8"),

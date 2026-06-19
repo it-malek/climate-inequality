@@ -3,11 +3,19 @@
 > Which regions are warming fastest — and is warming proportional to
 > emissions responsibility?
 
-**Status:** ✅ Phases 1–8 complete (data layer; trend fitting; spatial
-interpolation; emissions join; dashboard; out-of-sample validation; explanatory
-variables; Phase 6 & 7 surfaced in the live app) and
-**deployed: [climate-inequality.streamlit.app](https://climate-inequality.streamlit.app/)**.
-The broader roadmap is in `docs/future_work.md`.
+**Status:** ✅ Complete and **deployed:
+[climate-inequality.streamlit.app](https://climate-inequality.streamlit.app/)**.
+The pipeline runs from the raw data through trend fitting, spatial
+interpolation, the emissions join, out-of-sample validation and explanatory
+variables to the headline **cross-country variance decomposition** — a
+group-level Shapley/LMG attribution over the frozen `SCHEMA_V1` feature
+contract. Design and scope boundary:
+[`docs/decomposition_design_memo.md`](docs/decomposition_design_memo.md);
+end-to-end reproduction: [`docs/reproducibility.md`](docs/reproducibility.md);
+results: [`docs/key_findings.md`](docs/key_findings.md) /
+[`docs/research_summary.md`](docs/research_summary.md); next-phase roadmap:
+[`docs/stability_roadmap.md`](docs/stability_roadmap.md) and
+[`docs/future_work.md`](docs/future_work.md).
 
 *Originally proposed as an undergraduate research fellowship project (2022);
 rebuilt and substantially upgraded in 2026.*
@@ -48,8 +56,34 @@ most responsible for cumulative CO₂ emissions.
   quantified by Spearman rank correlation plus OLS of warming on log₁₀
   emissions — pooled and with continent fixed effects — using HC1 robust
   standard errors, so effects read as °C/decade per 10× emissions.
+- **Variance decomposition (the headline).** The cross-country variance in
+  country-mean warming trend is attributed to four *structural axes* —
+  emissions, geography, socioeconomic development, population — plus an
+  explicit residual, using a group-level LMG / Shapley-Owen R² decomposition
+  (each axis's incremental R² averaged over every ordering, so correlated
+  axes split their shared variance fairly rather than by entry order). The
+  axes are fixed by a frozen feature contract (`src/feature_schema.py`,
+  `SCHEMA_V1`); nothing outside the contract may enter a model. The shares are
+  **descriptive variance attribution, not causal climate attribution** — there
+  is deliberately no physical/driver layer (see the design memo's scope
+  boundary). This demotes the earlier single "emissions coefficient" to one
+  axis among several.
 
 ## Findings
+
+**The headline: cross-country warming inequality is overwhelmingly geographic.**
+A group-level Shapley/LMG decomposition of the variance in country-mean warming
+trend (n = 154 countries, total R² = 0.63) attributes **46% of total variance
+to physical geography** (latitude foremost), **8% to emissions
+responsibility**, 6% to socioeconomic development and 4% to
+population/urbanization, leaving a **37% residual** that none of the four axes
+explains. Of the *explained* variance, geography is ≈72% and emissions ≈13%.
+Emissions' standalone R² is 0.13, but most of that overlaps geography once both
+are present — so the decomposition turns the latitude-vs-emissions confound
+into a *measured overlap* rather than a caveat. The shares are a descriptive
+variance attribution, **not** causal climate attribution (CO₂ is well-mixed; a
+country's emissions do not preferentially heat its own territory). Full numbers
+and interpretation: [`docs/key_findings.md`](docs/key_findings.md).
 
 **Warming is universal across the sample, but far from uniform.** Every one
 of the 3,510 city-locations shows a positive 1950–2013 trend, and for 99.1%
@@ -108,11 +142,18 @@ vs 0.0099); IDW still wins, but narrowly and for honest reasons.
 
 **Live at [climate-inequality.streamlit.app](https://climate-inequality.streamlit.app/).**
 
-Five-page Streamlit app: an interpolated warming map with a city-station
-layer toggle; a city explorer showing any location's anomaly series with
-its fitted trend; the country-level inequality scatter; an out-of-sample
-validation page (did the 1950–2013 trends hold post-2013?); and a drivers
-page (what explains where warming is fastest?).
+Streamlit app in two sections. **Decomposition** (the headline): the
+inequality-decomposition page — Gini/Theil of country warming, the Shapley
+variance-share bar, and an emissions-only / geography-only / full-model
+explorer; the country warming map; and a "How confident are we?" panel that
+scaffolds the forthcoming stability diagnostics (it renders an explicit pending
+state until the stability layer ships — see `docs/stability_roadmap.md`).
+**Foundations** (how the inputs were built): the interpolated warming surface
+with a city-station toggle; a city explorer (any location's anomaly series and
+fitted trend); the emissions-vs-warming scatter; an out-of-sample validation
+page (did the 1950–2013 trends hold post-2013?); and a drivers page (what
+explains where warming is fastest?). A fixed interpretation banner on every
+page states the variance-attribution-only boundary.
 
 ```bash
 uv run streamlit run app/streamlit_app.py
@@ -183,16 +224,25 @@ uv run ruff check src tests app
 uv run python -c "from src.data_io import download_raw_data; download_raw_data()"
 uv run python -c "from src.data_io import load_city_temperatures, city_csv_path; load_city_temperatures(city_csv_path())"
 
-# Phase outputs (each prints its sanity checks):
-uv run python -m src.trends       # city_trends.parquet
-uv run python -m src.interpolate  # outputs/trend_surface.html
-uv run python -m src.emissions    # country_inequality.parquet + scatter
-uv run python -m src.validation   # data/processed/validation_*.{json,parquet}
-uv run python -m src.explain      # data/processed/explain_*.{json,parquet}
-uv run python -m src.app_assets   # app/data/ dashboard bundle (committed)
+# Pipeline modules (each prints its sanity checks):
+uv run python -m src.trends         # city_trends.parquet
+uv run python -m src.interpolate    # outputs/trend_surface.html
+uv run python -m src.emissions      # country_inequality.parquet + scatter
+uv run python -m src.validation     # data/processed/validation_*.{json,parquet}
+uv run python -m src.explain        # city_features.parquet + explain_*.{json,parquet}
+uv run python -m src.feature_schema # regenerate docs/feature_schema_v1.yaml mirror
+uv run python -m src.inequality     # inequality_summary.json (Gini/Theil)
+uv run python -m src.decomposition  # decomposition_summary.json (Shapley/LMG)
+uv run python -m src.app_assets     # app/data/ bundle — folds in ALL of the above
 
 uv run streamlit run app/streamlit_app.py
 ```
+
+`src.app_assets` is the single bundle builder: it recomputes the trends,
+interpolation and inequality assets *and* (when the upstream `city_features`
+and income inputs exist) the headline `inequality_summary.json` and
+`decomposition_summary.json`, so one `python -m src.app_assets` regenerates the
+entire committed `app/data/` bundle.
 
 The dashboard bundle is committed, so the app (and its tests) work without
 any of the above data steps. On a fresh machine, start with
