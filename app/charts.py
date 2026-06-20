@@ -282,6 +282,83 @@ def influence_bar(
     return theme.apply_base_layout(fig)
 
 
+def lorenz_chart(table: pd.DataFrame) -> go.Figure:
+    """Lorenz-style curve: cumulative impact share vs cumulative responsibility share.
+
+    Countries are ordered by responsibility only (the PCS comparator's
+    construction); the empirical cumulative shares are drawn as a step curve (no
+    smoothing) against the 45° equality diagonal. The area between the two is what
+    the inequality coefficient summarizes.
+    """
+    work = table.sort_values("responsibility_index_v1", kind="stable")
+    r = work["responsibility_index_v1"].to_numpy(dtype=float)
+    im = work["impact_index_v1"].to_numpy(dtype=float)
+    cum_r = np.concatenate([[0.0], np.cumsum(r) / r.sum()])
+    cum_i = np.concatenate([[0.0], np.cumsum(im) / im.sum()])
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=[0.0, 1.0], y=[0.0, 1.0], mode="lines",
+            line={"dash": "dot", "color": "#aaa"}, name="equality",
+            hoverinfo="skip",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=cum_r, y=cum_i, mode="lines", line_shape="hv",
+            line={"color": theme.group_color("emissions")},
+            name="impact vs responsibility",
+            hovertemplate="cumulative responsibility %{x:.0%}<br>"
+            "cumulative impact %{y:.0%}<extra></extra>",
+        )
+    )
+    fig.update_layout(
+        title="Cumulative warming exposure vs cumulative responsibility",
+        xaxis={"title": "Cumulative responsibility share", "tickformat": ".0%",
+               "range": [0, 1]},
+        yaxis={"title": "Cumulative impact share", "tickformat": ".0%",
+               "range": [0, 1]},
+        height=380,
+        showlegend=True,
+    )
+    return theme.apply_base_layout(fig)
+
+
+def mismatch_scatter(table: pd.DataFrame) -> go.Figure:
+    """Responsibility vs impact per country, colored by the standardized z_gap.
+
+    A diverging RdBu_r scale centered at 0: positive z_gap (warming exposure above
+    emissions responsibility) reads one way, negative (the inverse) the other.
+    """
+    fig = go.Figure(
+        go.Scatter(
+            x=table["responsibility_index_v1"],
+            y=table["impact_index_v1"],
+            mode="markers",
+            marker={
+                "color": table["z_gap"],
+                "colorscale": "RdBu_r",
+                "cmid": 0.0,
+                "size": 9,
+                "line": {"color": "rgba(80,80,80,0.4)", "width": 0.5},
+                "colorbar": {"title": "z-gap"},
+            },
+            customdata=table["Country"],
+            hovertemplate="<b>%{customdata}</b><br>responsibility %{x:,.1f}<br>"
+            "impact %{y:.3f}<br>z-gap %{marker.color:+.2f}<extra></extra>",
+        )
+    )
+    fig.update_layout(
+        title="Responsibility vs impact (per country)",
+        xaxis={"title": "responsibility_index_v1 (t CO₂ per capita)"},
+        yaxis={"title": "impact_index_v1 (°C/decade)"},
+        height=420,
+        showlegend=False,
+    )
+    return theme.apply_base_layout(fig)
+
+
 def dfbeta_bar(top_dfbeta: list[tuple[str, float]]) -> go.Figure:
     """Horizontal bar of the most influential countries by |DFBETA|."""
     names = [str(n) for n, _ in top_dfbeta]
