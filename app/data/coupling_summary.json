@@ -1,0 +1,89 @@
+{
+  "spearman_rho": 0.359167415426,
+  "n_high_impact_low_responsibility": 79,
+  "inequality_coefficient": 0.562924293032,
+  "top_suffer_least_cause": [
+    [
+      "Mongolia",
+      2.855006445733
+    ],
+    [
+      "Afghanistan",
+      2.579659993392
+    ],
+    [
+      "Turkmenistan",
+      2.570832609665
+    ],
+    [
+      "Iran",
+      2.569893056242
+    ],
+    [
+      "Tajikistan",
+      2.223148684457
+    ],
+    [
+      "Uzbekistan",
+      2.15188596877
+    ],
+    [
+      "Tunisia",
+      1.915987726713
+    ],
+    [
+      "Algeria",
+      1.691517648238
+    ],
+    [
+      "Mauritania",
+      1.616176917303
+    ],
+    [
+      "Niger",
+      1.568398729251
+    ]
+  ],
+  "top_cause_least_suffer": [
+    [
+      "United States",
+      -3.905615185534
+    ],
+    [
+      "United Kingdom",
+      -3.28956192109
+    ],
+    [
+      "Belgium",
+      -2.557940621662
+    ],
+    [
+      "Germany",
+      -2.520061978887
+    ],
+    [
+      "Czech Republic",
+      -2.377692621265
+    ],
+    [
+      "Hong Kong",
+      -2.235005532758
+    ],
+    [
+      "New Zealand",
+      -2.04906063335
+    ],
+    [
+      "Japan",
+      -1.818150224318
+    ],
+    [
+      "Canada",
+      -1.787591280197
+    ],
+    [
+      "Estonia",
+      -1.637870759661
+    ]
+  ]
+}

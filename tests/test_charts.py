@@ -58,6 +58,32 @@ class TestExplorerBar:
         assert pytest.approx(sum(widths), abs=1e-9) == 1.0  # explained + unexplained
 
 
+COUPLING_TABLE = pd.DataFrame(
+    {
+        "Country": ["A", "B", "C", "D"],
+        "responsibility_index_v1": [1.0, 5.0, 20.0, 50.0],
+        "impact_index_v1": [0.10, 0.20, 0.12, 0.25],
+        "responsibility_rank": [4, 3, 2, 1],
+        "impact_rank": [4, 2, 3, 1],
+        "rank_gap": [0, -1, 1, 0],
+        "z_gap": [0.1, -0.3, 0.4, -0.2],
+    }
+)
+
+
+class TestCouplingCharts:
+    def test_lorenz_chart_has_diagonal_and_curve(self):
+        fig = charts.lorenz_chart(COUPLING_TABLE)
+        assert isinstance(fig, go.Figure)
+        assert len(fig.data) == 2  # equality diagonal + Lorenz step curve
+
+    def test_mismatch_scatter_colors_by_z_gap(self):
+        fig = charts.mismatch_scatter(COUPLING_TABLE)
+        assert isinstance(fig, go.Figure)
+        assert tuple(fig.data[0].marker.color) == tuple(COUPLING_TABLE["z_gap"])
+        assert fig.data[0].marker.cmid == 0.0
+
+
 class TestChoropleth:
     def test_builds_choropleth_with_hover_data(self):
         df = pd.DataFrame(

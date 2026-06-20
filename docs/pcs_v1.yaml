@@ -1,0 +1,17 @@
+# PCS -- generated mirror of src.pcs.PCS_V1 (the semantic registry).
+# Canonical source is the Python dataclasses; regenerate via:
+#   uv run python -m src.pcs
+version: "v1"
+projections:
+  - name: "responsibility_index_v1"
+    version: "v1"
+    units: "t CO2 per capita"
+    aggregation_rule: "sum-then-divide"
+    computation_definition: "Cumulative production-based CO2 emissions summed through the analysis cutoff year, divided by cutoff-year population (tonnes per capita); a historical-responsibility projection."
+    definition_hash: "75f5ea036cc35015a98d55943ca89a4119043066e33a324f4fd91d1c759e51aa"
+  - name: "impact_index_v1"
+    version: "v1"
+    units: "degC per decade"
+    aggregation_rule: "unweighted mean across city-locations"
+    computation_definition: "Country mean of the per-city-location Theil-Sen warming slopes over the analysis window (degrees Celsius per decade); a warming-exposure projection."
+    definition_hash: "41eb1820504a9e5d5e2d07cb40a2f505a655781c973753a18dc6359995ce1fea"
