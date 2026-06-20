@@ -68,7 +68,10 @@ checks. Inputs flow strictly left to right.
 | Validation | `src.validation` | `validation_*` | extend series post-2013 vs the stored Theil–Sen line; overlap gate r ≥ 0.80 | stored lines underpredict (acceleration) |
 | Inequality | `src.inequality` | `inequality_summary.json` | Gini, Theil-T (+ between/within continents), CV, variance; unweighted | Gini ≈ 0.175; Theil-T ≈ 0.050 |
 | Decomposition | `src.decomposition` | `decomposition_summary.json` | group LMG/Shapley over `SCHEMA_V1` (available features); complete-case | n = 154; R² ≈ 0.63; geography ≈ 0.46, emissions ≈ 0.08, residual ≈ 0.37 |
-| Bundle | `src.app_assets` | `app/data/` | recomputes assets + folds in inequality & decomposition | byte-stable; build-time slope check |
+| Stability | `src.stability` | `stability_summary.json` | country bootstrap (B = 2000, seeded); leave-one-country-out influence; Moran's I (k = 8) | geography `p_largest` = 1.0; Moran's I ≈ 0.33 (p = 0.005) |
+| Projections | `src.pcs`, `src.projections` | `docs/pcs_v1.yaml`, `projections_v1.parquet` | PCS v1 identity binding; emits `Country` + 2 projections only | sha256 hashes match; mirror `git diff`-clean |
+| Coupling (L3) | `src.coupling` | `coupling.parquet`, `coupling_summary.json` | DESC rank, z (ddof=0), rank/z-gap, Lorenz, Gini coeff, Spearman | n = 157; ρ ≈ +0.36; inequality ≈ 0.563 |
+| Bundle | `src.app_assets` | `app/data/` | recomputes assets + folds in inequality, decomposition, coupling & stability | byte-stable; build-time slope check |
 
 `src.app_assets` is the **single bundle builder**: it recomputes the
 trends/interpolation/inequality assets and, when `city_features.parquet` and the
@@ -76,7 +79,10 @@ income table exist, also writes `inequality_summary.json` and
 `decomposition_summary.json` (`build_decomposition_summaries`). One
 `python -m src.app_assets` therefore regenerates the entire committed bundle; if
 the Phase-7 feature inputs are absent it warns and skips the decomposition,
-and the dashboard page renders its explicit "not built yet" state.
+and the dashboard page renders its explicit "not built yet" state. It also builds
+the Layer-3 `coupling.parquet` + `coupling_summary.json`
+(`build_coupling_summary_asset`, unconditional) and folds in
+`stability_summary.json` when present.
 
 ## 4. Preprocessing & assumptions
 
@@ -92,8 +98,10 @@ and the dashboard page renders its explicit "not built yet" state.
 - **Analysis window ends Sept 2013** (the Kaggle snapshot's end). All trends are
   therefore *backcasts*; `src.validation` tests them against post-2013 gridded
   Berkeley Earth.
-- **Researcher degrees of freedom** (each a documented choice, several to be
-  perturbed by the future stability layer — `docs/stability_roadmap.md`):
+- **Researcher degrees of freedom** (each a documented choice, several
+  earmarked for the stability layer's construction-sensitivity block —
+  `docs/stability_roadmap.md` §6, roadmapped; the shipped stability layer covers
+  bootstrap share CIs, influence and residual spatial structure):
   unweighted vs population/area-weighted country means; mean vs median
   aggregation of city slopes; the 2013 cutoff; per-capita vs total emissions;
   ~1° grid-snapped sampling of Köppen/elevation.
@@ -184,7 +192,7 @@ To verify reproducibility yourself after a pipeline run:
 ```bash
 uv run python -m src.app_assets            # rebuild the committed bundle
 git diff --stat app/data/                  # expect: no change (deterministic)
-uv run pytest -q                           # 312 passing, synthetic fixtures
+uv run pytest -q                           # 362 passing, synthetic fixtures
 uv run ruff check src tests app
 ```
 

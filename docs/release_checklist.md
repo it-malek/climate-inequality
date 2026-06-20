@@ -6,11 +6,25 @@ phase. The remaining items are non-blocking polish/infrastructure, listed below.
 
 Assessed 2026-06-19 on branch `schema/x-schema-v1`.
 
+---
+
+**v1.1 update (2026-06-20).** `v1.0.0` is tagged on the PR #3 merge. Two additive,
+in-bounds layers have since shipped on `main` and are released as **v1.1.0**: the
+**stability diagnostics** page (bootstrap CIs on the Shapley shares,
+leave-one-country-out influence, Moran's I on the residual) and the **Layer-3 PCS
+responsibility–impact coupling** page. No `SCHEMA_V1` / PCS change; `pytest` 362
+green; the `round_floats`-hardened JSON summaries (`inequality`, `decomposition`,
+`coupling_summary`) rebuild byte-for-byte and the bundle is deterministic on a
+fixed platform. **Cross-platform caveat:** the unrounded `coupling.parquet`
+(content identical to ~1e-14) and the residual Moran's I (kNN tie-breaking) drift
+between Linux and macOS — a hardening follow-up (item 5 in Remaining issues). See
+the v1.1 sign-off steps at the end.
+
 ## Readiness gates (all green)
 
 | Gate | Status | Evidence |
 |------|:---:|----------|
-| Tests pass | ✅ | `pytest` 312 passed (synthetic fixtures, no data, no network) |
+| Tests pass | ✅ | `pytest` 362 passed (synthetic fixtures, no data, no network) |
 | Lint clean | ✅ | `ruff check src tests app` clean |
 | Builds from clean clone | ✅ | dashboard reads committed `app/data/`; tests need no data — `docs/reproducibility.md` §1 |
 | Bundle is reproducible | ✅ | `python -m src.app_assets` regenerates the full bundle **deterministically** (byte-stable JSON via `round_floats`) |
@@ -49,7 +63,10 @@ country-level spread. Strengths: centralized colorblind-safe visual language
 per-chart captions, graceful "not built yet" states for deferred pages, and a
 two-section nav (Decomposition / Foundations) with sidebar orientation. Streamlit
 API usage is consistent (`width="stretch"` throughout). The "How confident are
-we?" page honestly shows a pending state pointing to `docs/stability_roadmap.md`.
+we?" page now renders the shipped stability diagnostics — bootstrap CIs on the
+Shapley shares (geography largest in 100% of resamples), leave-one-country-out
+influence per share, and Moran's I on the residual (I ≈ 0.33, p = 0.005); the
+remaining legacy-coefficient blocks stay roadmapped in `docs/stability_roadmap.md`.
 
 ## Remaining issues (non-blocking)
 
@@ -59,6 +76,7 @@ we?" page honestly shows a pending state pointing to `docs/stability_roadmap.md`
 | 2 | Plotly `locationmode="ISO-3"` migration | Low | `app/charts.py:117` emits a `country names` deprecation warning; needs a vetted country→ISO-3 map (mind the Réunion/Puerto Rico edge cases) |
 | 3 | Notebook outputs are committed | Low | Now documented as exploratory (`notebooks/README.md`); optionally strip with `nbstripout` |
 | 4 | `app/requirements.txt` ↔ `uv.lock` drift | Low | Keep the pinned cloud stack in step with the lock on dependency bumps (already noted in the file) |
+| 5 | Cross-platform bundle byte-stability | Low–Med | The `round_floats` JSON summaries reproduce byte-for-byte across platforms; the unrounded `coupling.parquet` (data identical to ~1e-14) and the residual Moran's I (platform-dependent kNN tie-breaking, ~1e-4) do not — confirmed deterministic *on-platform* (Linux-built commit vs macOS rebuild). Fix: extend `round_floats` to the `coupling.parquet` float columns and make kNN neighbor selection deterministic (sort by distance, then stable id); or pin bundle builds to the Linux/CI target. Mirrors audit finding #2. |
 
 None blocks a v1.0 tag.
 
@@ -75,10 +93,20 @@ None blocks a v1.0 tag.
 
 ## Sign-off steps for a tagged v1.0
 
-1. ⏳ Merge this branch's reproducibility + docs + dashboard work to `main`
+1. ✅ Merge this branch's reproducibility + docs + dashboard work to `main`
    (PR #3).
 2. ✅ CI run green on the PR (push + pull_request).
-3. ⏳ Confirm the Streamlit Cloud redeploy from `main` renders the updated
+3. ✅ Confirm the Streamlit Cloud redeploy from `main` renders the updated
    landing page.
-4. ⏳ (Optional) Tag `v1.0` once #3 is confirmed and address remaining
-   item #2 if desired before tagging.
+4. ✅ Tag `v1.0` once #3 is confirmed — `v1.0.0` annotated on the PR #3 merge.
+
+## Sign-off steps for a tagged v1.1
+
+1. ⏳ Merge the stability + L3-coupling doc-alignment to `main` (this branch).
+2. ⏳ CI green on the PR (push + pull_request).
+3. ⏳ Confirm an **on-platform** deterministic rebuild — `git diff app/data/`
+   clean apart from the `stats.json` timestamp and the known cross-platform
+   `coupling.parquet` / Moran's I drift (item 5); a fully clean cross-platform
+   rebuild requires the Linux/CI build target.
+4. ⏳ Tag `v1.1.0` (additive: stability diagnostics + L3 coupling pages; no
+   `SCHEMA_V1` / PCS change).

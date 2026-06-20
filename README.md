@@ -145,9 +145,12 @@ vs 0.0099); IDW still wins, but narrowly and for honest reasons.
 Streamlit app in two sections. **Decomposition** (the headline): the
 inequality-decomposition page — Gini/Theil of country warming, the Shapley
 variance-share bar, and an emissions-only / geography-only / full-model
-explorer; the country warming map; a "How confident are we?" panel that
-scaffolds the forthcoming stability diagnostics (it renders an explicit pending
-state until the stability layer ships — see `docs/stability_roadmap.md`); and a
+explorer; the country warming map; a "How confident are we?" panel showing the
+decomposition's own stability — bootstrap 95% CIs on the Shapley shares
+(geography is the largest axis in 100% of country bootstrap resamples),
+leave-one-country-out influence per share, and Moran's I on the model residual
+(I ≈ 0.33, p = 0.005 — the 37% residual is regionally clustered, not noise; see
+`docs/stability_roadmap.md`); and a
 **Responsibility vs impact** page (Layer 3) comparing each country's emissions
 responsibility against its warming exposure — Spearman ρ, the Lorenz/Gini
 inequality coefficient, and the mismatch leaders.
