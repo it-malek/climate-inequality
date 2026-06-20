@@ -164,6 +164,16 @@ def build_design(
     years = raw_years[complete].astype(np.int64)
     x_raw = x_raw[complete]
     y = y[complete]
+    # Leading lag NaNs drop contiguously, but an interior NaN in a driver/outcome
+    # column would leave a gap here even when the raw years were contiguous --
+    # re-check so the AR(1) whitening never silently treats a multi-year jump as
+    # a single annual step.
+    if np.any(np.diff(years) != 1):
+        gaps = years[1:][np.diff(years) != 1]
+        raise ValueError(
+            f"years not contiguous after complete-case drop (gap before {gaps.tolist()}); "
+            "an interior NaN in a driver or the outcome column breaks the AR(1) lag structure"
+        )
     train_mask = years <= TRAIN_END
     if not train_mask.any():
         raise ValueError(f"no training rows (year <= {TRAIN_END}) after lag alignment")
