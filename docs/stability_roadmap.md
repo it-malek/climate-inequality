@@ -5,14 +5,34 @@ statistical models, outcomes, or causal/physical layer** — the committed Optio
 architecture (single-layer, strictly cross-sectional, descriptive) is unchanged.
 This blueprint specifies a `src/stability.py` module that re-estimates the
 *existing* decomposition under perturbations and reports how stable the shares
-are. It implements nothing; it is the spec the implementation phase builds
-against.
+are. It is the spec the implementation phase builds against; see the
+implementation-status banner immediately below for what has shipped.
+
+> **Implementation status (2026-06-20, v1.1).** A first `src/stability.py` has
+> **shipped** and lights up the page: the country-bootstrap **share-stability**
+> CIs (geography is the largest axis in 100% of resamples, `p_largest = 1.0`),
+> **leave-one-country-out influence** per share (§3b), and **Moran's I** on the
+> country residual (I ≈ 0.327, p = 0.005, k = 8 centroid kNN — the residual is
+> spatially structured, confirming C3 / §5). **Still roadmapped** (specified
+> below but not yet in `stability_summary.json`): the continent **block
+> bootstrap** and **leave-one-continent-out** fits (§3c, §4), the
+> **construction-sensitivity** table (§6), and the legacy-coefficient blocks —
+> GAM **df-sensitivity** and **Conley HAC** uncertainty (§5). The stale draft
+> PR #1 (`src/robustness.py`, on `origin/robustness/phase7-hardening`) is the
+> reference implementation for all of these legacy-coefficient blocks —
+> `conley_hac_se` (Bartlett-kernel Conley HAC → `uncertainty`),
+> `gam_latitude_df_sensitivity` (→ `df_sensitivity`), `influence_diagnostics`
+> (DFBETA + Cook's → `influence.top_dfbeta`), plus `continent_cluster_bootstrap_se`,
+> `jackknife_emissions_coef` and `weighted_inequality_fit` (§6
+> construction-sensitivity). Salvage by **reimplementing against the shipped
+> `stability_summary.json` schema**, not by merging the draft (8 commits behind;
+> conflicts on `pyproject.toml`/`uv.lock`/notebooks).
 
 It pairs with: `src/decomposition.py` (what is being stress-tested),
 `docs/decomposition_design_memo.md` §7–§8 (the threats and pre-registered
 priors this layer must probe), and `app/views/sensitivity.py` (the dashboard
-page that already renders a `stability_summary.json` and shows a pending state
-until this layer ships).
+page that renders the shipped `stability_summary.json` blocks above, and falls
+back to a pending state only when the summary is absent).
 
 ## 1. The question this layer answers
 
