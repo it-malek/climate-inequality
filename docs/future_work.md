@@ -96,3 +96,16 @@ The current metric (country warming vs cumulative per-capita CO₂) measures
   exceed N–S in temperature fields) and a nugget fixed from measurement
   uncertainty would make the kriging comparison fairer before declaring
   IDW the winner.
+
+## 6. Layer 1 — physical-drivers model (a new layer)
+
+A genuinely *physical* layer: global mean temperature as a response to radiative
+forcings (CO₂/CH₄/N₂O/aerosol/volcanic/solar) plus ENSO, fit as a closed-form
+Bayesian linear state-space model with AR(1) inertia and hindcast validation. It is
+specified in the `climate-inequality-instructions` repo (`03-models.md`,
+`07-data-schemas.md`) but not yet implemented, and it *extends* rather than
+restructures the pipeline (layers never merge; artifact-only communication). The
+toolchain decision for that build — **Python (NumPy/SciPy) at the core, statsmodels as a
+test-time cross-check, Wolfram as a design-time symbolic oracle; Julia and the
+climate-emulator stack rejected for the specified model** — is recorded in
+[`docs/l1_toolchain_survey.md`](l1_toolchain_survey.md).
