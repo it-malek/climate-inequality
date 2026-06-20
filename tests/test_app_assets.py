@@ -15,6 +15,8 @@ from scipy import stats
 from src.app_assets import (
     ANOMALIES_ASSET,
     APP_DATA_DIR,
+    COUPLING_ASSET,
+    COUPLING_SUMMARY_ASSET,
     DECOMPOSITION_SUMMARY_ASSET,
     EXPLAIN_FEATURES_ASSET,
     INEQUALITY_ASSET,
@@ -32,6 +34,7 @@ from src.app_assets import (
     _VALIDATION_GLOBAL_PATH,
     _VALIDATION_SUMMARY_PATH,
     build_app_assets,
+    build_coupling_summary_asset,
     build_decomposition_summaries,
     build_stability_summary_asset,
     disambiguate_labels,
@@ -401,3 +404,38 @@ class TestStabilitySummaryAsset:
 
         assert written == {}
         assert not (out_dir / STABILITY_SUMMARY_ASSET).exists()
+
+
+class TestCouplingAsset:
+    """build_coupling_summary_asset wires the L3 comparator into the bundle."""
+
+    def test_writes_both_artifacts(self, tmp_path):
+        inequality_path = tmp_path / "country_inequality.parquet"
+        make_inequality_frame().to_parquet(inequality_path, index=False)
+        out_dir = tmp_path / "bundle"
+
+        written = build_coupling_summary_asset(
+            inequality_path=inequality_path, out_dir=out_dir
+        )
+
+        assert COUPLING_ASSET in written and COUPLING_SUMMARY_ASSET in written
+        assert (out_dir / COUPLING_ASSET).exists()
+        payload = json.loads((out_dir / COUPLING_SUMMARY_ASSET).read_text("utf-8"))
+        assert set(payload) == {
+            "spearman_rho", "n_high_impact_low_responsibility",
+            "inequality_coefficient", "top_suffer_least_cause",
+            "top_cause_least_suffer",
+        }
+        # §8: the comparator summary carries no interpretation/narrative.
+        assert "interpretation" not in payload
+
+    def test_coupling_summary_byte_stable(self, tmp_path):
+        inequality_path = tmp_path / "country_inequality.parquet"
+        make_inequality_frame().to_parquet(inequality_path, index=False)
+        first = build_coupling_summary_asset(
+            inequality_path=inequality_path, out_dir=tmp_path / "b1"
+        )[COUPLING_SUMMARY_ASSET].read_text("utf-8")
+        second = build_coupling_summary_asset(
+            inequality_path=inequality_path, out_dir=tmp_path / "b2"
+        )[COUPLING_SUMMARY_ASSET].read_text("utf-8")
+        assert first == second

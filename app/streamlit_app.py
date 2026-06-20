@@ -22,6 +22,7 @@ import streamlit as st  # noqa: E402
 from app import theme  # noqa: E402
 from app.views import (  # noqa: E402
     city_explorer,
+    coupling,
     decomposition,
     explain,
     inequality,
@@ -57,6 +58,12 @@ navigation = st.navigation(
                 title="How confident are we?",
                 icon="🎯",
                 url_path="sensitivity",
+            ),
+            st.Page(
+                coupling.render,
+                title="Responsibility vs impact",
+                icon="⚖️",
+                url_path="coupling",
             ),
         ],
         "Foundations": [
