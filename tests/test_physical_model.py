@@ -354,6 +354,15 @@ class TestBuildDesign:
         with pytest.raises(ValueError, match="contiguous"):
             build_design(df)
 
+    def test_rejects_interior_nan_induced_gap(self):
+        # Years stay contiguous, but a lone interior NaN in a driver column drops
+        # one row in complete-case filtering -- which must still fail loudly so the
+        # AR(1) whitening never treats the resulting 2-year jump as one annual step.
+        df = make_synthetic_forcings(seed=1)
+        df.loc[100, "erf_aerosol"] = np.nan
+        with pytest.raises(ValueError, match="contiguous"):
+            build_design(df)
+
     def test_driver_column_mapping(self):
         assert driver_column("co2") == "erf_co2"
         assert driver_column("oni") == "oni"
