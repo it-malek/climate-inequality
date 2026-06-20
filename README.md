@@ -145,9 +145,12 @@ vs 0.0099); IDW still wins, but narrowly and for honest reasons.
 Streamlit app in two sections. **Decomposition** (the headline): the
 inequality-decomposition page — Gini/Theil of country warming, the Shapley
 variance-share bar, and an emissions-only / geography-only / full-model
-explorer; the country warming map; and a "How confident are we?" panel that
+explorer; the country warming map; a "How confident are we?" panel that
 scaffolds the forthcoming stability diagnostics (it renders an explicit pending
-state until the stability layer ships — see `docs/stability_roadmap.md`).
+state until the stability layer ships — see `docs/stability_roadmap.md`); and a
+**Responsibility vs impact** page (Layer 3) comparing each country's emissions
+responsibility against its warming exposure — Spearman ρ, the Lorenz/Gini
+inequality coefficient, and the mismatch leaders.
 **Foundations** (how the inputs were built): the interpolated warming surface
 with a city-station toggle; a city explorer (any location's anomaly series and
 fitted trend); the emissions-vs-warming scatter; an out-of-sample validation
@@ -233,6 +236,9 @@ uv run python -m src.explain        # city_features.parquet + explain_*.{json,pa
 uv run python -m src.feature_schema # regenerate docs/feature_schema_v1.yaml mirror
 uv run python -m src.inequality     # inequality_summary.json (Gini/Theil)
 uv run python -m src.decomposition  # decomposition_summary.json (Shapley/LMG)
+uv run python -m src.pcs            # regenerate docs/pcs_v1.yaml (PCS v1 registry mirror)
+uv run python -m src.projections    # projections_v1.parquet (PCS v1 instantiation)
+uv run python -m src.coupling       # coupling_summary.json + coupling.parquet (Layer 3)
 uv run python -m src.app_assets     # app/data/ bundle — folds in ALL of the above
 
 uv run streamlit run app/streamlit_app.py

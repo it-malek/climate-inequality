@@ -183,6 +183,21 @@ def _make_synthetic_decomposition_artifacts(bundle_dir: Path) -> None:
     )
 
 
+def _make_synthetic_coupling_artifacts(bundle_dir: Path) -> None:
+    """Write synthetic L3 coupling artifacts into the bundle via the real builder.
+
+    Routed through the production ``build_coupling_summary_asset`` so the
+    responsibility-vs-impact page's AppTest exercises real bundle artifacts
+    (``coupling.parquet`` + ``coupling_summary.json``).
+    """
+    from src.app_assets import build_coupling_summary_asset
+
+    build_coupling_summary_asset(
+        inequality_path=bundle_dir / "country_inequality.parquet",
+        out_dir=bundle_dir,
+    )
+
+
 def build_synthetic_bundle(root: Path) -> dict:
     """Run build_app_assets end to end on synthetic inputs under `root`."""
     inputs = make_synthetic_inputs(root)
@@ -203,6 +218,7 @@ def build_synthetic_bundle(root: Path) -> dict:
         explain_bundle_path=exp_paths["bundle"],
     )
     _make_synthetic_decomposition_artifacts(root / "bundle")
+    _make_synthetic_coupling_artifacts(root / "bundle")
     result["bundle_dir"] = root / "bundle"
     return result
 
