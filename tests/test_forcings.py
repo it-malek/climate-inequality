@@ -20,7 +20,11 @@ from src.forcings import (
     FORCINGS_COLUMNS,
     FORCINGS_SCHEMA,
     ForcingsCrossCheckError,
+    ForcingsError,
+    ForcingsMagnitudeError,
     ForcingsResult,
+    _read_gistemp,
+    _read_oni,
     assemble_forcings,
     compute_forcings,
     parse_berkeley,
@@ -134,6 +138,46 @@ class TestParsers:
         assert list(out["year"]) == [1950, 1951]
         assert out["oni"].to_numpy() == pytest.approx(expected)
 
+    def test_oni_drops_incomplete_year(self):
+        raw = _oni_raw(range(1950, 1952))
+        # strip 1951 down to 4 seasons -- a still-accumulating year
+        raw = raw[~((raw["YR"] == 1951) & raw["SEAS"].isin(["MAM", "AMJ", "MJJ",
+                                                            "JJA", "JAS", "ASO",
+                                                            "SON", "OND"]))]
+        out = parse_oni(raw)
+        assert list(out["year"]) == [1950]  # partial 1951 dropped
+
+
+class TestReaders:
+    def test_read_gistemp_skips_title_and_keeps_columns(self, tmp_path):
+        path = tmp_path / "gistemp.csv"
+        path.write_text(
+            "Land-Ocean: Global Means\n"
+            "Year,Jan,Feb,J-D,D-N,DJF\n"
+            "1951,-.10,-.12,-.06,***,-.11\n"
+            "1990,.40,.38,.45,.43,.39\n",
+            encoding="utf-8",
+        )
+        raw = _read_gistemp(path)
+        assert "Year" in raw.columns and "J-D" in raw.columns
+        assert list(raw["Year"]) == [1951, 1990]
+        # ragged sentinel survives the read as a string for parse_gistemp to coerce
+        parsed = parse_gistemp(raw, baseline=(1951, 1951))
+        assert list(parsed["year"]) == [1951, 1990]
+
+    def test_read_oni_handles_ragged_whitespace(self, tmp_path):
+        path = tmp_path / "oni.ascii.txt"
+        path.write_text(
+            " SEAS  YR   TOTAL   ANOM\n"
+            "  DJF 1950  24.72  -1.53\n"
+            "  JFM 1950  25.17  -1.34\n",
+            encoding="utf-8",
+        )
+        raw = _read_oni(path)
+        assert list(raw.columns) == ["SEAS", "YR", "TOTAL", "ANOM"]
+        assert list(raw["YR"]) == [1950, 1950]
+        assert raw["ANOM"].iloc[0] == pytest.approx(-1.53)
+
 
 class TestAssemble:
     def test_inner_join_span_and_uncertainty_fallback(self):
@@ -157,6 +201,7 @@ class TestComputeAndResult:
         assert result.n_uncertainty_filled == 9
         assert result.n_estimator_nan == 0
         assert result.cross_check_corr == pytest.approx(1.0)
+        assert 0.3 <= result.recent_temp_mean <= 2.0
         # passing compute implies check() already held
         result.check()
 
@@ -167,7 +212,7 @@ class TestComputeAndResult:
     def test_rejects_interior_year_gap(self):
         g, b, e, o = make_raw_sources()
         g = g[g["Year"] != 2000]  # hole inside the joined span
-        with pytest.raises(AssertionError, match="contiguous"):
+        with pytest.raises(ForcingsError, match="contiguous"):
             compute_forcings(g, b, e, o)
 
     def test_rejects_low_cross_check_corr(self):
@@ -177,20 +222,37 @@ class TestComputeAndResult:
         with pytest.raises(ForcingsCrossCheckError, match="correlation"):
             compute_forcings(g, b, e, o)
 
+    def test_rejects_temperature_unit_scale_error(self):
+        # A degC -> 0.01 degC drift inflates the level 100x but leaves the
+        # GISTEMP/Berkeley correlation at ~1.0, so only the magnitude guard can see it.
+        g, b, e, o = make_raw_sources()
+        g["J-D"] = g["J-D"] * 100.0
+        with pytest.raises(ForcingsMagnitudeError, match="units/scale"):
+            compute_forcings(g, b, e, o)
+
+    def test_check_rejects_out_of_band_magnitude(self):
+        bad = ForcingsResult(
+            year_min=1950, year_max=2024, n_years=75,
+            n_uncertainty_filled=0, cross_check_corr=0.99,
+            recent_temp_mean=59.0, max_abs_oni=1.0, n_estimator_nan=0,
+        )
+        with pytest.raises(ForcingsMagnitudeError, match="units/scale"):
+            bad.check()
+
     def test_check_rejects_implausible_oni(self):
         bad = ForcingsResult(
             year_min=1950, year_max=2024, n_years=75,
             n_uncertainty_filled=0, cross_check_corr=0.99,
-            max_abs_oni=7.0, n_estimator_nan=0,
+            recent_temp_mean=0.8, max_abs_oni=7.0, n_estimator_nan=0,
         )
-        with pytest.raises(AssertionError, match="oni"):
+        with pytest.raises(ForcingsError, match="oni"):
             bad.check()
 
     def test_check_rejects_nan_corr(self):
         bad = ForcingsResult(
             year_min=1950, year_max=2024, n_years=75,
             n_uncertainty_filled=0, cross_check_corr=float("nan"),
-            max_abs_oni=1.0, n_estimator_nan=0,
+            recent_temp_mean=0.8, max_abs_oni=1.0, n_estimator_nan=0,
         )
         with pytest.raises(ForcingsCrossCheckError, match="correlation"):
             bad.check()

@@ -58,6 +58,13 @@ BASELINE: tuple[int, int] = (1951, 1980)
 MIN_CROSS_CORR = 0.95   # GISTEMP vs Berkeley annual anomaly, over their overlap
 MAX_ABS_ONI = 5.0       # ENSO index never approaches this magnitude
 
+# Recent-warming magnitude guard. The cross-check correlation is affine-invariant and
+# so blind to a temperature units error (e.g. a source switching degC -> 0.01 degC);
+# pin the absolute level instead: the mean anomaly over MAGNITUDE_WINDOW must land in
+# TEMP_MAGNITUDE_BAND (degC) for the table to be trusted.
+MAGNITUDE_WINDOW: tuple[int, int] = (2010, 2020)
+TEMP_MAGNITUDE_BAND: tuple[float, float] = (0.3, 2.0)
+
 # Source-column -> schema-column map for the ERF aggregates file. The file's
 # ``aerosol`` column already sums radiation + cloud interactions.
 ERF_COLUMN_MAP: dict[str, str] = {
@@ -153,12 +160,14 @@ def parse_berkeley(raw: pd.DataFrame, baseline: tuple[int, int] = BASELINE) -> p
             ),
         }
     ).dropna(subset=["temp", "unc"])
+    df["unc_sq"] = np.square(df["unc"])
     annual = df.groupby("year").agg(
         n=("temp", "size"),
         temp_mean=("temp", "mean"),
-        temp_uncertainty=("unc", lambda u: float(np.sqrt(np.mean(np.square(u))))),
+        mean_unc_sq=("unc_sq", "mean"),
     )
     annual = annual[annual["n"] == 12].reset_index()
+    annual["temp_uncertainty"] = np.sqrt(annual["mean_unc_sq"])  # RMS of monthly unc
     annual["berkeley_anomaly"] = annual["temp_mean"] - _baseline_mean(
         annual, "temp_mean", baseline
     )
@@ -183,16 +192,23 @@ def parse_erf(raw: pd.DataFrame) -> pd.DataFrame:
 
 
 def parse_oni(raw: pd.DataFrame) -> pd.DataFrame:
-    """NOAA ONI seasonal ANOM -> ``year, oni`` (annual mean of the 3-month seasons)."""
+    """NOAA ONI seasonal ANOM -> ``year, oni`` (annual mean of the 3-month seasons).
+
+    Only complete years (all 12 overlapping 3-month seasons, DJF..NDJ) are kept, so the
+    latest still-accumulating year is dropped rather than contributing a biased
+    partial-season mean. (The ERF inner-join in :func:`assemble_forcings` would also drop
+    any year past the ERF series' end, but filtering here keeps ``oni`` self-consistent
+    irrespective of the other sources' coverage.)
+    """
     df = pd.DataFrame(
         {
             "year": pd.to_numeric(raw["YR"], errors="coerce"),
             "oni": pd.to_numeric(raw["ANOM"], errors="coerce"),
         }
     ).dropna(subset=["year", "oni"]).astype({"year": int})
-    return df.groupby("year", as_index=False)["oni"].mean().sort_values(
-        "year"
-    ).reset_index(drop=True)
+    annual = df.groupby("year").agg(n=("oni", "size"), oni=("oni", "mean"))
+    annual = annual[annual["n"] == 12].reset_index()
+    return annual[["year", "oni"]].sort_values("year").reset_index(drop=True)
 
 
 def assemble_forcings(
@@ -230,7 +246,11 @@ def assemble_forcings(
 # ---------------------------------------------------------------------
 # Result + compute
 # ---------------------------------------------------------------------
-class ForcingsCrossCheckError(RuntimeError):
+class ForcingsError(RuntimeError):
+    """Base class for fail-loud forcings-assembly invariant violations."""
+
+
+class ForcingsCrossCheckError(ForcingsError):
     """The GISTEMP vs Berkeley annual-anomaly cross-check fell below tolerance.
 
     Two independently-sourced global temperature series must track each other very
@@ -239,6 +259,17 @@ class ForcingsCrossCheckError(RuntimeError):
     format, or the year alignment skewed during the join. Raising a distinct, named
     error here surfaces that *at assembly time* instead of letting it masquerade as an
     "odd" L1 model fit to be debugged much later.
+    """
+
+
+class ForcingsMagnitudeError(ForcingsError):
+    """The recent temperature-anomaly magnitude is outside its plausible band.
+
+    The correlation cross-check (:class:`ForcingsCrossCheckError`) is invariant to
+    affine rescaling, so it is blind to a temperature *units* error -- a source moving
+    from degC to 0.01 degC keeps corr ~1.0 while inflating the level 100x, and ridge
+    R^2 / hindcast coverage are scale-invariant too. This guard pins the absolute level
+    of recent warming, catching the silent scale drift the other gates cannot see.
     """
 
 
@@ -251,18 +282,19 @@ class ForcingsResult:
     n_years: int
     n_uncertainty_filled: int
     cross_check_corr: float
+    recent_temp_mean: float
     max_abs_oni: float
     n_estimator_nan: int
 
     def check(self) -> None:
         """Assert the table is contiguous, complete, and physically plausible."""
         if self.n_years != self.year_max - self.year_min + 1:
-            raise AssertionError(
+            raise ForcingsError(
                 f"years not contiguous: span {self.year_min}-{self.year_max} "
                 f"but n={self.n_years}"
             )
         if self.n_estimator_nan:
-            raise AssertionError(
+            raise ForcingsError(
                 f"{self.n_estimator_nan} NaN(s) in estimator columns {ESTIMATOR_COLUMNS}"
             )
         if not (self.cross_check_corr >= MIN_CROSS_CORR):  # also catches NaN
@@ -273,8 +305,16 @@ class ForcingsResult:
                 "is the likely cause -- inspect the raw sources before trusting any "
                 "L1 fit derived from this table."
             )
+        lo, hi = TEMP_MAGNITUDE_BAND
+        if not (lo <= self.recent_temp_mean <= hi):  # also catches NaN
+            raise ForcingsMagnitudeError(
+                f"mean temp_anomaly over {MAGNITUDE_WINDOW} is "
+                f"{self.recent_temp_mean!r} degC, outside the plausible [{lo}, {hi}] "
+                "band: a temperature units/scale error is the likely cause (the "
+                "correlation cross-check is scale-invariant and cannot detect it)."
+            )
         if self.max_abs_oni >= MAX_ABS_ONI:
-            raise AssertionError(f"implausible |oni| max {self.max_abs_oni}")
+            raise ForcingsError(f"implausible |oni| max {self.max_abs_oni}")
 
 
 def compute_forcings(
@@ -311,6 +351,7 @@ def compute_forcings(
         n_years=len(frame),
         n_uncertainty_filled=n_filled,
         cross_check_corr=corr,
+        recent_temp_mean=_baseline_mean(frame, "temp_anomaly", MAGNITUDE_WINDOW),
         max_abs_oni=float(frame["oni"].abs().max()),
         n_estimator_nan=int(frame[list(ESTIMATOR_COLUMNS)].isna().to_numpy().sum()),
     )
