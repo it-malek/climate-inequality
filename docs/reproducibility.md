@@ -186,13 +186,28 @@ stale/inconsistent artifact:
 - **Disclaimer travels with the numbers.** Every summary JSON carries
   `feature_schema.INTERPRETATION_NOTE`, so the variance-attribution-only boundary
   cannot be dropped by a downstream consumer.
+- **Shipped-bundle validation.** `tests/test_artifacts.py` validates the committed
+  `app/data/` bundle *on disk* — not just the producing functions on synthetic
+  inputs — with value-free invariants and cross-file consistency across
+  PCS → projections → decomposition/stability → coupling: the coupling summary
+  recomputes from `coupling.parquet`; projections equal their upstream source
+  columns (the PCS identity binding, `responsibility_index_v1 == cum_co2_t_per_capita`
+  etc.); decomposition shares partition to 1; and the stability `point` shares match
+  the decomposition. Every check runs against both the committed bundle and the
+  synthetic `conftest` bundle. The suite caught a false invariant on first run:
+  `rank_gap` does **not** sum to zero on the real data — `_rank_desc` uses
+  `method="min"`, and one tie in `impact_index_v1` compresses the rank sum
+  (`sum_impact_rank = 12402` vs the tie-free `sum_responsibility_rank = 12403 =
+  157·158/2`), so the suite asserts the tie-robust `z_gap` zero-mean (z-scores sum to
+  zero regardless of ties) instead of a rank-sum identity that only holds for tie-free
+  data.
 
 To verify reproducibility yourself after a pipeline run:
 
 ```bash
 uv run python -m src.app_assets            # rebuild the committed bundle
 git diff --stat app/data/                  # expect: no change (deterministic)
-uv run pytest -q                           # 362 passing, synthetic fixtures
+uv run pytest -q                           # 388 passing, 4 skipped; synthetic fixtures + committed bundle
 uv run ruff check src tests app
 ```
 
