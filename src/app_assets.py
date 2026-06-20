@@ -86,6 +86,11 @@ INEQUALITY_SUMMARY_ASSET = "inequality_summary.json"
 DECOMPOSITION_SUMMARY_ASSET = "decomposition_summary.json"
 STABILITY_SUMMARY_ASSET = "stability_summary.json"
 
+# Layer 3 coupling assets (responsibility-impact comparator). Built
+# unconditionally: the only input is the country table, which always ships.
+COUPLING_ASSET = "coupling.parquet"
+COUPLING_SUMMARY_ASSET = "coupling_summary.json"
+
 # Phase 6/7 optional bundle assets (present only when the heavy pipeline has run).
 VALIDATION_ASSET = "validation.parquet"
 VALIDATION_GLOBAL_ASSET = "validation_global.parquet"
@@ -670,6 +675,51 @@ def build_stability_summary_asset(
     return written
 
 
+def build_coupling_summary_asset(
+    inequality_path: Path = DEFAULT_INEQUALITY_PATH,
+    out_dir: Path = APP_DATA_DIR,
+) -> dict[str, Path]:
+    """Write the Layer 3 coupling artifacts into the bundle.
+
+    The responsibility-impact comparator's only input is the country table that
+    already ships, so -- unlike the decomposition/stability summaries -- it is
+    built unconditionally. The PCS v1 projections are resolved in-memory (identity
+    binding) and the deterministic comparator writes ``coupling.parquet`` and
+    ``coupling_summary.json`` into `out_dir`; both are byte-stable.
+
+    Args:
+        inequality_path: Phase 4 ``country_inequality.parquet``.
+        out_dir: Bundle destination, normally the committed ``app/data/``.
+
+    Returns:
+        Dict of asset-name -> written Path.
+    """
+    # Lazy imports mirror build_decomposition_summaries: keep the coupling stack
+    # out of this module's import graph (build_app_assets is the heavy entry point).
+    from src.coupling import COUPLING_SCHEMA, compute_coupling
+    from src.coupling import summary_payload as coupling_payload
+    from src.data_io import write_typed_parquet
+    from src.projections import ID_COL, resolve_projections
+
+    inequality = pd.read_parquet(inequality_path)
+    projections = resolve_projections(inequality)
+    table, result = compute_coupling(projections)
+    result.check()
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    table_dest = out_dir / COUPLING_ASSET
+    write_typed_parquet(table, table_dest, COUPLING_SCHEMA, order_by=(ID_COL,))
+    summary_dest = out_dir / COUPLING_SUMMARY_ASSET
+    summary_dest.write_text(
+        json.dumps(coupling_payload(result), indent=2) + "\n", encoding="utf-8"
+    )
+    logger.info(
+        "wrote %s and %s (n=%d, inequality_coefficient=%.3f)",
+        table_dest, summary_dest, len(table), result.inequality_coefficient,
+    )
+    return {COUPLING_ASSET: table_dest, COUPLING_SUMMARY_ASSET: summary_dest}
+
+
 def main() -> None:
     """Build the default bundle and print the README sanity checks."""
     logging.basicConfig(
@@ -678,6 +728,7 @@ def main() -> None:
     out = build_app_assets()
     summaries = build_decomposition_summaries()
     stability = build_stability_summary_asset()
+    coupling = build_coupling_summary_asset()
     trends = out["stats"]["trends"]
     interp = out["stats"]["interpolation"]
     ineq = out["stats"]["inequality"]
@@ -750,7 +801,18 @@ def main() -> None:
     else:
         print("stability: skipped (city features / income not built)")
 
-    all_paths = {**out["paths"], **summaries, **stability}
+    coupling_summary = json.loads(
+        coupling[COUPLING_SUMMARY_ASSET].read_text(encoding="utf-8")
+    )
+    print(
+        f"coupling: Spearman rho {coupling_summary['spearman_rho']:+.3f}, "
+        f"inequality coefficient {coupling_summary['inequality_coefficient']:.3f}, "
+        f"high-impact/low-responsibility "
+        f"{coupling_summary['n_high_impact_low_responsibility']} "
+        "(deterministic comparator)"
+    )
+
+    all_paths = {**out["paths"], **summaries, **stability, **coupling}
     total_kb = sum(p.stat().st_size for p in all_paths.values()) / 1024
     print(f"bundle: {len(all_paths)} files, {total_kb:,.0f} KB total")
     for name, path in all_paths.items():

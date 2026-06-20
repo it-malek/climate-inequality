@@ -108,6 +108,18 @@ def load_inequality() -> pd.DataFrame:
 
 
 @st.cache_data
+def load_coupling() -> pd.DataFrame:
+    """The Layer 3 responsibility-impact comparison table (one row per country)."""
+    return _read_bundle_parquet(
+        "coupling.parquet",
+        required=(
+            "Country", "responsibility_index_v1", "impact_index_v1",
+            "responsibility_rank", "impact_rank", "rank_gap", "z_gap",
+        ),
+    )
+
+
+@st.cache_data
 def load_stats() -> dict:
     """Headline statistics computed at bundle-build time (stats.json)."""
     return json.loads((APP_DATA_DIR / "stats.json").read_text(encoding="utf-8"))
@@ -147,6 +159,17 @@ def load_stability_summary() -> dict | None:
     sensitivity page renders an explicit pending state rather than failing.
     """
     return _load_optional_json("stability_summary.json")
+
+
+@st.cache_data
+def load_coupling_summary() -> dict | None:
+    """Deterministic responsibility-impact comparator metrics, if present.
+
+    Returns ``None`` until a ``coupling_summary.json`` is added to the bundle, so
+    the responsibility-vs-impact page renders an explicit pending state rather
+    than failing.
+    """
+    return _load_optional_json("coupling_summary.json")
 
 
 @st.cache_data

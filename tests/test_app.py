@@ -188,6 +188,25 @@ class TestWorldMapPage:
         assert any("countries" in (c.value or "") for c in at.caption)
 
 
+class TestCouplingPage:
+    def test_renders_metrics_and_charts(self, bundle_dir):
+        at = run_page("app.views.coupling")
+        assert at.title[0].value == "Responsibility vs impact"
+        labels = [m.label for m in at.metric]
+        assert "Spearman ρ" in labels
+        assert "Inequality coefficient" in labels
+        assert "High impact, low responsibility" in labels
+
+    def test_pending_state_without_summary(self, tmp_path, monkeypatch):
+        # Point loaders at an empty dir: the page must degrade, not crash.
+        monkeypatch.setattr(loaders, "APP_DATA_DIR", tmp_path)
+        st.cache_data.clear()
+        at = run_page("app.views.coupling")
+        assert not at.exception
+        assert len(at.info) == 1
+        st.cache_data.clear()
+
+
 class TestSensitivityPage:
     def test_pending_state_by_default(self, bundle_dir):
         # No stability_summary.json in the synthetic bundle -> pending state.
