@@ -64,5 +64,6 @@
     "test_rmse": 0.102978233,
     "test_band_coverage": 0.909090909091,
     "n_test": 11
-  }
+  },
+  "forcings_hash": "9c128c0409fe5558efb6880074fe0d7a20e44fcf2715be69bda3ecdc1f7e7f71"
 }
