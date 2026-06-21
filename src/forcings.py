@@ -125,6 +125,21 @@ def _baseline_mean(frame: pd.DataFrame, col: str, baseline: tuple[int, int]) -> 
     return float(window.mean())
 
 
+def _window_mean(frame: pd.DataFrame, col: str, window: tuple[int, int]) -> float:
+    """Mean of `col` over the inclusive `window`, or NaN if no rows fall in it.
+
+    Unlike :func:`_baseline_mean` (which hard-errors on an absent window because an
+    anomaly cannot be anchored without it), this is the *tolerant* variant used for
+    the magnitude guard: a missing window yields NaN, which :meth:`ForcingsResult.check`
+    folds into the same :class:`ForcingsMagnitudeError` as an out-of-band level, so all
+    of contiguity / cross-check / magnitude stay behind one error hierarchy and are
+    evaluable in one pass rather than one pre-empting another with a foreign exception.
+    """
+    lo, hi = window
+    sel = frame.loc[(frame["year"] >= lo) & (frame["year"] <= hi), col]
+    return float(sel.mean()) if not sel.empty else float("nan")
+
+
 def parse_gistemp(raw: pd.DataFrame, baseline: tuple[int, int] = BASELINE) -> pd.DataFrame:
     """GISTEMP ``GLB.Ts+dSST`` -> ``year, temp_anomaly`` (re-centred on `baseline`).
 
@@ -306,12 +321,13 @@ class ForcingsResult:
                 "L1 fit derived from this table."
             )
         lo, hi = TEMP_MAGNITUDE_BAND
-        if not (lo <= self.recent_temp_mean <= hi):  # also catches NaN
+        if not (lo <= self.recent_temp_mean <= hi):  # NaN (absent window) also trips
             raise ForcingsMagnitudeError(
                 f"mean temp_anomaly over {MAGNITUDE_WINDOW} is "
-                f"{self.recent_temp_mean!r} degC, outside the plausible [{lo}, {hi}] "
-                "band: a temperature units/scale error is the likely cause (the "
-                "correlation cross-check is scale-invariant and cannot detect it)."
+                f"{self.recent_temp_mean!r} degC (expected within [{lo}, {hi}]): the "
+                "magnitude window is missing, or a temperature units/scale error has "
+                "shifted the level (the correlation cross-check is scale-invariant and "
+                "cannot detect it)."
             )
         if self.max_abs_oni >= MAX_ABS_ONI:
             raise ForcingsError(f"implausible |oni| max {self.max_abs_oni}")
@@ -351,7 +367,7 @@ def compute_forcings(
         n_years=len(frame),
         n_uncertainty_filled=n_filled,
         cross_check_corr=corr,
-        recent_temp_mean=_baseline_mean(frame, "temp_anomaly", MAGNITUDE_WINDOW),
+        recent_temp_mean=_window_mean(frame, "temp_anomaly", MAGNITUDE_WINDOW),
         max_abs_oni=float(frame["oni"].abs().max()),
         n_estimator_nan=int(frame[list(ESTIMATOR_COLUMNS)].isna().to_numpy().sum()),
     )

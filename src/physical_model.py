@@ -224,6 +224,11 @@ def prais_winsten_whiten(matrix: np.ndarray, rho: float) -> np.ndarray:
     Returns:
         The whitened array, same shape as `matrix`.
     """
+    if not abs(rho) < 1.0:
+        # The row-0 factor sqrt(1 - rho^2) is only real (and the AR(1) only
+        # stationary) for |rho| < 1; estimate_rho clamps to enforce this, so a
+        # violation here means a hand-built/non-stationary rho reached the math.
+        raise ValueError(f"prais_winsten_whiten requires |rho| < 1; got rho={rho!r}")
     m = np.asarray(matrix, dtype=float)
     whitened = np.empty_like(m)
     whitened[0] = m[0] * np.sqrt(1.0 - rho**2)
@@ -487,6 +492,11 @@ def predict_trajectory(
     combining innovation and parameter uncertainty under the Student-t predictive.
     """
     rho = fit.rho
+    if not abs(rho) < 1.0:
+        # The forecast-error factors c = 1/(1 - rho^2) and (1 - rho^{2h})/(1 - rho^2)
+        # require a stationary rho; guard here since predict_trajectory divides by
+        # (1 - rho^2) directly without routing through the whitener.
+        raise ValueError(f"predict_trajectory requires a stationary |rho| < 1; got {rho!r}")
     m_n, v_n = fit.m_n, fit.v_n
     df = 2.0 * fit.alpha_n
     t_crit = float(student_t.ppf(0.975, df))

@@ -234,14 +234,23 @@ class TestPhysical:
     def test_trajectory_schema_and_contiguous(self, bundle):
         traj = _parquet(bundle, app_assets.PHYSICAL_TRAJECTORY_ASSET)
         assert list(traj.columns) == list(TRAJECTORY_SCHEMA)
+        # Schema is about identity *and* type: a year drifting to float or
+        # in_sample to int would pass a column-name check but break consumers.
+        assert str(traj["year"].dtype).startswith("int")
+        assert traj["in_sample"].dtype == bool
         years = traj["year"].to_numpy()
         assert np.all(np.diff(years) == 1)  # sorted and contiguous
 
     def test_band_brackets_mean(self, bundle):
         traj = _parquet(bundle, app_assets.PHYSICAL_TRAJECTORY_ASSET)
         mean = traj["predicted_mean"].to_numpy()
-        assert np.all(traj["lower95"].to_numpy() <= mean + ABS)
-        assert np.all(mean <= traj["upper95"].to_numpy() + ABS)
+        lower = traj["lower95"].to_numpy()
+        upper = traj["upper95"].to_numpy()
+        assert np.all(lower <= mean + ABS)
+        assert np.all(mean <= upper + ABS)
+        # Strictly positive width: a degenerate zero-width band (e.g. a vanished
+        # predictive variance) would satisfy lower <= mean <= upper but is invalid.
+        assert np.all(upper > lower)
 
     def test_in_sample_flag_matches_train_end(self, bundle):
         traj = _parquet(bundle, app_assets.PHYSICAL_TRAJECTORY_ASSET)
