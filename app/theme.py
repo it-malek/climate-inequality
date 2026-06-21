@@ -50,9 +50,12 @@ GROUP_GLOSS: dict[str, str] = {
 TREND_COLORSCALE = "OrRd"
 TREND_UNIT = "°C/decade"
 
-# Minimal, research-grade Plotly template and shared layout knobs.
-PLOTLY_TEMPLATE = "plotly_white"
-BASE_FONT = {"family": "Inter, system-ui, sans-serif", "size": 13, "color": "#222"}
+# Shared typography. No `color` and no Plotly template here: charts render through
+# st.plotly_chart's default `theme="streamlit"`, which supplies the background,
+# gridlines and font color from the *active* Streamlit theme -- so the charts invert
+# cleanly between light and dark. Pinning a template or a font color would override
+# that adaptation (and a dark `#222` would vanish on a dark background).
+BASE_FONT = {"family": "Inter, system-ui, sans-serif", "size": 13}
 
 # The exact, non-negotiable interpretation banner (visible on every page).
 BANNER_TEXT = (
@@ -69,11 +72,13 @@ def apply_base_layout(fig: go.Figure, **overrides) -> go.Figure:
     ``update_layout`` last, so a caller can still tweak a single figure.
     """
     fig.update_layout(
-        template=PLOTLY_TEMPLATE,
         font=BASE_FONT,
-        margin={"l": 10, "r": 10, "t": 40, "b": 10},
+        margin={"l": 10, "r": 10, "t": 36, "b": 10},
         title_font={"size": 16},
-        legend={"orientation": "h", "yanchor": "bottom", "y": 1.02, "x": 0},
+        # Legend sits *below* the plot (autoexpand grows the bottom margin to fit)
+        # so it never collides with the chart title; tighter top margin closes the
+        # gap the old above-plot legend left behind.
+        legend={"orientation": "h", "yanchor": "top", "y": -0.2, "x": 0},
     )
     if overrides:
         fig.update_layout(**overrides)

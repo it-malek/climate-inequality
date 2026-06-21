@@ -1,8 +1,7 @@
 # Dashboard configuration (used locally and by Streamlit Community Cloud).
-# Light base theme so the RdBu_r diverging maps read as intended.
-
-[theme]
-base = "light"
+# No [theme] block: the app respects the system default and lets users switch
+# Light / Dark / System from the Settings menu. Charts adapt automatically via
+# st.plotly_chart's default theme="streamlit" (see app/theme.py).
 
 [browser]
 gatherUsageStats = false
