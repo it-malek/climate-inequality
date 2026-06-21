@@ -135,6 +135,13 @@ class TestWhitener:
         assert w[0] == pytest.approx(3.0 * np.sqrt(1.0 - rho**2))
         assert w[1] == pytest.approx(1.0 - rho * 3.0)
 
+    def test_rejects_nonstationary_rho(self):
+        # The stationarity invariant must travel with the math primitive, not rely
+        # on a clamp elsewhere: |rho| >= 1 makes sqrt(1 - rho^2) non-real.
+        for bad in (1.0, -1.0, 1.5):
+            with pytest.raises(ValueError, match="rho"):
+                prais_winsten_whiten(np.array([1.0, 2.0, 3.0]), bad)
+
     def test_works_on_2d_rowwise(self):
         m = np.arange(12.0).reshape(6, 2)
         rho = 0.4

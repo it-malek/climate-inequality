@@ -230,6 +230,17 @@ class TestComputeAndResult:
         with pytest.raises(ForcingsMagnitudeError, match="units/scale"):
             compute_forcings(g, b, e, o)
 
+    def test_rejects_absent_magnitude_window(self):
+        # A table ending before the 2010-2020 window must fail through the unified
+        # ForcingsMagnitudeError (NaN recent mean), not a bare ValueError that would
+        # pre-empt the other invariants with a foreign exception type.
+        old = dict(
+            gistemp_years=range(1945, 2006), berkeley_years=range(1945, 2006),
+            erf_years=range(1930, 2006), oni_years=range(1945, 2006),
+        )
+        with pytest.raises(ForcingsMagnitudeError, match="missing"):
+            compute_forcings(*make_raw_sources(**old))
+
     def test_check_rejects_out_of_band_magnitude(self):
         bad = ForcingsResult(
             year_min=1950, year_max=2024, n_years=75,
