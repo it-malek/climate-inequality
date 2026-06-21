@@ -122,7 +122,7 @@ def warming_choropleth(df: pd.DataFrame) -> go.Figure:
             customdata=customdata,
             colorscale=theme.TREND_COLORSCALE,
             colorbar={"title": theme.TREND_UNIT},
-            marker_line_color="rgba(120,120,120,0.5)",
+            marker_line_color=theme.NEUTRAL_MID,
             marker_line_width=0.3,
             hovertemplate=(
                 "<b>%{location}</b><br>"
@@ -176,7 +176,7 @@ def coef_ci_chart(
             hovertemplate="<b>%{y}</b><br>coef %{x:.4f}<extra></extra>",
         )
     )
-    fig.add_vline(x=0.0, line={"dash": "dot", "color": "#aaa"})
+    fig.add_vline(x=0.0, line={"dash": "dot", "color": theme.NEUTRAL_FAINT})
     fig.update_layout(
         title=title,
         xaxis={"title": "coefficient (°C/decade per 10× emissions)"},
@@ -221,7 +221,7 @@ def share_ci_chart(
                     "type": "data", "symmetric": False,
                     "array": [h - p for h, p in zip(bh, points)],
                     "arrayminus": [p - low for p, low in zip(points, bl)],
-                    "color": "rgba(150,150,150,0.5)", "thickness": 11, "width": 0,
+                    "color": theme.NEUTRAL_MID, "thickness": 11, "width": 0,
                 },
                 hoverinfo="skip",
             )
@@ -234,7 +234,7 @@ def share_ci_chart(
                 "type": "data", "symmetric": False,
                 "array": [h - p for h, p in zip(hi, points)],
                 "arrayminus": [p - low for p, low in zip(points, lo)],
-                "color": "#555", "thickness": 2,
+                "color": theme.NEUTRAL_MID, "thickness": 2,
             },
             customdata=np.stack([lo, hi], axis=-1),
             hovertemplate="<b>%{y}</b><br>share %{x:.1%}"
@@ -271,7 +271,7 @@ def influence_bar(
             hovertemplate="<b>%{y}</b><br>" + value_label + " %{x:+.4f}<extra></extra>",
         )
     )
-    fig.add_vline(x=0.0, line={"dash": "dot", "color": "#aaa"})
+    fig.add_vline(x=0.0, line={"dash": "dot", "color": theme.NEUTRAL_FAINT})
     fig.update_layout(
         title=title,
         xaxis={"title": value_label},
@@ -300,7 +300,7 @@ def lorenz_chart(table: pd.DataFrame) -> go.Figure:
     fig.add_trace(
         go.Scatter(
             x=[0.0, 1.0], y=[0.0, 1.0], mode="lines",
-            line={"dash": "dot", "color": "#aaa"}, name="equality",
+            line={"dash": "dot", "color": theme.NEUTRAL_FAINT}, name="equality",
             hoverinfo="skip",
         )
     )
@@ -341,7 +341,7 @@ def mismatch_scatter(table: pd.DataFrame) -> go.Figure:
                 "colorscale": "RdBu_r",
                 "cmid": 0.0,
                 "size": 9,
-                "line": {"color": "rgba(80,80,80,0.4)", "width": 0.5},
+                "line": {"color": theme.NEUTRAL_MID, "width": 0.5},
                 "colorbar": {"title": "z-gap"},
             },
             customdata=table["Country"],
@@ -372,7 +372,7 @@ def dfbeta_bar(top_dfbeta: list[tuple[str, float]]) -> go.Figure:
             hovertemplate="<b>%{y}</b><br>DFBETA %{x:+.4f}<extra></extra>",
         )
     )
-    fig.add_vline(x=0.0, line={"dash": "dot", "color": "#aaa"})
+    fig.add_vline(x=0.0, line={"dash": "dot", "color": theme.NEUTRAL_FAINT})
     fig.update_layout(
         title="Most influential countries (DFBETA on the emissions term)",
         xaxis={"title": "DFBETA"},
@@ -430,7 +430,7 @@ def physical_trajectory_chart(
     fig.add_trace(
         go.Scatter(
             x=years, y=df["observed"], mode="markers", name="observed",
-            marker={"color": "#333", "size": 5},
+            marker={"color": theme.NEUTRAL_STRONG, "size": 5},
             hovertemplate="%{x}<br>observed %{y:.2f} °C<extra></extra>",
         )
     )
@@ -481,14 +481,14 @@ def sensitivity_forest(sensitivity: dict[str, dict]) -> go.Figure:
                 "type": "data", "symmetric": False,
                 "array": [h - m for h, m in zip(hi, means)],
                 "arrayminus": [m - low for m, low in zip(means, lo)],
-                "color": "#888",
+                "color": theme.NEUTRAL_MID,
             },
             customdata=np.stack([lo, hi], axis=-1),
             hovertemplate="<b>%{y}</b><br>%{x:+.3f} "
             "[%{customdata[0]:+.3f}, %{customdata[1]:+.3f}]<extra></extra>",
         )
     )
-    fig.add_vline(x=0.0, line={"dash": "dot", "color": "#aaa"})
+    fig.add_vline(x=0.0, line={"dash": "dot", "color": theme.NEUTRAL_FAINT})
     fig.update_layout(
         title="Driver sensitivities (°C per W/m²; ONI dimensionless)",
         xaxis={"title": "°C per W/m²"},
