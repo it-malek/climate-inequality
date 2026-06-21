@@ -93,3 +93,8 @@ def render() -> None:
             file_name="physical_trajectory.csv",
             mime="text/csv",
         )
+        forcings_hash = summary.get("forcings_hash")
+        if forcings_hash:
+            # Quiet provenance stamp: the SHA-256 of the forcings table this
+            # trajectory was fit on, so the committed artifact is traceable.
+            st.caption(f"forcings provenance · sha256 `{forcings_hash[:12]}…`")

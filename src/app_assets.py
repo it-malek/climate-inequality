@@ -33,6 +33,7 @@ Run after any pipeline change that alters published numbers:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 from dataclasses import asdict
@@ -727,6 +728,15 @@ def build_coupling_summary_asset(
     return {COUPLING_ASSET: table_dest, COUPLING_SUMMARY_ASSET: summary_dest}
 
 
+def _sha256_file(path: Path) -> str:
+    """SHA-256 hex digest of a file's bytes (streamed, so large inputs are cheap)."""
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def build_physical_summary_asset(
     forcings_path: Path | None = None,
     out_dir: Path = APP_DATA_DIR,
@@ -764,15 +774,23 @@ def build_physical_summary_asset(
         return {}
 
     forcings = pd.read_parquet(forcings_path)
+    # Provenance anchor (§4 audit finding): stamp the exact forcings vintage this
+    # trajectory was fit on so a stale committed bundle is *observable* -- the
+    # network-derived forcings table is gitignored, so without this the committed
+    # L1 artifacts have no reproducible link back to their input.
+    forcings_hash = _sha256_file(forcings_path)
     trajectory, result = compute_physical_model(forcings)
     result.check()
 
     out_dir.mkdir(parents=True, exist_ok=True)
     traj_dest = out_dir / PHYSICAL_TRAJECTORY_ASSET
     write_typed_parquet(trajectory, traj_dest, TRAJECTORY_SCHEMA, order_by=("year",))
+    # forcings_hash is bundle-build provenance, not an estimator output -- inject it
+    # at this layer rather than polluting the pure physical_model.summary_payload.
+    payload = {**physical_payload(result), "forcings_hash": forcings_hash}
     summary_dest = out_dir / PHYSICAL_SUMMARY_ASSET
     summary_dest.write_text(
-        json.dumps(physical_payload(result), indent=2) + "\n", encoding="utf-8"
+        json.dumps(payload, indent=2) + "\n", encoding="utf-8"
     )
     logger.info(
         "wrote %s and %s (n=%d, train<=%d, test coverage %.0f%%)",

@@ -265,6 +265,15 @@ class TestPhysical:
         n_test = int((traj["year"].to_numpy() > summary["train_end"]).sum())
         assert summary["hindcast"]["n_test"] == n_test
 
+    def test_summary_carries_forcings_hash(self, bundle):
+        # Provenance anchor: the committed L1 summary records the SHA-256 of the
+        # forcings table it was built from (value-free -- assert shape, not value).
+        summary = _json(bundle, app_assets.PHYSICAL_SUMMARY_ASSET)
+        forcings_hash = summary.get("forcings_hash")
+        assert isinstance(forcings_hash, str)
+        assert len(forcings_hash) == 64
+        assert all(c in "0123456789abcdef" for c in forcings_hash)
+
     def test_summary_keys_and_bounds(self, bundle):
         summary = _json(bundle, app_assets.PHYSICAL_SUMMARY_ASSET)
         assert {
