@@ -381,3 +381,119 @@ def dfbeta_bar(top_dfbeta: list[tuple[str, float]]) -> go.Figure:
         showlegend=False,
     )
     return theme.apply_base_layout(fig)
+
+
+# Physical band reuses the geography blue so the L1 page is visually distinct
+# from the emissions-vermillion decomposition pages.
+_PHYSICAL_COLOR = "#0072B2"
+_PHYSICAL_BAND = "rgba(0,114,178,0.15)"
+_VOLCANIC_COLOR = "#D55E00"
+
+
+def physical_trajectory_chart(
+    trajectory: pd.DataFrame,
+    train_end: int,
+    eruptions: list[tuple[int, str]] | None = None,
+) -> go.Figure:
+    """Observed vs predicted global temperature with the 95% predictive band.
+
+    The hero of the L1 page: the model mean (``predicted_mean``) inside its
+    ``lower95``/``upper95`` band, observed annual anomalies as markers, the
+    out-of-sample region (``year > train_end``) shaded, and the major volcanic
+    eruptions in `eruptions` marked so the transient cooling dips the model
+    reproduces stand out against the secular trend.
+    """
+    df = trajectory.sort_values("year")
+    years = df["year"].to_numpy()
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=years, y=df["lower95"], mode="lines",
+            line={"width": 0}, hoverinfo="skip", showlegend=False,
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=years, y=df["upper95"], mode="lines", name="95% predictive band",
+            line={"width": 0}, fill="tonexty", fillcolor=_PHYSICAL_BAND,
+            hoverinfo="skip",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=years, y=df["predicted_mean"], mode="lines", name="model",
+            line={"color": _PHYSICAL_COLOR, "width": 2},
+            hovertemplate="%{x}<br>predicted %{y:.2f} °C<extra></extra>",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=years, y=df["observed"], mode="markers", name="observed",
+            marker={"color": "#333", "size": 5},
+            hovertemplate="%{x}<br>observed %{y:.2f} °C<extra></extra>",
+        )
+    )
+    fig.add_vrect(
+        x0=train_end + 0.5, x1=float(years.max()) + 0.5,
+        fillcolor="rgba(150,150,150,0.10)", line_width=0,
+        annotation_text="out-of-sample", annotation_position="top left",
+    )
+    for year, label in eruptions or []:
+        if years.min() <= year <= years.max():
+            fig.add_vline(x=year, line={"color": _VOLCANIC_COLOR, "width": 1, "dash": "dot"})
+            fig.add_annotation(
+                x=year, y=1.0, yref="paper", text=label, showarrow=False,
+                textangle=-90, xshift=-7, font={"size": 10, "color": _VOLCANIC_COLOR},
+            )
+    fig.update_layout(
+        title="Global temperature: observed vs the physical model",
+        xaxis={"title": "year"},
+        yaxis={"title": "anomaly (°C, 1951–1980 baseline)"},
+        height=460,
+    )
+    return theme.apply_base_layout(fig)
+
+
+def sensitivity_forest(sensitivity: dict[str, dict]) -> go.Figure:
+    """Per-driver sensitivity (°C per W/m²) with 95% CIs; CO₂ emphasized.
+
+    `sensitivity` maps each driver to ``{mean, sd, ci_low, ci_high}``. ONI is a
+    dimensionless ENSO regressor, not a W/m² forcing — it is labeled as such. These
+    are model coefficients (predictive association), never a causal attribution.
+    """
+    labels = {
+        "co2": "CO₂", "ch4": "CH₄", "n2o": "N₂O", "aerosol": "Aerosol",
+        "volcanic": "Volcanic", "solar": "Solar", "oni": "ONI (ENSO)",
+    }
+    keys = [k for k in labels if k in sensitivity]
+    names = [labels[k] for k in keys]
+    means = [float(sensitivity[k]["mean"]) for k in keys]
+    lo = [float(sensitivity[k]["ci_low"]) for k in keys]
+    hi = [float(sensitivity[k]["ci_high"]) for k in keys]
+    colors = [_VOLCANIC_COLOR if k == "co2" else _PHYSICAL_COLOR for k in keys]
+
+    fig = go.Figure(
+        go.Scatter(
+            x=means, y=names, mode="markers",
+            marker={"color": colors, "size": 10},
+            error_x={
+                "type": "data", "symmetric": False,
+                "array": [h - m for h, m in zip(hi, means)],
+                "arrayminus": [m - low for m, low in zip(means, lo)],
+                "color": "#888",
+            },
+            customdata=np.stack([lo, hi], axis=-1),
+            hovertemplate="<b>%{y}</b><br>%{x:+.3f} "
+            "[%{customdata[0]:+.3f}, %{customdata[1]:+.3f}]<extra></extra>",
+        )
+    )
+    fig.add_vline(x=0.0, line={"dash": "dot", "color": "#aaa"})
+    fig.update_layout(
+        title="Driver sensitivities (°C per W/m²; ONI dimensionless)",
+        xaxis={"title": "°C per W/m²"},
+        yaxis={"autorange": "reversed"},
+        height=80 + 42 * max(len(keys), 1),
+        showlegend=False,
+    )
+    return theme.apply_base_layout(fig)

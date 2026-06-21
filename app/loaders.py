@@ -162,6 +162,34 @@ def load_stability_summary() -> dict | None:
 
 
 @st.cache_data
+def load_physical_summary() -> dict | None:
+    """Layer 1 physical-model summary (``physical_summary.json``), if present.
+
+    Returns ``None`` until the L1 artifacts are added to the bundle (they require
+    the network-derived ``forcings.parquet``), so the physical-model page renders an
+    explicit pending state rather than failing.
+    """
+    return _load_optional_json("physical_summary.json")
+
+
+@st.cache_data
+def load_physical_trajectory() -> pd.DataFrame | None:
+    """Layer 1 observed-vs-predicted temperature trajectory, if present.
+
+    Returns ``None`` when ``physical_trajectory.parquet`` is absent from the bundle
+    (the L1 page degrades to a pending state). When present, the expected columns are
+    validated so a stale bundle surfaces one clear error.
+    """
+    path = APP_DATA_DIR / "physical_trajectory.parquet"
+    if not path.exists():
+        return None
+    return _read_bundle_parquet(
+        "physical_trajectory.parquet",
+        required=("year", "observed", "predicted_mean", "lower95", "upper95", "in_sample"),
+    )
+
+
+@st.cache_data
 def load_coupling_summary() -> dict | None:
     """Deterministic responsibility-impact comparator metrics, if present.
 

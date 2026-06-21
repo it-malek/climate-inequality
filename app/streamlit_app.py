@@ -26,6 +26,7 @@ from app.views import (  # noqa: E402
     decomposition,
     explain,
     inequality,
+    physical,
     sensitivity,
     trend_map,
     validation,
@@ -67,6 +68,10 @@ navigation = st.navigation(
             ),
         ],
         "Foundations": [
+            st.Page(
+                physical.render, title="Physical climate model", icon="🌋",
+                url_path="physical",
+            ),
             st.Page(
                 trend_map.render, title="Interpolated surface", icon="🌍",
                 url_path="surface",

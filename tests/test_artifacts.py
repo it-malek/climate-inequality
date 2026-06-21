@@ -34,6 +34,7 @@ from src.coupling import (
 )
 from src.coupling import compute_coupling
 from src.coupling import summary_payload as coupling_summary_payload
+from src.physical_model import DRIVERS, TRAJECTORY_SCHEMA
 from src.projections import ID_COL, PCS_V1_BINDING
 from src.stability import RESIDUAL_KEY
 
@@ -224,6 +225,50 @@ class TestCoupling:
             for country, z in summary[key]:
                 assert country in z_by_country, country
                 assert z == pytest.approx(z_by_country[country], abs=ABS), country
+
+
+# --------------------------------------------------------------------------- #
+# Layer 1 physical-model trajectory + summary
+# --------------------------------------------------------------------------- #
+class TestPhysical:
+    def test_trajectory_schema_and_contiguous(self, bundle):
+        traj = _parquet(bundle, app_assets.PHYSICAL_TRAJECTORY_ASSET)
+        assert list(traj.columns) == list(TRAJECTORY_SCHEMA)
+        years = traj["year"].to_numpy()
+        assert np.all(np.diff(years) == 1)  # sorted and contiguous
+
+    def test_band_brackets_mean(self, bundle):
+        traj = _parquet(bundle, app_assets.PHYSICAL_TRAJECTORY_ASSET)
+        mean = traj["predicted_mean"].to_numpy()
+        assert np.all(traj["lower95"].to_numpy() <= mean + ABS)
+        assert np.all(mean <= traj["upper95"].to_numpy() + ABS)
+
+    def test_in_sample_flag_matches_train_end(self, bundle):
+        traj = _parquet(bundle, app_assets.PHYSICAL_TRAJECTORY_ASSET)
+        summary = _json(bundle, app_assets.PHYSICAL_SUMMARY_ASSET)
+        expected = traj["year"].to_numpy() <= summary["train_end"]
+        assert np.array_equal(traj["in_sample"].to_numpy().astype(bool), expected)
+
+    def test_summary_matches_trajectory(self, bundle):
+        traj = _parquet(bundle, app_assets.PHYSICAL_TRAJECTORY_ASSET)
+        summary = _json(bundle, app_assets.PHYSICAL_SUMMARY_ASSET)
+        assert summary["n_years"] == len(traj)
+        n_test = int((traj["year"].to_numpy() > summary["train_end"]).sum())
+        assert summary["hindcast"]["n_test"] == n_test
+
+    def test_summary_keys_and_bounds(self, bundle):
+        summary = _json(bundle, app_assets.PHYSICAL_SUMMARY_ASSET)
+        assert {
+            "interpretation", "outcome", "n_years", "train_end",
+            "ar1_rho", "lags", "sensitivity", "hindcast",
+        } <= set(summary)
+        assert set(summary["sensitivity"]) == set(DRIVERS)
+        assert set(summary["lags"]) == set(DRIVERS)
+        assert abs(summary["ar1_rho"]) < 1.0  # stationary AR(1)
+        assert 0.0 - ABS <= summary["hindcast"]["test_band_coverage"] <= 1.0 + ABS
+        for sens in summary["sensitivity"].values():
+            assert sens["ci_low"] <= sens["mean"] <= sens["ci_high"]
+        assert summary["interpretation"].strip()
 
 
 # --------------------------------------------------------------------------- #

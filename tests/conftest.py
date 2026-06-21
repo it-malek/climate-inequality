@@ -198,6 +198,23 @@ def _make_synthetic_coupling_artifacts(bundle_dir: Path) -> None:
     )
 
 
+def _make_synthetic_physical_artifacts(bundle_dir: Path) -> None:
+    """Write synthetic L1 physical-model artifacts into the bundle via the real builder.
+
+    Uses the physical model's own generative fixture (varied, identifiable drivers
+    spanning the 2013 train/test split) and routes it through the production
+    ``build_physical_summary_asset`` so the physical-model page's AppTest and the
+    shipped-bundle checks exercise real L1 artifacts (``physical_trajectory.parquet``
+    + ``physical_summary.json``).
+    """
+    from src.app_assets import build_physical_summary_asset
+    from tests.test_physical_model import make_synthetic_forcings
+
+    forcings_path = bundle_dir / "forcings.parquet"
+    make_synthetic_forcings().to_parquet(forcings_path, index=False)
+    build_physical_summary_asset(forcings_path=forcings_path, out_dir=bundle_dir)
+
+
 def build_synthetic_bundle(root: Path) -> dict:
     """Run build_app_assets end to end on synthetic inputs under `root`."""
     inputs = make_synthetic_inputs(root)
@@ -219,6 +236,7 @@ def build_synthetic_bundle(root: Path) -> dict:
     )
     _make_synthetic_decomposition_artifacts(root / "bundle")
     _make_synthetic_coupling_artifacts(root / "bundle")
+    _make_synthetic_physical_artifacts(root / "bundle")
     result["bundle_dir"] = root / "bundle"
     return result
 
