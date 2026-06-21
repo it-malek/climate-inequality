@@ -50,6 +50,17 @@ GROUP_GLOSS: dict[str, str] = {
 TREND_COLORSCALE = "OrRd"
 TREND_UNIT = "°C/decade"
 
+# Neutral greys for non-semantic chart furniture (data markers, error bars,
+# reference/zero lines). st.plotly_chart(theme="streamlit") adapts the background,
+# gridlines and font but NOT explicit trace colors, so these must read on both a
+# light and a dark plot background by construction. Mid-grey (128) is the
+# light/dark perceptual midpoint; opacity alone sets prominence, so a single value
+# stays legible in either mode -- never a near-black (#333, lost on dark) or a pale
+# grey (#aaa, lost on light).
+NEUTRAL_STRONG = "rgba(128, 128, 128, 0.95)"   # data-point markers
+NEUTRAL_MID = "rgba(128, 128, 128, 0.65)"      # error bars, marker outlines
+NEUTRAL_FAINT = "rgba(128, 128, 128, 0.40)"    # zero / reference lines
+
 # Shared typography. No `color` and no Plotly template here: charts render through
 # st.plotly_chart's default `theme="streamlit"`, which supplies the background,
 # gridlines and font color from the *active* Streamlit theme -- so the charts invert
