@@ -91,6 +91,13 @@ STABILITY_SUMMARY_ASSET = "stability_summary.json"
 COUPLING_ASSET = "coupling.parquet"
 COUPLING_SUMMARY_ASSET = "coupling_summary.json"
 
+# Layer 1 physical-driver assets (global temperature vs effective radiative
+# forcings). Built best-effort: the input forcings.parquet is network-derived and
+# not committed, so the builder skips when it is absent (a no-network bundle build
+# still succeeds), mirroring the optional validation/explain assets.
+PHYSICAL_TRAJECTORY_ASSET = "physical_trajectory.parquet"
+PHYSICAL_SUMMARY_ASSET = "physical_summary.json"
+
 # Phase 6/7 optional bundle assets (present only when the heavy pipeline has run).
 VALIDATION_ASSET = "validation.parquet"
 VALIDATION_GLOBAL_ASSET = "validation_global.parquet"
@@ -720,6 +727,61 @@ def build_coupling_summary_asset(
     return {COUPLING_ASSET: table_dest, COUPLING_SUMMARY_ASSET: summary_dest}
 
 
+def build_physical_summary_asset(
+    forcings_path: Path | None = None,
+    out_dir: Path = APP_DATA_DIR,
+) -> dict[str, Path]:
+    """Write the Layer 1 physical-model artifacts into the bundle (best-effort).
+
+    Reads the assembled ``forcings.parquet``, refits the deterministic physical
+    driver model and writes ``physical_trajectory.parquet`` + ``physical_summary.json``
+    into `out_dir` (both byte-stable). Unlike the coupling builder, the input is the
+    network-derived forcings table, which is *not* committed; when it is absent the
+    builder logs and returns ``{}`` so a no-network bundle build still succeeds (the
+    L1 dashboard page then degrades to its "not built yet" state).
+
+    Args:
+        forcings_path: the assembled ``forcings.parquet`` (defaults to
+            :data:`src.forcings.DEFAULT_FORCINGS_PATH`).
+        out_dir: Bundle destination, normally the committed ``app/data/``.
+
+    Returns:
+        Dict of asset-name -> written Path, or ``{}`` when forcings are absent.
+    """
+    # Lazy imports mirror build_coupling_summary_asset: keep the L1 stack out of
+    # this module's import graph (build_app_assets is the heavy entry point).
+    from src.data_io import write_typed_parquet
+    from src.forcings import DEFAULT_FORCINGS_PATH
+    from src.physical_model import (
+        TRAJECTORY_SCHEMA,
+        compute_physical_model,
+        summary_payload as physical_payload,
+    )
+
+    forcings_path = forcings_path or DEFAULT_FORCINGS_PATH
+    if not forcings_path.exists():
+        logger.info("physical: skipped (no %s; run python -m src.forcings)", forcings_path)
+        return {}
+
+    forcings = pd.read_parquet(forcings_path)
+    trajectory, result = compute_physical_model(forcings)
+    result.check()
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    traj_dest = out_dir / PHYSICAL_TRAJECTORY_ASSET
+    write_typed_parquet(trajectory, traj_dest, TRAJECTORY_SCHEMA, order_by=("year",))
+    summary_dest = out_dir / PHYSICAL_SUMMARY_ASSET
+    summary_dest.write_text(
+        json.dumps(physical_payload(result), indent=2) + "\n", encoding="utf-8"
+    )
+    logger.info(
+        "wrote %s and %s (n=%d, train<=%d, test coverage %.0f%%)",
+        traj_dest, summary_dest, result.n_years, result.train_end,
+        100 * result.hindcast["test_band_coverage"],
+    )
+    return {PHYSICAL_TRAJECTORY_ASSET: traj_dest, PHYSICAL_SUMMARY_ASSET: summary_dest}
+
+
 def main() -> None:
     """Build the default bundle and print the README sanity checks."""
     logging.basicConfig(
@@ -729,6 +791,7 @@ def main() -> None:
     summaries = build_decomposition_summaries()
     stability = build_stability_summary_asset()
     coupling = build_coupling_summary_asset()
+    physical = build_physical_summary_asset()
     trends = out["stats"]["trends"]
     interp = out["stats"]["interpolation"]
     ineq = out["stats"]["inequality"]
@@ -812,7 +875,22 @@ def main() -> None:
         "(deterministic comparator)"
     )
 
-    all_paths = {**out["paths"], **summaries, **stability, **coupling}
+    if PHYSICAL_SUMMARY_ASSET in physical:
+        physical_summary = json.loads(
+            physical[PHYSICAL_SUMMARY_ASSET].read_text(encoding="utf-8")
+        )
+        h = physical_summary["hindcast"]
+        print(
+            f"physical (L1): n={physical_summary['n_years']}, "
+            f"train<={physical_summary['train_end']}, AR(1) rho "
+            f"{physical_summary['ar1_rho']:+.3f}, train R^2 {h['train_r2']:.3f}, "
+            f"test band coverage {h['test_band_coverage']:.0%} "
+            "(predictive association, non-causal)"
+        )
+    else:
+        print("physical (L1): skipped (forcings.parquet not built)")
+
+    all_paths = {**out["paths"], **summaries, **stability, **coupling, **physical}
     total_kb = sum(p.stat().st_size for p in all_paths.values()) / 1024
     print(f"bundle: {len(all_paths)} files, {total_kb:,.0f} KB total")
     for name, path in all_paths.items():

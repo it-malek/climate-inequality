@@ -207,6 +207,26 @@ class TestCouplingPage:
         st.cache_data.clear()
 
 
+class TestPhysicalPage:
+    def test_renders_metrics_and_sections(self, bundle_dir):
+        # The synthetic bundle now carries L1 artifacts (forcings -> physical model).
+        at = run_page("app.views.physical")
+        assert at.title[0].value == "The physical climate engine"
+        labels = [m.label for m in at.metric]
+        assert {"Train R²", "Test RMSE", "Band coverage", "AR(1) ρ"} <= set(labels)
+        subheaders = [s.value for s in at.subheader]
+        assert "The model feels volcanic shocks" in subheaders
+
+    def test_pending_state_without_artifacts(self, tmp_path, monkeypatch):
+        # Point loaders at an empty dir: the page must degrade, not crash.
+        monkeypatch.setattr(loaders, "APP_DATA_DIR", tmp_path)
+        st.cache_data.clear()
+        at = run_page("app.views.physical")
+        assert not at.exception
+        assert len(at.info) == 1
+        st.cache_data.clear()
+
+
 class TestSensitivityPage:
     def test_pending_state_by_default(self, bundle_dir):
         # No stability_summary.json in the synthetic bundle -> pending state.
