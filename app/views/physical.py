@@ -48,7 +48,8 @@ def render() -> None:
     st.caption(summary["interpretation"])
 
     # --- HERO: the volcanic fingerprint -------------------------------------
-    st.subheader("The model feels volcanic shocks")
+    # No st.subheader here: the chart carries its own title, and the volcanic
+    # framing lives in the caption below, so a Streamlit header would double-title.
     st.plotly_chart(
         charts.physical_trajectory_chart(trajectory, train_end, ERUPTIONS),
         width="stretch",

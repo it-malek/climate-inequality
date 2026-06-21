@@ -214,8 +214,10 @@ class TestPhysicalPage:
         assert at.title[0].value == "The physical climate engine"
         labels = [m.label for m in at.metric]
         assert {"Train R²", "Test RMSE", "Band coverage", "AR(1) ρ"} <= set(labels)
+        # Hero chart carries its own title (no Streamlit subheader); the hindcast
+        # section header remains.
         subheaders = [s.value for s in at.subheader]
-        assert "The model feels volcanic shocks" in subheaders
+        assert any("Trained" in s for s in subheaders)
 
     def test_pending_state_without_artifacts(self, tmp_path, monkeypatch):
         # Point loaders at an empty dir: the page must degrade, not crash.
