@@ -16,6 +16,8 @@ from src.app_assets import (
     ANOMALIES_ASSET,
     APP_DATA_DIR,
     COUPLING_ASSET,
+    COUPLING_CONSUMPTION_ASSET,
+    COUPLING_CONSUMPTION_SUMMARY_ASSET,
     COUPLING_SUMMARY_ASSET,
     DECOMPOSITION_SUMMARY_ASSET,
     EXPLAIN_FEATURES_ASSET,
@@ -34,6 +36,7 @@ from src.app_assets import (
     _VALIDATION_GLOBAL_PATH,
     _VALIDATION_SUMMARY_PATH,
     build_app_assets,
+    build_coupling_consumption_asset,
     build_coupling_summary_asset,
     build_decomposition_summaries,
     build_stability_summary_asset,
@@ -439,3 +442,58 @@ class TestCouplingAsset:
             inequality_path=inequality_path, out_dir=tmp_path / "b2"
         )[COUPLING_SUMMARY_ASSET].read_text("utf-8")
         assert first == second
+
+
+class TestCouplingConsumptionAsset:
+    """build_coupling_consumption_asset wires the PCS v2 consumption lens in."""
+
+    def test_writes_both_artifacts_with_window_and_two_passes(self, tmp_path):
+        inequality_path = tmp_path / "country_inequality.parquet"
+        make_inequality_frame().to_parquet(inequality_path, index=False)
+        out_dir = tmp_path / "bundle"
+
+        written = build_coupling_consumption_asset(
+            inequality_path=inequality_path, out_dir=out_dir
+        )
+
+        assert COUPLING_CONSUMPTION_ASSET in written
+        assert COUPLING_CONSUMPTION_SUMMARY_ASSET in written
+        assert (out_dir / COUPLING_CONSUMPTION_ASSET).exists()
+        payload = json.loads(
+            (out_dir / COUPLING_CONSUMPTION_SUMMARY_ASSET).read_text("utf-8")
+        )
+        assert set(payload) == {
+            "window", "consumption_vs_impact", "production_to_consumption_shift",
+        }
+        assert payload["window"]["n_countries"] > 0
+        assert "interpretation" not in payload
+
+    def test_byte_stable(self, tmp_path):
+        inequality_path = tmp_path / "country_inequality.parquet"
+        make_inequality_frame().to_parquet(inequality_path, index=False)
+        first = build_coupling_consumption_asset(
+            inequality_path=inequality_path, out_dir=tmp_path / "b1"
+        )[COUPLING_CONSUMPTION_SUMMARY_ASSET].read_text("utf-8")
+        second = build_coupling_consumption_asset(
+            inequality_path=inequality_path, out_dir=tmp_path / "b2"
+        )[COUPLING_CONSUMPTION_SUMMARY_ASSET].read_text("utf-8")
+        assert first == second
+
+    def test_skips_when_consumption_columns_absent(self, tmp_path):
+        inequality_path = tmp_path / "country_inequality.parquet"
+        # A pre-v2 country table with no consumption columns.
+        frame = make_inequality_frame().drop(
+            columns=[
+                "consumption_start_year",
+                "cum_consumption_t_per_capita",
+                "cum_co2_window_t_per_capita",
+            ]
+        )
+        frame.to_parquet(inequality_path, index=False)
+        out_dir = tmp_path / "bundle"
+
+        written = build_coupling_consumption_asset(
+            inequality_path=inequality_path, out_dir=out_dir
+        )
+        assert written == {}
+        assert not (out_dir / COUPLING_CONSUMPTION_ASSET).exists()

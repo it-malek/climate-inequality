@@ -1,0 +1,23 @@
+# PCS -- generated mirror of src.pcs.PCS_V2 (the wide semantic registry).
+# Canonical source is the Python dataclasses; regenerate via:
+#   uv run python -m src.pcs
+version: "v2"
+projections:
+  - name: "impact_index_v1"
+    version: "v1"
+    units: "degC per decade"
+    aggregation_rule: "unweighted mean across city-locations"
+    computation_definition: "Country mean of the per-city-location Theil-Sen warming slopes over the analysis window (degrees Celsius per decade); a warming-exposure projection."
+    definition_hash: "41eb1820504a9e5d5e2d07cb40a2f505a655781c973753a18dc6359995ce1fea"
+  - name: "responsibility_index_consumption"
+    version: "v2"
+    units: "t CO2 per capita"
+    aggregation_rule: "sum-then-divide over the consumption-available window"
+    computation_definition: "Cumulative consumption-based CO2 emissions (emissions counted where goods are consumed) summed over each country's consumption-available window [first year consumption data exists .. analysis cutoff], divided by cutoff-year population (tonnes per capita); a consumption-based historical-responsibility projection."
+    definition_hash: "e93f3aebe02ec1e40898a3112a24c528994985857ba61c3e72a9dfba6d617281"
+  - name: "responsibility_index_production_matched"
+    version: "v2"
+    units: "t CO2 per capita"
+    aggregation_rule: "sum-then-divide over the consumption-available window"
+    computation_definition: "Cumulative production-based CO2 emissions summed over the SAME consumption-available window as responsibility_index_consumption, divided by cutoff-year population (tonnes per capita); the window-matched production baseline for an apples-to-apples production-vs-consumption responsibility comparison."
+    definition_hash: "323f6051d9983415d142978ea49a0d7ac0c03e0041d8a87bd746b0c3f37b740d"

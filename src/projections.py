@@ -55,6 +55,35 @@ if set(PCS_V1_BINDING) != set(pcs.PROJECTION_NAMES):
         f"projections {sorted(pcs.PROJECTION_NAMES)}"
     )
 
+# The frozen PCS v2 (wide-registry) instantiation: the v1 impact projection plus
+# the two window-matched responsibility lenses, each bound by identity to its
+# source column in the (additively-extended) country table.
+PCS_V2_BINDING: dict[str, str] = {
+    pcs.IMPACT_INDEX: "trend_c_per_decade",
+    pcs.RESPONSIBILITY_CONSUMPTION_INDEX: "cum_consumption_t_per_capita",
+    pcs.RESPONSIBILITY_PRODUCTION_MATCHED_INDEX: "cum_co2_window_t_per_capita",
+}
+
+# On-disk schema of projections_consumption.parquet (DuckDB types), in order:
+# the Country key plus the three registered v2 projections (the wide registry).
+PROJECTIONS_CONSUMPTION_SCHEMA: dict[str, str] = {
+    ID_COL: "VARCHAR",
+    pcs.IMPACT_INDEX: "DOUBLE",
+    pcs.RESPONSIBILITY_CONSUMPTION_INDEX: "DOUBLE",
+    pcs.RESPONSIBILITY_PRODUCTION_MATCHED_INDEX: "DOUBLE",
+}
+PROJECTIONS_CONSUMPTION_COLUMNS = tuple(PROJECTIONS_CONSUMPTION_SCHEMA)
+
+DEFAULT_PROJECTIONS_CONSUMPTION_PATH = (
+    PROCESSED_DIR / "projections_consumption.parquet"
+)
+
+if set(PCS_V2_BINDING) != set(pcs.PROJECTION_NAMES_V2):
+    raise ValueError(
+        f"PCS_V2_BINDING keys {sorted(PCS_V2_BINDING)} must equal the registry "
+        f"projections {sorted(pcs.PROJECTION_NAMES_V2)}"
+    )
+
 
 def resolve_projections(inequality: pd.DataFrame) -> pd.DataFrame:
     """Apply the frozen identity binding to emit the Layer 1 projection table.
@@ -102,6 +131,102 @@ def build_projections(
     inequality = pd.read_parquet(inequality_path)
     projections = resolve_projections(inequality)
     write_typed_parquet(projections, out_path, PROJECTIONS_SCHEMA, order_by=(ID_COL,))
+    logger.info("wrote %s (%d countries)", out_path, len(projections))
+    return out_path
+
+
+def resolve_consumption_projections(inequality: pd.DataFrame) -> pd.DataFrame:
+    """Apply the frozen v2 identity binding to emit the wide projection table.
+
+    Mirrors :func:`resolve_projections` for the PCS v2 wide registry: selects the
+    bound source columns (identity, no transformation) and emits only ``Country``
+    plus the three registered v2 projections. Countries with no OWID consumption
+    series carry NULLs in the consumption sources; those rows are dropped here so
+    the consumption lens operates only on countries with a real window.
+
+    Args:
+        inequality: the upstream country table (``country_inequality.parquet``),
+            which must carry the bound source columns and ``Country``.
+
+    Returns:
+        One row per consumption-covered country with columns
+        :data:`PROJECTIONS_CONSUMPTION_COLUMNS`.
+
+    Raises:
+        ValueError: if a bound source column or the ``Country`` key is absent.
+    """
+    required = [ID_COL, *PCS_V2_BINDING.values()]
+    missing = [c for c in required if c not in inequality.columns]
+    if missing:
+        raise ValueError(
+            f"cannot resolve PCS v2 projections: source column(s) {missing} absent "
+            f"from the upstream table"
+        )
+    out = pd.DataFrame({ID_COL: inequality[ID_COL].to_numpy()})
+    for projection, source in PCS_V2_BINDING.items():
+        out[projection] = inequality[source].to_numpy()  # identity binding
+    out = out[list(PROJECTIONS_CONSUMPTION_COLUMNS)]
+    # Drop countries lacking a consumption window (NULL responsibility lenses).
+    covered = out[
+        [pcs.RESPONSIBILITY_CONSUMPTION_INDEX, pcs.RESPONSIBILITY_PRODUCTION_MATCHED_INDEX]
+    ].notna().all(axis=1)
+    n_drop = int((~covered).sum())
+    if n_drop:
+        logger.info("consumption projections: dropping %d countries without a window", n_drop)
+    return out.loc[covered].reset_index(drop=True)
+
+
+def consumption_window(inequality: pd.DataFrame) -> dict:
+    """Window-provenance label for the consumption lens (summary metadata).
+
+    The per-country consumption-available window is opaque to the closed
+    projection frame (``consumption_start_year`` is not a projection), so this
+    label is derived upstream from the country table and injected into the
+    consumption summary -- mirroring how the forcings hash is stamped at the
+    bundle layer rather than by the pure estimator. The window end is the shared
+    analysis cutoff; only the per-country start years vary.
+
+    Args:
+        inequality: the country table carrying ``consumption_start_year``.
+
+    Returns:
+        ``{n_countries, consumption_start_year_min/median/max}`` over the
+        consumption-covered countries (empty-safe).
+    """
+    years = inequality["consumption_start_year"].dropna()
+    if years.empty:
+        return {
+            "n_countries": 0,
+            "consumption_start_year_min": None,
+            "consumption_start_year_median": None,
+            "consumption_start_year_max": None,
+        }
+    return {
+        "n_countries": int(len(years)),
+        "consumption_start_year_min": int(years.min()),
+        "consumption_start_year_median": float(years.median()),
+        "consumption_start_year_max": int(years.max()),
+    }
+
+
+def build_consumption_projections(
+    inequality_path: Path = DEFAULT_INEQUALITY_PATH,
+    out_path: Path = DEFAULT_PROJECTIONS_CONSUMPTION_PATH,
+) -> Path:
+    """Materialize ``projections_consumption.parquet`` from the country table.
+
+    Args:
+        inequality_path: Phase 4 ``country_inequality.parquet``.
+        out_path: Destination parquet (parents created).
+
+    Returns:
+        `out_path`.
+    """
+    inequality = pd.read_parquet(inequality_path)
+    projections = resolve_consumption_projections(inequality)
+    write_typed_parquet(
+        projections, out_path, PROJECTIONS_CONSUMPTION_SCHEMA, order_by=(ID_COL,)
+    )
     logger.info("wrote %s (%d countries)", out_path, len(projections))
     return out_path
 

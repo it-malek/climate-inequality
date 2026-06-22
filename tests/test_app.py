@@ -197,6 +197,15 @@ class TestCouplingPage:
         assert "Inequality coefficient" in labels
         assert "High impact, low responsibility" in labels
 
+    def test_renders_consumption_section(self, bundle_dir):
+        # The synthetic bundle carries the PCS v2 consumption artifacts.
+        at = run_page("app.views.coupling")
+        labels = [m.label for m in at.metric]
+        assert "Production → consumption rank ρ" in labels
+        assert "Consumption inequality coefficient" in labels
+        headers = [h.value for h in at.header]
+        assert any("consumed" in h.lower() for h in headers)
+
     def test_pending_state_without_summary(self, tmp_path, monkeypatch):
         # Point loaders at an empty dir: the page must degrade, not crash.
         monkeypatch.setattr(loaders, "APP_DATA_DIR", tmp_path)

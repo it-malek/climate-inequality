@@ -73,7 +73,10 @@ BERKELEY_TO_OWID = {
     "Swaziland": "Eswatini",
 }
 
-# On-disk schema of country_inequality.parquet (DuckDB types), in order.
+# On-disk schema of country_inequality.parquet (DuckDB types), in order. The
+# consumption-lens columns are appended additively (the v1 columns and their
+# order are frozen): a country with no OWID consumption series carries NULLs in
+# the three trailing columns and is dropped only by the v2 consumption consumers.
 INEQUALITY_SCHEMA = {
     "Country": "VARCHAR",
     "owid_country": "VARCHAR",
@@ -83,8 +86,19 @@ INEQUALITY_SCHEMA = {
     "cumulative_co2_mt": "DOUBLE",
     "population": "BIGINT",
     "cum_co2_t_per_capita": "DOUBLE",
+    "consumption_start_year": "BIGINT",
+    "cum_consumption_t_per_capita": "DOUBLE",
+    "cum_co2_window_t_per_capita": "DOUBLE",
 }
 INEQUALITY_COLUMNS = list(INEQUALITY_SCHEMA)
+
+# Columns emitted by cumulative_consumption_per_capita (merged into the country
+# table on `country`); these populate the trailing INEQUALITY_SCHEMA columns.
+CONSUMPTION_COLUMNS = (
+    "consumption_start_year",
+    "cum_consumption_t_per_capita",
+    "cum_co2_window_t_per_capita",
+)
 
 
 def load_owid_co2(csv_path: Path = OWID_CO2_PATH) -> pd.DataFrame:
@@ -103,7 +117,10 @@ def load_owid_co2(csv_path: Path = OWID_CO2_PATH) -> pd.DataFrame:
     if not csv_path.exists():
         raise FileNotFoundError(f"no such file: {csv_path}; download it first")
     return pd.read_csv(
-        csv_path, usecols=["country", "iso_code", "year", "co2", "population"]
+        csv_path,
+        usecols=[
+            "country", "iso_code", "year", "co2", "consumption_co2", "population"
+        ],
     )
 
 
@@ -197,6 +214,81 @@ def cumulative_emissions_per_capita(
         cum_co2_t_per_capita=out["cumulative_co2_mt"] * 1e6 / out["population"]
     )
     return out.reset_index(drop=True)
+
+
+def cumulative_consumption_per_capita(
+    owid: pd.DataFrame, cutoff_year: int
+) -> pd.DataFrame:
+    """Consumption- and window-matched production cumulatives, per capita.
+
+    OWID's ``consumption_co2`` (emissions counted where goods are *consumed*)
+    starts only ~1990 and is missing for many countries, while production
+    ``co2`` runs from 1750 -- so a naive production-vs-consumption comparison is
+    window-confounded. This function fixes the confounder by computing *both*
+    cumulatives over each country's **consumption-available window**
+    ``[first year consumption_co2 is present .. cutoff_year]``:
+
+    - ``cum_consumption_t_per_capita`` -- cumulative consumption CO2 over the
+      window, per cutoff-year resident (tonnes/person);
+    - ``cum_co2_window_t_per_capita`` -- cumulative *production* CO2 over the
+      **same** window, per cutoff-year resident (the apples-to-apples baseline).
+
+    The cutoff-year population basis matches :func:`cumulative_emissions_per_capita`.
+    OWID aggregate rows (World, continents, income groups) are excluded via their
+    missing or ``OWID_*`` iso codes. Countries with no consumption record in the
+    window, or no cutoff-year population, are dropped and logged.
+
+    Args:
+        owid: Frame from :func:`load_owid_co2` (must carry ``consumption_co2``).
+        cutoff_year: Last year included (the analysis-window end).
+
+    Returns:
+        One row per country: ``country``, ``consumption_start_year``,
+        ``cum_consumption_t_per_capita``, ``cum_co2_window_t_per_capita``.
+    """
+    iso = owid["iso_code"].fillna("")
+    countries = owid[(iso != "") & ~iso.str.startswith("OWID_")]
+    within = countries.loc[countries["year"] <= cutoff_year]
+
+    present = within.loc[within["consumption_co2"].notna()]
+    start = present.groupby("country")["year"].min().rename("consumption_start_year")
+    cum_consumption = (
+        present.groupby("country")["consumption_co2"].sum(min_count=1)
+        .mul(1e6).rename("cum_consumption_mt_e6")
+    )
+
+    # Window-matched production: sum co2 only from each country's consumption
+    # start year through the cutoff (the same window the consumption sum spans).
+    windowed = within.merge(start, on="country", how="inner")
+    in_window = windowed.loc[windowed["year"] >= windowed["consumption_start_year"]]
+    cum_production = (
+        in_window.groupby("country")["co2"].sum(min_count=1)
+        .mul(1e6).rename("cum_co2_window_mt_e6")
+    )
+
+    population = (
+        countries.loc[countries["year"] == cutoff_year]
+        .set_index("country")["population"]
+    )
+    out = pd.concat([start, cum_consumption, cum_production, population], axis=1)
+
+    incomplete = out["cum_consumption_mt_e6"].isna() | out["population"].isna()
+    if incomplete.any():
+        logger.info(
+            "consumption lens: dropping %d countries without consumption record "
+            "or %d population: %s",
+            int(incomplete.sum()),
+            cutoff_year,
+            sorted(out.index[incomplete]),
+        )
+        out = out.loc[~incomplete]
+
+    out = out.assign(
+        consumption_start_year=out["consumption_start_year"].astype("int64"),
+        cum_consumption_t_per_capita=out["cum_consumption_mt_e6"] / out["population"],
+        cum_co2_window_t_per_capita=out["cum_co2_window_mt_e6"] / out["population"],
+    )
+    return out.reset_index(names="country")[["country", *CONSUMPTION_COLUMNS]]
 
 
 def join_country_data(
@@ -380,7 +472,12 @@ def build_inequality_analysis(
         logger.info("cutoff year %d derived from analysis_window", cutoff_year)
 
     country_trends = aggregate_trends_by_country(trends)
-    emissions = cumulative_emissions_per_capita(load_owid_co2(co2_path), cutoff_year)
+    owid = load_owid_co2(co2_path)
+    emissions = cumulative_emissions_per_capita(owid, cutoff_year)
+    consumption = cumulative_consumption_per_capita(owid, cutoff_year)
+    # Left merge: countries without an OWID consumption series keep NULLs in the
+    # trailing consumption columns (only the v2 consumption lens drops them).
+    emissions = emissions.merge(consumption, on="country", how="left")
     table = join_country_data(
         country_trends, emissions, load_continents(continents_path)
     )
