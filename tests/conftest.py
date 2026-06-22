@@ -184,15 +184,22 @@ def _make_synthetic_decomposition_artifacts(bundle_dir: Path) -> None:
 
 
 def _make_synthetic_coupling_artifacts(bundle_dir: Path) -> None:
-    """Write synthetic L3 coupling artifacts into the bundle via the real builder.
+    """Write synthetic L3 coupling artifacts into the bundle via the real builders.
 
-    Routed through the production ``build_coupling_summary_asset`` so the
-    responsibility-vs-impact page's AppTest exercises real bundle artifacts
-    (``coupling.parquet`` + ``coupling_summary.json``).
+    Routed through the production ``build_coupling_summary_asset`` (v1
+    responsibility-vs-impact) and ``build_coupling_consumption_asset`` (PCS v2
+    consumption lens) so both pages' AppTests exercise real bundle artifacts.
     """
-    from src.app_assets import build_coupling_summary_asset
+    from src.app_assets import (
+        build_coupling_consumption_asset,
+        build_coupling_summary_asset,
+    )
 
     build_coupling_summary_asset(
+        inequality_path=bundle_dir / "country_inequality.parquet",
+        out_dir=bundle_dir,
+    )
+    build_coupling_consumption_asset(
         inequality_path=bundle_dir / "country_inequality.parquet",
         out_dir=bundle_dir,
     )

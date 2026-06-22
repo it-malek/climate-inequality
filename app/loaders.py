@@ -201,6 +201,38 @@ def load_coupling_summary() -> dict | None:
 
 
 @st.cache_data
+def load_coupling_consumption_summary() -> dict | None:
+    """Two-pass consumption-lens comparator metrics (PCS v2), if present.
+
+    Returns ``None`` until ``coupling_consumption_summary.json`` is added to the
+    bundle (it needs the additive consumption columns in the country table), so
+    the responsibility page's consumption comparison degrades gracefully.
+    """
+    return _load_optional_json("coupling_consumption_summary.json")
+
+
+@st.cache_data
+def load_coupling_consumption() -> pd.DataFrame | None:
+    """The Layer 3 consumption-lens wide diagnostic table, if present.
+
+    Returns ``None`` when ``coupling_consumption.parquet`` is absent; when present,
+    the expected columns are validated so a stale bundle surfaces one clear error.
+    """
+    path = APP_DATA_DIR / "coupling_consumption.parquet"
+    if not path.exists():
+        return None
+    return _read_bundle_parquet(
+        "coupling_consumption.parquet",
+        required=(
+            "Country", "impact_index_v1", "responsibility_index_consumption",
+            "responsibility_index_production_matched", "production_matched_rank",
+            "consumption_rank", "prod_to_cons_rank_gap", "prod_to_cons_z_gap",
+            "impact_rank", "consumption_impact_z_gap",
+        ),
+    )
+
+
+@st.cache_data
 def load_country_latitudes() -> pd.DataFrame:
     """Mean signed latitude per country, aggregated from the city features.
 

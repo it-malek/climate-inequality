@@ -17,6 +17,7 @@ from src.emissions import (
     InequalityResult,
     aggregate_trends_by_country,
     build_inequality_analysis,
+    cumulative_consumption_per_capita,
     cumulative_emissions_per_capita,
     join_country_data,
     load_continents,
@@ -26,14 +27,20 @@ from src.emissions import (
 SLOPE = 0.05  # injected °C/decade per 10x emissions
 
 
-def make_owid_rows(country, iso_code, years, co2, population):
-    """Rows for one country in the OWID long format."""
+def make_owid_rows(country, iso_code, years, co2, population, consumption_co2=None):
+    """Rows for one country in the OWID long format.
+
+    `consumption_co2` defaults to all-missing (the column is always present so
+    :func:`src.emissions.load_owid_co2`'s ``usecols`` finds it, mirroring the
+    real OWID csv where the series is sparse).
+    """
     return pd.DataFrame(
         {
             "country": country,
             "year": years,
             "iso_code": iso_code,
             "co2": co2,
+            "consumption_co2": np.nan if consumption_co2 is None else consumption_co2,
             "population": population,
         }
     )
@@ -68,6 +75,11 @@ def make_inequality_frame(noise_sd=0.0, seed=0, specs=None):
                     "cumulative_co2_mt": 10.0,
                     "population": 1_000_000,
                     "cum_co2_t_per_capita": 10.0**lx,
+                    # Consumption lens (window-matched). Positive and monotone
+                    # in lx so the v2 wide-registry consumers have valid input.
+                    "consumption_start_year": 1990,
+                    "cum_consumption_t_per_capita": 10.0**lx,
+                    "cum_co2_window_t_per_capita": 10.0**lx,
                 }
             )
     return pd.DataFrame(rows)
@@ -141,6 +153,75 @@ class TestCumulativeEmissionsPerCapita:
         assert "B" in caplog.text
 
 
+class TestCumulativeConsumptionPerCapita:
+    def test_window_matched_arithmetic(self):
+        # Consumption begins 2012; the window-matched production cumulative must
+        # sum production over that SAME [2012..2013] window, excluding 2011.
+        owid = make_owid_rows(
+            "A", "AAA", [2011, 2012, 2013],
+            co2=[1.0, 2.0, 3.0], population=1e6,
+            consumption_co2=[np.nan, 10.0, 20.0],
+        )
+        out = cumulative_consumption_per_capita(owid, cutoff_year=2013)
+        row = out.set_index("country").loc["A"]
+        assert row["consumption_start_year"] == 2012
+        # consumption 30 Mt over 1e6 people -> 30 t/cap.
+        assert row["cum_consumption_t_per_capita"] == pytest.approx(30.0)
+        # production over the matched window is 2+3=5 Mt (2011's 1 Mt excluded).
+        assert row["cum_co2_window_t_per_capita"] == pytest.approx(5.0)
+
+    def test_respects_cutoff_year(self):
+        owid = make_owid_rows(
+            "A", "AAA", [2012, 2013, 2014],
+            co2=[1.0, 2.0, 99.0], population=1e6,
+            consumption_co2=[5.0, 5.0, 99.0],
+        )
+        out = cumulative_consumption_per_capita(owid, cutoff_year=2013)
+        row = out.set_index("country").loc["A"]
+        assert row["cum_consumption_t_per_capita"] == pytest.approx(10.0)
+        assert row["cum_co2_window_t_per_capita"] == pytest.approx(3.0)
+
+    def test_drops_country_without_any_consumption(self, caplog):
+        frames = [
+            make_owid_rows("A", "AAA", [2013], [1.0], 1e6, consumption_co2=[2.0]),
+            make_owid_rows("B", "BBB", [2013], [1.0], 1e6, consumption_co2=[np.nan]),
+        ]
+        with caplog.at_level(logging.INFO, logger="src.emissions"):
+            out = cumulative_consumption_per_capita(pd.concat(frames), cutoff_year=2013)
+        assert out["country"].tolist() == ["A"]
+        assert "B" in caplog.text
+
+    def test_drops_country_without_cutoff_population(self, caplog):
+        frames = [
+            make_owid_rows("A", "AAA", [2013], [1.0], 1e6, consumption_co2=[2.0]),
+            make_owid_rows("B", "BBB", [2013], [1.0], np.nan, consumption_co2=[2.0]),
+        ]
+        with caplog.at_level(logging.INFO, logger="src.emissions"):
+            out = cumulative_consumption_per_capita(pd.concat(frames), cutoff_year=2013)
+        assert out["country"].tolist() == ["A"]
+        assert "B" in caplog.text
+
+    def test_excludes_owid_aggregate_rows(self):
+        frames = [
+            make_owid_rows("A", "AAA", [2013], [1.0], 1e6, consumption_co2=[2.0]),
+            make_owid_rows("World", "OWID_WRL", [2013], [999.0], 7e9, consumption_co2=[9.0]),
+        ]
+        out = cumulative_consumption_per_capita(pd.concat(frames), cutoff_year=2013)
+        assert out["country"].tolist() == ["A"]
+
+    def test_returns_only_consumption_columns(self):
+        owid = make_owid_rows(
+            "A", "AAA", [2012, 2013], [1.0, 2.0], 1e6, consumption_co2=[3.0, 4.0]
+        )
+        out = cumulative_consumption_per_capita(owid, cutoff_year=2013)
+        assert out.columns.tolist() == [
+            "country",
+            "consumption_start_year",
+            "cum_consumption_t_per_capita",
+            "cum_co2_window_t_per_capita",
+        ]
+
+
 class TestJoinCountryData:
     @staticmethod
     def inputs():
@@ -157,6 +238,9 @@ class TestJoinCountryData:
                 "cumulative_co2_mt": [10.0, 20.0],
                 "population": [1e6, 2e6],
                 "cum_co2_t_per_capita": [10.0, 10.0],
+                "consumption_start_year": [1990, 1990],
+                "cum_consumption_t_per_capita": [8.0, 8.0],
+                "cum_co2_window_t_per_capita": [5.0, 5.0],
             }
         )
         continents = pd.DataFrame(
@@ -263,8 +347,12 @@ class TestBuildInequalityAnalysis:
         population = 1_000_000
         owid_frames = [
             # 0 Mt in 2012 plus the full amount in 2013, so cumulative sums
-            # land exactly on 10**lx tonnes per person.
-            make_owid_rows(owid, iso, [2012, 2013], [0.0, 10.0**lx], population)
+            # land exactly on 10**lx tonnes per person. Consumption present from
+            # 2012, so the consumption window is [2012..2013] (== full record).
+            make_owid_rows(
+                owid, iso, [2012, 2013], [0.0, 10.0**lx], population,
+                consumption_co2=[0.0, (10.0**lx) * 0.8],
+            )
             for _, owid, iso, _, lx in self.COUNTRIES
         ]
         owid_frames.append(
@@ -324,6 +412,12 @@ class TestBuildInequalityAnalysis:
         assert table.columns.tolist() == INEQUALITY_COLUMNS
         assert table.set_index("Country").loc["Burma", "owid_country"] == "Myanmar"
         assert (table["n_cities"] == 2).all()
+        # Consumption lens populated additively: window-matched production over
+        # [2012..2013] equals the full record here, and consumption is 0.8x it.
+        burma = table.set_index("Country").loc["Burma"]
+        assert burma["consumption_start_year"] == 2012
+        assert burma["cum_co2_window_t_per_capita"] == pytest.approx(10.0**2.2)
+        assert burma["cum_consumption_t_per_capita"] == pytest.approx(10.0**2.2 * 0.8)
         assert out["figure_path"].exists()
         assert out["table_path"].exists()
 
@@ -346,6 +440,9 @@ class TestBuildInequalityAnalysis:
         assert schema["population"] == "BIGINT"
         assert schema["trend_c_per_decade"] == "DOUBLE"
         assert schema["cum_co2_t_per_capita"] == "DOUBLE"
+        assert schema["consumption_start_year"] == "BIGINT"
+        assert schema["cum_consumption_t_per_capita"] == "DOUBLE"
+        assert schema["cum_co2_window_t_per_capita"] == "DOUBLE"
 
 
 class TestLoaders:

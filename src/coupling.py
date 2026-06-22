@@ -31,8 +31,20 @@ import pandas as pd
 from scipy import stats
 
 from src.data_io import PROCESSED_DIR, round_floats, write_typed_parquet
-from src.pcs import IMPACT_INDEX, RESPONSIBILITY_INDEX
-from src.projections import DEFAULT_PROJECTIONS_PATH, ID_COL
+from src.pcs import (
+    IMPACT_INDEX,
+    RESPONSIBILITY_CONSUMPTION_INDEX,
+    RESPONSIBILITY_INDEX,
+    RESPONSIBILITY_PRODUCTION_MATCHED_INDEX,
+)
+from src.projections import (
+    DEFAULT_INEQUALITY_PATH,
+    DEFAULT_PROJECTIONS_CONSUMPTION_PATH,
+    DEFAULT_PROJECTIONS_PATH,
+    ID_COL,
+    PROJECTIONS_CONSUMPTION_COLUMNS,
+    consumption_window,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +52,14 @@ TOP_N = 10
 
 DEFAULT_SUMMARY_PATH = PROCESSED_DIR / "coupling_summary.json"
 DEFAULT_COUPLING_PATH = PROCESSED_DIR / "coupling.parquet"
+
+DEFAULT_CONSUMPTION_SUMMARY_PATH = PROCESSED_DIR / "coupling_consumption_summary.json"
+DEFAULT_CONSUMPTION_COUPLING_PATH = PROCESSED_DIR / "coupling_consumption.parquet"
+
+# The default admissible set is the v1 closure (Country + the two v1 projections);
+# v2 consumers pass the wide registered set instead.
+V1_ADMISSIBLE: frozenset[str] = frozenset({ID_COL, RESPONSIBILITY_INDEX, IMPACT_INDEX})
+WIDE_ADMISSIBLE: frozenset[str] = frozenset(PROJECTIONS_CONSUMPTION_COLUMNS)
 
 # On-disk schema of coupling.parquet (DuckDB types), in order.
 COUPLING_SCHEMA: dict[str, str] = {
@@ -53,19 +73,40 @@ COUPLING_SCHEMA: dict[str, str] = {
 }
 COUPLING_COLUMNS = tuple(COUPLING_SCHEMA)
 
+# On-disk schema of coupling_consumption.parquet (the wide two-pass diagnostics):
+# the registered v2 projections, plus the production->consumption rank-shift pass
+# and the consumption-vs-impact pass diagnostics.
+COUPLING_CONSUMPTION_SCHEMA: dict[str, str] = {
+    ID_COL: "VARCHAR",
+    IMPACT_INDEX: "DOUBLE",
+    RESPONSIBILITY_CONSUMPTION_INDEX: "DOUBLE",
+    RESPONSIBILITY_PRODUCTION_MATCHED_INDEX: "DOUBLE",
+    "production_matched_rank": "BIGINT",
+    "consumption_rank": "BIGINT",
+    "prod_to_cons_rank_gap": "BIGINT",
+    "prod_to_cons_z_gap": "DOUBLE",
+    "impact_rank": "BIGINT",
+    "consumption_impact_z_gap": "DOUBLE",
+}
+COUPLING_CONSUMPTION_COLUMNS = tuple(COUPLING_CONSUMPTION_SCHEMA)
 
-def validate_projection_frame(columns) -> None:
-    """Semantic-closure guard: only ``Country`` + the two PCS projections may appear.
+
+def validate_projection_frame(
+    columns, admissible: frozenset[str] = V1_ADMISSIBLE
+) -> None:
+    """Semantic-closure guard: only ``Country`` + registered projections may appear.
 
     Implements Invariant 1: the comparator operates *only* on the PCS-resolved
     scalars; a stray column (e.g. continent, population) would be forbidden
-    feature leakage and must raise rather than enter a computation.
+    feature leakage and must raise rather than enter a computation. `admissible`
+    defaults to the v1 closure (exactly the two v1 projections); v2 callers pass
+    the wider registered set, so closure widens from "exactly the two" to "exactly
+    the registered set" without being dropped.
 
     Raises:
-        ValueError: if any column is outside the admissible set, or a required
-            PCS column is missing.
+        ValueError: if any column is outside `admissible`, or a registered
+            column is missing.
     """
-    admissible = {ID_COL, RESPONSIBILITY_INDEX, IMPACT_INDEX}
     cols = list(columns)
     unknown = [c for c in cols if c not in admissible]
     if unknown:
@@ -135,25 +176,46 @@ class CouplingResult:
             )
 
 
-def compute_coupling(projections: pd.DataFrame) -> tuple[pd.DataFrame, CouplingResult]:
-    """Run the closed operator set over the two PCS projections.
+def compute_coupling(
+    projections: pd.DataFrame,
+    x_col: str = RESPONSIBILITY_INDEX,
+    y_col: str = IMPACT_INDEX,
+    admissible: frozenset[str] = V1_ADMISSIBLE,
+) -> tuple[pd.DataFrame, CouplingResult]:
+    """Run the closed operator set over a chosen pair of registered projections.
+
+    The operators are unchanged; only the two columns they run on are
+    parametrized. ``x_col`` plays the **responsibility** role (the Lorenz ordering
+    axis and the z/rank baseline); ``y_col`` plays the **impact** role (the
+    compared quantity). Defaults reproduce the v1 responsibility-vs-impact
+    comparison exactly; v2 callers pass a wider `admissible` set and any registered
+    pair (e.g. production-matched vs consumption).
 
     Args:
-        projections: one row per country with exactly ``Country``,
-            ``responsibility_index_v1``, ``impact_index_v1`` (the L1 output).
+        projections: one row per country, closed over `admissible`.
+        x_col: responsibility-role column (rank/z baseline, Lorenz ordering).
+        y_col: impact-role column (compared against the baseline).
+        admissible: the closure set the frame must equal.
 
     Returns:
-        ``(table, result)`` -- the per-country comparison table (the
-        ``coupling.parquet`` rows) and the summary :class:`CouplingResult`.
+        ``(table, result)`` -- the per-country comparison table (value columns
+        named ``x_col``/``y_col``; diagnostic columns ``responsibility_rank``,
+        ``impact_rank``, ``rank_gap``, ``z_gap``) and the summary
+        :class:`CouplingResult`.
 
     Raises:
-        ValueError: if the input is not closed over the PCS projections.
+        ValueError: if the input is not closed over `admissible`, or ``x_col`` /
+            ``y_col`` are not in it.
     """
-    validate_projection_frame(projections.columns)
+    validate_projection_frame(projections.columns, admissible)
+    for role, col in (("x_col", x_col), ("y_col", y_col)):
+        if col not in admissible:
+            raise ValueError(f"{role} {col!r} is not a registered projection")
+
     work = projections.reset_index(drop=True)
     countries = work[ID_COL].astype(str).to_numpy()
-    responsibility = work[RESPONSIBILITY_INDEX].to_numpy(dtype=float)
-    impact = work[IMPACT_INDEX].to_numpy(dtype=float)
+    responsibility = work[x_col].to_numpy(dtype=float)  # responsibility role
+    impact = work[y_col].to_numpy(dtype=float)  # impact role
 
     responsibility_rank = _rank_desc(responsibility)
     impact_rank = _rank_desc(impact)
@@ -167,8 +229,8 @@ def compute_coupling(projections: pd.DataFrame) -> tuple[pd.DataFrame, CouplingR
     table = pd.DataFrame(
         {
             ID_COL: countries,
-            RESPONSIBILITY_INDEX: responsibility,
-            IMPACT_INDEX: impact,
+            x_col: responsibility,
+            y_col: impact,
             "responsibility_rank": responsibility_rank,
             "impact_rank": impact_rank,
             "rank_gap": rank_gap,
@@ -230,6 +292,145 @@ def build_coupling(
     return {
         "table": table,
         "result": result,
+        "summary_path": summary_path,
+        "table_path": table_path,
+    }
+
+
+# ---------------------------------------------------------------------
+# Consumption lens (PCS v2 wide registry) -- the two-pass comparator
+# ---------------------------------------------------------------------
+
+
+def compute_consumption_coupling(
+    projections: pd.DataFrame,
+) -> tuple[pd.DataFrame, CouplingResult, CouplingResult]:
+    """Run the comparator twice over the wide consumption projection frame.
+
+    Same closed operators, two registered pairs:
+
+    - **Pass 1** ``(responsibility_index_consumption, impact_index_v1)`` -- the
+      consumption-based climate-inequality coefficient (consumption responsibility
+      vs warming impact, mirroring the v1 question's shape).
+    - **Pass 2** ``(responsibility_index_production_matched,
+      responsibility_index_consumption)`` -- the production->consumption rank-shift
+      diagnostic, valid because both cumulatives share each country's window. A
+      positive ``prod_to_cons_z_gap`` flags a net importer (more responsible under
+      consumption accounting); negative flags a net exporter.
+
+    Args:
+        projections: the wide ``projections_consumption.parquet`` frame, closed
+            over :data:`WIDE_ADMISSIBLE`.
+
+    Returns:
+        ``(wide_table, consumption_vs_impact, production_to_consumption_shift)``.
+    """
+    t_ci, consumption_vs_impact = compute_coupling(
+        projections,
+        x_col=RESPONSIBILITY_CONSUMPTION_INDEX,
+        y_col=IMPACT_INDEX,
+        admissible=WIDE_ADMISSIBLE,
+    )
+    t_pc, production_to_consumption_shift = compute_coupling(
+        projections,
+        x_col=RESPONSIBILITY_PRODUCTION_MATCHED_INDEX,
+        y_col=RESPONSIBILITY_CONSUMPTION_INDEX,
+        admissible=WIDE_ADMISSIBLE,
+    )
+
+    # Both passes ran on the same row order (reset_index inside compute_coupling),
+    # so positional assembly into the wide diagnostic table is aligned.
+    work = projections.reset_index(drop=True)
+    wide = pd.DataFrame(
+        {
+            ID_COL: work[ID_COL].astype(str).to_numpy(),
+            IMPACT_INDEX: work[IMPACT_INDEX].to_numpy(dtype=float),
+            RESPONSIBILITY_CONSUMPTION_INDEX: work[
+                RESPONSIBILITY_CONSUMPTION_INDEX
+            ].to_numpy(dtype=float),
+            RESPONSIBILITY_PRODUCTION_MATCHED_INDEX: work[
+                RESPONSIBILITY_PRODUCTION_MATCHED_INDEX
+            ].to_numpy(dtype=float),
+            "production_matched_rank": t_pc["responsibility_rank"].to_numpy(),
+            "consumption_rank": t_pc["impact_rank"].to_numpy(),
+            "prod_to_cons_rank_gap": t_pc["rank_gap"].to_numpy(),
+            "prod_to_cons_z_gap": t_pc["z_gap"].to_numpy(),
+            "impact_rank": t_ci["impact_rank"].to_numpy(),
+            "consumption_impact_z_gap": t_ci["z_gap"].to_numpy(),
+        }
+    )
+    return (
+        wide[list(COUPLING_CONSUMPTION_COLUMNS)],
+        consumption_vs_impact,
+        production_to_consumption_shift,
+    )
+
+
+def consumption_summary_payload(
+    consumption_vs_impact: CouplingResult,
+    production_to_consumption_shift: CouplingResult,
+    window: dict,
+) -> dict:
+    """Unified, float-rounded JSON payload for the two-pass consumption summary.
+
+    Carries the per-country consumption ``window`` provenance plus both passes'
+    metrics under namespaced keys. Floats are rounded
+    (:func:`src.data_io.round_floats`) so the committed JSON is byte-stable.
+    """
+    payload = {
+        "window": window,
+        "consumption_vs_impact": asdict(consumption_vs_impact),
+        "production_to_consumption_shift": asdict(production_to_consumption_shift),
+    }
+    return round_floats(payload)
+
+
+def build_coupling_consumption(
+    projections_path=DEFAULT_PROJECTIONS_CONSUMPTION_PATH,
+    inequality_path=DEFAULT_INEQUALITY_PATH,
+    summary_path=DEFAULT_CONSUMPTION_SUMMARY_PATH,
+    table_path=DEFAULT_CONSUMPTION_COUPLING_PATH,
+) -> dict:
+    """Read the wide projection table, run both passes, and write the L3 v2 artifacts.
+
+    Args:
+        projections_path: the wide ``projections_consumption.parquet``.
+        inequality_path: ``country_inequality.parquet`` -- read only for the
+            consumption-window provenance label (not for the comparison itself).
+        summary_path: destination ``coupling_consumption_summary.json``.
+        table_path: destination ``coupling_consumption.parquet``.
+
+    Returns:
+        Dict with ``table``, ``consumption_vs_impact``,
+        ``production_to_consumption_shift``, ``summary_path`` and ``table_path``.
+    """
+    projections = pd.read_parquet(projections_path)
+    window = consumption_window(pd.read_parquet(inequality_path))
+    table, consumption_vs_impact, production_to_consumption_shift = (
+        compute_consumption_coupling(projections)
+    )
+    consumption_vs_impact.check()
+    production_to_consumption_shift.check()
+
+    write_typed_parquet(
+        table, table_path, COUPLING_CONSUMPTION_SCHEMA, order_by=(ID_COL,)
+    )
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text(
+        json.dumps(
+            consumption_summary_payload(
+                consumption_vs_impact, production_to_consumption_shift, window
+            ),
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    logger.info("wrote %s and %s", table_path, summary_path)
+    return {
+        "table": table,
+        "consumption_vs_impact": consumption_vs_impact,
+        "production_to_consumption_shift": production_to_consumption_shift,
         "summary_path": summary_path,
         "table_path": table_path,
     }

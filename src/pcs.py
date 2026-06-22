@@ -50,6 +50,26 @@ FORBIDDEN_SUFFIXES: tuple[str, ...] = (
 
 DEFAULT_PCS_YAML_PATH = Path(__file__).resolve().parents[1] / "docs" / "pcs_v1.yaml"
 
+# PCS v2 -- the "wide registry". v1's exactly-two rule is a v1 invariant; v2
+# governance lifts it (a registered frame may hold N >= 2 explicitly-registered
+# projections), keeping semantic closure (only registered columns may appear) but
+# widening it from "exactly the two" to "exactly the registered set". This is a
+# new version, never an in-place edit of v1 -- PCS_V1 and validate_registry stay
+# byte-identical and frozen.
+PCS_VERSION_2 = "v2"
+RESPONSIBILITY_CONSUMPTION_INDEX = "responsibility_index_consumption"
+RESPONSIBILITY_PRODUCTION_MATCHED_INDEX = "responsibility_index_production_matched"
+# v2 registers the v1 impact projection (by reference) plus the two window-matched
+# responsibility lenses; order is the on-disk column order of the wide artifact.
+PROJECTION_NAMES_V2: tuple[str, ...] = (
+    IMPACT_INDEX,
+    RESPONSIBILITY_CONSUMPTION_INDEX,
+    RESPONSIBILITY_PRODUCTION_MATCHED_INDEX,
+)
+DEFAULT_PCS_V2_YAML_PATH = (
+    Path(__file__).resolve().parents[1] / "docs" / "pcs_v2.yaml"
+)
+
 
 @dataclass(frozen=True)
 class ProjectionContract:
@@ -128,6 +148,49 @@ PCS_V1: dict[str, ProjectionContract] = {
 }
 
 
+# ---------------------------------------------------------------------
+# PCS v2 -- the wide registry (the consumption-based responsibility lens)
+# ---------------------------------------------------------------------
+
+RESPONSIBILITY_CONSUMPTION_CONTRACT = ProjectionContract(
+    name=RESPONSIBILITY_CONSUMPTION_INDEX,
+    version=PCS_VERSION_2,
+    units="t CO2 per capita",
+    aggregation_rule="sum-then-divide over the consumption-available window",
+    computation_definition=(
+        "Cumulative consumption-based CO2 emissions (emissions counted where goods "
+        "are consumed) summed over each country's consumption-available window "
+        "[first year consumption data exists .. analysis cutoff], divided by "
+        "cutoff-year population (tonnes per capita); a consumption-based "
+        "historical-responsibility projection."
+    ),
+)
+
+RESPONSIBILITY_PRODUCTION_MATCHED_CONTRACT = ProjectionContract(
+    name=RESPONSIBILITY_PRODUCTION_MATCHED_INDEX,
+    version=PCS_VERSION_2,
+    units="t CO2 per capita",
+    aggregation_rule="sum-then-divide over the consumption-available window",
+    computation_definition=(
+        "Cumulative production-based CO2 emissions summed over the SAME "
+        "consumption-available window as responsibility_index_consumption, divided "
+        "by cutoff-year population (tonnes per capita); the window-matched "
+        "production baseline for an apples-to-apples production-vs-consumption "
+        "responsibility comparison."
+    ),
+)
+
+# The wide registry: the v1 impact projection (by reference) plus the two
+# window-matched responsibility lenses.
+PCS_V2: dict[str, ProjectionContract] = {
+    IMPACT_CONTRACT.name: IMPACT_CONTRACT,
+    RESPONSIBILITY_CONSUMPTION_CONTRACT.name: RESPONSIBILITY_CONSUMPTION_CONTRACT,
+    RESPONSIBILITY_PRODUCTION_MATCHED_CONTRACT.name: (
+        RESPONSIBILITY_PRODUCTION_MATCHED_CONTRACT
+    ),
+}
+
+
 def validate_registry(registry: dict[str, ProjectionContract] = PCS_V1) -> None:
     """Enforce PCS v1 governance: exactly two named projections, no variants.
 
@@ -146,9 +209,32 @@ def validate_registry(registry: dict[str, ProjectionContract] = PCS_V1) -> None:
             raise ValueError(f"registry key {key!r} != contract name {contract.name!r}")
 
 
+def validate_registry_v2(registry: dict[str, ProjectionContract] = PCS_V2) -> None:
+    """Enforce PCS v2 (wide-registry) governance: the registered set, no variants.
+
+    Unlike :func:`validate_registry`, v2 does **not** cap the count at two -- a
+    wide registry may hold N >= 2 projections. It still enforces the stable
+    registered name set (anti-drift) and key==name; the no-variant-suffix rule is
+    enforced per contract at construction (:meth:`ProjectionContract.__post_init__`).
+
+    Raises:
+        ValueError: if the registry's names disagree with :data:`PROJECTION_NAMES_V2`,
+            or a key disagrees with its contract name.
+    """
+    if set(registry) != set(PROJECTION_NAMES_V2):
+        raise ValueError(
+            f"PCS {PCS_VERSION_2} must register exactly "
+            f"{sorted(PROJECTION_NAMES_V2)}, got {sorted(registry)}"
+        )
+    for key, contract in registry.items():
+        if key != contract.name:
+            raise ValueError(f"registry key {key!r} != contract name {contract.name!r}")
+
+
 # Enforce governance at import so any drift fails loudly (mirrors the
 # FeatureSchema.__post_init__ partition check in src.feature_schema).
 validate_registry()
+validate_registry_v2()
 
 
 # ---------------------------------------------------------------------
@@ -162,21 +248,27 @@ def _yaml_scalar(value: str) -> str:
     return f'"{escaped}"'
 
 
-def to_yaml(registry: dict[str, ProjectionContract] = PCS_V1) -> str:
-    """Serialize the registry to a deterministic YAML string (the doc mirror).
+def to_yaml(
+    registry: dict[str, ProjectionContract] = PCS_V1,
+    version: str = PCS_VERSION,
+    names: tuple[str, ...] = PROJECTION_NAMES,
+    header: str = "# PCS -- generated mirror of src.pcs.PCS_V1 (the semantic registry).",
+) -> str:
+    """Serialize a registry to a deterministic YAML string (the doc mirror).
 
     The Python dataclasses are the in-repo source of truth; this is a review /
     diff artifact (including each contract's ``definition_hash``), regenerated by
-    :func:`main`.
+    :func:`main`. Defaults serialize the v1 registry byte-for-byte; pass the v2
+    arguments (and v2 `header`) to mirror the wide registry.
     """
     lines = [
-        "# PCS -- generated mirror of src.pcs.PCS_V1 (the semantic registry).",
+        header,
         "# Canonical source is the Python dataclasses; regenerate via:",
         "#   uv run python -m src.pcs",
-        f"version: {_yaml_scalar(PCS_VERSION)}",
+        f"version: {_yaml_scalar(version)}",
         "projections:",
     ]
-    for name in PROJECTION_NAMES:
+    for name in names:
         c = registry[name]
         lines.extend(
             [
@@ -194,23 +286,43 @@ def to_yaml(registry: dict[str, ProjectionContract] = PCS_V1) -> str:
 def write_yaml(
     registry: dict[str, ProjectionContract] = PCS_V1,
     path: Path = DEFAULT_PCS_YAML_PATH,
+    version: str = PCS_VERSION,
+    names: tuple[str, ...] = PROJECTION_NAMES,
+    header: str = "# PCS -- generated mirror of src.pcs.PCS_V1 (the semantic registry).",
 ) -> Path:
     """Write the YAML mirror of `registry` to `path` (parents created)."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(to_yaml(registry), encoding="utf-8")
+    path.write_text(to_yaml(registry, version, names, header), encoding="utf-8")
     return path
 
 
+_PCS_V2_HEADER = "# PCS -- generated mirror of src.pcs.PCS_V2 (the wide semantic registry)."
+
+
+def to_yaml_v2() -> str:
+    """Deterministic YAML mirror of the v2 wide registry."""
+    return to_yaml(PCS_V2, PCS_VERSION_2, PROJECTION_NAMES_V2, _PCS_V2_HEADER)
+
+
 def main() -> None:
-    """Regenerate the YAML mirror and print a one-line summary per projection."""
+    """Regenerate the YAML mirrors and print a one-line summary per projection."""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     validate_registry()
+    validate_registry_v2()
     out = write_yaml()
+    out_v2 = write_yaml(
+        PCS_V2, DEFAULT_PCS_V2_YAML_PATH, PCS_VERSION_2, PROJECTION_NAMES_V2,
+        _PCS_V2_HEADER,
+    )
     print(f"PCS {PCS_VERSION}: {len(PCS_V1)} projections (minimal, non-executable)")
     for name in PROJECTION_NAMES:
         c = PCS_V1[name]
         print(f"  {c.name} [{c.units}] hash={c.definition_hash[:12]}…")
-    print(f"wrote {out}")
+    print(f"PCS {PCS_VERSION_2}: {len(PCS_V2)} projections (wide registry)")
+    for name in PROJECTION_NAMES_V2:
+        c = PCS_V2[name]
+        print(f"  {c.name} [{c.units}] hash={c.definition_hash[:12]}…")
+    print(f"wrote {out} and {out_v2}")
 
 
 if __name__ == "__main__":

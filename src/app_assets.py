@@ -92,6 +92,12 @@ STABILITY_SUMMARY_ASSET = "stability_summary.json"
 COUPLING_ASSET = "coupling.parquet"
 COUPLING_SUMMARY_ASSET = "coupling_summary.json"
 
+# Layer 3 consumption lens (PCS v2 wide registry). Built best-effort: needs the
+# additive consumption columns in the country table; when absent (a pre-v2 table)
+# the builder skips so the dashboard degrades to its pending state.
+COUPLING_CONSUMPTION_ASSET = "coupling_consumption.parquet"
+COUPLING_CONSUMPTION_SUMMARY_ASSET = "coupling_consumption_summary.json"
+
 # Layer 1 physical-driver assets (global temperature vs effective radiative
 # forcings). Built best-effort: the input forcings.parquet is network-derived and
 # not committed, so the builder skips when it is absent (a no-network bundle build
@@ -728,6 +734,101 @@ def build_coupling_summary_asset(
     return {COUPLING_ASSET: table_dest, COUPLING_SUMMARY_ASSET: summary_dest}
 
 
+# Country-table columns the consumption lens needs (additive, v2). Re-declared
+# here (not imported) to keep the heavy emissions stack out of this module's
+# import graph, mirroring the path-constant discipline elsewhere in this file.
+_CONSUMPTION_SOURCE_COLUMNS = (
+    "consumption_start_year",
+    "cum_consumption_t_per_capita",
+    "cum_co2_window_t_per_capita",
+)
+
+
+def build_coupling_consumption_asset(
+    inequality_path: Path = DEFAULT_INEQUALITY_PATH,
+    out_dir: Path = APP_DATA_DIR,
+) -> dict[str, Path]:
+    """Write the Layer 3 consumption-lens artifacts into the bundle (best-effort).
+
+    Mirrors :func:`build_coupling_summary_asset` but for the PCS v2 wide registry:
+    resolves the wide projections in-memory, runs the two-pass comparator
+    (consumption-vs-impact and the window-matched production->consumption
+    rank-shift), and writes ``coupling_consumption.parquet`` +
+    ``coupling_consumption_summary.json`` (both byte-stable). When the country
+    table predates the additive consumption columns, or no country has a
+    consumption window, it logs and returns ``{}`` so the dashboard degrades to
+    its pending state rather than failing.
+
+    Args:
+        inequality_path: Phase 4 ``country_inequality.parquet``.
+        out_dir: Bundle destination, normally the committed ``app/data/``.
+
+    Returns:
+        Dict of asset-name -> written Path, or ``{}`` when the consumption lens
+        cannot be built.
+    """
+    # Lazy imports mirror build_coupling_summary_asset: keep the coupling stack
+    # out of this module's import graph (build_app_assets is the heavy entry point).
+    from src.coupling import (
+        COUPLING_CONSUMPTION_SCHEMA,
+        compute_consumption_coupling,
+        consumption_summary_payload,
+    )
+    from src.data_io import write_typed_parquet
+    from src.projections import (
+        ID_COL,
+        consumption_window,
+        resolve_consumption_projections,
+    )
+
+    inequality = pd.read_parquet(inequality_path)
+    missing = [c for c in _CONSUMPTION_SOURCE_COLUMNS if c not in inequality.columns]
+    if missing or inequality["cum_consumption_t_per_capita"].notna().sum() == 0:
+        logger.warning(
+            "consumption columns absent/empty (missing=%s); bundle will omit the "
+            "consumption lens -- rebuild country_inequality.parquet (python -m "
+            "src.emissions)",
+            missing,
+        )
+        return {}
+
+    projections = resolve_consumption_projections(inequality)
+    table, consumption_vs_impact, production_to_consumption_shift = (
+        compute_consumption_coupling(projections)
+    )
+    consumption_vs_impact.check()
+    production_to_consumption_shift.check()
+    window = consumption_window(inequality)
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    table_dest = out_dir / COUPLING_CONSUMPTION_ASSET
+    write_typed_parquet(
+        table, table_dest, COUPLING_CONSUMPTION_SCHEMA, order_by=(ID_COL,)
+    )
+    summary_dest = out_dir / COUPLING_CONSUMPTION_SUMMARY_ASSET
+    summary_dest.write_text(
+        json.dumps(
+            consumption_summary_payload(
+                consumption_vs_impact, production_to_consumption_shift, window
+            ),
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    logger.info(
+        "wrote %s and %s (n=%d, consumption inequality_coefficient=%.3f, "
+        "prod->cons rho=%.3f)",
+        table_dest, summary_dest, len(table),
+        consumption_vs_impact.inequality_coefficient,
+        production_to_consumption_shift.spearman_rho,
+    )
+    return {
+        COUPLING_CONSUMPTION_ASSET: table_dest,
+        COUPLING_CONSUMPTION_SUMMARY_ASSET: summary_dest,
+    }
+
+
 def _sha256_file(path: Path) -> str:
     """SHA-256 hex digest of a file's bytes (streamed, so large inputs are cheap)."""
     digest = hashlib.sha256()
@@ -809,6 +910,7 @@ def main() -> None:
     summaries = build_decomposition_summaries()
     stability = build_stability_summary_asset()
     coupling = build_coupling_summary_asset()
+    coupling_consumption = build_coupling_consumption_asset()
     physical = build_physical_summary_asset()
     trends = out["stats"]["trends"]
     interp = out["stats"]["interpolation"]
@@ -893,6 +995,22 @@ def main() -> None:
         "(deterministic comparator)"
     )
 
+    if COUPLING_CONSUMPTION_SUMMARY_ASSET in coupling_consumption:
+        cc = json.loads(
+            coupling_consumption[COUPLING_CONSUMPTION_SUMMARY_ASSET].read_text("utf-8")
+        )
+        win = cc["window"]
+        shift = cc["production_to_consumption_shift"]
+        print(
+            f"coupling (consumption lens): n={win['n_countries']} over window "
+            f"[{win['consumption_start_year_min']}..cutoff], prod->cons rank "
+            f"rho {shift['spearman_rho']:+.3f}, consumption inequality coefficient "
+            f"{cc['consumption_vs_impact']['inequality_coefficient']:.3f} "
+            "(window-matched, descriptive)"
+        )
+    else:
+        print("coupling (consumption lens): skipped (consumption columns not built)")
+
     if PHYSICAL_SUMMARY_ASSET in physical:
         physical_summary = json.loads(
             physical[PHYSICAL_SUMMARY_ASSET].read_text(encoding="utf-8")
@@ -908,7 +1026,10 @@ def main() -> None:
     else:
         print("physical (L1): skipped (forcings.parquet not built)")
 
-    all_paths = {**out["paths"], **summaries, **stability, **coupling, **physical}
+    all_paths = {
+        **out["paths"], **summaries, **stability, **coupling,
+        **coupling_consumption, **physical,
+    }
     total_kb = sum(p.stat().st_size for p in all_paths.values()) / 1024
     print(f"bundle: {len(all_paths)} files, {total_kb:,.0f} KB total")
     for name, path in all_paths.items():
