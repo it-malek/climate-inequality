@@ -191,6 +191,7 @@ def _make_synthetic_coupling_artifacts(bundle_dir: Path) -> None:
     consumption lens) so both pages' AppTests exercise real bundle artifacts.
     """
     from src.app_assets import (
+        build_coupling_area_asset,
         build_coupling_consumption_asset,
         build_coupling_exposure_asset,
         build_coupling_summary_asset,
@@ -200,6 +201,7 @@ def _make_synthetic_coupling_artifacts(bundle_dir: Path) -> None:
     build_coupling_summary_asset(inequality_path=inequality_path, out_dir=bundle_dir)
     build_coupling_consumption_asset(inequality_path=inequality_path, out_dir=bundle_dir)
     build_coupling_exposure_asset(inequality_path=inequality_path, out_dir=bundle_dir)
+    build_coupling_area_asset(inequality_path=inequality_path, out_dir=bundle_dir)
 
 
 def _make_synthetic_physical_artifacts(bundle_dir: Path) -> None:

@@ -207,15 +207,21 @@ class TestCouplingPage:
         assert any("consumed" in h.lower() for h in headers)
 
     def test_renders_exposure_section_with_toggle(self, bundle_dir):
-        # The synthetic bundle carries the PCS v2 people-weighted exposure artifacts.
+        # The synthetic bundle carries the PCS v2 people-weighted AND area-weighted
+        # exposure artifacts; both share one Station / People / Area basis toggle.
         at = run_page("app.views.coupling")
-        labels = [m.label for m in at.metric]
-        assert "Station → people rank ρ" in labels
         headers = [h.value for h in at.header]
         assert any("resident" in h.lower() for h in headers)
-        # the station/people inequality-basis toggle exists and switches cleanly
-        assert any("basis" in r.label.lower() for r in at.radio)
-        at.radio[0].set_value("People-weighted (residents)").run()
+        # the inequality-basis toggle exists; it defaults to Station-based.
+        basis = next(r for r in at.radio if "basis" in r.label.lower())
+        # Switching to people-weighted reveals its rank-shift metric, no exception.
+        basis.set_value("People-weighted (residents)").run()
+        assert "Station → people rank ρ" in [m.label for m in at.metric]
+        assert not at.exception
+        # Switching to area-weighted reveals the area rank-shift metric.
+        basis = next(r for r in at.radio if "basis" in r.label.lower())
+        basis.set_value("Area-weighted (land)").run()
+        assert "Station → area rank ρ" in [m.label for m in at.metric]
         assert not at.exception
 
     def test_pending_state_without_summary(self, tmp_path, monkeypatch):

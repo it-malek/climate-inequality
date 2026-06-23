@@ -261,6 +261,34 @@ def load_coupling_exposure() -> pd.DataFrame | None:
 
 
 @st.cache_data
+def load_coupling_area_summary() -> dict | None:
+    """Two-pass area-weighted exposure comparator metrics (PCS v2), if present.
+
+    Returns ``None`` until ``coupling_area_summary.json`` is in the bundle (it
+    needs the area-weighted column, which needs the Berkeley grid at build time),
+    so the responsibility page's area comparison degrades gracefully.
+    """
+    return _load_optional_json("coupling_area_summary.json")
+
+
+@st.cache_data
+def load_coupling_area() -> pd.DataFrame | None:
+    """The Layer 3 area-weighted exposure wide diagnostic table, if present."""
+    path = APP_DATA_DIR / "coupling_area.parquet"
+    if not path.exists():
+        return None
+    return _read_bundle_parquet(
+        "coupling_area.parquet",
+        required=(
+            "Country", "responsibility_index_v1", "impact_index_v1",
+            "impact_index_area_weighted", "station_rank", "area_rank",
+            "station_to_area_rank_gap", "station_to_area_z_gap",
+            "responsibility_rank", "area_responsibility_z_gap",
+        ),
+    )
+
+
+@st.cache_data
 def load_country_latitudes() -> pd.DataFrame:
     """Mean signed latitude per country, aggregated from the city features.
 
