@@ -43,7 +43,7 @@ def nearest_cell_indices(
 
 
 def check_coordinate_orientation(
-    nc_path: Path, lat_dim: str = "lat", lon_dim: str = "lon"
+    nc_path: Path, lat_dim: str = "lat", lon_dim: str = "lon", *, engine: str | None = None
 ) -> dict:
     """Summarize a static grid's coordinate conventions.
 
@@ -52,13 +52,15 @@ def check_coordinate_orientation(
             coordinate variables.
         lat_dim: Name of the latitude coordinate variable.
         lon_dim: Name of the longitude coordinate variable.
+        engine: optional xarray backend engine (e.g. ``"netcdf4"``); ``None``
+            lets xarray auto-detect.
 
     Returns:
         Dict with ``lat_min``, ``lat_max``, ``lat_ascending``, ``lon_min``,
         ``lon_max``, ``lon_ascending`` and ``lon_convention`` (one of
         ``"-180-180"`` or ``"0-360"``, by whether any longitude exceeds 180).
     """
-    ds = xr.open_dataset(nc_path)
+    ds = xr.open_dataset(nc_path, engine=engine)
     try:
         lat = ds[lat_dim].to_numpy().astype(float)
         lon = ds[lon_dim].to_numpy().astype(float)
@@ -108,8 +110,12 @@ def sample_static_grid(
     var: str,
     lat_dim: str = "lat",
     lon_dim: str = "lon",
+    *,
+    band_dim: str | None = None,
+    band: int | None = None,
+    engine: str | None = None,
 ) -> np.ndarray:
-    """Nearest-cell values of a static 2D (lat, lon) NetCDF variable.
+    """Nearest-cell values of a static (lat, lon) NetCDF variable.
 
     Shared by elevation (:func:`src.explain.add_elevation`), Koeppen class
     (:func:`src.explain.add_koppen`) and population
@@ -119,30 +125,37 @@ def sample_static_grid(
     (:func:`nearest_cell_indices`), so a [-180,180]-vs-[0,360] mismatch cannot
     silently wrap to the wrong side of the globe.
 
+    Sampling is lazy: the file is opened with xarray's native lazy backend and
+    only the queried points are read via pointwise (vectorized) indexing, so the
+    full grid is never materialized -- important for large rasters (e.g. the
+    ~84 MB GPW v4 population grid).
+
     Args:
-        nc_path: Path to a NetCDF file with a `var(lat_dim, lon_dim)`
-            variable (or `(lon_dim, lat_dim)` -- dimension order is read
-            from the variable itself).
-        lats, lons: Query coordinates, in signed [-90,90]/[-180,180]
-            degrees.
+        nc_path: Path to a NetCDF file with a `var(lat_dim, lon_dim)` variable
+            (optionally with a leading `band_dim`, e.g. GPW's ``raster``).
+        lats, lons: Query coordinates, in signed [-90,90]/[-180,180] degrees.
         var: Variable name to sample.
         lat_dim, lon_dim: Names of the latitude/longitude dimensions.
+        band_dim: optional extra dimension to select a single band from before
+            sampling (e.g. ``"raster"``); ``None`` for a plain 2D variable.
+        band: the `band_dim` coordinate *value* to select (via ``.sel``).
+        engine: optional xarray backend engine (e.g. ``"netcdf4"``).
 
     Returns:
-        1D float array, one value per query point. Values are read via
-        pointwise (vectorized) indexing, so the full grid is never loaded
-        into memory.
+        1D float array, one value per query point.
     """
-    orientation = check_coordinate_orientation(nc_path, lat_dim, lon_dim)
+    orientation = check_coordinate_orientation(nc_path, lat_dim, lon_dim, engine=engine)
     query_lons = normalize_longitudes(np.asarray(lons, dtype=float), orientation["lon_convention"])
     query_lats = np.asarray(lats, dtype=float)
 
-    ds = xr.open_dataset(nc_path)
+    ds = xr.open_dataset(nc_path, engine=engine)
     try:
         lat_index = pd.Index(ds[lat_dim].to_numpy().astype(float))
         lon_index = pd.Index(ds[lon_dim].to_numpy().astype(float))
         lat_pos, lon_pos = nearest_cell_indices(lat_index, lon_index, query_lats, query_lons)
         da = ds[var]
+        if band_dim is not None:
+            da = da.sel({band_dim: band})
         values = da.isel(
             {
                 lat_dim: xr.DataArray(lat_pos, dims="_points"),

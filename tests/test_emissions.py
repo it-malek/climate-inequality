@@ -23,7 +23,7 @@ from src.emissions import (
     load_continents,
     quantify_inequality,
 )
-from tests.test_population import write_population_grid
+from tests.test_population import write_gpw_grid
 
 SLOPE = 0.05  # injected °C/decade per 10x emissions
 
@@ -408,10 +408,10 @@ class TestBuildInequalityAnalysis:
         finally:
             con.close()
 
-        # Uniform population grid over the coordinate range: people-weighting
+        # Uniform GPW-shaped grid over the coordinate range: people-weighting
         # then equals the unweighted mean, an exact end-to-end check.
-        pop_grid_path = write_population_grid(
-            tmp_path / "pop.nc", [0.0, 60.0], [0.0, 60.0],
+        pop_grid_path = write_gpw_grid(
+            tmp_path / "gpw.nc", [60.0, 0.0], [0.0, 60.0],
             np.full((2, 2), 100.0),
         )
         return {

@@ -98,6 +98,12 @@ COUPLING_SUMMARY_ASSET = "coupling_summary.json"
 COUPLING_CONSUMPTION_ASSET = "coupling_consumption.parquet"
 COUPLING_CONSUMPTION_SUMMARY_ASSET = "coupling_consumption_summary.json"
 
+# Layer 3 exposure lens (PCS v2 wide registry). Built best-effort: needs the
+# additive people-weighted column (population grid present at build time); when
+# absent the builder skips and the dashboard degrades to its pending state.
+COUPLING_EXPOSURE_ASSET = "coupling_exposure.parquet"
+COUPLING_EXPOSURE_SUMMARY_ASSET = "coupling_exposure_summary.json"
+
 # Layer 1 physical-driver assets (global temperature vs effective radiative
 # forcings). Built best-effort: the input forcings.parquet is network-derived and
 # not committed, so the builder skips when it is absent (a no-network bundle build
@@ -829,6 +835,89 @@ def build_coupling_consumption_asset(
     }
 
 
+def build_coupling_exposure_asset(
+    inequality_path: Path = DEFAULT_INEQUALITY_PATH,
+    out_dir: Path = APP_DATA_DIR,
+) -> dict[str, Path]:
+    """Write the Layer 3 people-weighted exposure artifacts into the bundle.
+
+    Mirrors :func:`build_coupling_consumption_asset` for the exposure lens:
+    resolves the exposure projections, runs the two passes (station-vs-people
+    rank-shift and the people-weighted climate-inequality Lorenz), and writes
+    ``coupling_exposure.parquet`` + ``coupling_exposure_summary.json``. Skips
+    (returns ``{}``) when the country table carries no people-weighting (the
+    population grid was absent at ``country_inequality`` build time), so the
+    dashboard degrades to its pending state.
+
+    Args:
+        inequality_path: Phase 4 ``country_inequality.parquet``.
+        out_dir: Bundle destination, normally the committed ``app/data/``.
+
+    Returns:
+        Dict of asset-name -> written Path, or ``{}`` when the exposure lens
+        cannot be built.
+    """
+    from src.coupling import (
+        COUPLING_EXPOSURE_SCHEMA,
+        compute_exposure_coupling,
+        exposure_summary_payload,
+    )
+    from src.data_io import write_typed_parquet
+    from src.projections import (
+        ID_COL,
+        population_coverage,
+        resolve_exposure_projections,
+    )
+
+    inequality = pd.read_parquet(inequality_path)
+    if (
+        "trend_c_per_decade_pop_weighted" not in inequality.columns
+        or inequality["trend_c_per_decade_pop_weighted"].notna().sum() == 0
+    ):
+        logger.warning(
+            "people-weighted column absent/empty; bundle will omit the exposure "
+            "lens -- rebuild country_inequality.parquet with the population grid "
+            "present (python -m src.emissions)"
+        )
+        return {}
+
+    projections = resolve_exposure_projections(inequality)
+    table, station_vs_people, people_weighted_inequality = compute_exposure_coupling(
+        projections
+    )
+    station_vs_people.check()
+    people_weighted_inequality.check()
+    coverage = population_coverage(inequality)
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    table_dest = out_dir / COUPLING_EXPOSURE_ASSET
+    write_typed_parquet(
+        table, table_dest, COUPLING_EXPOSURE_SCHEMA, order_by=(ID_COL,)
+    )
+    summary_dest = out_dir / COUPLING_EXPOSURE_SUMMARY_ASSET
+    summary_dest.write_text(
+        json.dumps(
+            exposure_summary_payload(
+                station_vs_people, people_weighted_inequality, coverage
+            ),
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    logger.info(
+        "wrote %s and %s (n=%d, people-weighted inequality_coefficient=%.3f, "
+        "station->people rho=%.3f)",
+        table_dest, summary_dest, len(table),
+        people_weighted_inequality.inequality_coefficient,
+        station_vs_people.spearman_rho,
+    )
+    return {
+        COUPLING_EXPOSURE_ASSET: table_dest,
+        COUPLING_EXPOSURE_SUMMARY_ASSET: summary_dest,
+    }
+
+
 def _sha256_file(path: Path) -> str:
     """SHA-256 hex digest of a file's bytes (streamed, so large inputs are cheap)."""
     digest = hashlib.sha256()
@@ -911,6 +1000,7 @@ def main() -> None:
     stability = build_stability_summary_asset()
     coupling = build_coupling_summary_asset()
     coupling_consumption = build_coupling_consumption_asset()
+    coupling_exposure = build_coupling_exposure_asset()
     physical = build_physical_summary_asset()
     trends = out["stats"]["trends"]
     interp = out["stats"]["interpolation"]
@@ -1011,6 +1101,22 @@ def main() -> None:
     else:
         print("coupling (consumption lens): skipped (consumption columns not built)")
 
+    if COUPLING_EXPOSURE_SUMMARY_ASSET in coupling_exposure:
+        ce = json.loads(
+            coupling_exposure[COUPLING_EXPOSURE_SUMMARY_ASSET].read_text("utf-8")
+        )
+        cov = ce["coverage"]
+        sp = ce["station_vs_people"]
+        print(
+            f"coupling (exposure lens): n={cov['n_countries']} people-weighted, "
+            f"station->people rank rho {sp['spearman_rho']:+.3f}, people-weighted "
+            f"inequality coefficient "
+            f"{ce['people_weighted_inequality']['inequality_coefficient']:.3f} "
+            "(descriptive)"
+        )
+    else:
+        print("coupling (exposure lens): skipped (population weighting not built)")
+
     if PHYSICAL_SUMMARY_ASSET in physical:
         physical_summary = json.loads(
             physical[PHYSICAL_SUMMARY_ASSET].read_text(encoding="utf-8")
@@ -1028,7 +1134,7 @@ def main() -> None:
 
     all_paths = {
         **out["paths"], **summaries, **stability, **coupling,
-        **coupling_consumption, **physical,
+        **coupling_consumption, **coupling_exposure, **physical,
     }
     total_kb = sum(p.stat().st_size for p in all_paths.values()) / 1024
     print(f"bundle: {len(all_paths)} files, {total_kb:,.0f} KB total")

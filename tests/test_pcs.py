@@ -71,17 +71,20 @@ class TestYamlMirror:
 
 
 class TestRegistryV2:
-    def test_wide_registry_holds_three_projections(self):
+    def test_wide_registry_holds_registered_lenses(self):
         assert set(pcs.PCS_V2) == {
             "impact_index_v1",
             "responsibility_index_consumption",
             "responsibility_index_production_matched",
+            "responsibility_index_v1",
+            "impact_index_population_weighted",
         }
-        # Wide: more than the v1 cap of two.
+        # Wide: well beyond the v1 cap of two, and grows additively.
         assert len(pcs.PCS_V2) > 2
 
-    def test_reuses_v1_impact_projection_by_reference(self):
+    def test_reuses_v1_projections_by_reference(self):
         assert pcs.PCS_V2["impact_index_v1"] is pcs.IMPACT_CONTRACT
+        assert pcs.PCS_V2["responsibility_index_v1"] is pcs.RESPONSIBILITY_CONTRACT
 
     def test_projection_names_match_keys(self):
         for key, contract in pcs.PCS_V2.items():
@@ -100,7 +103,7 @@ class TestRegistryV2:
 
     def test_new_contracts_have_distinct_hashes(self):
         hashes = {c.definition_hash for c in pcs.PCS_V2.values()}
-        assert len(hashes) == 3
+        assert len(hashes) == len(pcs.PCS_V2)
 
 
 class TestYamlMirrorV2:

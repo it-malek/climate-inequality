@@ -11,10 +11,14 @@ from src import pcs
 from src.projections import (
     PCS_V1_BINDING,
     PCS_V2_BINDING,
+    PCS_V2_EXPOSURE_BINDING,
     PROJECTIONS_COLUMNS,
     PROJECTIONS_CONSUMPTION_COLUMNS,
+    PROJECTIONS_EXPOSURE_COLUMNS,
     consumption_window,
+    population_coverage,
     resolve_consumption_projections,
+    resolve_exposure_projections,
     resolve_projections,
 )
 
@@ -31,6 +35,8 @@ def make_country_table() -> pd.DataFrame:
             "consumption_start_year": [1990, 1995, np.nan],
             "cum_consumption_t_per_capita": [4.0, 60.0, np.nan],
             "cum_co2_window_t_per_capita": [3.0, 40.0, np.nan],
+            "trend_c_per_decade_pop_weighted": [0.11, 0.22, np.nan],
+            "pop_weight_coverage": [1.0, 0.5, np.nan],
             "extra": [1, 2, 3],
         }
     )
@@ -62,8 +68,14 @@ class TestBinding:
 
 
 class TestConsumptionBinding:
-    def test_binding_names_match_v2_registry(self):
-        assert set(PCS_V2_BINDING) == set(pcs.PROJECTION_NAMES_V2)
+    def test_binding_is_registered_subset(self):
+        # The wide registry grows; the consumption artifact binds a subset of it.
+        assert set(PCS_V2_BINDING) <= set(pcs.PROJECTION_NAMES_V2)
+        assert set(PCS_V2_BINDING) == {
+            "impact_index_v1",
+            "responsibility_index_consumption",
+            "responsibility_index_production_matched",
+        }
 
     def test_emits_exactly_wide_columns_no_leakage(self):
         out = resolve_consumption_projections(make_country_table())
@@ -110,3 +122,45 @@ class TestConsumptionWindow:
         window = consumption_window(empty)
         assert window["n_countries"] == 0
         assert window["consumption_start_year_min"] is None
+
+
+class TestExposureBinding:
+    def test_binding_is_registered_subset(self):
+        assert set(PCS_V2_EXPOSURE_BINDING) <= set(pcs.PROJECTION_NAMES_V2)
+
+    def test_emits_exactly_exposure_columns_no_leakage(self):
+        out = resolve_exposure_projections(make_country_table())
+        assert tuple(out.columns) == PROJECTIONS_EXPOSURE_COLUMNS
+        assert set(out.columns) == {
+            "Country",
+            "responsibility_index_v1",
+            "impact_index_v1",
+            "impact_index_population_weighted",
+        }
+
+    def test_identity_binding_and_drops_uncovered(self):
+        src = make_country_table()
+        out = resolve_exposure_projections(src).set_index("Country")
+        # Country C has NULL people-weighting and is dropped.
+        assert out.index.tolist() == ["A", "B"]
+        assert out.loc["A", "impact_index_population_weighted"] == 0.11
+        assert out.loc["B", "responsibility_index_v1"] == 50.0
+
+    def test_missing_source_column_raises(self):
+        bad = make_country_table().drop(columns=["trend_c_per_decade_pop_weighted"])
+        with pytest.raises(ValueError, match="trend_c_per_decade_pop_weighted"):
+            resolve_exposure_projections(bad)
+
+
+class TestPopulationCoverage:
+    def test_coverage_over_weighted_countries(self):
+        coverage = population_coverage(make_country_table())
+        # A (1.0) and B (0.5) have weighting; C is NaN.
+        assert coverage["n_countries"] == 2
+        assert coverage["mean_pop_weight_coverage"] == pytest.approx(0.75)
+
+    def test_empty_is_safe(self):
+        empty = make_country_table().assign(trend_c_per_decade_pop_weighted=np.nan)
+        coverage = population_coverage(empty)
+        assert coverage["n_countries"] == 0
+        assert coverage["mean_pop_weight_coverage"] is None
