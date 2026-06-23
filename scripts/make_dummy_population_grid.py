@@ -27,8 +27,11 @@ import xarray as xr
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.data_io import RAW_DIR  # noqa: E402
-from src.population import POP_VAR  # noqa: E402
 
+# Legacy fallback grid. Superseded by the real SEDAC GPW v4 grid now wired into
+# src.population (GPW_PATH); kept only for offline smoke tests. Its own 2D var
+# name is independent of src.population.POP_VAR (which now names the GPW band).
+POP_VAR = "population"
 OUT_PATH = RAW_DIR / "population" / "global_pop_1deg.nc"
 
 

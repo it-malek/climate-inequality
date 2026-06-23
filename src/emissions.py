@@ -44,8 +44,8 @@ from src.data_io import (
 )
 from src.figures import render_inequality_scatter
 from src.population import (
+    GPW_DEFAULT_YEAR,
     POP_GRID_PATH,
-    POP_VAR,
     population_weighted_country_mean,
 )
 from src.trends import DEFAULT_TRENDS_PATH
@@ -449,7 +449,7 @@ def build_inequality_analysis(
     table_path: Path = DEFAULT_INEQUALITY_PATH,
     cutoff_year: int | None = None,
     pop_grid_path: Path = POP_GRID_PATH,
-    pop_var: str = POP_VAR,
+    pop_year: int = GPW_DEFAULT_YEAR,
 ) -> dict:
     """Run the Phase 4 pipeline end to end.
 
@@ -485,7 +485,7 @@ def build_inequality_analysis(
     # committed static raster; when it is absent the columns are NULL and only
     # the v2 exposure lens degrades, mirroring the consumption-null handling.
     if pop_grid_path.exists():
-        pop_weighted = population_weighted_country_mean(trends, pop_grid_path, pop_var)
+        pop_weighted = population_weighted_country_mean(trends, pop_grid_path, pop_year)
         country_trends = country_trends.merge(pop_weighted, on="Country", how="left")
     else:
         logger.warning(

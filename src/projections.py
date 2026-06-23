@@ -78,11 +78,39 @@ DEFAULT_PROJECTIONS_CONSUMPTION_PATH = (
     PROCESSED_DIR / "projections_consumption.parquet"
 )
 
-if set(PCS_V2_BINDING) != set(pcs.PROJECTION_NAMES_V2):
-    raise ValueError(
-        f"PCS_V2_BINDING keys {sorted(PCS_V2_BINDING)} must equal the registry "
-        f"projections {sorted(pcs.PROJECTION_NAMES_V2)}"
-    )
+# The PCS v2 exposure binding: the v1 responsibility + impact projections plus
+# the people-weighted impact lens, each bound by identity to its source column.
+PCS_V2_EXPOSURE_BINDING: dict[str, str] = {
+    pcs.RESPONSIBILITY_INDEX: "cum_co2_t_per_capita",
+    pcs.IMPACT_INDEX: "trend_c_per_decade",
+    pcs.IMPACT_POPULATION_WEIGHTED_INDEX: "trend_c_per_decade_pop_weighted",
+}
+
+# On-disk schema of projections_exposure.parquet (DuckDB types), in order: the
+# Country key plus the three registered projections this lens compares.
+PROJECTIONS_EXPOSURE_SCHEMA: dict[str, str] = {
+    ID_COL: "VARCHAR",
+    pcs.RESPONSIBILITY_INDEX: "DOUBLE",
+    pcs.IMPACT_INDEX: "DOUBLE",
+    pcs.IMPACT_POPULATION_WEIGHTED_INDEX: "DOUBLE",
+}
+PROJECTIONS_EXPOSURE_COLUMNS = tuple(PROJECTIONS_EXPOSURE_SCHEMA)
+
+DEFAULT_PROJECTIONS_EXPOSURE_PATH = (
+    PROCESSED_DIR / "projections_exposure.parquet"
+)
+
+# Each v2 artifact binds a registered subset of the wide registry (the registry
+# grows; an artifact need not name every projection). Caught at import.
+for _binding_name, _binding in (
+    ("PCS_V2_BINDING", PCS_V2_BINDING),
+    ("PCS_V2_EXPOSURE_BINDING", PCS_V2_EXPOSURE_BINDING),
+):
+    if not set(_binding) <= set(pcs.PROJECTION_NAMES_V2):
+        raise ValueError(
+            f"{_binding_name} keys {sorted(_binding)} must be registered v2 "
+            f"projections {sorted(pcs.PROJECTION_NAMES_V2)}"
+        )
 
 
 def resolve_projections(inequality: pd.DataFrame) -> pd.DataFrame:
@@ -226,6 +254,75 @@ def build_consumption_projections(
     projections = resolve_consumption_projections(inequality)
     write_typed_parquet(
         projections, out_path, PROJECTIONS_CONSUMPTION_SCHEMA, order_by=(ID_COL,)
+    )
+    logger.info("wrote %s (%d countries)", out_path, len(projections))
+    return out_path
+
+
+def resolve_exposure_projections(inequality: pd.DataFrame) -> pd.DataFrame:
+    """Apply the frozen v2 exposure binding to emit the exposure projection table.
+
+    Mirrors :func:`resolve_consumption_projections` for the people-weighted
+    exposure lens: emits ``Country`` plus ``responsibility_index_v1``,
+    ``impact_index_v1`` and ``impact_index_population_weighted`` (identity, no
+    transformation). Countries with no people-weighted exposure (NULL, e.g. the
+    population grid was absent) are dropped here.
+
+    Raises:
+        ValueError: if a bound source column or the ``Country`` key is absent.
+    """
+    required = [ID_COL, *PCS_V2_EXPOSURE_BINDING.values()]
+    missing = [c for c in required if c not in inequality.columns]
+    if missing:
+        raise ValueError(
+            f"cannot resolve PCS v2 exposure projections: source column(s) "
+            f"{missing} absent from the upstream table"
+        )
+    out = pd.DataFrame({ID_COL: inequality[ID_COL].to_numpy()})
+    for projection, source in PCS_V2_EXPOSURE_BINDING.items():
+        out[projection] = inequality[source].to_numpy()  # identity binding
+    out = out[list(PROJECTIONS_EXPOSURE_COLUMNS)]
+    covered = out[pcs.IMPACT_POPULATION_WEIGHTED_INDEX].notna()
+    n_drop = int((~covered).sum())
+    if n_drop:
+        logger.info(
+            "exposure projections: dropping %d countries without people-weighting",
+            n_drop,
+        )
+    return out.loc[covered].reset_index(drop=True)
+
+
+def population_coverage(inequality: pd.DataFrame) -> dict:
+    """Coverage-provenance label for the exposure lens (summary metadata).
+
+    Like :func:`consumption_window`, this is derived upstream (``pop_weight_coverage``
+    is not a projection) and injected into the exposure summary. Reports how many
+    countries have a people-weighting and how complete that weighting is.
+
+    Returns:
+        ``{n_countries, mean_pop_weight_coverage}`` over the people-weighted
+        countries (empty-safe).
+    """
+    weighted = inequality.loc[
+        inequality["trend_c_per_decade_pop_weighted"].notna()
+    ]
+    if weighted.empty:
+        return {"n_countries": 0, "mean_pop_weight_coverage": None}
+    return {
+        "n_countries": int(len(weighted)),
+        "mean_pop_weight_coverage": float(weighted["pop_weight_coverage"].mean()),
+    }
+
+
+def build_exposure_projections(
+    inequality_path: Path = DEFAULT_INEQUALITY_PATH,
+    out_path: Path = DEFAULT_PROJECTIONS_EXPOSURE_PATH,
+) -> Path:
+    """Materialize ``projections_exposure.parquet`` from the country table."""
+    inequality = pd.read_parquet(inequality_path)
+    projections = resolve_exposure_projections(inequality)
+    write_typed_parquet(
+        projections, out_path, PROJECTIONS_EXPOSURE_SCHEMA, order_by=(ID_COL,)
     )
     logger.info("wrote %s (%d countries)", out_path, len(projections))
     return out_path

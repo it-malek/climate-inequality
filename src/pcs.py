@@ -59,12 +59,17 @@ DEFAULT_PCS_YAML_PATH = Path(__file__).resolve().parents[1] / "docs" / "pcs_v1.y
 PCS_VERSION_2 = "v2"
 RESPONSIBILITY_CONSUMPTION_INDEX = "responsibility_index_consumption"
 RESPONSIBILITY_PRODUCTION_MATCHED_INDEX = "responsibility_index_production_matched"
-# v2 registers the v1 impact projection (by reference) plus the two window-matched
-# responsibility lenses; order is the on-disk column order of the wide artifact.
+IMPACT_POPULATION_WEIGHTED_INDEX = "impact_index_population_weighted"
+# v2 registers the v1 projections (by reference) plus the new lenses. The wide
+# registry grows additively: the consumption lens (window-matched responsibility)
+# and the exposure lens (people-weighted impact) both live here; each artifact is
+# a registered subset. Order is the canonical registry/yaml order.
 PROJECTION_NAMES_V2: tuple[str, ...] = (
     IMPACT_INDEX,
     RESPONSIBILITY_CONSUMPTION_INDEX,
     RESPONSIBILITY_PRODUCTION_MATCHED_INDEX,
+    RESPONSIBILITY_INDEX,
+    IMPACT_POPULATION_WEIGHTED_INDEX,
 )
 DEFAULT_PCS_V2_YAML_PATH = (
     Path(__file__).resolve().parents[1] / "docs" / "pcs_v2.yaml"
@@ -180,14 +185,31 @@ RESPONSIBILITY_PRODUCTION_MATCHED_CONTRACT = ProjectionContract(
     ),
 )
 
-# The wide registry: the v1 impact projection (by reference) plus the two
-# window-matched responsibility lenses.
+IMPACT_POPULATION_WEIGHTED_CONTRACT = ProjectionContract(
+    name=IMPACT_POPULATION_WEIGHTED_INDEX,
+    version=PCS_VERSION_2,
+    units="degC per decade",
+    aggregation_rule="population-weighted mean across city-locations",
+    computation_definition=(
+        "Country mean of the per-city-location Theil-Sen warming slopes weighted "
+        "by each location's population (sampled from a static population grid at "
+        "its coordinates), degrees Celsius per decade; a people-weighted "
+        "warming-exposure projection -- the warming the average resident "
+        "experiences, rather than the average station."
+    ),
+)
+
+# The wide registry: the v1 impact and responsibility projections (by reference)
+# plus the consumption (window-matched responsibility) and exposure
+# (people-weighted impact) lenses.
 PCS_V2: dict[str, ProjectionContract] = {
     IMPACT_CONTRACT.name: IMPACT_CONTRACT,
     RESPONSIBILITY_CONSUMPTION_CONTRACT.name: RESPONSIBILITY_CONSUMPTION_CONTRACT,
     RESPONSIBILITY_PRODUCTION_MATCHED_CONTRACT.name: (
         RESPONSIBILITY_PRODUCTION_MATCHED_CONTRACT
     ),
+    RESPONSIBILITY_CONTRACT.name: RESPONSIBILITY_CONTRACT,
+    IMPACT_POPULATION_WEIGHTED_CONTRACT.name: IMPACT_POPULATION_WEIGHTED_CONTRACT,
 }
 
 

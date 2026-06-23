@@ -33,6 +33,7 @@ from scipy import stats
 from src.data_io import PROCESSED_DIR, round_floats, write_typed_parquet
 from src.pcs import (
     IMPACT_INDEX,
+    IMPACT_POPULATION_WEIGHTED_INDEX,
     RESPONSIBILITY_CONSUMPTION_INDEX,
     RESPONSIBILITY_INDEX,
     RESPONSIBILITY_PRODUCTION_MATCHED_INDEX,
@@ -40,10 +41,13 @@ from src.pcs import (
 from src.projections import (
     DEFAULT_INEQUALITY_PATH,
     DEFAULT_PROJECTIONS_CONSUMPTION_PATH,
+    DEFAULT_PROJECTIONS_EXPOSURE_PATH,
     DEFAULT_PROJECTIONS_PATH,
     ID_COL,
     PROJECTIONS_CONSUMPTION_COLUMNS,
+    PROJECTIONS_EXPOSURE_COLUMNS,
     consumption_window,
+    population_coverage,
 )
 
 logger = logging.getLogger(__name__)
@@ -56,10 +60,14 @@ DEFAULT_COUPLING_PATH = PROCESSED_DIR / "coupling.parquet"
 DEFAULT_CONSUMPTION_SUMMARY_PATH = PROCESSED_DIR / "coupling_consumption_summary.json"
 DEFAULT_CONSUMPTION_COUPLING_PATH = PROCESSED_DIR / "coupling_consumption.parquet"
 
+DEFAULT_EXPOSURE_SUMMARY_PATH = PROCESSED_DIR / "coupling_exposure_summary.json"
+DEFAULT_EXPOSURE_COUPLING_PATH = PROCESSED_DIR / "coupling_exposure.parquet"
+
 # The default admissible set is the v1 closure (Country + the two v1 projections);
-# v2 consumers pass the wide registered set instead.
+# v2 consumers pass the registered subset for their artifact instead.
 V1_ADMISSIBLE: frozenset[str] = frozenset({ID_COL, RESPONSIBILITY_INDEX, IMPACT_INDEX})
 WIDE_ADMISSIBLE: frozenset[str] = frozenset(PROJECTIONS_CONSUMPTION_COLUMNS)
+EXPOSURE_ADMISSIBLE: frozenset[str] = frozenset(PROJECTIONS_EXPOSURE_COLUMNS)
 
 # On-disk schema of coupling.parquet (DuckDB types), in order.
 COUPLING_SCHEMA: dict[str, str] = {
@@ -89,6 +97,23 @@ COUPLING_CONSUMPTION_SCHEMA: dict[str, str] = {
     "consumption_impact_z_gap": "DOUBLE",
 }
 COUPLING_CONSUMPTION_COLUMNS = tuple(COUPLING_CONSUMPTION_SCHEMA)
+
+# On-disk schema of coupling_exposure.parquet (the wide two-pass diagnostics):
+# the registered projections, plus the station->people exposure rank-shift pass
+# and the people-weighted-exposure-vs-responsibility pass diagnostics.
+COUPLING_EXPOSURE_SCHEMA: dict[str, str] = {
+    ID_COL: "VARCHAR",
+    RESPONSIBILITY_INDEX: "DOUBLE",
+    IMPACT_INDEX: "DOUBLE",
+    IMPACT_POPULATION_WEIGHTED_INDEX: "DOUBLE",
+    "station_rank": "BIGINT",
+    "people_rank": "BIGINT",
+    "station_to_people_rank_gap": "BIGINT",
+    "station_to_people_z_gap": "DOUBLE",
+    "responsibility_rank": "BIGINT",
+    "people_responsibility_z_gap": "DOUBLE",
+}
+COUPLING_EXPOSURE_COLUMNS = tuple(COUPLING_EXPOSURE_SCHEMA)
 
 
 def validate_projection_frame(
@@ -431,6 +456,131 @@ def build_coupling_consumption(
         "table": table,
         "consumption_vs_impact": consumption_vs_impact,
         "production_to_consumption_shift": production_to_consumption_shift,
+        "summary_path": summary_path,
+        "table_path": table_path,
+    }
+
+
+# ---------------------------------------------------------------------
+# Exposure lens (PCS v2 wide registry) -- people-weighted warming exposure
+# ---------------------------------------------------------------------
+
+
+def compute_exposure_coupling(
+    projections: pd.DataFrame,
+) -> tuple[pd.DataFrame, CouplingResult, CouplingResult]:
+    """Run the comparator twice over the exposure projection frame.
+
+    Same closed operators, two registered pairs:
+
+    - **Pass A** ``(impact_index_v1, impact_index_population_weighted)`` -- the
+      station-weighted vs people-weighted exposure rank-shift. A positive
+      ``station_to_people_z_gap`` flags a country that looks *more* exposed once
+      warming is weighted by where people actually live.
+    - **Pass B** ``(responsibility_index_v1, impact_index_population_weighted)`` --
+      the people-weighted climate-inequality Lorenz/Gini (cumulative
+      people-weighted warming exposure vs cumulative responsibility).
+
+    Returns:
+        ``(wide_table, station_vs_people, people_weighted_inequality)``.
+    """
+    t_sp, station_vs_people = compute_coupling(
+        projections,
+        x_col=IMPACT_INDEX,
+        y_col=IMPACT_POPULATION_WEIGHTED_INDEX,
+        admissible=EXPOSURE_ADMISSIBLE,
+    )
+    t_pi, people_weighted_inequality = compute_coupling(
+        projections,
+        x_col=RESPONSIBILITY_INDEX,
+        y_col=IMPACT_POPULATION_WEIGHTED_INDEX,
+        admissible=EXPOSURE_ADMISSIBLE,
+    )
+
+    work = projections.reset_index(drop=True)
+    wide = pd.DataFrame(
+        {
+            ID_COL: work[ID_COL].astype(str).to_numpy(),
+            RESPONSIBILITY_INDEX: work[RESPONSIBILITY_INDEX].to_numpy(dtype=float),
+            IMPACT_INDEX: work[IMPACT_INDEX].to_numpy(dtype=float),
+            IMPACT_POPULATION_WEIGHTED_INDEX: work[
+                IMPACT_POPULATION_WEIGHTED_INDEX
+            ].to_numpy(dtype=float),
+            "station_rank": t_sp["responsibility_rank"].to_numpy(),
+            "people_rank": t_sp["impact_rank"].to_numpy(),
+            "station_to_people_rank_gap": t_sp["rank_gap"].to_numpy(),
+            "station_to_people_z_gap": t_sp["z_gap"].to_numpy(),
+            "responsibility_rank": t_pi["responsibility_rank"].to_numpy(),
+            "people_responsibility_z_gap": t_pi["z_gap"].to_numpy(),
+        }
+    )
+    return (
+        wide[list(COUPLING_EXPOSURE_COLUMNS)],
+        station_vs_people,
+        people_weighted_inequality,
+    )
+
+
+def exposure_summary_payload(
+    station_vs_people: CouplingResult,
+    people_weighted_inequality: CouplingResult,
+    coverage: dict,
+) -> dict:
+    """Unified, float-rounded JSON payload for the two-pass exposure summary."""
+    payload = {
+        "coverage": coverage,
+        "station_vs_people": asdict(station_vs_people),
+        "people_weighted_inequality": asdict(people_weighted_inequality),
+    }
+    return round_floats(payload)
+
+
+def build_coupling_exposure(
+    projections_path=DEFAULT_PROJECTIONS_EXPOSURE_PATH,
+    inequality_path=DEFAULT_INEQUALITY_PATH,
+    summary_path=DEFAULT_EXPOSURE_SUMMARY_PATH,
+    table_path=DEFAULT_EXPOSURE_COUPLING_PATH,
+) -> dict:
+    """Read the exposure projection table, run both passes, write the L3 artifacts.
+
+    Args:
+        projections_path: the ``projections_exposure.parquet``.
+        inequality_path: ``country_inequality.parquet`` -- read only for the
+            people-weighting coverage label (not for the comparison itself).
+        summary_path: destination ``coupling_exposure_summary.json``.
+        table_path: destination ``coupling_exposure.parquet``.
+
+    Returns:
+        Dict with ``table``, ``station_vs_people``,
+        ``people_weighted_inequality``, ``summary_path`` and ``table_path``.
+    """
+    projections = pd.read_parquet(projections_path)
+    coverage = population_coverage(pd.read_parquet(inequality_path))
+    table, station_vs_people, people_weighted_inequality = compute_exposure_coupling(
+        projections
+    )
+    station_vs_people.check()
+    people_weighted_inequality.check()
+
+    write_typed_parquet(
+        table, table_path, COUPLING_EXPOSURE_SCHEMA, order_by=(ID_COL,)
+    )
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text(
+        json.dumps(
+            exposure_summary_payload(
+                station_vs_people, people_weighted_inequality, coverage
+            ),
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    logger.info("wrote %s and %s", table_path, summary_path)
+    return {
+        "table": table,
+        "station_vs_people": station_vs_people,
+        "people_weighted_inequality": people_weighted_inequality,
         "summary_path": summary_path,
         "table_path": table_path,
     }

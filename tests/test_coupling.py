@@ -16,12 +16,15 @@ from scipy import stats
 
 from src.coupling import (
     COUPLING_CONSUMPTION_SCHEMA,
+    COUPLING_EXPOSURE_SCHEMA,
     COUPLING_SCHEMA,
     WIDE_ADMISSIBLE,
     CouplingResult,
     compute_consumption_coupling,
     compute_coupling,
+    compute_exposure_coupling,
     consumption_summary_payload,
+    exposure_summary_payload,
     summary_payload,
     validate_projection_frame,
 )
@@ -284,6 +287,77 @@ class TestConsumptionCoupling:
         loaded = pd.read_parquet(path)
         assert list(loaded.columns) == list(COUPLING_CONSUMPTION_SCHEMA)
         assert str(loaded["prod_to_cons_rank_gap"].dtype).startswith("int")
+
+
+def make_exposure_projections(n: int = 12, seed: int = 0) -> pd.DataFrame:
+    """Synthetic exposure frame: Country + the three registered exposure projections."""
+    rng = np.random.default_rng(seed)
+    responsibility = np.abs(rng.normal(10.0, 5.0, n)) + 0.1
+    station = np.abs(rng.normal(0.15, 0.05, n)) + 0.01
+    # People-weighting reshuffles exposure relative to the station mean.
+    people = station * rng.uniform(0.6, 1.6, n)
+    return pd.DataFrame(
+        {
+            "Country": [f"C{i}" for i in range(n)],
+            "responsibility_index_v1": responsibility,
+            "impact_index_v1": station,
+            "impact_index_population_weighted": people,
+        }
+    )
+
+
+class TestExposureCoupling:
+    def test_wide_table_schema(self):
+        table, _, _ = compute_exposure_coupling(make_exposure_projections())
+        assert list(table.columns) == list(COUPLING_EXPOSURE_SCHEMA)
+
+    def test_station_to_people_rank_gap(self):
+        table, _, _ = compute_exposure_coupling(make_exposure_projections(seed=3))
+        expected = table["people_rank"] - table["station_rank"]
+        assert table["station_to_people_rank_gap"].tolist() == expected.tolist()
+
+    def test_people_weighted_inequality_bounded(self):
+        _, station_vs_people, people_ineq = compute_exposure_coupling(
+            make_exposure_projections(n=30, seed=5)
+        )
+        for result in (station_vs_people, people_ineq):
+            assert 0.0 <= result.inequality_coefficient <= 1.0
+
+    def test_summary_payload_structure(self):
+        _, station_vs_people, people_ineq = compute_exposure_coupling(
+            make_exposure_projections()
+        )
+        coverage = {"n_countries": 12, "mean_pop_weight_coverage": 0.9}
+        payload = exposure_summary_payload(station_vs_people, people_ineq, coverage)
+        assert set(payload) == {
+            "coverage",
+            "station_vs_people",
+            "people_weighted_inequality",
+        }
+        assert payload["coverage"]["n_countries"] == 12
+        assert "interpretation" not in payload
+        assert "inequality_coefficient" in payload["people_weighted_inequality"]
+
+    def test_summary_byte_stable(self):
+        _, station_vs_people, people_ineq = compute_exposure_coupling(
+            make_exposure_projections()
+        )
+        coverage = {"n_countries": 12, "mean_pop_weight_coverage": 0.9}
+        first = json.dumps(
+            exposure_summary_payload(station_vs_people, people_ineq, coverage)
+        )
+        second = json.dumps(
+            exposure_summary_payload(station_vs_people, people_ineq, coverage)
+        )
+        assert first == second
+
+    def test_wide_table_round_trips_through_typed_parquet(self, tmp_path):
+        table, _, _ = compute_exposure_coupling(make_exposure_projections())
+        path = tmp_path / "coupling_exposure.parquet"
+        write_typed_parquet(table, path, COUPLING_EXPOSURE_SCHEMA, order_by=("Country",))
+        loaded = pd.read_parquet(path)
+        assert list(loaded.columns) == list(COUPLING_EXPOSURE_SCHEMA)
+        assert str(loaded["station_to_people_rank_gap"].dtype).startswith("int")
 
 
 class TestResultCheck:
