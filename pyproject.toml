@@ -32,3 +32,6 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 88
 target-version = "py311"
+# Exploratory / archival Jupyter notebooks are not held to the production lint
+# bar (setup-cell imports, scratch unused imports); the pipeline is src/tests/app.
+extend-exclude = ["notebooks"]
