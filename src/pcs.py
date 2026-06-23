@@ -60,16 +60,19 @@ PCS_VERSION_2 = "v2"
 RESPONSIBILITY_CONSUMPTION_INDEX = "responsibility_index_consumption"
 RESPONSIBILITY_PRODUCTION_MATCHED_INDEX = "responsibility_index_production_matched"
 IMPACT_POPULATION_WEIGHTED_INDEX = "impact_index_population_weighted"
+IMPACT_AREA_WEIGHTED_INDEX = "impact_index_area_weighted"
 # v2 registers the v1 projections (by reference) plus the new lenses. The wide
-# registry grows additively: the consumption lens (window-matched responsibility)
-# and the exposure lens (people-weighted impact) both live here; each artifact is
-# a registered subset. Order is the canonical registry/yaml order.
+# registry grows additively: the consumption lens (window-matched responsibility),
+# the exposure lens (people-weighted impact) and the area-weighted lens (gridded
+# cos-latitude impact) all live here; each artifact is a registered subset. Order
+# is the canonical registry/yaml order.
 PROJECTION_NAMES_V2: tuple[str, ...] = (
     IMPACT_INDEX,
     RESPONSIBILITY_CONSUMPTION_INDEX,
     RESPONSIBILITY_PRODUCTION_MATCHED_INDEX,
     RESPONSIBILITY_INDEX,
     IMPACT_POPULATION_WEIGHTED_INDEX,
+    IMPACT_AREA_WEIGHTED_INDEX,
 )
 DEFAULT_PCS_V2_YAML_PATH = (
     Path(__file__).resolve().parents[1] / "docs" / "pcs_v2.yaml"
@@ -199,9 +202,27 @@ IMPACT_POPULATION_WEIGHTED_CONTRACT = ProjectionContract(
     ),
 )
 
+IMPACT_AREA_WEIGHTED_CONTRACT = ProjectionContract(
+    name=IMPACT_AREA_WEIGHTED_INDEX,
+    version=PCS_VERSION_2,
+    units="degC per decade",
+    aggregation_rule="cos(latitude) area-weighted mean across gridded land cells",
+    computation_definition=(
+        "Country mean of per-grid-cell Theil-Sen warming slopes from the Berkeley "
+        "Earth 1-degree gridded field over the analysis window, each cell assigned "
+        "to a country via the GPW national-identifier grid and weighted by "
+        "cos(latitude) so every unit of land area counts equally (degrees Celsius "
+        "per decade); an area-weighted warming-exposure projection -- the warming "
+        "of the average square kilometre, rather than the average station. "
+        "cos(latitude) weighting is required because a temperature trend is an "
+        "intensive field, the mirror of the population-count rule where it is "
+        "forbidden."
+    ),
+)
+
 # The wide registry: the v1 impact and responsibility projections (by reference)
-# plus the consumption (window-matched responsibility) and exposure
-# (people-weighted impact) lenses.
+# plus the consumption (window-matched responsibility), exposure (people-weighted
+# impact) and area-weighted (gridded cos-latitude impact) lenses.
 PCS_V2: dict[str, ProjectionContract] = {
     IMPACT_CONTRACT.name: IMPACT_CONTRACT,
     RESPONSIBILITY_CONSUMPTION_CONTRACT.name: RESPONSIBILITY_CONSUMPTION_CONTRACT,
@@ -210,6 +231,7 @@ PCS_V2: dict[str, ProjectionContract] = {
     ),
     RESPONSIBILITY_CONTRACT.name: RESPONSIBILITY_CONTRACT,
     IMPACT_POPULATION_WEIGHTED_CONTRACT.name: IMPACT_POPULATION_WEIGHTED_CONTRACT,
+    IMPACT_AREA_WEIGHTED_CONTRACT.name: IMPACT_AREA_WEIGHTED_CONTRACT,
 }
 
 

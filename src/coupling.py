@@ -32,6 +32,7 @@ from scipy import stats
 
 from src.data_io import PROCESSED_DIR, round_floats, write_typed_parquet
 from src.pcs import (
+    IMPACT_AREA_WEIGHTED_INDEX,
     IMPACT_INDEX,
     IMPACT_POPULATION_WEIGHTED_INDEX,
     RESPONSIBILITY_CONSUMPTION_INDEX,
@@ -40,12 +41,15 @@ from src.pcs import (
 )
 from src.projections import (
     DEFAULT_INEQUALITY_PATH,
+    DEFAULT_PROJECTIONS_AREA_PATH,
     DEFAULT_PROJECTIONS_CONSUMPTION_PATH,
     DEFAULT_PROJECTIONS_EXPOSURE_PATH,
     DEFAULT_PROJECTIONS_PATH,
     ID_COL,
+    PROJECTIONS_AREA_COLUMNS,
     PROJECTIONS_CONSUMPTION_COLUMNS,
     PROJECTIONS_EXPOSURE_COLUMNS,
+    area_coverage,
     consumption_window,
     population_coverage,
 )
@@ -63,11 +67,15 @@ DEFAULT_CONSUMPTION_COUPLING_PATH = PROCESSED_DIR / "coupling_consumption.parque
 DEFAULT_EXPOSURE_SUMMARY_PATH = PROCESSED_DIR / "coupling_exposure_summary.json"
 DEFAULT_EXPOSURE_COUPLING_PATH = PROCESSED_DIR / "coupling_exposure.parquet"
 
+DEFAULT_AREA_SUMMARY_PATH = PROCESSED_DIR / "coupling_area_summary.json"
+DEFAULT_AREA_COUPLING_PATH = PROCESSED_DIR / "coupling_area.parquet"
+
 # The default admissible set is the v1 closure (Country + the two v1 projections);
 # v2 consumers pass the registered subset for their artifact instead.
 V1_ADMISSIBLE: frozenset[str] = frozenset({ID_COL, RESPONSIBILITY_INDEX, IMPACT_INDEX})
 WIDE_ADMISSIBLE: frozenset[str] = frozenset(PROJECTIONS_CONSUMPTION_COLUMNS)
 EXPOSURE_ADMISSIBLE: frozenset[str] = frozenset(PROJECTIONS_EXPOSURE_COLUMNS)
+AREA_ADMISSIBLE: frozenset[str] = frozenset(PROJECTIONS_AREA_COLUMNS)
 
 # On-disk schema of coupling.parquet (DuckDB types), in order.
 COUPLING_SCHEMA: dict[str, str] = {
@@ -114,6 +122,23 @@ COUPLING_EXPOSURE_SCHEMA: dict[str, str] = {
     "people_responsibility_z_gap": "DOUBLE",
 }
 COUPLING_EXPOSURE_COLUMNS = tuple(COUPLING_EXPOSURE_SCHEMA)
+
+# On-disk schema of coupling_area.parquet (the wide two-pass diagnostics): the
+# registered projections, plus the station->area exposure rank-shift pass and the
+# area-weighted-exposure-vs-responsibility pass diagnostics.
+COUPLING_AREA_SCHEMA: dict[str, str] = {
+    ID_COL: "VARCHAR",
+    RESPONSIBILITY_INDEX: "DOUBLE",
+    IMPACT_INDEX: "DOUBLE",
+    IMPACT_AREA_WEIGHTED_INDEX: "DOUBLE",
+    "station_rank": "BIGINT",
+    "area_rank": "BIGINT",
+    "station_to_area_rank_gap": "BIGINT",
+    "station_to_area_z_gap": "DOUBLE",
+    "responsibility_rank": "BIGINT",
+    "area_responsibility_z_gap": "DOUBLE",
+}
+COUPLING_AREA_COLUMNS = tuple(COUPLING_AREA_SCHEMA)
 
 
 def validate_projection_frame(
@@ -581,6 +606,129 @@ def build_coupling_exposure(
         "table": table,
         "station_vs_people": station_vs_people,
         "people_weighted_inequality": people_weighted_inequality,
+        "summary_path": summary_path,
+        "table_path": table_path,
+    }
+
+
+# ---------------------------------------------------------------------
+# Area-weighted lens (PCS v2 wide registry) -- gridded cos-latitude exposure
+# ---------------------------------------------------------------------
+
+
+def compute_area_coupling(
+    projections: pd.DataFrame,
+) -> tuple[pd.DataFrame, CouplingResult, CouplingResult]:
+    """Run the comparator twice over the area-weighted projection frame.
+
+    Same closed operators, two registered pairs:
+
+    - **Pass A** ``(impact_index_v1, impact_index_area_weighted)`` -- the
+      station-weighted vs area-weighted exposure rank-shift. A positive
+      ``station_to_area_z_gap`` flags a country that looks *more* exposed once
+      warming is weighted by land area instead of by station density.
+    - **Pass B** ``(responsibility_index_v1, impact_index_area_weighted)`` -- the
+      area-weighted climate-inequality Lorenz/Gini (cumulative area-weighted
+      warming exposure vs cumulative responsibility).
+
+    Returns:
+        ``(wide_table, station_vs_area, area_weighted_inequality)``.
+    """
+    t_sa, station_vs_area = compute_coupling(
+        projections,
+        x_col=IMPACT_INDEX,
+        y_col=IMPACT_AREA_WEIGHTED_INDEX,
+        admissible=AREA_ADMISSIBLE,
+    )
+    t_ai, area_weighted_inequality = compute_coupling(
+        projections,
+        x_col=RESPONSIBILITY_INDEX,
+        y_col=IMPACT_AREA_WEIGHTED_INDEX,
+        admissible=AREA_ADMISSIBLE,
+    )
+
+    work = projections.reset_index(drop=True)
+    wide = pd.DataFrame(
+        {
+            ID_COL: work[ID_COL].astype(str).to_numpy(),
+            RESPONSIBILITY_INDEX: work[RESPONSIBILITY_INDEX].to_numpy(dtype=float),
+            IMPACT_INDEX: work[IMPACT_INDEX].to_numpy(dtype=float),
+            IMPACT_AREA_WEIGHTED_INDEX: work[
+                IMPACT_AREA_WEIGHTED_INDEX
+            ].to_numpy(dtype=float),
+            "station_rank": t_sa["responsibility_rank"].to_numpy(),
+            "area_rank": t_sa["impact_rank"].to_numpy(),
+            "station_to_area_rank_gap": t_sa["rank_gap"].to_numpy(),
+            "station_to_area_z_gap": t_sa["z_gap"].to_numpy(),
+            "responsibility_rank": t_ai["responsibility_rank"].to_numpy(),
+            "area_responsibility_z_gap": t_ai["z_gap"].to_numpy(),
+        }
+    )
+    return (
+        wide[list(COUPLING_AREA_COLUMNS)],
+        station_vs_area,
+        area_weighted_inequality,
+    )
+
+
+def area_summary_payload(
+    station_vs_area: CouplingResult,
+    area_weighted_inequality: CouplingResult,
+    coverage: dict,
+) -> dict:
+    """Unified, float-rounded JSON payload for the two-pass area summary."""
+    payload = {
+        "coverage": coverage,
+        "station_vs_area": asdict(station_vs_area),
+        "area_weighted_inequality": asdict(area_weighted_inequality),
+    }
+    return round_floats(payload)
+
+
+def build_coupling_area(
+    projections_path=DEFAULT_PROJECTIONS_AREA_PATH,
+    inequality_path=DEFAULT_INEQUALITY_PATH,
+    summary_path=DEFAULT_AREA_SUMMARY_PATH,
+    table_path=DEFAULT_AREA_COUPLING_PATH,
+) -> dict:
+    """Read the area projection table, run both passes, write the L3 artifacts.
+
+    Args:
+        projections_path: the ``projections_area.parquet``.
+        inequality_path: ``country_inequality.parquet`` -- read only for the
+            area-weighting coverage label (not for the comparison itself).
+        summary_path: destination ``coupling_area_summary.json``.
+        table_path: destination ``coupling_area.parquet``.
+
+    Returns:
+        Dict with ``table``, ``station_vs_area``, ``area_weighted_inequality``,
+        ``summary_path`` and ``table_path``.
+    """
+    projections = pd.read_parquet(projections_path)
+    coverage = area_coverage(pd.read_parquet(inequality_path))
+    table, station_vs_area, area_weighted_inequality = compute_area_coupling(
+        projections
+    )
+    station_vs_area.check()
+    area_weighted_inequality.check()
+
+    write_typed_parquet(table, table_path, COUPLING_AREA_SCHEMA, order_by=(ID_COL,))
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text(
+        json.dumps(
+            area_summary_payload(
+                station_vs_area, area_weighted_inequality, coverage
+            ),
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    logger.info("wrote %s and %s", table_path, summary_path)
+    return {
+        "table": table,
+        "station_vs_area": station_vs_area,
+        "area_weighted_inequality": area_weighted_inequality,
         "summary_path": summary_path,
         "table_path": table_path,
     }

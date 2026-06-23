@@ -332,17 +332,23 @@ def lorenz_chart(
     return theme.apply_base_layout(fig)
 
 
-def exposure_shift_scatter(table: pd.DataFrame) -> go.Figure:
-    """Station-based vs people-weighted warming exposure, per country.
+def exposure_shift_scatter(
+    table: pd.DataFrame,
+    *,
+    impact_col: str = "impact_index_population_weighted",
+    z_col: str = "station_to_people_z_gap",
+    basis_label: str = "people-weighted",
+) -> go.Figure:
+    """Station-based vs re-weighted warming exposure, per country.
 
-    Each country is plotted at (station-weighted rate, people-weighted rate)
-    against the 45° no-shift line; distance from it is how much weighting by where
-    people actually live changes the country's exposure. Points are colored by the
-    standardized ``station_to_people_z_gap`` (positive = residents are *more*
-    exposed than the station mean suggests).
+    Each country is plotted at (station-weighted rate, re-weighted rate) against
+    the 45° no-shift line; distance from it is how much the alternative weighting
+    changes the country's exposure. Points are colored by the standardized z-shift
+    (`z_col`; positive = *more* exposed than the station mean suggests). Defaults
+    render the people-weighted lens; pass the area columns for the area lens.
     """
     station = table["impact_index_v1"].to_numpy(dtype=float)
-    people = table["impact_index_population_weighted"].to_numpy(dtype=float)
+    people = table[impact_col].to_numpy(dtype=float)
     lo = float(min(station.min(), people.min()))
     hi = float(max(station.max(), people.max()))
 
@@ -358,7 +364,7 @@ def exposure_shift_scatter(table: pd.DataFrame) -> go.Figure:
         go.Scatter(
             x=station, y=people, mode="markers", name="country",
             marker={
-                "color": table["station_to_people_z_gap"],
+                "color": table[z_col],
                 "colorscale": "RdBu_r",
                 "cmid": 0.0,
                 "size": 9,
@@ -367,13 +373,13 @@ def exposure_shift_scatter(table: pd.DataFrame) -> go.Figure:
             },
             customdata=table["Country"],
             hovertemplate="<b>%{customdata}</b><br>station %{x:.3f}<br>"
-            "people-weighted %{y:.3f}<br>z-shift %{marker.color:+.2f}<extra></extra>",
+            f"{basis_label} %{{y:.3f}}<br>z-shift %{{marker.color:+.2f}}<extra></extra>",
         )
     )
     fig.update_layout(
-        title="Station-based vs people-weighted warming exposure",
+        title=f"Station-based vs {basis_label} warming exposure",
         xaxis={"title": "Station-weighted warming (°C/decade)"},
-        yaxis={"title": "People-weighted warming (°C/decade)"},
+        yaxis={"title": f"{basis_label.capitalize()} warming (°C/decade)"},
         height=420,
         showlegend=False,
     )

@@ -104,6 +104,12 @@ COUPLING_CONSUMPTION_SUMMARY_ASSET = "coupling_consumption_summary.json"
 COUPLING_EXPOSURE_ASSET = "coupling_exposure.parquet"
 COUPLING_EXPOSURE_SUMMARY_ASSET = "coupling_exposure_summary.json"
 
+# Layer 3 area-weighted lens (PCS v2 wide registry). Built best-effort: needs the
+# additive area-weighted column (Berkeley grid present at build time); when absent
+# the builder skips and the dashboard degrades to its pending state.
+COUPLING_AREA_ASSET = "coupling_area.parquet"
+COUPLING_AREA_SUMMARY_ASSET = "coupling_area_summary.json"
+
 # Layer 1 physical-driver assets (global temperature vs effective radiative
 # forcings). Built best-effort: the input forcings.parquet is network-derived and
 # not committed, so the builder skips when it is absent (a no-network bundle build
@@ -918,6 +924,87 @@ def build_coupling_exposure_asset(
     }
 
 
+def build_coupling_area_asset(
+    inequality_path: Path = DEFAULT_INEQUALITY_PATH,
+    out_dir: Path = APP_DATA_DIR,
+) -> dict[str, Path]:
+    """Write the Layer 3 area-weighted exposure artifacts into the bundle.
+
+    Mirrors :func:`build_coupling_exposure_asset` for the area-weighted lens:
+    resolves the area projections, runs the two passes (station-vs-area rank-shift
+    and the area-weighted climate-inequality Lorenz), and writes
+    ``coupling_area.parquet`` + ``coupling_area_summary.json``. Skips (returns
+    ``{}``) when the country table carries no area-weighting (the Berkeley grid
+    was absent at ``country_inequality`` build time), so the dashboard degrades to
+    its pending state.
+
+    Args:
+        inequality_path: Phase 4 ``country_inequality.parquet``.
+        out_dir: Bundle destination, normally the committed ``app/data/``.
+
+    Returns:
+        Dict of asset-name -> written Path, or ``{}`` when the area lens cannot
+        be built.
+    """
+    from src.coupling import (
+        COUPLING_AREA_SCHEMA,
+        area_summary_payload,
+        compute_area_coupling,
+    )
+    from src.data_io import write_typed_parquet
+    from src.projections import (
+        ID_COL,
+        area_coverage,
+        resolve_area_projections,
+    )
+
+    inequality = pd.read_parquet(inequality_path)
+    if (
+        "trend_c_per_decade_area_weighted" not in inequality.columns
+        or inequality["trend_c_per_decade_area_weighted"].notna().sum() == 0
+    ):
+        logger.warning(
+            "area-weighted column absent/empty; bundle will omit the area lens -- "
+            "rebuild country_inequality.parquet with the Berkeley grid present "
+            "(python -m src.emissions)"
+        )
+        return {}
+
+    projections = resolve_area_projections(inequality)
+    table, station_vs_area, area_weighted_inequality = compute_area_coupling(
+        projections
+    )
+    station_vs_area.check()
+    area_weighted_inequality.check()
+    coverage = area_coverage(inequality)
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    table_dest = out_dir / COUPLING_AREA_ASSET
+    write_typed_parquet(table, table_dest, COUPLING_AREA_SCHEMA, order_by=(ID_COL,))
+    summary_dest = out_dir / COUPLING_AREA_SUMMARY_ASSET
+    summary_dest.write_text(
+        json.dumps(
+            area_summary_payload(
+                station_vs_area, area_weighted_inequality, coverage
+            ),
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    logger.info(
+        "wrote %s and %s (n=%d, area-weighted inequality_coefficient=%.3f, "
+        "station->area rho=%.3f)",
+        table_dest, summary_dest, len(table),
+        area_weighted_inequality.inequality_coefficient,
+        station_vs_area.spearman_rho,
+    )
+    return {
+        COUPLING_AREA_ASSET: table_dest,
+        COUPLING_AREA_SUMMARY_ASSET: summary_dest,
+    }
+
+
 def _sha256_file(path: Path) -> str:
     """SHA-256 hex digest of a file's bytes (streamed, so large inputs are cheap)."""
     digest = hashlib.sha256()
@@ -1001,6 +1088,7 @@ def main() -> None:
     coupling = build_coupling_summary_asset()
     coupling_consumption = build_coupling_consumption_asset()
     coupling_exposure = build_coupling_exposure_asset()
+    coupling_area = build_coupling_area_asset()
     physical = build_physical_summary_asset()
     trends = out["stats"]["trends"]
     interp = out["stats"]["interpolation"]
@@ -1117,6 +1205,22 @@ def main() -> None:
     else:
         print("coupling (exposure lens): skipped (population weighting not built)")
 
+    if COUPLING_AREA_SUMMARY_ASSET in coupling_area:
+        ca = json.loads(
+            coupling_area[COUPLING_AREA_SUMMARY_ASSET].read_text("utf-8")
+        )
+        cov = ca["coverage"]
+        sa = ca["station_vs_area"]
+        print(
+            f"coupling (area lens): n={cov['n_countries']} area-weighted, "
+            f"station->area rank rho {sa['spearman_rho']:+.3f}, area-weighted "
+            f"inequality coefficient "
+            f"{ca['area_weighted_inequality']['inequality_coefficient']:.3f} "
+            "(descriptive)"
+        )
+    else:
+        print("coupling (area lens): skipped (area weighting not built)")
+
     if PHYSICAL_SUMMARY_ASSET in physical:
         physical_summary = json.loads(
             physical[PHYSICAL_SUMMARY_ASSET].read_text(encoding="utf-8")
@@ -1134,7 +1238,7 @@ def main() -> None:
 
     all_paths = {
         **out["paths"], **summaries, **stability, **coupling,
-        **coupling_consumption, **coupling_exposure, **physical,
+        **coupling_consumption, **coupling_exposure, **coupling_area, **physical,
     }
     total_kb = sum(p.stat().st_size for p in all_paths.values()) / 1024
     print(f"bundle: {len(all_paths)} files, {total_kb:,.0f} KB total")

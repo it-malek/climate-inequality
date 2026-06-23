@@ -78,6 +78,7 @@ class TestRegistryV2:
             "responsibility_index_production_matched",
             "responsibility_index_v1",
             "impact_index_population_weighted",
+            "impact_index_area_weighted",
         }
         # Wide: well beyond the v1 cap of two, and grows additively.
         assert len(pcs.PCS_V2) > 2

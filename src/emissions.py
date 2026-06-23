@@ -34,6 +34,14 @@ import statsmodels.formula.api as smf
 from scipy import stats
 from statsmodels.regression.linear_model import RegressionResultsWrapper
 
+from src.area_weighting import (
+    AREA_COVERAGE_COL,
+    AREA_WEIGHTED_COL,
+    BERKELEY_GRID_PATH,
+    GPW_NATID_LOOKUP_PATH,
+    ISO3_COL,
+    area_weighted_country_trends,
+)
 from src.cleaning import parse_window
 from src.data_io import (
     OUTPUTS_DIR,
@@ -96,6 +104,8 @@ INEQUALITY_SCHEMA = {
     "cum_co2_window_t_per_capita": "DOUBLE",
     "trend_c_per_decade_pop_weighted": "DOUBLE",
     "pop_weight_coverage": "DOUBLE",
+    "trend_c_per_decade_area_weighted": "DOUBLE",
+    "area_cell_coverage": "DOUBLE",
 }
 INEQUALITY_COLUMNS = list(INEQUALITY_SCHEMA)
 
@@ -169,6 +179,28 @@ def aggregate_trends_by_country(
         trends.groupby("Country", observed=True)[value_col]
         .agg(n_cities="size", trend_c_per_decade="mean")
         .reset_index()
+    )
+
+
+def _attach_area_weighted(
+    country_trends: pd.DataFrame,
+    area: pd.DataFrame,
+    overrides: Mapping[str, str],
+    iso_by_owid: pd.Series,
+) -> pd.DataFrame:
+    """Merge ISO3-keyed area-weighted trends onto the station country table.
+
+    Bridges each Berkeley ``Country`` to ISO3 via the OWID name `overrides` and
+    the OWID ``iso_code`` map `iso_by_owid` -- the same identity
+    :func:`join_country_data` uses -- so the merge is on ISO3 with no fuzzy name
+    matching. Countries with no grid cells keep NaN in the two area columns.
+    """
+    owid_name = country_trends["Country"].map(lambda c: overrides.get(c, c))
+    iso3 = owid_name.map(iso_by_owid)
+    return (
+        country_trends.assign(_iso3=iso3.to_numpy())
+        .merge(area, left_on="_iso3", right_on=ISO3_COL, how="left")
+        .drop(columns=["_iso3", ISO3_COL])
     )
 
 
@@ -450,6 +482,8 @@ def build_inequality_analysis(
     cutoff_year: int | None = None,
     pop_grid_path: Path = POP_GRID_PATH,
     pop_year: int = GPW_DEFAULT_YEAR,
+    berkeley_grid_path: Path = BERKELEY_GRID_PATH,
+    natid_lookup_path: Path = GPW_NATID_LOOKUP_PATH,
 ) -> dict:
     """Run the Phase 4 pipeline end to end.
 
@@ -475,8 +509,8 @@ def build_inequality_analysis(
     download_file(CONTINENTS_URL, continents_path)
 
     trends = pd.read_parquet(trends_path)
+    window_start, window_end = parse_window(trends["analysis_window"].iloc[0])
     if cutoff_year is None:
-        _, window_end = parse_window(trends["analysis_window"].iloc[0])
         cutoff_year = int(window_end[:4])
         logger.info("cutoff year %d derived from analysis_window", cutoff_year)
 
@@ -496,7 +530,40 @@ def build_inequality_analysis(
         country_trends = country_trends.assign(
             trend_c_per_decade_pop_weighted=np.nan, pop_weight_coverage=np.nan
         )
+
     owid = load_owid_co2(co2_path)
+
+    # Area-weighted exposure (additive, best-effort): a per-cell Theil-Sen trend
+    # off the Berkeley gridded field, reduced to a country mean weighted by
+    # cos(lat) -- the honest answer to station sampling bias -- with cells
+    # assigned to countries via the GPW national-id band. Joined on ISO3 <->
+    # OWID iso_code (the exact bridge, no name matching); skipped to NULLs when
+    # the ~199 MB grid is absent, mirroring the population-null path so a no-grid
+    # build still succeeds.
+    if berkeley_grid_path.exists() and pop_grid_path.exists():
+        area = area_weighted_country_trends(
+            berkeley_grid_path, pop_grid_path,
+            start=window_start, end=window_end, lookup_path=natid_lookup_path,
+        )
+        iso_by_owid = (
+            owid.dropna(subset=["iso_code"])
+            .drop_duplicates("country")
+            .set_index("country")["iso_code"]
+        )
+        country_trends = _attach_area_weighted(
+            country_trends, area, BERKELEY_TO_OWID, iso_by_owid
+        )
+    else:
+        logger.warning(
+            "Berkeley grid absent (%s) or population grid absent (%s); "
+            "area-weighted exposure columns will be NULL -- commit the grid to "
+            "enable the L3 area-weighted lens",
+            berkeley_grid_path, pop_grid_path,
+        )
+        country_trends = country_trends.assign(
+            **{AREA_WEIGHTED_COL: np.nan, AREA_COVERAGE_COL: np.nan}
+        )
+
     emissions = cumulative_emissions_per_capita(owid, cutoff_year)
     consumption = cumulative_consumption_per_capita(owid, cutoff_year)
     # Left merge: countries without an OWID consumption series keep NULLs in the

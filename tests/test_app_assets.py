@@ -18,6 +18,8 @@ from src.app_assets import (
     COUPLING_ASSET,
     COUPLING_CONSUMPTION_ASSET,
     COUPLING_CONSUMPTION_SUMMARY_ASSET,
+    COUPLING_AREA_ASSET,
+    COUPLING_AREA_SUMMARY_ASSET,
     COUPLING_EXPOSURE_ASSET,
     COUPLING_EXPOSURE_SUMMARY_ASSET,
     COUPLING_SUMMARY_ASSET,
@@ -39,6 +41,7 @@ from src.app_assets import (
     _VALIDATION_SUMMARY_PATH,
     build_app_assets,
     build_coupling_consumption_asset,
+    build_coupling_area_asset,
     build_coupling_exposure_asset,
     build_coupling_summary_asset,
     build_decomposition_summaries,
@@ -550,3 +553,53 @@ class TestCouplingExposureAsset:
         )
         assert written == {}
         assert not (out_dir / COUPLING_EXPOSURE_ASSET).exists()
+
+
+class TestCouplingAreaAsset:
+    """build_coupling_area_asset wires the area-weighted exposure lens in."""
+
+    def test_writes_both_artifacts_with_coverage_and_two_passes(self, tmp_path):
+        inequality_path = tmp_path / "country_inequality.parquet"
+        make_inequality_frame().to_parquet(inequality_path, index=False)
+        out_dir = tmp_path / "bundle"
+
+        written = build_coupling_area_asset(
+            inequality_path=inequality_path, out_dir=out_dir
+        )
+
+        assert COUPLING_AREA_ASSET in written
+        assert COUPLING_AREA_SUMMARY_ASSET in written
+        assert (out_dir / COUPLING_AREA_ASSET).exists()
+        payload = json.loads(
+            (out_dir / COUPLING_AREA_SUMMARY_ASSET).read_text("utf-8")
+        )
+        assert set(payload) == {
+            "coverage", "station_vs_area", "area_weighted_inequality",
+        }
+        assert payload["coverage"]["n_countries"] > 0
+        assert "interpretation" not in payload
+
+    def test_byte_stable(self, tmp_path):
+        inequality_path = tmp_path / "country_inequality.parquet"
+        make_inequality_frame().to_parquet(inequality_path, index=False)
+        first = build_coupling_area_asset(
+            inequality_path=inequality_path, out_dir=tmp_path / "b1"
+        )[COUPLING_AREA_SUMMARY_ASSET].read_text("utf-8")
+        second = build_coupling_area_asset(
+            inequality_path=inequality_path, out_dir=tmp_path / "b2"
+        )[COUPLING_AREA_SUMMARY_ASSET].read_text("utf-8")
+        assert first == second
+
+    def test_skips_when_area_weighting_absent(self, tmp_path):
+        inequality_path = tmp_path / "country_inequality.parquet"
+        frame = make_inequality_frame().drop(
+            columns=["trend_c_per_decade_area_weighted", "area_cell_coverage"]
+        )
+        frame.to_parquet(inequality_path, index=False)
+        out_dir = tmp_path / "bundle"
+
+        written = build_coupling_area_asset(
+            inequality_path=inequality_path, out_dir=out_dir
+        )
+        assert written == {}
+        assert not (out_dir / COUPLING_AREA_ASSET).exists()

@@ -23,6 +23,7 @@ from src.emissions import (
     load_continents,
     quantify_inequality,
 )
+from tests.test_area_weighting import write_berkeley_grid, write_natid_grid
 from tests.test_population import write_gpw_grid
 
 SLOPE = 0.05  # injected °C/decade per 10x emissions
@@ -86,6 +87,12 @@ def make_inequality_frame(noise_sd=0.0, seed=0, specs=None):
                         intercept + SLOPE * lx + rng.normal(0.0, noise_sd)
                     ),
                     "pop_weight_coverage": 1.0,
+                    # Area-weighted exposure lens (gridded cos-latitude impact).
+                    # Deterministic (no rng draw) so adding this column does not
+                    # perturb the shared RNG stream the noise-sensitive tests rely
+                    # on.
+                    "trend_c_per_decade_area_weighted": intercept + SLOPE * lx,
+                    "area_cell_coverage": 0.85,
                 }
             )
     return pd.DataFrame(rows)
@@ -238,6 +245,8 @@ class TestJoinCountryData:
                 "trend_c_per_decade": [0.1, 0.2],
                 "trend_c_per_decade_pop_weighted": [0.12, 0.18],
                 "pop_weight_coverage": [1.0, 1.0],
+                "trend_c_per_decade_area_weighted": [0.11, 0.19],
+                "area_cell_coverage": [0.9, 0.95],
             }
         )
         emissions = pd.DataFrame(
@@ -421,6 +430,10 @@ class TestBuildInequalityAnalysis:
             "out_dir": tmp_path / "outputs",
             "table_path": tmp_path / "country_inequality.parquet",
             "pop_grid_path": pop_grid_path,
+            # Absent by default: the area-weighted lens degrades to NULL columns
+            # (the real 199 MB grid is never touched in tests). The dedicated
+            # test below passes synthetic Berkeley + national-id grids.
+            "berkeley_grid_path": tmp_path / "absent_berkeley.nc",
         }
 
     def test_pipeline_end_to_end(self, paths):
@@ -447,8 +460,46 @@ class TestBuildInequalityAnalysis:
             table["trend_c_per_decade"].to_numpy()
         )
         assert (table["pop_weight_coverage"] == 1.0).all()
+        # Area-weighted columns are present but NULL (Berkeley grid absent here).
+        assert table["trend_c_per_decade_area_weighted"].isna().all()
+        assert table["area_cell_coverage"].isna().all()
         assert out["figure_path"].exists()
         assert out["table_path"].exists()
+
+    def test_area_weighted_columns_populate(self, paths, tmp_path):
+        # Synthetic Berkeley grid (one cell per country at its latitude) +
+        # national-id grid (band 11) assigning each cell to that country's ISO3.
+        lats = [5.0 + 8.0 * i for i in range(len(self.COUNTRIES))]
+        lons = [5.0]
+        area_slopes = np.array([[0.10 + 0.02 * i] for i in range(len(self.COUNTRIES))])
+        codes = np.array([[(i + 1) * 10.0] for i in range(len(self.COUNTRIES))])
+        berkeley = write_berkeley_grid(
+            tmp_path / "berkeley.nc", lats, lons, area_slopes
+        )
+        natid = write_natid_grid(tmp_path / "natid.nc", lats, lons, codes)
+        # band-11 codes -> the OWID iso codes the fixture's continents/owid use.
+        from tests.test_area_weighting import write_lookup
+
+        lookup = {(i + 1) * 10: c[2] for i, c in enumerate(self.COUNTRIES)}
+        lookup_path = write_lookup(tmp_path / "natid_lookup.txt", lookup)
+
+        paths = {
+            **paths,
+            "berkeley_grid_path": berkeley,
+            "pop_grid_path": natid,
+            "natid_lookup_path": lookup_path,
+        }
+        out = build_inequality_analysis(**paths)
+        table = out["table"].set_index("Country")
+        # Single cell per country -> cos-weighting is trivial; the area-weighted
+        # trend equals the injected per-cell slope, bridged ISO3 <-> iso_code.
+        assert table.loc["Alphaland", "trend_c_per_decade_area_weighted"] == pytest.approx(
+            0.10
+        )
+        assert table.loc["Burma", "trend_c_per_decade_area_weighted"] == pytest.approx(
+            0.10 + 0.02 * 3
+        )
+        assert (out["table"]["area_cell_coverage"] == 1.0).all()
 
     def test_degrades_when_population_grid_absent(self, paths, tmp_path, caplog):
         # Best-effort: an absent population grid leaves the people-weighted

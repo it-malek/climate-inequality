@@ -89,14 +89,19 @@ def render() -> None:
     if consumption is not None:
         _render_consumption_section(consumption, loaders.load_coupling_consumption())
 
-    # People-weighted exposure lens (PCS v2). Also degrades silently.
+    # Alternative-weighting lenses (PCS v2): people-weighted and area-weighted
+    # exposure share one Station / People / Area basis toggle. Degrades silently
+    # to whichever lenses are present (or none).
     exposure = loaders.load_coupling_exposure_summary()
-    if exposure is not None:
-        _render_exposure_section(
-            exposure,
-            loaders.load_coupling_exposure(),
-            table,
-            summary["inequality_coefficient"],
+    area = loaders.load_coupling_area_summary()
+    if exposure is not None or area is not None:
+        _render_weighting_section(
+            station_table=table,
+            station_coeff=summary["inequality_coefficient"],
+            exposure_summary=exposure,
+            exposure_table=loaders.load_coupling_exposure(),
+            area_summary=area,
+            area_table=loaders.load_coupling_area(),
         )
 
 
@@ -158,95 +163,163 @@ def _render_consumption_section(summary: dict, table: pd.DataFrame | None) -> No
             )
 
 
-def _render_exposure_section(
-    summary: dict,
-    table: pd.DataFrame | None,
+def _render_weighting_section(
+    *,
     station_table: pd.DataFrame,
     station_coeff: float,
+    exposure_summary: dict | None,
+    exposure_table: pd.DataFrame | None,
+    area_summary: dict | None,
+    area_table: pd.DataFrame | None,
 ) -> None:
-    """People-weighted warming exposure comparison (PCS v2 exposure lens).
+    """Alternative-weighting exposure comparison: Station / People / Area (PCS v2).
 
-    All numbers are read from the pre-computed ``coupling_exposure.parquet`` /
-    summary — no runtime recomputation, so the page stays snappy.
+    The station-weighted country mean over-samples dense mid-latitude monitoring
+    clusters. Two pre-computed lenses re-weight it: **people-weighted** (by where
+    residents live) and **area-weighted** (by land area, a per-cell gridded trend
+    with cos-latitude weighting). All numbers are read from the pre-computed
+    ``coupling_*`` artifacts — no runtime recomputation — and the section degrades
+    to whichever lenses are present.
     """
-    coverage = summary["coverage"]
-    shift = summary["station_vs_people"]
-    people_coeff = summary["people_weighted_inequality"]["inequality_coefficient"]
+    # Per-lens display config; only lenses with both summary and table are offered.
+    lenses: dict[str, dict] = {}
+    if exposure_summary is not None and exposure_table is not None:
+        lenses["People-weighted (residents)"] = {
+            "table": exposure_table,
+            "impact_col": "impact_index_population_weighted",
+            "z_col": "station_to_people_z_gap",
+            "basis_label": "people-weighted",
+            "shift": exposure_summary["station_vs_people"],
+            "coeff": exposure_summary["people_weighted_inequality"][
+                "inequality_coefficient"
+            ],
+            "n_countries": exposure_summary["coverage"]["n_countries"],
+            "rank_label": "Station → people rank ρ",
+            "lorenz_title": (
+                "Cumulative people-weighted exposure vs cumulative responsibility"
+            ),
+            "more_header": "Residents more exposed than stations suggest",
+            "more_caption": "Population sits in the country's faster-warming regions.",
+            "less_header": "Stations overstate residents' exposure",
+            "less_caption": "Monitoring over-samples fast-warming, sparse areas.",
+            "csv": "coupling_exposure.csv",
+        }
+    if area_summary is not None and area_table is not None:
+        lenses["Area-weighted (land)"] = {
+            "table": area_table,
+            "impact_col": "impact_index_area_weighted",
+            "z_col": "station_to_area_z_gap",
+            "basis_label": "area-weighted",
+            "shift": area_summary["station_vs_area"],
+            "coeff": area_summary["area_weighted_inequality"][
+                "inequality_coefficient"
+            ],
+            "n_countries": area_summary["coverage"]["n_countries"],
+            "rank_label": "Station → area rank ρ",
+            "lorenz_title": (
+                "Cumulative area-weighted exposure vs cumulative responsibility"
+            ),
+            "more_header": "More exposed once every km² counts equally",
+            "more_caption": "Fast-warming interiors are under-sampled by stations.",
+            "less_header": "Stations overstate area-average exposure",
+            "less_caption": "Stations cluster in the faster-warming regions.",
+            "csv": "coupling_area.csv",
+        }
+    if not lenses:
+        return
 
     st.divider()
-    st.header("Warming the average resident actually feels")
+    st.header("Warming the average resident — and the average km² — actually feels")
     st.markdown(
-        "Station means weight every monitoring location equally; **people-weighted** "
-        "means weight each location by its population (GPW v4, 15-arc-minute count) — "
-        "the warming experienced by the average *resident*, across "
-        f"{coverage['n_countries']} countries. Counts are used directly (no "
-        "cos-latitude weighting, which would understate fast-warming high-latitude "
-        "populations)."
+        "Station means weight every monitoring location equally, so dense "
+        "mid-latitude clusters dominate. Two re-weightings correct that: "
+        "**people-weighted** (GPW v4 population count — counts used directly, no "
+        "cos-latitude) and **area-weighted** (a per-grid-cell Theil–Sen trend off "
+        "the Berkeley 1° field, **cos-latitude** weighted because a trend is an "
+        "intensive field — the exact mirror of the population-count rule)."
     )
 
     basis = st.radio(
         "Inequality basis",
-        ["Station-based", "People-weighted (residents)"],
+        ["Station-based", *lenses],
         horizontal=True,
         help="Switch the Lorenz curve and inequality coefficient between weighting "
-        "every station equally and weighting by population.",
+        "every station equally, by population, and by land area.",
     )
-    people_weighted = basis.startswith("People")
-    if people_weighted and table is not None:
-        coeff, other = people_coeff, station_coeff
-        lorenz = charts.lorenz_chart(
-            table,
-            impact_col="impact_index_population_weighted",
-            title="Cumulative people-weighted exposure vs cumulative responsibility",
+
+    if basis == "Station-based":
+        m1, *_ = st.columns(2)
+        m1.metric(
+            "Inequality coefficient",
+            f"{station_coeff:.2f}",
+            help="Gini-style divergence of cumulative warming exposure from "
+            "cumulative responsibility, station-weighted.",
         )
-    else:
-        coeff, other = station_coeff, people_coeff
-        lorenz = charts.lorenz_chart(station_table)
+        st.plotly_chart(
+            charts.lorenz_chart(station_table), width="stretch", key="weighting_lorenz"
+        )
+        return
+
+    cfg = lenses[basis]
+    table = cfg["table"]
+    shift = cfg["shift"]
 
     m1, m2 = st.columns(2)
     m1.metric(
         "Inequality coefficient",
-        f"{coeff:.2f}",
-        delta=f"{coeff - other:+.2f} vs other basis",
+        f"{cfg['coeff']:.2f}",
+        delta=f"{cfg['coeff'] - station_coeff:+.2f} vs station-based",
         delta_color="off",
         help="Gini-style divergence of cumulative warming exposure from cumulative "
         "responsibility, for the selected basis.",
     )
     m2.metric(
-        "Station → people rank ρ",
+        cfg["rank_label"],
         f"{shift['spearman_rho']:+.2f}",
-        help="How much the exposure ranking changes when weighting by residents "
-        "(1 = unchanged).",
+        help=f"How much the exposure ranking changes under the {cfg['basis_label']} "
+        "basis (1 = unchanged), across "
+        f"{cfg['n_countries']} countries.",
     )
 
-    st.plotly_chart(lorenz, width="stretch", key="exposure_lorenz")
-    if table is not None:
-        st.plotly_chart(
-            charts.exposure_shift_scatter(table), width="stretch", key="exposure_shift"
-        )
+    st.plotly_chart(
+        charts.lorenz_chart(
+            table, impact_col=cfg["impact_col"], title=cfg["lorenz_title"]
+        ),
+        width="stretch",
+        key="weighting_lorenz",
+    )
+    st.plotly_chart(
+        charts.exposure_shift_scatter(
+            table,
+            impact_col=cfg["impact_col"],
+            z_col=cfg["z_col"],
+            basis_label=cfg["basis_label"],
+        ),
+        width="stretch",
+        key="weighting_shift",
+    )
 
     c1, c2 = st.columns(2)
-    c1.subheader("Residents more exposed than stations suggest")
-    c1.caption("Population sits in the country's faster-warming regions.")
+    c1.subheader(cfg["more_header"])
+    c1.caption(cfg["more_caption"])
     c1.dataframe(
         _leaders_frame(shift["top_suffer_least_cause"]),
         width="stretch",
         hide_index=True,
     )
-    c2.subheader("Stations overstate residents' exposure")
-    c2.caption("Monitoring over-samples fast-warming, sparsely-populated areas.")
+    c2.subheader(cfg["less_header"])
+    c2.caption(cfg["less_caption"])
     c2.dataframe(
         _leaders_frame(shift["top_cause_least_suffer"]),
         width="stretch",
         hide_index=True,
     )
 
-    if table is not None:
-        with st.expander("Exposure lens — country table"):
-            st.dataframe(table, width="stretch", hide_index=True)
-            st.download_button(
-                "Download CSV",
-                table.to_csv(index=False).encode("utf-8"),
-                file_name="coupling_exposure.csv",
-                mime="text/csv",
-            )
+    with st.expander(f"{cfg['basis_label'].capitalize()} lens — country table"):
+        st.dataframe(table, width="stretch", hide_index=True)
+        st.download_button(
+            "Download CSV",
+            table.to_csv(index=False).encode("utf-8"),
+            file_name=cfg["csv"],
+            mime="text/csv",
+        )

@@ -15,11 +15,14 @@ import pytest
 from scipy import stats
 
 from src.coupling import (
+    COUPLING_AREA_SCHEMA,
     COUPLING_CONSUMPTION_SCHEMA,
     COUPLING_EXPOSURE_SCHEMA,
     COUPLING_SCHEMA,
     WIDE_ADMISSIBLE,
     CouplingResult,
+    area_summary_payload,
+    compute_area_coupling,
     compute_consumption_coupling,
     compute_coupling,
     compute_exposure_coupling,
@@ -358,6 +361,69 @@ class TestExposureCoupling:
         loaded = pd.read_parquet(path)
         assert list(loaded.columns) == list(COUPLING_EXPOSURE_SCHEMA)
         assert str(loaded["station_to_people_rank_gap"].dtype).startswith("int")
+
+
+def make_area_projections(n: int = 12, seed: int = 0) -> pd.DataFrame:
+    """Synthetic area frame: Country + the three registered area projections."""
+    rng = np.random.default_rng(seed)
+    responsibility = np.abs(rng.normal(10.0, 5.0, n)) + 0.1
+    station = np.abs(rng.normal(0.15, 0.05, n)) + 0.01
+    # Area-weighting reshuffles exposure relative to the station mean.
+    area = station * rng.uniform(0.6, 1.6, n)
+    return pd.DataFrame(
+        {
+            "Country": [f"C{i}" for i in range(n)],
+            "responsibility_index_v1": responsibility,
+            "impact_index_v1": station,
+            "impact_index_area_weighted": area,
+        }
+    )
+
+
+class TestAreaCoupling:
+    def test_wide_table_schema(self):
+        table, _, _ = compute_area_coupling(make_area_projections())
+        assert list(table.columns) == list(COUPLING_AREA_SCHEMA)
+
+    def test_station_to_area_rank_gap(self):
+        table, _, _ = compute_area_coupling(make_area_projections(seed=3))
+        expected = table["area_rank"] - table["station_rank"]
+        assert table["station_to_area_rank_gap"].tolist() == expected.tolist()
+
+    def test_area_weighted_inequality_bounded(self):
+        _, station_vs_area, area_ineq = compute_area_coupling(
+            make_area_projections(n=30, seed=5)
+        )
+        for result in (station_vs_area, area_ineq):
+            assert 0.0 <= result.inequality_coefficient <= 1.0
+
+    def test_summary_payload_structure(self):
+        _, station_vs_area, area_ineq = compute_area_coupling(make_area_projections())
+        coverage = {"n_countries": 12, "mean_area_cell_coverage": 0.7}
+        payload = area_summary_payload(station_vs_area, area_ineq, coverage)
+        assert set(payload) == {
+            "coverage",
+            "station_vs_area",
+            "area_weighted_inequality",
+        }
+        assert payload["coverage"]["n_countries"] == 12
+        assert "interpretation" not in payload
+        assert "inequality_coefficient" in payload["area_weighted_inequality"]
+
+    def test_summary_byte_stable(self):
+        _, station_vs_area, area_ineq = compute_area_coupling(make_area_projections())
+        coverage = {"n_countries": 12, "mean_area_cell_coverage": 0.7}
+        first = json.dumps(area_summary_payload(station_vs_area, area_ineq, coverage))
+        second = json.dumps(area_summary_payload(station_vs_area, area_ineq, coverage))
+        assert first == second
+
+    def test_wide_table_round_trips_through_typed_parquet(self, tmp_path):
+        table, _, _ = compute_area_coupling(make_area_projections())
+        path = tmp_path / "coupling_area.parquet"
+        write_typed_parquet(table, path, COUPLING_AREA_SCHEMA, order_by=("Country",))
+        loaded = pd.read_parquet(path)
+        assert list(loaded.columns) == list(COUPLING_AREA_SCHEMA)
+        assert str(loaded["station_to_area_rank_gap"].dtype).startswith("int")
 
 
 class TestResultCheck:
