@@ -112,8 +112,11 @@ makes the overlap itself reportable.
 The binding constraints (full list: design memo §7, README):
 
 - **Station sampling bias** — trends exist only where Berkeley Earth has city
-  series (dense mid-latitudes, sparse Arctic/Sahara/Amazonia); country means are
-  station-weighted, not area- or population-weighted. The single largest threat.
+  series (dense mid-latitudes, sparse Arctic/Sahara/Amazonia); the default
+  country mean is station-weighted, not area- or population-weighted (the single
+  largest threat for the L2 decomposition). The Layer 3 exposure lens now reports
+  a **people-weighted** view alongside it (GPW v4 population), so the headline can
+  be read either way.
 - **Axis collinearity** — Shapley splits shared variance *fairly* but cannot
   *separate* genuinely entangled axes; a dominant geography share could partly
   reflect that high emitters simply *are* high-latitude.

@@ -32,24 +32,31 @@ observations that now exist:
 - **ERA5 reanalysis 2m temperature** as an independent cross-check on the
   station-derived trends — where the two disagree, station inhomogeneities
   are suspect.
-- **Population weighting:** join city-locations against a population grid
-  (GPW v4 or WorldPop) by coordinates — no fragile name matching — to turn
-  station-weighted country means into *people-weighted* means ("warming
-  experienced by the average resident").
+- **Population weighting:** ✅ **built** (Layer 3 exposure lens). City-locations
+  are joined against the SEDAC **GPW v4.11** 15-arc-minute population-*count*
+  grid by coordinates (no name matching, `src/population.py`), turning the
+  station-weighted country mean into a *people-weighted* one ("warming
+  experienced by the average resident"). Counts are used directly — **no
+  cos(latitude) weighting**: a count grid already embeds meridian convergence,
+  and cos-weighting would understate fast-warming high-latitude residents
+  (cos(lat) is for intensive/density fields only). Loading is native-lazy via
+  `xarray`/`netcdf4` (only the sampled cells are read; **dask is intentionally
+  not a dependency**).
 
 ## 3. Better inequality metrics
 
 The current metric (country warming vs cumulative per-capita CO₂) measures
 *who warms*, not *who suffers*. Variants that sharpen the question:
 
-- **Consumption-based emissions** (Global Carbon Project, via OWID's
-  `consumption_co2`): reallocates traded-goods emissions to the consuming
-  country; tests whether the production/consumption distinction changes
-  the responsibility ranking (for export-heavy economies it does).
-- **Lorenz/Gini framing:** plot the cumulative share of warming exposure
-  (population-weighted) against the cumulative share of emissions
-  responsibility, country-ranked. One curve and one Gini-style coefficient
-  summarize "climate inequality" far more directly than a regression slope.
+- **Consumption-based emissions** ✅ **built** (Layer 3 consumption lens, PCS v2):
+  OWID's `consumption_co2` reallocates traded-goods emissions to the consuming
+  country; the lens tests whether the production/consumption distinction changes
+  the responsibility ranking, with both cumulatives summed over each country's
+  shared consumption-available window to avoid a window confound.
+- **Lorenz/Gini framing:** ✅ **built** — the cumulative share of warming
+  exposure (station- or **people-weighted**) is plotted against the cumulative
+  share of emissions responsibility, with the Gini-style inequality coefficient,
+  on the Layer 3 dashboard page.
 - **Exposure × vulnerability:** join ND-GAIN (vulnerability/readiness) or
   income groups; the hypothesis worth testing is a *triple* inequality —
   low emitters warm somewhat less in °C but are far more exposed

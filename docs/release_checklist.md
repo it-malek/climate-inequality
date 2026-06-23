@@ -86,10 +86,11 @@ None blocks a v1.0 tag.
   is the highest-value next step: bootstrap CIs on the Shapley shares, Moran's I
   on the country residual, construction-sensitivity, and spatial robustness. The
   dashboard already scaffolds it.
-- **Substantive extensions** — `docs/future_work.md`: gridded/area-weighted
-  warming, population-weighted *exposure* and a Lorenz/Gini injustice framing,
-  consumption-based emissions, extreme-heat (vs mean) inequality. These address
-  the project's main external-validity gap (outcome ≠ impact).
+- **Substantive extensions** — `docs/future_work.md`. Built since: the Layer 3
+  **people-weighted exposure** lens (GPW v4), the **consumption-based**
+  responsibility lens, and the Lorenz/Gini injustice framing. Still open:
+  gridded/area-weighted warming and extreme-heat (vs mean) inequality. These
+  address the project's main external-validity gap (outcome ≠ impact).
 
 ## Sign-off steps for a tagged v1.0
 

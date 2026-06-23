@@ -75,6 +75,10 @@ class TestSamplePopulation:
         out = sample_population(np.array([0.0, 9.0]), np.array([0.0, 9.0]), grid)
         assert out.tolist() == [10.0, 90.0]
 
+    def test_missing_grid_raises_informative_error(self, tmp_path):
+        with pytest.raises(FileNotFoundError, match="population grid not found"):
+            sample_population(np.array([0.0]), np.array([0.0]), tmp_path / "absent.nc")
+
     def test_negative_fill_becomes_nan(self, tmp_path):
         # GPW ocean/no-data fill is a large negative -> NaN, not a giant weight.
         count = np.array([[-3.4e38, 50.0], [-3.4e38, 50.0]])

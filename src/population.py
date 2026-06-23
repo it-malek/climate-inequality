@@ -69,7 +69,6 @@ GPW_FILL_FLOOR = 0.0
 
 # The production grid for the people-weighted exposure lens.
 POP_GRID_PATH = GPW_PATH
-POP_VAR = GPW_POP_VAR
 
 ID_COL = "Country"
 POP_WEIGHTED_COL = "trend_c_per_decade_pop_weighted"
@@ -79,6 +78,23 @@ POP_COVERAGE_COL = "pop_weight_coverage"
 def _dask_available() -> bool:
     """Whether dask is importable (xarray needs it to honor ``chunks=``)."""
     return importlib.util.find_spec("dask") is not None
+
+
+def _require_grid(path: Path) -> Path:
+    """Validate the population grid exists, with one informative error message.
+
+    Shared by every entry point (:func:`verify_population_grid`,
+    :func:`sample_population`, :func:`global_population_total`) so a missing
+    15-arc-minute NetCDF fails the same clear way everywhere rather than as a
+    cryptic backend error from ``xarray``.
+    """
+    path = Path(path)
+    if not path.exists():
+        raise FileNotFoundError(
+            f"population grid not found: {path}; place the SEDAC GPW v4 "
+            f"15-arc-minute population NetCDF there (the data/raw tree is gitignored)"
+        )
+    return path
 
 
 def verify_population_grid(
@@ -109,12 +125,7 @@ def verify_population_grid(
     Raises:
         FileNotFoundError: if `path` is absent.
     """
-    path = Path(path)
-    if not path.exists():
-        raise FileNotFoundError(
-            f"population grid not found: {path}; place the GPW v4 NetCDF there "
-            f"(the data/raw tree is gitignored)"
-        )
+    path = _require_grid(path)
     chunks = {GPW_LAT_DIM: 180, GPW_LON_DIM: 360} if _dask_available() else None
     ds = xr.open_dataset(path, engine=engine, chunks=chunks)
     try:
@@ -170,6 +181,7 @@ def sample_population(
     Returns:
         1D float array of person-counts (NaN where no-data), aligned to inputs.
     """
+    nc_path = _require_grid(nc_path)
     band = GPW_COUNT_BAND_BY_YEAR[year]
     values = sample_static_grid(
         nc_path,
@@ -262,6 +274,7 @@ def global_population_total(
     Reads a single ~4 MB band (not the full 84 MB file); ocean/no-data (fill < 0)
     is masked out.
     """
+    path = _require_grid(path)
     band = GPW_COUNT_BAND_BY_YEAR[year]
     ds = xr.open_dataset(path, engine=engine)
     try:

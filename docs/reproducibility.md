@@ -109,10 +109,12 @@ the Layer-3 `coupling.parquet` + `coupling_summary.json`
 ## 5. Country aggregation
 
 - **Warming** per country = the **unweighted mean** of its city-location
-  Theil–Sen slopes. Unweighted because the project datasets carry **no city
-  populations**; this is *station-weighted*, not area- or population-weighted,
-  and is the single largest validity caveat (see the design memo §7 and the
-  README limitations).
+  Theil–Sen slopes by default — *station-weighted*, not area- or
+  population-weighted, the single largest validity caveat (see the design memo §7
+  and the README limitations). The temperature datasets carry no city
+  populations, so the Layer 3 **people-weighted exposure** lens instead samples
+  the SEDAC GPW v4 population grid at each location's coordinates and reports a
+  resident-weighted mean alongside the default (`src/population.py`).
 - **Geography features** are aggregated city→country as means (abs-latitude,
   elevation, continentality, station density) and **modal class** (Köppen,
   hemisphere) — `aggregate_city_features_to_country`.

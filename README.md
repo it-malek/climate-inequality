@@ -158,8 +158,11 @@ it: a **consumption-based** responsibility view (emissions counted where goods
 are consumed, window-matched to OWID's 1990+ consumption series), and a
 **people-weighted exposure** view that re-weights each country's warming by where
 its residents actually live — population sampled from the SEDAC **GPW v4**
-15-arc-minute grid at each city-location's coordinates — with a
-station-vs-people toggle and the country rank-shift leaders.
+15-arc-minute grid at each city-location's coordinates. A toggle switches the
+Lorenz curve and inequality coefficient between **Station-Based** (every
+monitoring location counts equally) and **People-Weighted** (each location
+weighted by its resident population); a rank-shift view flags the countries whose
+exposure ranking moves most between the two.
 **Foundations** (how the inputs were built): the interpolated warming surface
 with a city-station toggle; a city explorer (any location's anomaly series and
 fitted trend); the emissions-vs-warming scatter; an out-of-sample validation
