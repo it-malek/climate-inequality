@@ -233,6 +233,34 @@ def load_coupling_consumption() -> pd.DataFrame | None:
 
 
 @st.cache_data
+def load_coupling_exposure_summary() -> dict | None:
+    """Two-pass people-weighted exposure comparator metrics (PCS v2), if present.
+
+    Returns ``None`` until ``coupling_exposure_summary.json`` is in the bundle (it
+    needs the people-weighted column, which needs the population grid at build
+    time), so the responsibility page's exposure comparison degrades gracefully.
+    """
+    return _load_optional_json("coupling_exposure_summary.json")
+
+
+@st.cache_data
+def load_coupling_exposure() -> pd.DataFrame | None:
+    """The Layer 3 people-weighted exposure wide diagnostic table, if present."""
+    path = APP_DATA_DIR / "coupling_exposure.parquet"
+    if not path.exists():
+        return None
+    return _read_bundle_parquet(
+        "coupling_exposure.parquet",
+        required=(
+            "Country", "responsibility_index_v1", "impact_index_v1",
+            "impact_index_population_weighted", "station_rank", "people_rank",
+            "station_to_people_rank_gap", "station_to_people_z_gap",
+            "responsibility_rank", "people_responsibility_z_gap",
+        ),
+    )
+
+
+@st.cache_data
 def load_country_latitudes() -> pd.DataFrame:
     """Mean signed latitude per country, aggregated from the city features.
 
