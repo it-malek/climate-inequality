@@ -153,7 +153,13 @@ leave-one-country-out influence per share, and Moran's I on the model residual
 `docs/stability_roadmap.md`); and a
 **Responsibility vs impact** page (Layer 3) comparing each country's emissions
 responsibility against its warming exposure — Spearman ρ, the Lorenz/Gini
-inequality coefficient, and the mismatch leaders.
+inequality coefficient, and the mismatch leaders. Two **PCS v2** lenses extend
+it: a **consumption-based** responsibility view (emissions counted where goods
+are consumed, window-matched to OWID's 1990+ consumption series), and a
+**people-weighted exposure** view that re-weights each country's warming by where
+its residents actually live — population sampled from the SEDAC **GPW v4**
+15-arc-minute grid at each city-location's coordinates — with a
+station-vs-people toggle and the country rank-shift leaders.
 **Foundations** (how the inputs were built): the interpolated warming surface
 with a city-station toggle; a city explorer (any location's anomaly series and
 fitted trend); the emissions-vs-warming scatter; an out-of-sample validation
@@ -179,10 +185,12 @@ redeploys automatically on push to `main`.
 
 - **Station sampling bias.** Trends exist only where Berkeley Earth has
   city series: dense in populous mid-latitudes, sparse over the Arctic
-  (25 locations >60°N), the Sahara, Amazonia, and Siberia. Country means
-  are unweighted across city-locations — station-weighted, not area- or
-  population-weighted — because the project datasets carry no city
-  populations.
+  (25 locations >60°N), the Sahara, Amazonia, and Siberia. The default
+  country mean is **station-weighted** (each city-location counts equally);
+  the Layer 3 **people-weighted exposure** lens additionally re-weights by
+  population sampled from the SEDAC GPW v4 grid at each location's coordinates
+  (population counts used directly — no cos-latitude bias), so the headline can
+  be read either way.
 - **Land-only, ending September 2013 (analysis window).** Ocean warming is
   absent (which is also why the Arctic ratio reads 1.56× rather than the
   canonical ~2×). Post-2013 Berkeley Earth gridded data is used in Phase 6
@@ -213,11 +221,12 @@ redeploys automatically on push to `main`.
 
 ## Future work
 
-A prioritized roadmap lives in [`docs/future_work.md`](docs/future_work.md):
-switching to Berkeley Earth's gridded product, population-weighted
-exposure, consumption-based emissions and Lorenz/Gini inequality framings,
-gradient-boosted trees + SHAP vs the Phase 7 OLS, and extreme-heat
-(rather than mean) warming inequality using GHCN-Daily data.
+A prioritized roadmap lives in [`docs/future_work.md`](docs/future_work.md).
+The consumption-based responsibility and people-weighted exposure lenses
+(Layer 3, PCS v2) are now built; remaining items include switching to Berkeley
+Earth's gridded product, an exposure × vulnerability (ND-GAIN) join,
+gradient-boosted trees + SHAP vs the Phase 7 OLS, and extreme-heat (rather than
+mean) warming inequality using GHCN-Daily data.
 
 ## Reproducing
 
@@ -260,5 +269,6 @@ any of the above data steps. On a fresh machine, start with
 ## Data
 
 - [Berkeley Earth — Climate Change: Earth Surface Temperature Data](https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data)
-- [Our World in Data — CO₂ and Greenhouse Gas Emissions](https://github.com/owid/co2-data)
+- [Our World in Data — CO₂ and Greenhouse Gas Emissions](https://github.com/owid/co2-data) (production- and consumption-based CO₂)
+- [SEDAC — Gridded Population of the World (GPW) v4.11, UN WPP-adjusted population count](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4) (15-arc-minute; people-weighted exposure)
 - [Natural Earth — 110m land polygons](https://www.naturalearthdata.com/downloads/110m-physical-vectors/) (land mask)

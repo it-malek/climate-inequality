@@ -1,0 +1,186 @@
+{
+  "window": {
+    "n_countries": 114,
+    "consumption_start_year_min": 1990,
+    "consumption_start_year_median": 1990.0,
+    "consumption_start_year_max": 2003
+  },
+  "consumption_vs_impact": {
+    "spearman_rho": 0.39938923754,
+    "n_high_impact_low_responsibility": 59,
+    "inequality_coefficient": 0.472135744187,
+    "top_suffer_least_cause": [
+      [
+        "Mongolia",
+        2.743912472647
+      ],
+      [
+        "Iran",
+        2.497050991609
+      ],
+      [
+        "Tajikistan",
+        2.460134382905
+      ],
+      [
+        "Tunisia",
+        2.062721284313
+      ],
+      [
+        "Azerbaijan",
+        1.842692664982
+      ],
+      [
+        "Armenia",
+        1.643327883867
+      ],
+      [
+        "Georgia",
+        1.55968443298
+      ],
+      [
+        "Morocco",
+        1.425706483509
+      ],
+      [
+        "Ethiopia",
+        1.370014543315
+      ],
+      [
+        "Pakistan",
+        1.338973051993
+      ]
+    ],
+    "top_cause_least_suffer": [
+      [
+        "Singapore",
+        -4.187709068978
+      ],
+      [
+        "Hong Kong",
+        -3.672271854266
+      ],
+      [
+        "United States",
+        -2.889169034632
+      ],
+      [
+        "Japan",
+        -2.16992298957
+      ],
+      [
+        "New Zealand",
+        -1.97272365861
+      ],
+      [
+        "Taiwan",
+        -1.946795099672
+      ],
+      [
+        "Canada",
+        -1.637601856824
+      ],
+      [
+        "Australia",
+        -1.633784457517
+      ],
+      [
+        "Greece",
+        -1.580707878088
+      ],
+      [
+        "Belgium",
+        -1.525798472073
+      ]
+    ]
+  },
+  "production_to_consumption_shift": {
+    "spearman_rho": 0.972297037322,
+    "n_high_impact_low_responsibility": 42,
+    "inequality_coefficient": 0.060393556518,
+    "top_suffer_least_cause": [
+      [
+        "Singapore",
+        2.499439500723
+      ],
+      [
+        "Switzerland",
+        1.405911765267
+      ],
+      [
+        "Hong Kong",
+        1.305578901353
+      ],
+      [
+        "Belgium",
+        0.764273133412
+      ],
+      [
+        "Sweden",
+        0.58338071925
+      ],
+      [
+        "Finland",
+        0.561707277497
+      ],
+      [
+        "Lithuania",
+        0.468105800404
+      ],
+      [
+        "Austria",
+        0.45978948484
+      ],
+      [
+        "Latvia",
+        0.408060679037
+      ],
+      [
+        "Portugal",
+        0.353770446353
+      ]
+    ],
+    "top_cause_least_suffer": [
+      [
+        "Qatar",
+        -2.039308915932
+      ],
+      [
+        "Bahrain",
+        -1.413222385142
+      ],
+      [
+        "Russia",
+        -0.777885922194
+      ],
+      [
+        "Kazakhstan",
+        -0.776047870678
+      ],
+      [
+        "Australia",
+        -0.514446656367
+      ],
+      [
+        "Ukraine",
+        -0.507120771831
+      ],
+      [
+        "Saudi Arabia",
+        -0.491462931329
+      ],
+      [
+        "Belarus",
+        -0.472477008736
+      ],
+      [
+        "South Africa",
+        -0.381053235003
+      ],
+      [
+        "Venezuela",
+        -0.356518671857
+      ]
+    ]
+  }
+}

@@ -282,17 +282,24 @@ def influence_bar(
     return theme.apply_base_layout(fig)
 
 
-def lorenz_chart(table: pd.DataFrame) -> go.Figure:
+def lorenz_chart(
+    table: pd.DataFrame,
+    responsibility_col: str = "responsibility_index_v1",
+    impact_col: str = "impact_index_v1",
+    title: str = "Cumulative warming exposure vs cumulative responsibility",
+) -> go.Figure:
     """Lorenz-style curve: cumulative impact share vs cumulative responsibility share.
 
     Countries are ordered by responsibility only (the PCS comparator's
     construction); the empirical cumulative shares are drawn as a step curve (no
     smoothing) against the 45° equality diagonal. The area between the two is what
-    the inequality coefficient summarizes.
+    the inequality coefficient summarizes. The columns are parametrized so the
+    same curve serves the station-based (``impact_index_v1``) and people-weighted
+    (``impact_index_population_weighted``) exposure lenses.
     """
-    work = table.sort_values("responsibility_index_v1", kind="stable")
-    r = work["responsibility_index_v1"].to_numpy(dtype=float)
-    im = work["impact_index_v1"].to_numpy(dtype=float)
+    work = table.sort_values(responsibility_col, kind="stable")
+    r = work[responsibility_col].to_numpy(dtype=float)
+    im = work[impact_col].to_numpy(dtype=float)
     cum_r = np.concatenate([[0.0], np.cumsum(r) / r.sum()])
     cum_i = np.concatenate([[0.0], np.cumsum(im) / im.sum()])
 
@@ -314,13 +321,61 @@ def lorenz_chart(table: pd.DataFrame) -> go.Figure:
         )
     )
     fig.update_layout(
-        title="Cumulative warming exposure vs cumulative responsibility",
+        title=title,
         xaxis={"title": "Cumulative responsibility share", "tickformat": ".0%",
                "range": [0, 1]},
         yaxis={"title": "Cumulative impact share", "tickformat": ".0%",
                "range": [0, 1]},
         height=380,
         showlegend=True,
+    )
+    return theme.apply_base_layout(fig)
+
+
+def exposure_shift_scatter(table: pd.DataFrame) -> go.Figure:
+    """Station-based vs people-weighted warming exposure, per country.
+
+    Each country is plotted at (station-weighted rate, people-weighted rate)
+    against the 45° no-shift line; distance from it is how much weighting by where
+    people actually live changes the country's exposure. Points are colored by the
+    standardized ``station_to_people_z_gap`` (positive = residents are *more*
+    exposed than the station mean suggests).
+    """
+    station = table["impact_index_v1"].to_numpy(dtype=float)
+    people = table["impact_index_population_weighted"].to_numpy(dtype=float)
+    lo = float(min(station.min(), people.min()))
+    hi = float(max(station.max(), people.max()))
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=[lo, hi], y=[lo, hi], mode="lines",
+            line={"dash": "dot", "color": theme.NEUTRAL_FAINT}, name="no shift",
+            hoverinfo="skip",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=station, y=people, mode="markers", name="country",
+            marker={
+                "color": table["station_to_people_z_gap"],
+                "colorscale": "RdBu_r",
+                "cmid": 0.0,
+                "size": 9,
+                "line": {"color": theme.NEUTRAL_MID, "width": 0.5},
+                "colorbar": {"title": "z-shift"},
+            },
+            customdata=table["Country"],
+            hovertemplate="<b>%{customdata}</b><br>station %{x:.3f}<br>"
+            "people-weighted %{y:.3f}<br>z-shift %{marker.color:+.2f}<extra></extra>",
+        )
+    )
+    fig.update_layout(
+        title="Station-based vs people-weighted warming exposure",
+        xaxis={"title": "Station-weighted warming (°C/decade)"},
+        yaxis={"title": "People-weighted warming (°C/decade)"},
+        height=420,
+        showlegend=False,
     )
     return theme.apply_base_layout(fig)
 

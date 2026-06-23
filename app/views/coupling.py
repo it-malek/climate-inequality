@@ -89,6 +89,16 @@ def render() -> None:
     if consumption is not None:
         _render_consumption_section(consumption, loaders.load_coupling_consumption())
 
+    # People-weighted exposure lens (PCS v2). Also degrades silently.
+    exposure = loaders.load_coupling_exposure_summary()
+    if exposure is not None:
+        _render_exposure_section(
+            exposure,
+            loaders.load_coupling_exposure(),
+            table,
+            summary["inequality_coefficient"],
+        )
+
 
 def _render_consumption_section(summary: dict, table: pd.DataFrame | None) -> None:
     """Side-by-side consumption-based responsibility comparison (PCS v2)."""
@@ -144,5 +154,99 @@ def _render_consumption_section(summary: dict, table: pd.DataFrame | None) -> No
                 "Download CSV",
                 table.to_csv(index=False).encode("utf-8"),
                 file_name="coupling_consumption.csv",
+                mime="text/csv",
+            )
+
+
+def _render_exposure_section(
+    summary: dict,
+    table: pd.DataFrame | None,
+    station_table: pd.DataFrame,
+    station_coeff: float,
+) -> None:
+    """People-weighted warming exposure comparison (PCS v2 exposure lens).
+
+    All numbers are read from the pre-computed ``coupling_exposure.parquet`` /
+    summary — no runtime recomputation, so the page stays snappy.
+    """
+    coverage = summary["coverage"]
+    shift = summary["station_vs_people"]
+    people_coeff = summary["people_weighted_inequality"]["inequality_coefficient"]
+
+    st.divider()
+    st.header("Warming the average resident actually feels")
+    st.markdown(
+        "Station means weight every monitoring location equally; **people-weighted** "
+        "means weight each location by its population (GPW v4, 15-arc-minute count) — "
+        "the warming experienced by the average *resident*, across "
+        f"{coverage['n_countries']} countries. Counts are used directly (no "
+        "cos-latitude weighting, which would understate fast-warming high-latitude "
+        "populations)."
+    )
+
+    basis = st.radio(
+        "Inequality basis",
+        ["Station-based", "People-weighted (residents)"],
+        horizontal=True,
+        help="Switch the Lorenz curve and inequality coefficient between weighting "
+        "every station equally and weighting by population.",
+    )
+    people_weighted = basis.startswith("People")
+    if people_weighted and table is not None:
+        coeff, other = people_coeff, station_coeff
+        lorenz = charts.lorenz_chart(
+            table,
+            impact_col="impact_index_population_weighted",
+            title="Cumulative people-weighted exposure vs cumulative responsibility",
+        )
+    else:
+        coeff, other = station_coeff, people_coeff
+        lorenz = charts.lorenz_chart(station_table)
+
+    m1, m2 = st.columns(2)
+    m1.metric(
+        "Inequality coefficient",
+        f"{coeff:.2f}",
+        delta=f"{coeff - other:+.2f} vs other basis",
+        delta_color="off",
+        help="Gini-style divergence of cumulative warming exposure from cumulative "
+        "responsibility, for the selected basis.",
+    )
+    m2.metric(
+        "Station → people rank ρ",
+        f"{shift['spearman_rho']:+.2f}",
+        help="How much the exposure ranking changes when weighting by residents "
+        "(1 = unchanged).",
+    )
+
+    st.plotly_chart(lorenz, width="stretch", key="exposure_lorenz")
+    if table is not None:
+        st.plotly_chart(
+            charts.exposure_shift_scatter(table), width="stretch", key="exposure_shift"
+        )
+
+    c1, c2 = st.columns(2)
+    c1.subheader("Residents more exposed than stations suggest")
+    c1.caption("Population sits in the country's faster-warming regions.")
+    c1.dataframe(
+        _leaders_frame(shift["top_suffer_least_cause"]),
+        width="stretch",
+        hide_index=True,
+    )
+    c2.subheader("Stations overstate residents' exposure")
+    c2.caption("Monitoring over-samples fast-warming, sparsely-populated areas.")
+    c2.dataframe(
+        _leaders_frame(shift["top_cause_least_suffer"]),
+        width="stretch",
+        hide_index=True,
+    )
+
+    if table is not None:
+        with st.expander("Exposure lens — country table"):
+            st.dataframe(table, width="stretch", hide_index=True)
+            st.download_button(
+                "Download CSV",
+                table.to_csv(index=False).encode("utf-8"),
+                file_name="coupling_exposure.csv",
                 mime="text/csv",
             )
