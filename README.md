@@ -224,12 +224,17 @@ redeploys automatically on push to `main`.
 
 ## Future work
 
-A prioritized roadmap lives in [`docs/future_work.md`](docs/future_work.md).
-The consumption-based responsibility and people-weighted exposure lenses
-(Layer 3, PCS v2) are now built; remaining items include switching to Berkeley
-Earth's gridded product, an exposure × vulnerability (ND-GAIN) join,
-gradient-boosted trees + SHAP vs the Phase 7 OLS, and extreme-heat (rather than
-mean) warming inequality using GHCN-Daily data.
+A prioritized roadmap lives in [`docs/future_work.md`](docs/future_work.md). The
+out-of-sample validation (Phase 6), the Layer 1 physical-drivers model, the
+stability layer, and the Layer 3 PCS v2 lenses (consumption-based responsibility,
+people-weighted exposure on GPW v4) and Lorenz/Gini framing are all built. The
+**next epic (v1.2)** is **area-weighted gridded warming** — replacing
+station-weighted country means with true area-weighted means from the in-repo
+Berkeley Earth 1°×1° product (cos-latitude-weighted, the correct mirror of the
+population-count rule) to close the project's main external-validity gap (station
+sampling bias). Later: extreme-heat (vs mean) inequality via GHCN-Daily, an
+exposure × vulnerability (ND-GAIN) join, and gradient-boosted trees + SHAP vs the
+Phase 7 OLS.
 
 ## Reproducing
 

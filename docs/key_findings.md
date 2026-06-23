@@ -63,8 +63,9 @@ into a stable, order-independent share.
 **37% of the total** cross-country warming variance is left unexplained by all
 four axes (hypothesis H5, partly). This is not noise to be dismissed: country
 warming residuals are expected to be **spatially structured** (regional
-processes the four axes do not capture), which is precisely what the deferred
-stability layer is scoped to test (Moran's I / Conley HAC — see
+processes the four axes do not capture), which is precisely what the
+(now-shipped) stability layer tests — Moran's I ≈ 0.33 (p = 0.005), confirming the
+residual is regionally clustered, not noise (Conley HAC SEs remain roadmapped; see
 `docs/stability_roadmap.md`). The residual is a named, testable object, not a
 modeling afterthought.
 

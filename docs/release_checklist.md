@@ -82,15 +82,32 @@ None blocks a v1.0 tag.
 
 ## Recommended future work
 
-- **Next research phase: the stability layer** — `docs/stability_roadmap.md`. This
-  is the highest-value next step: bootstrap CIs on the Shapley shares, Moran's I
-  on the country residual, construction-sensitivity, and spatial robustness. The
-  dashboard already scaffolds it.
-- **Substantive extensions** — `docs/future_work.md`. Built since: the Layer 3
-  **people-weighted exposure** lens (GPW v4), the **consumption-based**
-  responsibility lens, and the Lorenz/Gini injustice framing. Still open:
-  gridded/area-weighted warming and extreme-heat (vs mean) inequality. These
-  address the project's main external-validity gap (outcome ≠ impact).
+- **Stability layer — ✅ built** (`src/stability.py`, `app/data/stability_summary.json`,
+  `docs/stability_roadmap.md`): bootstrap + block-bootstrap CIs on the Shapley shares
+  (geography largest in 100% of resamples; P(emissions > 0) = 1.0), leave-one-country-out
+  influence, and Moran's I on the country residual (I ≈ 0.33, p = 0.005), shipped with the
+  sensitivity dashboard page.
+- **Also built since v1.0** — Layer 1 physical-drivers model; the Layer 3 PCS v2 Wide
+  Registry lenses (**consumption-based** responsibility, **people-weighted exposure** on
+  SEDAC GPW v4) and the Lorenz/Gini injustice framing.
+
+- **⏭️ Next research phase — area-weighted gridded warming (v1.2).** The project's #1
+  external-validity gap is *station sampling bias*: country means are station-weighted, so
+  dense mid-latitude clusters dominate and the Arctic/Sahara/Amazonia are under-sampled.
+  Replace it with TRUE **area-weighted** country means from the Berkeley Earth 1°×1° gridded
+  product — already in-repo (`data/raw/berkeley_gridded/Complete_TAVG_LatLong1.nc`, read by
+  `src/validation.py`), **cos(latitude)**-weighted (required here: temperature is *intensive*,
+  the mirror of the GPW population-count rule), with cells assigned to countries via the
+  GPW v4 National Identifier Grid band (no new polygon dataset). Add it as a third L3 impact
+  lens (`impact_index_area_weighted`) in the PCS v2 Wide Registry and re-test whether the
+  climate-inequality conclusions (ρ ≈ 0.36, Gini ≈ 0.56, the Central-Asia mismatch leaders)
+  survive when every km² counts equally. Reuses `src/population.py`
+  `latitude_area_weights` / `area_weighted_mean`. See `docs/future_work.md` §2.
+- **Then — extreme-heat (vs mean) inequality** (`docs/future_work.md` §4): extreme-heat
+  *days* via GHCN-Daily, a new outcome dimension — but the data is **not in-repo** and is
+  large, so scope download/storage first (lower priority than the zero-friction gridded epic).
+- **Other open items** (`docs/future_work.md`): ERA5 cross-check, exposure × vulnerability
+  (ND-GAIN), era-weighted responsibility, gradient-boosted trees + SHAP vs the Phase 7 OLS.
 
 ## Sign-off steps for a tagged v1.0
 

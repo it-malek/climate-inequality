@@ -6,6 +6,11 @@ the existing pipeline — they extend it.
 
 ## 1. Validate the fitted trends out of sample (Phase 6, highest value)
 
+✅ **built** — `src/validation.py` + the "Did the trends hold?" dashboard page.
+Result: the 1950–2013 lines *underpredict* — full-record land slope **0.200** vs the
+fitted **0.147 °C/decade** (Δ +0.053, tight CI), mean post-2013 residual **+0.48 °C**;
+warming accelerated, exactly as anticipated below.
+
 The dataset ends September 2013, so every trend here is a *backcast*. The
 strongest possible upgrade is to test them against the twelve years of
 observations that now exist:
@@ -25,10 +30,20 @@ observations that now exist:
 
 ## 2. Better warming data
 
-- **Berkeley Earth 1°×1° gridded product** instead of (or alongside) city
-  series: removes the city-sampling and urban-density bias entirely, makes
-  the interpolation step unnecessary as a product (it remains as a methods
-  comparison), and gives true area-weighted country means.
+- **Berkeley Earth 1°×1° gridded product — ⏭️ NEXT EPIC (v1.2).** The project's
+  #1 external-validity gap is station sampling bias: country means are
+  *station-weighted*, so dense mid-latitude clusters dominate. This replaces it
+  with TRUE **area-weighted** country means. Zero data friction — the grid is
+  already in-repo (`data/raw/berkeley_gridded/Complete_TAVG_LatLong1.nc`, read by
+  `src/validation.py`). Plan: per-cell Theil–Sen trend (same operator/window as
+  the station pipeline) → assign cells to countries via the GPW v4 **National
+  Identifier Grid** band (no new polygon dataset) → **cos(latitude)** area-weighted
+  mean per country. *cos(lat) is REQUIRED here* — temperature is an *intensive*
+  field, the exact mirror of the GPW population-**count** rule (where cos-lat is
+  forbidden); reuse `src/population.py` `latitude_area_weights` / `area_weighted_mean`.
+  Ships as a third L3 impact lens (`impact_index_area_weighted`) in the PCS v2 Wide
+  Registry, then re-tests whether the climate-inequality conclusions (ρ≈0.36,
+  Gini≈0.56, the Central-Asia mismatch leaders) survive when every km² counts equally.
 - **ERA5 reanalysis 2m temperature** as an independent cross-check on the
   station-derived trends — where the two disagree, station inhomogeneities
   are suspect.
@@ -69,10 +84,12 @@ The current metric (country warming vs cumulative per-capita CO₂) measures
 
 ## 4. New questions this data can spotlight
 
-- **Extremes vs means:** monthly means hide heat extremes. With daily data
-  (GHCN-Daily), is inequality in *extreme-heat days* larger than in mean
-  warming? (Almost certainly yes — tropical countries sit closer to
-  physiological thresholds.)
+- **Extremes vs means — follow-on epic (after the gridded v1.2).** Monthly means
+  hide heat extremes. With daily data (GHCN-Daily), is inequality in *extreme-heat
+  days* larger than in mean warming? (Almost certainly yes — tropical countries sit
+  closer to physiological thresholds.) NOTE: GHCN-Daily is **not in-repo** and is
+  large — scope the download/storage first; lower priority than the zero-friction
+  gridded epic above.
 - **Within-country inequality:** the per-city trends already exist —
   variance decomposition of warming within vs between countries; which
   countries contain both fast- and slow-warming regions?
@@ -106,11 +123,15 @@ The current metric (country warming vs cumulative per-capita CO₂) measures
 
 ## 6. Layer 1 — physical-drivers model (a new layer)
 
+✅ **built** — `src/physical_model.py` + `src/forcings.py` produce `forcings.parquet`,
+`physical_trajectory.parquet` and `physical_summary.json`, wired into the app bundle
+and dashboard (train R² 0.91, hindcast band coverage 91%, AR(1) ρ ≈ 0).
+
 A genuinely *physical* layer: global mean temperature as a response to radiative
 forcings (CO₂/CH₄/N₂O/aerosol/volcanic/solar) plus ENSO, fit as a closed-form
 Bayesian linear state-space model with AR(1) inertia and hindcast validation. It is
 specified in the `climate-inequality-instructions` repo (`03-models.md`,
-`07-data-schemas.md`) but not yet implemented, and it *extends* rather than
+`07-data-schemas.md`) and *extends* rather than
 restructures the pipeline (layers never merge; artifact-only communication). The
 toolchain decision for that build — **Python (NumPy/SciPy) at the core, statsmodels as a
 test-time cross-check, Wolfram as a design-time symbolic oracle; Julia and the

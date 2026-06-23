@@ -151,9 +151,9 @@ cases already noted in the README). Low user impact today; tracked in
   (`AverageTemperatureUncertainty` unused) — a documented limitation and a
   `docs/future_work.md` item, not debt to fix here.
 - **Spatial autocorrelation in country residuals** makes HC1 SEs optimistic.
-  This is exactly what the deferred stability layer
-  (`docs/stability_roadmap.md`) is scoped to address; the sensitivity dashboard
-  page already scaffolds it.
+  This is exactly what the shipped stability layer
+  (`docs/stability_roadmap.md`) addresses — residual Moran's I ≈ 0.33 (p = 0.005),
+  rendered on the sensitivity dashboard page; Conley HAC SEs remain roadmapped.
 
 ## 7. Notebooks (deferred — finding #9)
 
