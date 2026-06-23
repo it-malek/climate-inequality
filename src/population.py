@@ -1,0 +1,129 @@
+"""People-weighted warming exposure: per-city population from a static grid.
+
+``docs/future_work.md`` §2: the country warming mean
+(:func:`src.emissions.aggregate_trends_by_country`) is deliberately
+*station-weighted* -- it over-counts dense mid-latitude station clusters and
+under-counts where people actually live. This module turns it into a
+*people-weighted* mean ("the warming the average resident experiences") by
+sampling a population grid at each city-location's coordinates -- no fragile
+city-name matching, reusing :func:`src.grids.sample_static_grid` -- and
+weighting each location's Theil-Sen slope by that population.
+
+The population grid is a static, coarse (~0.5-1deg), public-domain NetCDF
+committed under ``data/raw/population/`` (mirroring the committed Koeppen /
+ETOPO grids). The tests drive a *synthetic* grid, so CI needs no network and no
+real raster; consumers degrade gracefully when the committed grid is absent.
+"""
+
+from __future__ import annotations
+
+import logging
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+from src.data_io import RAW_DIR
+from src.grids import sample_static_grid
+
+logger = logging.getLogger(__name__)
+
+# Provenance for the committed grid (a coarse, login-free, public-domain
+# population raster; the file is committed like koppen/etopo, not downloaded per
+# run). The variable name and dims match whichever grid is committed.
+POP_GRID_URL = (
+    "https://data.isimip.org/"  # public-domain coarse population NetCDF source
+)
+POP_GRID_PATH = RAW_DIR / "population" / "population_density_0p5.nc"
+POP_VAR = "population"
+
+ID_COL = "Country"
+POP_WEIGHTED_COL = "trend_c_per_decade_pop_weighted"
+POP_COVERAGE_COL = "pop_weight_coverage"
+
+
+def sample_population(
+    lats: np.ndarray,
+    lons: np.ndarray,
+    nc_path: Path = POP_GRID_PATH,
+    var: str = POP_VAR,
+) -> np.ndarray:
+    """Population (grid value) at each ``(lat, lon)`` via nearest-cell sampling.
+
+    Thin wrapper over :func:`src.grids.sample_static_grid` (which handles the
+    [-180,180]/[0,360] longitude convention), returning a float array aligned to
+    the inputs. Negative grid fill values are *not* coerced here -- the weighting
+    step treats non-positive populations as zero weight.
+
+    Args:
+        lats, lons: Query coordinates, signed degrees.
+        nc_path: Population NetCDF path.
+        var: Population variable name.
+
+    Returns:
+        1D float array of populations, one per query point.
+    """
+    return np.asarray(
+        sample_static_grid(
+            nc_path, np.asarray(lats, dtype=float), np.asarray(lons, dtype=float), var
+        ),
+        dtype=float,
+    )
+
+
+def population_weighted_country_mean(
+    trends: pd.DataFrame,
+    nc_path: Path = POP_GRID_PATH,
+    var: str = POP_VAR,
+    value_col: str = "slope_c_per_decade",
+) -> pd.DataFrame:
+    """People-weighted mean warming slope per country.
+
+    Each city-location's slope is weighted by the population sampled at its
+    coordinates. A location with NaN or non-positive population gets zero weight
+    (it cannot count people it does not have); a country with no positive weights
+    falls back to the unweighted mean (logged), so every country keeps a value
+    rather than dropping out of the responsibility/impact join.
+
+    Args:
+        trends: Phase 2 output, one row per city-location, with ``Country``,
+            ``Latitude``, ``Longitude`` and `value_col`.
+        nc_path: Population NetCDF path.
+        var: Population variable name.
+        value_col: The per-location slope column to average.
+
+    Returns:
+        One row per ``Country`` with :data:`POP_WEIGHTED_COL` (people-weighted
+        slope) and :data:`POP_COVERAGE_COL` (fraction of the country's locations
+        with positive sampled population).
+    """
+    pop = sample_population(
+        trends["Latitude"].to_numpy(), trends["Longitude"].to_numpy(), nc_path, var
+    )
+    valid = np.isfinite(pop) & (pop > 0.0)
+    work = trends[[ID_COL, value_col]].assign(
+        _weight=np.where(valid, pop, 0.0), _valid=valid
+    )
+
+    rows = []
+    for country, grp in work.groupby(ID_COL, observed=True, sort=True):
+        slopes = grp[value_col].to_numpy(dtype=float)
+        weights = grp["_weight"].to_numpy(dtype=float)
+        total = float(weights.sum())
+        if total > 0.0:
+            weighted = float(np.dot(slopes, weights) / total)
+        else:
+            weighted = float(slopes.mean())
+            logger.info(
+                "population weighting: %s has no positive population weights; "
+                "falling back to the unweighted mean",
+                country,
+            )
+        rows.append(
+            {
+                ID_COL: country,
+                POP_WEIGHTED_COL: weighted,
+                POP_COVERAGE_COL: float(grp["_valid"].mean()),
+            }
+        )
+    return pd.DataFrame(rows, columns=[ID_COL, POP_WEIGHTED_COL, POP_COVERAGE_COL])

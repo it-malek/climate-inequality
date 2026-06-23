@@ -43,6 +43,11 @@ from src.data_io import (
     write_typed_parquet,
 )
 from src.figures import render_inequality_scatter
+from src.population import (
+    POP_GRID_PATH,
+    POP_VAR,
+    population_weighted_country_mean,
+)
 from src.trends import DEFAULT_TRENDS_PATH
 
 logger = logging.getLogger(__name__)
@@ -89,6 +94,8 @@ INEQUALITY_SCHEMA = {
     "consumption_start_year": "BIGINT",
     "cum_consumption_t_per_capita": "DOUBLE",
     "cum_co2_window_t_per_capita": "DOUBLE",
+    "trend_c_per_decade_pop_weighted": "DOUBLE",
+    "pop_weight_coverage": "DOUBLE",
 }
 INEQUALITY_COLUMNS = list(INEQUALITY_SCHEMA)
 
@@ -441,6 +448,8 @@ def build_inequality_analysis(
     out_dir: Path = OUTPUTS_DIR,
     table_path: Path = DEFAULT_INEQUALITY_PATH,
     cutoff_year: int | None = None,
+    pop_grid_path: Path = POP_GRID_PATH,
+    pop_var: str = POP_VAR,
 ) -> dict:
     """Run the Phase 4 pipeline end to end.
 
@@ -472,6 +481,21 @@ def build_inequality_analysis(
         logger.info("cutoff year %d derived from analysis_window", cutoff_year)
 
     country_trends = aggregate_trends_by_country(trends)
+    # People-weighted exposure (additive). Best-effort: the population grid is a
+    # committed static raster; when it is absent the columns are NULL and only
+    # the v2 exposure lens degrades, mirroring the consumption-null handling.
+    if pop_grid_path.exists():
+        pop_weighted = population_weighted_country_mean(trends, pop_grid_path, pop_var)
+        country_trends = country_trends.merge(pop_weighted, on="Country", how="left")
+    else:
+        logger.warning(
+            "population grid absent (%s); people-weighted exposure columns will "
+            "be NULL -- commit the grid to enable the L3 exposure lens",
+            pop_grid_path,
+        )
+        country_trends = country_trends.assign(
+            trend_c_per_decade_pop_weighted=np.nan, pop_weight_coverage=np.nan
+        )
     owid = load_owid_co2(co2_path)
     emissions = cumulative_emissions_per_capita(owid, cutoff_year)
     consumption = cumulative_consumption_per_capita(owid, cutoff_year)

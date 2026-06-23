@@ -33,7 +33,6 @@ from src.explain import (
     build_city_features,
     build_country_table,
     build_explain_summary,
-    check_coordinate_orientation,
     check_country_join,
     check_nan_rate,
     check_sampling_determinism,
@@ -43,11 +42,14 @@ from src.explain import (
     fit_city_model,
     fit_country_model,
     load_income_groups,
-    normalize_longitudes,
     print_city_sanity_checks,
-    sample_static_grid,
     term_to_dict,
     write_explain_summary,
+)
+from src.grids import (
+    check_coordinate_orientation,
+    normalize_longitudes,
+    sample_static_grid,
 )
 from src.interpolate import haversine_km
 from src.trends import CITY_KEYS

@@ -23,6 +23,7 @@ from src.emissions import (
     load_continents,
     quantify_inequality,
 )
+from tests.test_population import write_population_grid
 
 SLOPE = 0.05  # injected °C/decade per 10x emissions
 
@@ -80,6 +81,11 @@ def make_inequality_frame(noise_sd=0.0, seed=0, specs=None):
                     "consumption_start_year": 1990,
                     "cum_consumption_t_per_capita": 10.0**lx,
                     "cum_co2_window_t_per_capita": 10.0**lx,
+                    # People-weighted exposure lens.
+                    "trend_c_per_decade_pop_weighted": (
+                        intercept + SLOPE * lx + rng.normal(0.0, noise_sd)
+                    ),
+                    "pop_weight_coverage": 1.0,
                 }
             )
     return pd.DataFrame(rows)
@@ -230,6 +236,8 @@ class TestJoinCountryData:
                 "Country": ["Alandia", "Burma"],
                 "n_cities": [2, 3],
                 "trend_c_per_decade": [0.1, 0.2],
+                "trend_c_per_decade_pop_weighted": [0.12, 0.18],
+                "pop_weight_coverage": [1.0, 1.0],
             }
         )
         emissions = pd.DataFrame(
@@ -377,6 +385,13 @@ class TestBuildInequalityAnalysis:
         trends = pd.DataFrame(
             {
                 "Country": [name for name, *_ in self.COUNTRIES for _ in range(2)],
+                # Distinct in-grid coordinates per country (both rows share one).
+                "Latitude": [
+                    5.0 + 8.0 * i for i in range(len(self.COUNTRIES)) for _ in range(2)
+                ],
+                "Longitude": [
+                    5.0 + 8.0 * i for i in range(len(self.COUNTRIES)) for _ in range(2)
+                ],
                 "slope_c_per_decade": [
                     offsets[continent] + SLOPE * lx
                     for _, _, _, continent, lx in self.COUNTRIES
@@ -392,12 +407,20 @@ class TestBuildInequalityAnalysis:
             con.execute(f"COPY _trends TO '{trends_path}' (FORMAT PARQUET)")
         finally:
             con.close()
+
+        # Uniform population grid over the coordinate range: people-weighting
+        # then equals the unweighted mean, an exact end-to-end check.
+        pop_grid_path = write_population_grid(
+            tmp_path / "pop.nc", [0.0, 60.0], [0.0, 60.0],
+            np.full((2, 2), 100.0),
+        )
         return {
             "trends_path": trends_path,
             "co2_path": co2_path,
             "continents_path": continents_path,
             "out_dir": tmp_path / "outputs",
             "table_path": tmp_path / "country_inequality.parquet",
+            "pop_grid_path": pop_grid_path,
         }
 
     def test_pipeline_end_to_end(self, paths):
@@ -418,8 +441,26 @@ class TestBuildInequalityAnalysis:
         assert burma["consumption_start_year"] == 2012
         assert burma["cum_co2_window_t_per_capita"] == pytest.approx(10.0**2.2)
         assert burma["cum_consumption_t_per_capita"] == pytest.approx(10.0**2.2 * 0.8)
+        # Uniform population grid -> people-weighted mean equals the unweighted
+        # country mean, and coverage is full.
+        assert table["trend_c_per_decade_pop_weighted"].to_numpy() == pytest.approx(
+            table["trend_c_per_decade"].to_numpy()
+        )
+        assert (table["pop_weight_coverage"] == 1.0).all()
         assert out["figure_path"].exists()
         assert out["table_path"].exists()
+
+    def test_degrades_when_population_grid_absent(self, paths, tmp_path, caplog):
+        # Best-effort: an absent population grid leaves the people-weighted
+        # columns NULL (the v2 exposure lens degrades) without failing the build.
+        paths = {**paths, "pop_grid_path": tmp_path / "absent.nc"}
+        with caplog.at_level(logging.WARNING, logger="src.emissions"):
+            out = build_inequality_analysis(**paths)
+        table = out["table"]
+        assert table.columns.tolist() == INEQUALITY_COLUMNS
+        assert table["trend_c_per_decade_pop_weighted"].isna().all()
+        assert table["pop_weight_coverage"].isna().all()
+        assert "population grid absent" in caplog.text
 
     def test_parquet_types_are_explicit(self, paths):
         build_inequality_analysis(**paths)
@@ -443,6 +484,8 @@ class TestBuildInequalityAnalysis:
         assert schema["consumption_start_year"] == "BIGINT"
         assert schema["cum_consumption_t_per_capita"] == "DOUBLE"
         assert schema["cum_co2_window_t_per_capita"] == "DOUBLE"
+        assert schema["trend_c_per_decade_pop_weighted"] == "DOUBLE"
+        assert schema["pop_weight_coverage"] == "DOUBLE"
 
 
 class TestLoaders:
