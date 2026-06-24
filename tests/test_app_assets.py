@@ -653,8 +653,10 @@ class TestBuildVulnerabilityAsset:
         )
         out_dir = tmp_path / "bundle"
 
+        # ndgain_path absent -> income-only lens (hermetic; ignore any vendored CSV).
         written = build_vulnerability_asset(
-            income_path=income_csv, inequality_path=inequality_path, out_dir=out_dir
+            income_path=income_csv, inequality_path=inequality_path,
+            ndgain_path=tmp_path / "no_ndgain.csv", out_dir=out_dir,
         )
         assert set(written) == {VULNERABILITY_STRATA_ASSET, VULNERABILITY_SUMMARY_ASSET}
         assert (out_dir / VULNERABILITY_STRATA_ASSET).exists()
@@ -662,6 +664,45 @@ class TestBuildVulnerabilityAsset:
         assert summary["available"] is True
         assert summary["coverage"]["n_countries"] == 7
         assert "holds" in summary["triple_inequality"]
+        assert "ndgain" not in summary
+
+    def test_builds_ndgain_block_when_inputs_present(self, tmp_path):
+        inequality_path = tmp_path / "country_inequality.parquet"
+        make_inequality_frame().to_parquet(inequality_path, index=False)
+        tiers = [
+            "Low-income countries", "Low-income countries",
+            "Lower-middle-income countries", "Lower-middle-income countries",
+            "Upper-middle-income countries", "Upper-middle-income countries",
+            "High-income countries",
+        ]
+        income_csv = self._income_csv(
+            tmp_path / "income.csv", {f"C{i}": tiers[i] for i in range(7)}
+        )
+        ndgain_csv = tmp_path / "ndgain.csv"
+        pd.DataFrame({
+            "iso3": [f"IS{i}" for i in range(7)],
+            "ndgain_year": [2023] * 7,
+            "vulnerability": [0.70, 0.60, 0.50, 0.40, 0.30, 0.20, 0.10],
+            "readiness": [0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80],
+            "gain": [30.0, 40.0, 45.0, 50.0, 58.0, 66.0, 75.0],
+        }).to_csv(ndgain_csv, index=False)
+        co2_csv = tmp_path / "co2.csv"
+        pd.DataFrame({
+            "country": [f"C{i}" for i in range(7)],
+            "iso_code": [f"IS{i}" for i in range(7)],
+            "year": [2020] * 7, "co2": [1.0] * 7,
+            "consumption_co2": [1.0] * 7, "population": [1_000_000] * 7,
+        }).to_csv(co2_csv, index=False)
+
+        build_vulnerability_asset(
+            income_path=income_csv, inequality_path=inequality_path,
+            ndgain_path=ndgain_csv, co2_path=co2_csv, out_dir=tmp_path / "bundle",
+        )
+        summary = json.loads(
+            (tmp_path / "bundle" / VULNERABILITY_SUMMARY_ASSET).read_text()
+        )
+        assert summary["ndgain"]["n_with_ndgain"] == 7
+        assert "holds" in summary["ndgain"]["triple_inequality_direct"]
 
     def test_skips_when_income_csv_absent(self, tmp_path, caplog):
         import logging
