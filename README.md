@@ -172,7 +172,10 @@ confirmed against ERA5 reanalysis**
 **World Bank income group** (an ordinal stratifier, *not* a new PCS projection): the
 *triple inequality* holds — responsibility climbs steeply with income (ρ **+0.885**)
 while area-weighted warming stays flat (ρ **−0.145**, n.s.) and, per person, the
-**poorest countries warm the most** (+0.205 vs +0.182 °C/decade)
+**poorest countries warm the most** (+0.205 vs +0.182 °C/decade). A second,
+**ND-GAIN vulnerability** axis measures "adapt least" directly (not by income proxy):
+responsibility **falls** with vulnerability (ρ **−0.882**) while warming stays flat
+(ρ **+0.02**, n.s.), confirming the triple inequality across 155 countries
 ([`docs/vulnerability_results.md`](docs/vulnerability_results.md)).
 **Foundations** (how the inputs were built): the interpolated warming surface
 with a city-station toggle; a city explorer (any location's anomaly series and

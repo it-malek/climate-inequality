@@ -74,9 +74,14 @@ The current metric (country warming vs cumulative per-capita CO₂) measures
   high income). Significance via a deterministic label-permutation test (the honest
   ordinal small-stratum tool; Conley §5 is orthogonal — it targets the continuous
   OLS slope, not a rank statistic). Full result in
-  [`docs/vulnerability_results.md`](vulnerability_results.md). **Still open:** join
-  **ND-GAIN** (vulnerability/readiness) to measure the "adapt least" leg directly
-  rather than by income proxy — an out-of-repo download to scope separately.
+  [`docs/vulnerability_results.md`](vulnerability_results.md).
+- ~~**Exposure × vulnerability** (ND-GAIN, the direct axis)~~ ✅ shipped — the
+  **ND-GAIN Country Index** *vulnerability* score added as a **continuous** second
+  stratifier in the same lens (joined via the OWID→ISO3 bridge; vendored slim CSV via
+  `scripts/fetch_ndgain.py`). Measures "adapt least" directly: across 155 countries
+  responsibility **falls** steeply with vulnerability (ρ −0.882, perm p=0.001) while
+  area-weighted warming is flat (ρ +0.019, n.s.) — the direct triple inequality holds,
+  more cleanly than the income proxy. Readiness is the secondary axis.
 - **Era-weighted responsibility:** divide cumulative emissions by
   population *of the emitting era* (e.g., population-year-weighted), not
   2013 population — fairer to fast-growing countries.
