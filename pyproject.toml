@@ -25,10 +25,14 @@ dev = [
     "xarray>=2026.4.0",
     "netcdf4>=1.7.4",
 ]
-# ERA5 reanalysis cross-check (scripts/fetch_era5.py). Optional: only needed to
-# download the gridded field from the Copernicus CDS once; never imported in CI.
+# ERA5 reanalysis cross-check (scripts/fetch_era5.py + src.era5_validation).
+# Self-contained: includes the xarray/netcdf4 the fetch and validation need to read
+# the grid, so `uv sync --extra era5` works on its own (no dependency on `dev`).
+# Optional / never imported in CI.
 era5 = [
     "cdsapi>=0.7",
+    "xarray>=2026.4.0",
+    "netcdf4>=1.7.4",
 ]
 
 [tool.pytest.ini_options]
