@@ -153,21 +153,27 @@ leave-one-country-out influence per share, and Moran's I on the model residual
 `docs/stability_roadmap.md`); and a
 **Responsibility vs impact** page (Layer 3) comparing each country's emissions
 responsibility against its warming exposure — Spearman ρ, the Lorenz/Gini
-inequality coefficient, and the mismatch leaders. Two **PCS v2** lenses extend
+inequality coefficient, and the mismatch leaders. Three **PCS v2** lenses extend
 it: a **consumption-based** responsibility view (emissions counted where goods
-are consumed, window-matched to OWID's 1990+ consumption series), and a
+are consumed, window-matched to OWID's 1990+ consumption series), a
 **people-weighted exposure** view that re-weights each country's warming by where
-its residents actually live — population sampled from the SEDAC **GPW v4**
-15-arc-minute grid at each city-location's coordinates. A toggle switches the
-Lorenz curve and inequality coefficient between **Station-Based** (every
-monitoring location counts equally) and **People-Weighted** (each location
-weighted by its resident population); a rank-shift view flags the countries whose
-exposure ranking moves most between the two.
+its residents actually live (population sampled from the SEDAC **GPW v4**
+15-arc-minute grid at each city-location's coordinates), and an **area-weighted
+exposure** view computed off the Berkeley Earth 1°×1° grid (cos-latitude-weighted,
+so every km² of land counts equally). A toggle switches the Lorenz curve and
+inequality coefficient between **Station-Based**, **People-Weighted**, and
+**Area-Weighted**; a rank-shift view flags the countries whose exposure ranking
+moves most. The area-weighted lens overturns the headline — the
+warming↔responsibility coupling collapses (Spearman ρ **+0.36 → +0.01**) once land
+area is weighted honestly rather than station density — a result **independently
+confirmed against ERA5 reanalysis**
+([`docs/era5_validation_results.md`](docs/era5_validation_results.md)).
 **Foundations** (how the inputs were built): the interpolated warming surface
 with a city-station toggle; a city explorer (any location's anomaly series and
 fitted trend); the emissions-vs-warming scatter; an out-of-sample validation
-page (did the 1950–2013 trends hold post-2013?); and a drivers page (what
-explains where warming is fastest?). A fixed interpretation banner on every
+page (did the 1950–2013 trends hold post-2013?, which also carries the independent
+**ERA5 reanalysis cross-check** of the area-weighted lens); and a drivers page
+(what explains where warming is fastest?). A fixed interpretation banner on every
 page states the variance-attribution-only boundary.
 
 ```bash
@@ -227,14 +233,16 @@ redeploys automatically on push to `main`.
 A prioritized roadmap lives in [`docs/future_work.md`](docs/future_work.md). The
 out-of-sample validation (Phase 6), the Layer 1 physical-drivers model, the
 stability layer, and the Layer 3 PCS v2 lenses (consumption-based responsibility,
-people-weighted exposure on GPW v4) and Lorenz/Gini framing are all built. The
-**next epic (v1.2)** is **area-weighted gridded warming** — replacing
-station-weighted country means with true area-weighted means from the in-repo
-Berkeley Earth 1°×1° product (cos-latitude-weighted, the correct mirror of the
-population-count rule) to close the project's main external-validity gap (station
-sampling bias). Later: extreme-heat (vs mean) inequality via GHCN-Daily, an
-exposure × vulnerability (ND-GAIN) join, and gradient-boosted trees + SHAP vs the
-Phase 7 OLS.
+people-weighted exposure on GPW v4, **area-weighted gridded warming** on the
+Berkeley Earth 1°×1° product) plus Lorenz/Gini framing are all built. The
+area-weighted lens (v1.2) closed the project's main external-validity gap (station
+sampling bias) and overturned the headline — the warming↔responsibility coupling
+collapses (Spearman ρ +0.36 → +0.01) once every km² counts equally — and that
+result has since been **independently confirmed against ERA5 reanalysis**
+([`docs/era5_validation_results.md`](docs/era5_validation_results.md)): the collapse
+holds on both products. Still ahead: extreme-heat (vs mean) inequality via
+GHCN-Daily, an exposure × vulnerability (ND-GAIN) join, and gradient-boosted trees
++ SHAP vs the Phase 7 OLS.
 
 ## Reproducing
 
