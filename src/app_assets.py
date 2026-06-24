@@ -110,6 +110,12 @@ COUPLING_EXPOSURE_SUMMARY_ASSET = "coupling_exposure_summary.json"
 COUPLING_AREA_ASSET = "coupling_area.parquet"
 COUPLING_AREA_SUMMARY_ASSET = "coupling_area_summary.json"
 
+# ERA5 reanalysis cross-check of the area-weighted finding (src.era5_validation).
+# Built best-effort: needs the ~200 MB ERA5 grid fetched via scripts/fetch_era5.py,
+# so the builder skips when it is absent and the validation page omits the panel.
+ERA5_AREA_TRENDS_ASSET = "era5_area_trends.parquet"
+ERA5_VALIDATION_SUMMARY_ASSET = "era5_validation_summary.json"
+
 # Layer 1 physical-driver assets (global temperature vs effective radiative
 # forcings). Built best-effort: the input forcings.parquet is network-derived and
 # not committed, so the builder skips when it is absent (a no-network bundle build
@@ -1005,6 +1011,50 @@ def build_coupling_area_asset(
     }
 
 
+def build_era5_validation_asset(
+    era5_grid_path: Path | None = None,
+    out_dir: Path = APP_DATA_DIR,
+) -> dict[str, Path]:
+    """Write the ERA5 cross-check artifacts into the bundle (best-effort).
+
+    Recomputes the area-weighted warming off the independent ERA5 reanalysis grid
+    and the station/Berkeley/ERA5 coupling reproduction (:mod:`src.era5_validation`),
+    writing ``era5_area_trends.parquet`` + ``era5_validation_summary.json``. Skips
+    (returns ``{}``) when the ~200 MB ERA5 grid is absent (fetch it via
+    ``scripts/fetch_era5.py``), so the no-grid bundle build still succeeds and the
+    validation page degrades to its pending state -- mirroring the area-lens skip.
+
+    Returns:
+        Dict of asset-name -> written Path, or ``{}`` when the grid is absent.
+    """
+    # Lazy import: src.era5_validation pulls src.emissions; keep it out of module
+    # scope to match the area/physical builders and avoid any import-order surprise.
+    from src.era5_validation import ERA5_GRID_PATH, build_era5_validation
+
+    grid_path = ERA5_GRID_PATH if era5_grid_path is None else era5_grid_path
+    if not grid_path.exists():
+        logger.warning(
+            "ERA5 grid absent (%s); bundle will omit the ERA5 cross-check -- run "
+            "scripts/fetch_era5.py to enable it",
+            grid_path,
+        )
+        return {}
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    trends_dest = out_dir / ERA5_AREA_TRENDS_ASSET
+    summary_dest = out_dir / ERA5_VALIDATION_SUMMARY_ASSET
+    build_era5_validation(
+        era5_grid_path=grid_path,
+        trends_path=trends_dest,
+        summary_path=summary_dest,
+    )
+    logger.info("wrote %s and %s", trends_dest, summary_dest)
+    return {
+        ERA5_AREA_TRENDS_ASSET: trends_dest,
+        ERA5_VALIDATION_SUMMARY_ASSET: summary_dest,
+    }
+
+
 def _sha256_file(path: Path) -> str:
     """SHA-256 hex digest of a file's bytes (streamed, so large inputs are cheap)."""
     digest = hashlib.sha256()
@@ -1089,6 +1139,7 @@ def main() -> None:
     coupling_consumption = build_coupling_consumption_asset()
     coupling_exposure = build_coupling_exposure_asset()
     coupling_area = build_coupling_area_asset()
+    era5_validation = build_era5_validation_asset()
     physical = build_physical_summary_asset()
     trends = out["stats"]["trends"]
     interp = out["stats"]["interpolation"]
@@ -1220,6 +1271,24 @@ def main() -> None:
         )
     else:
         print("coupling (area lens): skipped (area weighting not built)")
+
+    if ERA5_VALIDATION_SUMMARY_ASSET in era5_validation:
+        ev = json.loads(
+            era5_validation[ERA5_VALIDATION_SUMMARY_ASSET].read_text("utf-8")
+        )
+        cc = ev["coupling_common"]
+        wl = ev["world_land_mean"]
+        print(
+            f"ERA5 cross-check: world-land mean {wl['era5_area']:.3f} "
+            f"(Berkeley {wl['berkeley_area']}, ref ~{wl['berkeley_reference']}); "
+            f"common n={cc['n']} area-vs-responsibility rho "
+            f"station {cc['station']['spearman_vs_responsibility']['rho']:+.3f} -> "
+            f"Berkeley {cc['berkeley_area']['spearman_vs_responsibility']['rho']:+.3f} "
+            f"-> ERA5 {cc['era5_area']['spearman_vs_responsibility']['rho']:+.3f} "
+            "(independent reanalysis)"
+        )
+    else:
+        print("ERA5 cross-check: skipped (ERA5 grid not fetched)")
 
     if PHYSICAL_SUMMARY_ASSET in physical:
         physical_summary = json.loads(

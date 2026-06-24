@@ -23,6 +23,7 @@ htmlcov/
 # Environment / secrets
 .env
 kaggle.json
+.cdsapirc
 
 # OS / editor
 .DS_Store

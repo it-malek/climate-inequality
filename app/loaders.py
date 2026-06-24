@@ -289,6 +289,17 @@ def load_coupling_area() -> pd.DataFrame | None:
 
 
 @st.cache_data
+def load_era5_validation_summary() -> dict | None:
+    """ERA5 vs Berkeley area-weighted cross-check metrics, if present.
+
+    Returns ``None`` until ``era5_validation_summary.json`` is in the bundle (it
+    needs the ERA5 grid fetched via ``scripts/fetch_era5.py`` at build time), so the
+    validation page's cross-check panel degrades gracefully.
+    """
+    return _load_optional_json("era5_validation_summary.json")
+
+
+@st.cache_data
 def load_country_latitudes() -> pd.DataFrame:
     """Mean signed latitude per country, aggregated from the city features.
 
