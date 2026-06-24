@@ -65,6 +65,12 @@ class TestLoaders:
         assert len(series) == int(trends["n_obs"].iloc[0])
         assert series["dt"].is_monotonic_increasing
 
+    def test_era5_validation_summary_absent_returns_none(self, bundle_dir):
+        # The synthetic bundle has no ERA5 cross-check (grid is never fetched in
+        # CI), so the optional loader degrades to None and the panel is omitted.
+        st.cache_data.clear()
+        assert loaders.load_era5_validation_summary() is None
+
     def test_window_years(self):
         assert loaders.window_years("1950-01-01..2013-09-01") == "1950–2013"
 

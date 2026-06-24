@@ -44,9 +44,26 @@ observations that now exist:
   Ships as a third L3 impact lens (`impact_index_area_weighted`) in the PCS v2 Wide
   Registry, then re-tests whether the climate-inequality conclusions (ρ≈0.36,
   Gini≈0.56, the Central-Asia mismatch leaders) survive when every km² counts equally.
-- **ERA5 reanalysis 2m temperature** as an independent cross-check on the
-  station-derived trends — where the two disagree, station inhomogeneities
-  are suspect.
+- **ERA5 reanalysis 2m temperature** ✅ **built** (independent cross-check of the
+  v1.2 area-weighted finding). v1.2's headline — area-weighting collapses the
+  warming↔responsibility coupling (ρ +0.36 → +0.01) — rested on a single gridded
+  product, so this recomputes the *same* area-weighted country warming off ERA5,
+  a model-assimilated field with no station-sampling gaps. **Same operator, window
+  and cos(lat) weighting** as `src.area_weighting` (the streamed Theil–Sen
+  `cell_trends` was generalized with `var`/`decode_times`/`time_to_months` knobs,
+  defaults unchanged); only the data source differs. ERA5-specific handling:
+  absolute Kelvin (irrelevant for a *slope*), CF datetime axis, 0–360 longitudes
+  normalized for the GPW band-11 ISO3 sampler (`src/era5_weighting.py`). The
+  comparator (`src/era5_validation.py`) reports the world-land sanity mean and the
+  station/Berkeley/ERA5 coupling reproduction (Spearman ρ + Gini, via the reused
+  `src.coupling` helpers) side-by-side on one common country set — kept as a
+  **cross-check artifact, not a new PCS projection** (`PCS_V2` stays frozen at six).
+  The ERA5 grid is not in-repo (~200 MB, gitignored); fetch it once via
+  `scripts/fetch_era5.py` (needs a Copernicus CDS account + the `era5` optional
+  dependency), then `uv run python -m src.era5_validation`. If ERA5 reproduces the
+  collapse the finding is robust to the data source; if not, it was
+  Berkeley-specific — equally publishable. Where the two products disagree at the
+  *cell* level, station inhomogeneities are suspect.
 - **Population weighting:** ✅ **built** (Layer 3 exposure lens). City-locations
   are joined against the SEDAC **GPW v4.11** 15-arc-minute population-*count*
   grid by coordinates (no name matching, `src/population.py`), turning the
