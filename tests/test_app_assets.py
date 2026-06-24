@@ -42,6 +42,7 @@ from src.app_assets import (
     build_app_assets,
     build_coupling_consumption_asset,
     build_coupling_area_asset,
+    build_era5_validation_asset,
     build_coupling_exposure_asset,
     build_coupling_summary_asset,
     build_decomposition_summaries,
@@ -603,3 +604,19 @@ class TestCouplingAreaAsset:
         )
         assert written == {}
         assert not (out_dir / COUPLING_AREA_ASSET).exists()
+
+
+class TestBuildEra5ValidationAsset:
+    """build_era5_validation_asset is best-effort: skips when the ERA5 grid is absent."""
+
+    def test_skips_when_era5_grid_absent(self, tmp_path, caplog):
+        out_dir = tmp_path / "bundle"
+        import logging
+
+        with caplog.at_level(logging.WARNING):
+            written = build_era5_validation_asset(
+                era5_grid_path=tmp_path / "absent_era5.nc", out_dir=out_dir
+            )
+        assert written == {}
+        assert not out_dir.exists() or not any(out_dir.iterdir())
+        assert "ERA5 grid absent" in caplog.text

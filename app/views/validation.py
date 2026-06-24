@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pandas as pd
 import streamlit as st
 
 from app import loaders
@@ -95,3 +96,80 @@ def render() -> None:
             file_name="validation_residuals.csv",
             mime="text/csv",
         )
+
+    _render_era5_crosscheck()
+
+
+def _fmt_rho(rho: float | None) -> str:
+    return "n/a" if rho is None else f"{rho:+.3f}"
+
+
+def _render_era5_crosscheck() -> None:
+    """Independent ERA5 reanalysis cross-check of the area-weighted finding.
+
+    Renders only when the optional ``era5_validation_summary.json`` is in the
+    bundle (it needs the ERA5 grid fetched via ``scripts/fetch_era5.py`` at build
+    time); otherwise the page omits the panel entirely.
+    """
+    summary = loaders.load_era5_validation_summary()
+    if not summary or not summary.get("available"):
+        return
+
+    wl = summary["world_land_mean"]
+    cc = summary["coupling_common"]
+    ra = summary["rank_agreement"]
+
+    st.divider()
+    st.subheader("Independent cross-check: ERA5 reanalysis")
+    st.markdown(
+        "Re-running the area-weighted lens on **ERA5** — a model-assimilated "
+        "field with no station-sampling gaps — tests whether v1.2's finding (that "
+        "weighting every km² equally collapses the warming↔responsibility "
+        "coupling) is robust to the data source rather than an artifact of one "
+        "gridded product."
+    )
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric(
+        "ERA5 world-land mean",
+        f"{wl['era5_area']:.3f} °C/decade",
+        help=f"Berkeley Earth global-land reference ~{wl['berkeley_reference']}.",
+    )
+    if wl.get("berkeley_area") is not None:
+        c2.metric("Berkeley world-land mean", f"{wl['berkeley_area']:.3f} °C/decade")
+    c3.metric(
+        "ERA5 ↔ Berkeley rank ρ",
+        _fmt_rho(ra["era5_area_vs_berkeley_area"]["rho"]),
+        help="Spearman ρ of area-weighted country trends; high means the two "
+             "independent products rank countries the same way.",
+    )
+
+    rows = [
+        {"Lens": label,
+         "ρ vs responsibility": cc[key]["spearman_vs_responsibility"]["rho"],
+         "Gini": cc[key]["gini"]}
+        for key, label in (
+            ("station", "Station-weighted"),
+            ("berkeley_area", "Area-weighted (Berkeley)"),
+            ("era5_area", "Area-weighted (ERA5)"),
+        )
+    ]
+    st.markdown(
+        f"**Coupling on the common {cc['n']}-country set** "
+        "(every lens scored on identical countries):"
+    )
+    st.dataframe(
+        pd.DataFrame(rows),
+        width="stretch",
+        hide_index=True,
+        column_config={
+            "ρ vs responsibility": st.column_config.NumberColumn(format="%+.3f"),
+            "Gini": st.column_config.NumberColumn(format="%.3f"),
+        },
+    )
+    st.caption(
+        "If the ERA5 area-weighted ρ sits near the Berkeley area-weighted ρ (and "
+        "well below the station ρ), the coupling collapse is independently "
+        "reproduced — the station-sampling correction was real. If it tracks the "
+        "station ρ instead, the collapse was Berkeley-specific."
+    )

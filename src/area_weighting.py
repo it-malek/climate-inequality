@@ -33,7 +33,7 @@ the whole window). No dask dependency, matching the GPW decision.
 from __future__ import annotations
 
 import logging
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 
 import numpy as np
@@ -195,6 +195,9 @@ def cell_trends(
     end: str = DEFAULT_END,
     min_coverage: float = DEFAULT_MIN_COVERAGE,
     lat_chunk: int = DEFAULT_LAT_CHUNK,
+    var: str = GRID_VAR,
+    decode_times: bool = False,
+    time_to_months: Callable[[np.ndarray], pd.DatetimeIndex] = _decode_fractional_years,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Per-cell Theil-Sen warming slope over the analysis window (streamed).
 
@@ -207,34 +210,47 @@ def cell_trends(
     and window as :func:`src.trends.fit_city_trends`. Ocean / unassigned cells are
     skipped (left NaN), which also avoids fitting two-thirds of the globe.
 
+    The defaults read the Berkeley grid (``temperature``, mid-month fractional-year
+    time axis); the `var` / `decode_times` / `time_to_months` knobs let another
+    intensive-field grid on the same ``(time, latitude, longitude)`` layout reuse
+    the identical operator and window -- e.g. ERA5 ``t2m`` (CF datetime axis), where
+    only the *data source* differs, not the trend. A trend slope is unit-offset
+    invariant, so ERA5's absolute Kelvin needs no anomaly conversion (1 K = 1 °C
+    per decade).
+
     Args:
-        nc_path: Berkeley gridded NetCDF (or a synthetic file with the same
-            ``temperature(time, latitude, longitude)`` layout).
+        nc_path: gridded NetCDF (Berkeley, or a synthetic/ERA5 file with the same
+            ``var(time, latitude, longitude)`` layout).
         country_mask: ``(n_lat, n_lon)`` object array from
             :func:`assign_cell_iso3`; only non-``None`` cells are fit.
         start, end: inclusive analysis-window bounds (the station window).
         min_coverage: minimum finite-month fraction for a cell to be fit.
         lat_chunk: latitude rows per streamed slab.
+        var: gridded variable name (default ``temperature``; ERA5 uses ``t2m``).
+        decode_times: passed to :func:`xarray.open_dataset`; Berkeley's axis is not
+            CF-decodable (``False``), ERA5's is (``True``).
+        time_to_months: maps the raw ``time`` values to a first-of-month
+            ``DatetimeIndex`` (Berkeley fractional-year decoder by default).
 
     Returns:
         ``(lats, lons, slopes)`` -- the grid coordinate arrays and an
         ``(n_lat, n_lon)`` float array of °C/decade slopes (NaN where unfit).
 
     Raises:
-        ValueError: if the file lacks ``temperature(time, latitude, longitude)``.
+        ValueError: if the file lacks ``var(time, latitude, longitude)``.
     """
-    ds = xr.open_dataset(nc_path, decode_times=False)
+    ds = xr.open_dataset(nc_path, decode_times=decode_times)
     try:
-        if GRID_VAR not in ds.data_vars:
+        if var not in ds.data_vars:
             raise ValueError(
-                f"{nc_path} has no {GRID_VAR!r} variable (found {sorted(ds.data_vars)})"
+                f"{nc_path} has no {var!r} variable (found {sorted(ds.data_vars)})"
             )
-        da = ds[GRID_VAR]
+        da = ds[var]
         if tuple(da.dims) != GRID_DIMS:
             raise ValueError(
-                f"{GRID_VAR} has dims {tuple(da.dims)}, expected {GRID_DIMS}"
+                f"{var} has dims {tuple(da.dims)}, expected {GRID_DIMS}"
             )
-        months = _decode_fractional_years(ds["time"].to_numpy())
+        months = time_to_months(ds["time"].to_numpy())
         lats = ds["latitude"].to_numpy().astype(float)
         lons = ds["longitude"].to_numpy().astype(float)
         lo = int(months.searchsorted(pd.Timestamp(start)))
@@ -310,8 +326,38 @@ def area_weighted_country_trends(
         nc_path, mask, start=start, end=end,
         min_coverage=min_coverage, lat_chunk=lat_chunk,
     )
+    return reduce_cells_to_country(
+        mask, lats, slopes,
+        value_col=AREA_WEIGHTED_COL, coverage_col=AREA_COVERAGE_COL,
+    )
 
-    lat_grid = np.broadcast_to(lats[:, None], slopes.shape)
+
+def reduce_cells_to_country(
+    mask: np.ndarray,
+    lats: np.ndarray,
+    slopes: np.ndarray,
+    *,
+    value_col: str,
+    coverage_col: str,
+) -> pd.DataFrame:
+    """Reduce per-cell slopes to one cos(lat) area-weighted mean per ISO3 country.
+
+    Shared by the Berkeley (:func:`area_weighted_country_trends`) and ERA5
+    (:mod:`src.era5_weighting`) paths so both apply the identical intensive-field
+    weighting (:func:`src.population.latitude_area_weights`) and coverage
+    accounting. Countries with no successfully-fit cell are omitted.
+
+    Args:
+        mask: ``(n_lat, n_lon)`` ISO3 assignment from :func:`assign_cell_iso3`.
+        lats: 1D grid latitudes aligned to ``slopes``' first axis.
+        slopes: ``(n_lat, n_lon)`` per-cell slopes (NaN where unfit).
+        value_col: name of the emitted area-weighted-slope column.
+        coverage_col: name of the emitted cell-coverage-fraction column.
+
+    Returns:
+        One row per ISO3 (sorted), columns ``(iso3, value_col, coverage_col)``.
+    """
+    lat_grid = np.broadcast_to(np.asarray(lats, dtype=float)[:, None], slopes.shape)
     rows = []
     for iso in sorted({v for v in mask.ravel() if v is not None}):
         assigned = mask == iso
@@ -323,13 +369,22 @@ def area_weighted_country_trends(
         weights = latitude_area_weights(lat_grid[valid])
         trend = float(np.dot(weights, slopes[valid]))
         rows.append(
-            {
-                ISO3_COL: iso,
-                AREA_WEIGHTED_COL: trend,
-                AREA_COVERAGE_COL: n_valid / n_assigned,
-            }
+            {ISO3_COL: iso, value_col: trend, coverage_col: n_valid / n_assigned}
         )
-    return pd.DataFrame(rows, columns=list(AREA_COLUMNS))
+    return pd.DataFrame(rows, columns=[ISO3_COL, value_col, coverage_col])
+
+
+def land_mean_from_slopes(lats: np.ndarray, slopes: np.ndarray) -> float:
+    """cos(lat) area-weighted mean of all finite cells (no country grouping).
+
+    Shared by :func:`world_land_mean` and the ERA5 world-land sanity helper.
+    """
+    lat_grid = np.broadcast_to(np.asarray(lats, dtype=float)[:, None], slopes.shape)
+    valid = np.isfinite(slopes)
+    if not valid.any():
+        return float("nan")
+    weights = latitude_area_weights(lat_grid[valid])
+    return float(np.dot(weights, slopes[valid]))
 
 
 def world_land_mean(nc_path: Path = BERKELEY_GRID_PATH, **kwargs) -> float:
@@ -346,9 +401,4 @@ def world_land_mean(nc_path: Path = BERKELEY_GRID_PATH, **kwargs) -> float:
     lats, lons = _grid_coords(nc_path)
     mask = assign_cell_iso3(lats, lons, gpw_path, load_national_id_lookup(lookup_path))
     lats, lons, slopes = cell_trends(nc_path, mask, **kwargs)
-    lat_grid = np.broadcast_to(lats[:, None], slopes.shape)
-    valid = np.isfinite(slopes)
-    if not valid.any():
-        return float("nan")
-    weights = latitude_area_weights(lat_grid[valid])
-    return float(np.dot(weights, slopes[valid]))
+    return land_mean_from_slopes(lats, slopes)
