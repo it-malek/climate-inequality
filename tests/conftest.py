@@ -246,8 +246,31 @@ def _make_synthetic_vulnerability_artifacts(bundle_dir: Path) -> None:
         "Year": [2022] * 7,
         "World Bank's income classification": tiers,
     }).to_csv(income_csv, index=False)
+
+    # Synthetic ND-GAIN slim table + OWID CO2 ISO3 bridge so the bundle exercises
+    # the direct adaptive-capacity axis. Vulnerability descends across C0..C6 (low
+    # emitters most vulnerable), so the direct triple inequality is constructed.
+    ndgain_csv = bundle_dir / "ndgain_latest.csv"
+    pd.DataFrame({
+        "iso3": [f"IS{i}" for i in range(7)],
+        "ndgain_year": [2023] * 7,
+        "vulnerability": [0.70, 0.60, 0.50, 0.40, 0.30, 0.20, 0.10],
+        "readiness": [0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80],
+        "gain": [30.0, 40.0, 45.0, 50.0, 58.0, 66.0, 75.0],
+    }).to_csv(ndgain_csv, index=False)
+    co2_csv = bundle_dir / "owid_co2_synthetic.csv"
+    pd.DataFrame({
+        "country": [f"C{i}" for i in range(7)],
+        "iso_code": [f"IS{i}" for i in range(7)],
+        "year": [2020] * 7,
+        "co2": [1.0] * 7,
+        "consumption_co2": [1.0] * 7,
+        "population": [1_000_000] * 7,
+    }).to_csv(co2_csv, index=False)
+
     build_vulnerability_asset(
-        income_path=income_csv, inequality_path=inequality_path, out_dir=bundle_dir
+        income_path=income_csv, inequality_path=inequality_path,
+        ndgain_path=ndgain_csv, co2_path=co2_csv, out_dir=bundle_dir,
     )
 
 

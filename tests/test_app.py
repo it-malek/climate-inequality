@@ -250,6 +250,15 @@ class TestVulnerabilityPage:
         assert "Area-warming vs income ρ" in labels
         assert "Triple inequality" in labels
 
+    def test_renders_ndgain_section(self, bundle_dir):
+        # The synthetic bundle now carries the ND-GAIN direct-axis block.
+        at = run_page("app.views.vulnerability")
+        headers = [h.value for h in at.header]
+        assert any("ND-GAIN" in h for h in headers)
+        labels = [m.label for m in at.metric]
+        assert "Responsibility vs vulnerability ρ" in labels
+        assert "Direct triple inequality" in labels
+
     def test_lens_toggle_switches_without_error(self, bundle_dir):
         at = run_page("app.views.vulnerability")
         lens = next(r for r in at.radio if "warming lens" in r.label.lower())
