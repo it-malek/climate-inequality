@@ -457,6 +457,8 @@ dev = [
 ]
 era5 = [
     { name = "cdsapi" },
+    { name = "netcdf4" },
+    { name = "xarray" },
 ]
 
 [package.metadata]
@@ -467,6 +469,7 @@ requires-dist = [
     { name = "jupyter", marker = "extra == 'dev'" },
     { name = "kagglehub", specifier = ">=0.3" },
     { name = "netcdf4", marker = "extra == 'dev'", specifier = ">=1.7.4" },
+    { name = "netcdf4", marker = "extra == 'era5'", specifier = ">=1.7.4" },
     { name = "pandas", specifier = ">=2.0" },
     { name = "plotly", specifier = ">=5.20" },
     { name = "pykrige", specifier = ">=1.7" },
@@ -478,6 +481,7 @@ requires-dist = [
     { name = "statsmodels", specifier = ">=0.14" },
     { name = "streamlit", specifier = ">=1.35" },
     { name = "xarray", marker = "extra == 'dev'", specifier = ">=2026.4.0" },
+    { name = "xarray", marker = "extra == 'era5'", specifier = ">=2026.4.0" },
 ]
 provides-extras = ["dev", "era5"]
 
