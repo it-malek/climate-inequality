@@ -114,3 +114,58 @@ class TestSensitivityCharts:
     def test_dfbeta_bar(self):
         fig = charts.dfbeta_bar([("Russia", 0.012), ("Canada", -0.008)])
         assert list(fig.data[0].y) == ["Russia", "Canada"]
+
+
+VULN_SUMMARY = {
+    "income_order": [
+        "Low-income countries", "Lower-middle-income countries",
+        "Upper-middle-income countries", "High-income countries",
+    ],
+    "responsibility": {
+        "by_tier": {
+            "Low-income countries": {"mean": 0.8, "median": 0.8},
+            "Lower-middle-income countries": {"mean": 5.5, "median": 5.5},
+            "Upper-middle-income countries": {"mean": 32.0, "median": 32.0},
+            "High-income countries": {"mean": 85.0, "median": 85.0},
+        }
+    },
+    "exposure": {
+        "area": {
+            "by_tier": {
+                "Low-income countries": {"pop_weighted_mean": 0.205, "median": 0.205},
+                "Lower-middle-income countries": {"pop_weighted_mean": 0.198, "median": 0.198},
+                "Upper-middle-income countries": {"pop_weighted_mean": 0.168, "median": 0.168},
+                "High-income countries": {"pop_weighted_mean": 0.182, "median": 0.182},
+            }
+        }
+    },
+}
+
+VULN_STRATA = pd.DataFrame({
+    "owid_country": ["A", "B", "C", "D"],
+    "income_group": [
+        "Low-income countries", "Low-income countries",
+        "High-income countries", "High-income countries",
+    ],
+    "trend_c_per_decade_area_weighted": [0.21, 0.20, 0.18, 0.19],
+})
+
+
+class TestVulnerabilityCharts:
+    def test_gradient_chart_has_bars_and_line_on_two_axes(self):
+        fig = charts.income_gradient_chart(VULN_SUMMARY, lens="area")
+        assert isinstance(fig, go.Figure)
+        assert len(fig.data) == 2  # responsibility bars + warming line
+        bar, line = fig.data
+        # Responsibility climbs steeply (left axis); warming is on the secondary axis.
+        assert list(bar.y) == [0.8, 5.5, 32.0, 85.0]
+        assert line.yaxis == "y2"
+        assert list(line.x) == ["Low", "Lower-mid", "Upper-mid", "High"]
+
+    def test_strata_box_orders_tiers_low_to_high(self):
+        fig = charts.income_strata_box(
+            VULN_STRATA, "trend_c_per_decade_area_weighted",
+            VULN_SUMMARY["income_order"], title="Area warming by income group",
+        )
+        # Only the two populated tiers appear, in low -> high order.
+        assert [b.name for b in fig.data] == ["Low", "High"]

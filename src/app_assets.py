@@ -116,6 +116,13 @@ COUPLING_AREA_SUMMARY_ASSET = "coupling_area_summary.json"
 ERA5_AREA_TRENDS_ASSET = "era5_area_trends.parquet"
 ERA5_VALIDATION_SUMMARY_ASSET = "era5_validation_summary.json"
 
+# Exposure x vulnerability lens (src.vulnerability): income-stratified warming and
+# responsibility distributions + the triple-inequality test. Built best-effort off
+# the in-repo World Bank income CSV, so it normally always builds; skips (with a
+# warning) only if that CSV is missing.
+VULNERABILITY_STRATA_ASSET = "vulnerability_strata.parquet"
+VULNERABILITY_SUMMARY_ASSET = "vulnerability_summary.json"
+
 # Layer 1 physical-driver assets (global temperature vs effective radiative
 # forcings). Built best-effort: the input forcings.parquet is network-derived and
 # not committed, so the builder skips when it is absent (a no-network bundle build
@@ -1055,6 +1062,61 @@ def build_era5_validation_asset(
     }
 
 
+def build_vulnerability_asset(
+    income_path: Path | None = None,
+    inequality_path: Path | None = None,
+    out_dir: Path = APP_DATA_DIR,
+) -> dict[str, Path]:
+    """Write the income x vulnerability lens artifacts into the bundle (best-effort).
+
+    Runs :func:`src.vulnerability.build_vulnerability` against the committed
+    ``country_inequality.parquet`` and the in-repo World Bank income CSV, writing
+    ``vulnerability_strata.parquet`` + ``vulnerability_summary.json``. Skips
+    (returns ``{}``) only when the income CSV is absent, so the bundle build still
+    succeeds and the dashboard page degrades to its pending state -- mirroring the
+    ERA5/area-lens skips.
+
+    Args:
+        income_path: World Bank income CSV; ``None`` uses
+            :data:`src.vulnerability.INCOME_PATH`.
+        inequality_path: ``country_inequality.parquet``; ``None`` uses
+            :data:`src.emissions.DEFAULT_INEQUALITY_PATH` (parametrised for tests).
+        out_dir: Bundle destination, normally the committed ``app/data/``.
+
+    Returns:
+        Dict of asset-name -> written Path, or ``{}`` when the income CSV is absent.
+    """
+    # Lazy import: src.vulnerability pulls src.explain/src.emissions; keep it out of
+    # module scope to match the era5/physical builders.
+    from src.emissions import DEFAULT_INEQUALITY_PATH
+    from src.vulnerability import INCOME_PATH, build_vulnerability
+
+    income = INCOME_PATH if income_path is None else income_path
+    inequality = DEFAULT_INEQUALITY_PATH if inequality_path is None else inequality_path
+    if not income.exists():
+        logger.warning(
+            "income CSV absent (%s); bundle will omit the vulnerability lens -- "
+            "download it via src.explain.INCOME_URL to enable it",
+            income,
+        )
+        return {}
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    table_dest = out_dir / VULNERABILITY_STRATA_ASSET
+    summary_dest = out_dir / VULNERABILITY_SUMMARY_ASSET
+    build_vulnerability(
+        inequality_path=inequality,
+        income_path=income,
+        table_path=table_dest,
+        summary_path=summary_dest,
+    )
+    logger.info("wrote %s and %s", table_dest, summary_dest)
+    return {
+        VULNERABILITY_STRATA_ASSET: table_dest,
+        VULNERABILITY_SUMMARY_ASSET: summary_dest,
+    }
+
+
 def _sha256_file(path: Path) -> str:
     """SHA-256 hex digest of a file's bytes (streamed, so large inputs are cheap)."""
     digest = hashlib.sha256()
@@ -1140,6 +1202,7 @@ def main() -> None:
     coupling_exposure = build_coupling_exposure_asset()
     coupling_area = build_coupling_area_asset()
     era5_validation = build_era5_validation_asset()
+    vulnerability = build_vulnerability_asset()
     physical = build_physical_summary_asset()
     trends = out["stats"]["trends"]
     interp = out["stats"]["interpolation"]
@@ -1290,6 +1353,22 @@ def main() -> None:
     else:
         print("ERA5 cross-check: skipped (ERA5 grid not fetched)")
 
+    if VULNERABILITY_SUMMARY_ASSET in vulnerability:
+        vuln = json.loads(
+            vulnerability[VULNERABILITY_SUMMARY_ASSET].read_text("utf-8")
+        )
+        rg = vuln["responsibility"]["gradient_vs_income"]
+        ag = vuln["exposure"]["area"]["gradient_vs_income"]
+        ti = vuln["triple_inequality"]
+        print(
+            f"vulnerability (income lens): n={vuln['coverage']['n_countries']}, "
+            f"responsibility vs income rho {rg['rho']:+.3f} (perm p={rg['p_permutation']:.3g}) "
+            f"vs area-warming rho {ag['rho']:+.3f} (perm p={ag['p_permutation']:.3g}); "
+            f"triple inequality holds={ti['holds']} (descriptive, non-causal)"
+        )
+    else:
+        print("vulnerability (income lens): skipped (income CSV not present)")
+
     if PHYSICAL_SUMMARY_ASSET in physical:
         physical_summary = json.loads(
             physical[PHYSICAL_SUMMARY_ASSET].read_text(encoding="utf-8")
@@ -1307,7 +1386,8 @@ def main() -> None:
 
     all_paths = {
         **out["paths"], **summaries, **stability, **coupling,
-        **coupling_consumption, **coupling_exposure, **coupling_area, **physical,
+        **coupling_consumption, **coupling_exposure, **coupling_area,
+        **era5_validation, **vulnerability, **physical,
     }
     total_kb = sum(p.stat().st_size for p in all_paths.values()) / 1024
     print(f"bundle: {len(all_paths)} files, {total_kb:,.0f} KB total")

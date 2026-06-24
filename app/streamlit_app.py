@@ -30,6 +30,7 @@ from app.views import (  # noqa: E402
     sensitivity,
     trend_map,
     validation,
+    vulnerability,
     world_map,
 )
 
@@ -65,6 +66,12 @@ navigation = st.navigation(
                 title="Responsibility vs impact",
                 icon="⚖️",
                 url_path="coupling",
+            ),
+            st.Page(
+                vulnerability.render,
+                title="Who suffers, not who warms",
+                icon="🌡️",
+                url_path="vulnerability",
             ),
         ],
         "Foundations": [

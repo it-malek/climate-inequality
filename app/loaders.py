@@ -300,6 +300,38 @@ def load_era5_validation_summary() -> dict | None:
 
 
 @st.cache_data
+def load_vulnerability_summary() -> dict | None:
+    """Income-stratified exposure x vulnerability lens metrics, if present.
+
+    Returns ``None`` until ``vulnerability_summary.json`` is in the bundle (it needs
+    the in-repo World Bank income CSV at build time), so the triple-inequality page
+    renders an explicit pending state rather than failing.
+    """
+    return _load_optional_json("vulnerability_summary.json")
+
+
+@st.cache_data
+def load_vulnerability_strata() -> pd.DataFrame | None:
+    """Per-country income-stratified warming/responsibility points, if present.
+
+    Returns ``None`` when ``vulnerability_strata.parquet`` is absent from the bundle
+    (the page degrades to a pending state). When present, the expected columns are
+    validated so a stale bundle surfaces one clear error.
+    """
+    path = APP_DATA_DIR / "vulnerability_strata.parquet"
+    if not path.exists():
+        return None
+    return _read_bundle_parquet(
+        "vulnerability_strata.parquet",
+        required=(
+            "owid_country", "continent", "income_group", "income_rank",
+            "population", "cum_co2_t_per_capita", "trend_c_per_decade_area_weighted",
+            "trend_c_per_decade_pop_weighted", "trend_c_per_decade",
+        ),
+    )
+
+
+@st.cache_data
 def load_country_latitudes() -> pd.DataFrame:
     """Mean signed latitude per country, aggregated from the city features.
 
