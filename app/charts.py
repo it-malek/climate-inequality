@@ -558,3 +558,97 @@ def sensitivity_forest(sensitivity: dict[str, dict]) -> go.Figure:
         showlegend=False,
     )
     return theme.apply_base_layout(fig)
+
+
+# Short tier labels for the income axis (low -> high); the summary carries the
+# canonical long names, the chart shows the compact ones.
+INCOME_SHORT_LABELS: dict[str, str] = {
+    "Low-income countries": "Low",
+    "Lower-middle-income countries": "Lower-mid",
+    "Upper-middle-income countries": "Upper-mid",
+    "High-income countries": "High",
+}
+
+
+def income_gradient_chart(summary: dict, lens: str = "area") -> go.Figure:
+    """The triple inequality on one chart: steep responsibility, flat warming.
+
+    Per income tier (low -> high), responsibility (mean cumulative per-capita CO₂)
+    is drawn as bars on the left axis and the per-person warming exposure of the
+    chosen `lens` as a line on the right axis. A steep bar climb beside a flat line
+    is the triple inequality. Reads only the pre-computed
+    ``vulnerability_summary.json`` blocks (no recomputation).
+    """
+    order = summary["income_order"]
+    resp_tiers = summary["responsibility"]["by_tier"]
+    warm_tiers = summary["exposure"][lens]["by_tier"]
+    tiers = [t for t in order if t in resp_tiers and t in warm_tiers]
+    labels = [INCOME_SHORT_LABELS.get(t, t) for t in tiers]
+    responsibility = [resp_tiers[t]["mean"] for t in tiers]
+    warming = [warm_tiers[t]["pop_weighted_mean"] for t in tiers]
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            x=labels, y=responsibility, name="Responsibility (mean t CO₂/capita)",
+            marker={"color": theme.group_color("emissions")},
+            hovertemplate="<b>%{x}</b><br>%{y:.1f} t CO₂/capita<extra></extra>",
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=labels, y=warming, name="Warming (per-person °C/decade)", yaxis="y2",
+            mode="lines+markers", line={"color": "#D55E00"},
+            marker={"color": theme.NEUTRAL_STRONG, "size": 9},
+            hovertemplate="<b>%{x}</b><br>%{y:+.3f} °C/decade<extra></extra>",
+        )
+    )
+    fig.update_layout(
+        title="Responsibility climbs with income; warming barely moves",
+        xaxis={"title": "World Bank income group (low → high)"},
+        yaxis={"title": "Mean cumulative t CO₂/capita"},
+        yaxis2={
+            "title": "Per-person warming (°C/decade)",
+            "overlaying": "y", "side": "right", "showgrid": False,
+        },
+        height=420,
+        showlegend=True,
+        legend={"orientation": "h", "yanchor": "bottom", "y": 1.02},
+    )
+    return theme.apply_base_layout(fig)
+
+
+def income_strata_box(
+    strata: pd.DataFrame, value_col: str, income_order: list[str], title: str
+) -> go.Figure:
+    """Per-income-tier distribution (box + points) of one country-level column.
+
+    Boxes are ordered low -> high income; points are the individual countries, so a
+    reader sees both the tier summary and its spread. Rows with a missing
+    `value_col` are dropped (a lens with coverage gaps shows fewer points).
+    """
+    work = strata.dropna(subset=[value_col])
+    fig = go.Figure()
+    for tier in income_order:
+        group = work.loc[work["income_group"] == tier]
+        if group.empty:
+            continue
+        fig.add_trace(
+            go.Box(
+                y=group[value_col].to_numpy(dtype=float),
+                name=INCOME_SHORT_LABELS.get(tier, tier),
+                boxpoints="all", jitter=0.4, pointpos=0,
+                marker={"color": theme.NEUTRAL_STRONG, "size": 5},
+                line={"color": theme.group_color("emissions")},
+                customdata=group["owid_country"].to_numpy()[:, None],
+                hovertemplate="<b>%{customdata[0]}</b><br>%{y:+.3f}<extra></extra>",
+            )
+        )
+    fig.update_layout(
+        title=title,
+        xaxis={"title": "World Bank income group (low → high)"},
+        yaxis={"title": theme.TREND_UNIT},
+        height=420,
+        showlegend=False,
+    )
+    return theme.apply_base_layout(fig)

@@ -221,6 +221,36 @@ def _make_synthetic_physical_artifacts(bundle_dir: Path) -> None:
     build_physical_summary_asset(forcings_path=forcings_path, out_dir=bundle_dir)
 
 
+def _make_synthetic_vulnerability_artifacts(bundle_dir: Path) -> None:
+    """Write synthetic income x vulnerability artifacts into the bundle.
+
+    Builds a tiny OWID-format income CSV covering the synthetic countries
+    (``C0``..``C6``) across all four World Bank tiers and routes it through the
+    production ``build_vulnerability_asset`` so the triple-inequality page's AppTest
+    exercises real bundle artifacts (``vulnerability_strata.parquet`` +
+    ``vulnerability_summary.json``).
+    """
+    from src.app_assets import build_vulnerability_asset
+
+    inequality_path = bundle_dir / "country_inequality.parquet"
+    tiers = [
+        "Low-income countries", "Low-income countries",
+        "Lower-middle-income countries", "Lower-middle-income countries",
+        "Upper-middle-income countries", "Upper-middle-income countries",
+        "High-income countries",
+    ]
+    income_csv = bundle_dir / "income_groups.csv"
+    pd.DataFrame({
+        "Entity": [f"C{i}" for i in range(7)],
+        "Code": [f"C{i:02d}" for i in range(7)],
+        "Year": [2022] * 7,
+        "World Bank's income classification": tiers,
+    }).to_csv(income_csv, index=False)
+    build_vulnerability_asset(
+        income_path=income_csv, inequality_path=inequality_path, out_dir=bundle_dir
+    )
+
+
 def build_synthetic_bundle(root: Path) -> dict:
     """Run build_app_assets end to end on synthetic inputs under `root`."""
     inputs = make_synthetic_inputs(root)
@@ -243,6 +273,7 @@ def build_synthetic_bundle(root: Path) -> dict:
     _make_synthetic_decomposition_artifacts(root / "bundle")
     _make_synthetic_coupling_artifacts(root / "bundle")
     _make_synthetic_physical_artifacts(root / "bundle")
+    _make_synthetic_vulnerability_artifacts(root / "bundle")
     result["bundle_dir"] = root / "bundle"
     return result
 

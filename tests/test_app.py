@@ -240,6 +240,35 @@ class TestCouplingPage:
         st.cache_data.clear()
 
 
+class TestVulnerabilityPage:
+    def test_renders_metrics_and_gradient(self, bundle_dir):
+        # The synthetic bundle carries the income x vulnerability artifacts.
+        at = run_page("app.views.vulnerability")
+        assert at.title[0].value == "Who suffers, not who warms"
+        labels = [m.label for m in at.metric]
+        assert "Responsibility vs income ρ" in labels
+        assert "Area-warming vs income ρ" in labels
+        assert "Triple inequality" in labels
+
+    def test_lens_toggle_switches_without_error(self, bundle_dir):
+        at = run_page("app.views.vulnerability")
+        lens = next(r for r in at.radio if "warming lens" in r.label.lower())
+        lens.set_value("People-weighted (residents)").run()
+        assert not at.exception
+        lens = next(r for r in at.radio if "warming lens" in r.label.lower())
+        lens.set_value("Station (raw)").run()
+        assert not at.exception
+
+    def test_pending_state_without_summary(self, tmp_path, monkeypatch):
+        # Point loaders at an empty dir: the page must degrade, not crash.
+        monkeypatch.setattr(loaders, "APP_DATA_DIR", tmp_path)
+        st.cache_data.clear()
+        at = run_page("app.views.vulnerability")
+        assert not at.exception
+        assert len(at.info) == 1
+        st.cache_data.clear()
+
+
 class TestPhysicalPage:
     def test_renders_metrics_and_sections(self, bundle_dir):
         # The synthetic bundle now carries L1 artifacts (forcings -> physical model).
