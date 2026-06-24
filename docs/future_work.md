@@ -64,10 +64,19 @@ The current metric (country warming vs cumulative per-capita CO₂) measures
 - ~~**Lorenz/Gini framing**~~ ✅ shipped — cumulative warming-exposure (station- or
   people-weighted) vs emissions-responsibility share + the Gini-style coefficient on
   the Layer 3 page.
-- **Exposure × vulnerability:** join ND-GAIN (vulnerability/readiness) or
-  income groups; the hypothesis worth testing is a *triple* inequality —
-  low emitters warm somewhat less in °C but are far more exposed
-  (outdoor labor, agriculture) and less able to adapt.
+- ~~**Exposure × vulnerability** (income-first)~~ ✅ shipped — World Bank income
+  groups as an ordinal **stratifier** (not a PCS projection; `PCS_V2` stays frozen)
+  over the existing station/people/area exposure and responsibility columns
+  (`src/vulnerability.py`). The *triple inequality* **holds** under the de-artifacted
+  area lens: responsibility climbs steeply with income (ρ +0.885, perm p=0.001) while
+  area-weighted warming is flat/non-significant (ρ −0.145, perm p=0.06), and
+  per-person the **poorest tier warms the most** (+0.205 vs +0.182 °C/decade for
+  high income). Significance via a deterministic label-permutation test (the honest
+  ordinal small-stratum tool; Conley §5 is orthogonal — it targets the continuous
+  OLS slope, not a rank statistic). Full result in
+  [`docs/vulnerability_results.md`](vulnerability_results.md). **Still open:** join
+  **ND-GAIN** (vulnerability/readiness) to measure the "adapt least" leg directly
+  rather than by income proxy — an out-of-repo download to scope separately.
 - **Era-weighted responsibility:** divide cumulative emissions by
   population *of the emitting era* (e.g., population-year-weighted), not
   2013 population — fairer to fast-growing countries.
