@@ -1065,13 +1065,16 @@ def build_era5_validation_asset(
 def build_vulnerability_asset(
     income_path: Path | None = None,
     inequality_path: Path | None = None,
+    ndgain_path: Path | None = None,
+    co2_path: Path | None = None,
     out_dir: Path = APP_DATA_DIR,
 ) -> dict[str, Path]:
     """Write the income x vulnerability lens artifacts into the bundle (best-effort).
 
     Runs :func:`src.vulnerability.build_vulnerability` against the committed
     ``country_inequality.parquet`` and the in-repo World Bank income CSV, writing
-    ``vulnerability_strata.parquet`` + ``vulnerability_summary.json``. Skips
+    ``vulnerability_strata.parquet`` + ``vulnerability_summary.json``. The ND-GAIN
+    block is added when the vendored ND-GAIN CSV + OWID CO2 table are present. Skips
     (returns ``{}``) only when the income CSV is absent, so the bundle build still
     succeeds and the dashboard page degrades to its pending state -- mirroring the
     ERA5/area-lens skips.
@@ -1081,6 +1084,10 @@ def build_vulnerability_asset(
             :data:`src.vulnerability.INCOME_PATH`.
         inequality_path: ``country_inequality.parquet``; ``None`` uses
             :data:`src.emissions.DEFAULT_INEQUALITY_PATH` (parametrised for tests).
+        ndgain_path: vendored ND-GAIN slim CSV; ``None`` uses
+            :data:`src.vulnerability.NDGAIN_PATH`.
+        co2_path: OWID CO2 table (ISO3 bridge); ``None`` uses
+            :data:`src.emissions.OWID_CO2_PATH`.
         out_dir: Bundle destination, normally the committed ``app/data/``.
 
     Returns:
@@ -1088,11 +1095,13 @@ def build_vulnerability_asset(
     """
     # Lazy import: src.vulnerability pulls src.explain/src.emissions; keep it out of
     # module scope to match the era5/physical builders.
-    from src.emissions import DEFAULT_INEQUALITY_PATH
-    from src.vulnerability import INCOME_PATH, build_vulnerability
+    from src.emissions import DEFAULT_INEQUALITY_PATH, OWID_CO2_PATH
+    from src.vulnerability import INCOME_PATH, NDGAIN_PATH, build_vulnerability
 
     income = INCOME_PATH if income_path is None else income_path
     inequality = DEFAULT_INEQUALITY_PATH if inequality_path is None else inequality_path
+    ndgain = NDGAIN_PATH if ndgain_path is None else ndgain_path
+    co2 = OWID_CO2_PATH if co2_path is None else co2_path
     if not income.exists():
         logger.warning(
             "income CSV absent (%s); bundle will omit the vulnerability lens -- "
@@ -1107,6 +1116,8 @@ def build_vulnerability_asset(
     build_vulnerability(
         inequality_path=inequality,
         income_path=income,
+        ndgain_path=ndgain,
+        co2_path=co2,
         table_path=table_dest,
         summary_path=summary_dest,
     )

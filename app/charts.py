@@ -619,18 +619,25 @@ def income_gradient_chart(summary: dict, lens: str = "area") -> go.Figure:
 
 
 def income_strata_box(
-    strata: pd.DataFrame, value_col: str, income_order: list[str], title: str
+    strata: pd.DataFrame,
+    value_col: str,
+    income_order: list[str],
+    title: str,
+    group_col: str = "income_group",
+    xaxis_title: str = "World Bank income group (low → high)",
 ) -> go.Figure:
-    """Per-income-tier distribution (box + points) of one country-level column.
+    """Per-group distribution (box + points) of one country-level column.
 
-    Boxes are ordered low -> high income; points are the individual countries, so a
-    reader sees both the tier summary and its spread. Rows with a missing
+    Boxes are ordered as `income_order`; points are the individual countries, so a
+    reader sees both the group summary and its spread. Rows with a missing
     `value_col` are dropped (a lens with coverage gaps shows fewer points).
+    `group_col` selects the stratifier -- income tier (default) or, for the ND-GAIN
+    view, the vulnerability quartile.
     """
     work = strata.dropna(subset=[value_col])
     fig = go.Figure()
     for tier in income_order:
-        group = work.loc[work["income_group"] == tier]
+        group = work.loc[work[group_col] == tier]
         if group.empty:
             continue
         fig.add_trace(
@@ -646,8 +653,46 @@ def income_strata_box(
         )
     fig.update_layout(
         title=title,
-        xaxis={"title": "World Bank income group (low → high)"},
+        xaxis={"title": xaxis_title},
         yaxis={"title": theme.TREND_UNIT},
+        height=420,
+        showlegend=False,
+    )
+    return theme.apply_base_layout(fig)
+
+
+def ndgain_scatter(strata: pd.DataFrame) -> go.Figure:
+    """The direct triple inequality: responsibility falls as vulnerability rises.
+
+    Per country, x = ND-GAIN vulnerability score (right = more vulnerable / less
+    adaptive capacity), y = cumulative per-capita CO₂ (log, responsibility), with the
+    marker colored by area-weighted warming. A down-sloping cloud whose color stays
+    roughly uniform across x *is* the triple inequality: the most vulnerable caused
+    least yet face no less warming. Rows missing the vulnerability score or
+    responsibility are dropped.
+    """
+    work = strata.dropna(subset=["vulnerability", "cum_co2_t_per_capita"])
+    fig = go.Figure(
+        go.Scatter(
+            x=work["vulnerability"].to_numpy(dtype=float),
+            y=work["cum_co2_t_per_capita"].to_numpy(dtype=float),
+            mode="markers",
+            marker={
+                "color": work["trend_c_per_decade_area_weighted"].to_numpy(dtype=float),
+                "colorscale": theme.TREND_COLORSCALE,
+                "colorbar": {"title": theme.TREND_UNIT},
+                "size": 8,
+                "line": {"color": theme.NEUTRAL_MID, "width": 0.5},
+            },
+            customdata=work["owid_country"].to_numpy()[:, None],
+            hovertemplate="<b>%{customdata[0]}</b><br>vulnerability %{x:.2f}<br>"
+            "%{y:.1f} t CO₂/capita<extra></extra>",
+        )
+    )
+    fig.update_layout(
+        title="Responsibility vs vulnerability (color = area warming)",
+        xaxis={"title": "ND-GAIN vulnerability (least → most)"},
+        yaxis={"title": "Cumulative t CO₂/capita", "type": "log"},
         height=420,
         showlegend=False,
     )

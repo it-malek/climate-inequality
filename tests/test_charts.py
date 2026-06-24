@@ -169,3 +169,26 @@ class TestVulnerabilityCharts:
         )
         # Only the two populated tiers appear, in low -> high order.
         assert [b.name for b in fig.data] == ["Low", "High"]
+
+    def test_strata_box_accepts_custom_group_col(self):
+        strata = VULN_STRATA.assign(vuln_quartile=["Q1 (least)", "Q1 (least)",
+                                                   "Q4 (most)", "Q4 (most)"])
+        fig = charts.income_strata_box(
+            strata, "trend_c_per_decade_area_weighted",
+            ["Q1 (least)", "Q4 (most)"], title="by quartile",
+            group_col="vuln_quartile", xaxis_title="vulnerability quartile",
+        )
+        assert [b.name for b in fig.data] == ["Q1 (least)", "Q4 (most)"]
+
+    def test_ndgain_scatter_drops_missing_and_colors_by_warming(self):
+        strata = pd.DataFrame({
+            "owid_country": ["A", "B", "C"],
+            "vulnerability": [0.7, 0.3, None],  # C dropped (no score)
+            "cum_co2_t_per_capita": [1.0, 50.0, 80.0],
+            "trend_c_per_decade_area_weighted": [0.21, 0.19, 0.18],
+        })
+        fig = charts.ndgain_scatter(strata)
+        assert isinstance(fig, go.Figure)
+        assert list(fig.data[0].x) == [0.7, 0.3]  # only finite-vulnerability rows
+        assert tuple(fig.data[0].marker.color) == (0.21, 0.19)
+        assert fig.layout.yaxis.type == "log"
