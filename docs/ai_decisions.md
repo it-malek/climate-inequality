@@ -28,3 +28,25 @@ standing instruction.
 (perm p = 0.001); area-weighted warming vs income ρ = −0.145 (perm p = 0.06, n.s.);
 per-person, low-income countries warm the *most* (+0.205 vs +0.182 °C/decade for
 high-income). The triple inequality **holds** under the de-artifacted lens.
+
+## 2026-06-24 — ND-GAIN direct adaptive-capacity axis
+
+Branch `feat/ndgain-vulnerability` (off `main`, after merging PRs #11 + #12). The
+three design forks (vendor slim CSV + fetch script; continuous Spearman + quartile
+bins; vulnerability primary) were decided *with* the user. Solo calls below; the user
+directed "keep everything local" so **nothing is pushed**.
+
+| # | Decision | Why | Alternatives passed over |
+|---|----------|-----|--------------------------|
+| 1 | ND-GAIN extends the **existing** `src/vulnerability.py` (optional `ndgain`/`iso_by_owid` args on `compute_vulnerability`) rather than a new module. | It is the same lens's second stratifier; additive args keep the income-only path and its tests unchanged. | A separate `src/ndgain.py` (duplicates the strata/permutation machinery). |
+| 2 | Reused the project's existing **OWID→ISO3 bridge** (`load_owid_co2` iso_code map) for the join, exactly as the area/ERA5 lenses do. | One consistent country-key map across the repo; no new mapping table to drift. | A bespoke ND-GAIN name/ISO map. |
+| 3 | Pure wide→slim derivation (`derive_ndgain_latest`) lives in `src/`, not the fetch script; the script only does network + extraction. | Keeps the logic unit-testable on synthetic wide frames (strict-TDD requirement), with the script as a thin wrapper. | Derivation inside `scripts/` (not import-testable). |
+| 4 | Vendored the slim CSV via **`git add -f`** under `data/raw/ndgain/` (the tree is gitignored) + a `NOTICE.md`, mirroring the force-added World Bank income CSV. | Matches the existing vendored-reference-data precedent exactly; NOTICE satisfies the CC attribution requirement. | A `.gitignore` exception (more explicit but inconsistent with the income CSV); gitignoring + build-time derive (CI/bundle couldn't build the block). |
+| 5 | Direct verdict holds when responsibility is **significantly negatively** correlated with vulnerability while area-warming is **not significantly negative** (read off the permutation p). | The continuous mirror of the income verdict; conservative and computed, not asserted. | A hardcoded narrative; using the asymptotic p (optimistic). |
+| 6 | The fetch script sends a **browser User-Agent + referer**. | `gain.nd.edu` returns 403 to bare clients (bot protection); this is the documented public-download path, not an auth bypass. | `src.data_io.download_file` (no UA → 403). |
+| 7 | ND-GAIN score columns written into the strata parquet only when present (extended schema); loader's required columns stay the base set. | A no-ND-GAIN bundle still writes/loads a valid slim table; the dashboard checks column presence. | Always requiring ND-GAIN columns (breaks the income-only/no-ND-GAIN path). |
+
+**Result on real data (155 joined countries):** responsibility vs ND-GAIN
+vulnerability ρ = **−0.882** (perm p = 0.001); area-weighted warming vs vulnerability
+ρ = **+0.019** (perm p = 0.80, n.s.). The **direct** triple inequality holds — more
+cleanly than the income proxy. 586 tests pass, ruff clean. Local-only (not pushed).
