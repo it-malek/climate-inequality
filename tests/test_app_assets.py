@@ -33,6 +33,8 @@ from src.app_assets import (
     TRENDS_ASSET,
     VALIDATION_ASSET,
     VALIDATION_GLOBAL_ASSET,
+    VULNERABILITY_STRATA_ASSET,
+    VULNERABILITY_SUMMARY_ASSET,
     _EXPLAIN_BUNDLE_PATH,
     _EXPLAIN_SUMMARY_PATH,
     _STABILITY_SUMMARY_PATH,
@@ -47,6 +49,7 @@ from src.app_assets import (
     build_coupling_summary_asset,
     build_decomposition_summaries,
     build_stability_summary_asset,
+    build_vulnerability_asset,
     disambiguate_labels,
     theil_sen_intercepts,
 )
@@ -620,3 +623,54 @@ class TestBuildEra5ValidationAsset:
         assert written == {}
         assert not out_dir.exists() or not any(out_dir.iterdir())
         assert "ERA5 grid absent" in caplog.text
+
+
+class TestBuildVulnerabilityAsset:
+    """build_vulnerability_asset: builds off in-repo inputs, skips if income absent."""
+
+    def _income_csv(self, path, owid_to_group):
+        """Write a tiny OWID-format income CSV (Entity/Code/Year/classification)."""
+        pd.DataFrame({
+            "Entity": list(owid_to_group),
+            "Code": [c[:3].upper() for c in owid_to_group],
+            "Year": [2022] * len(owid_to_group),
+            "World Bank's income classification": list(owid_to_group.values()),
+        }).to_csv(path, index=False)
+        return path
+
+    def test_builds_strata_and_summary(self, tmp_path):
+        inequality_path = tmp_path / "country_inequality.parquet"
+        make_inequality_frame().to_parquet(inequality_path, index=False)
+        # 7 synthetic countries C0..C6 -> spread across all four WB tiers.
+        tiers = [
+            "Low-income countries", "Low-income countries",
+            "Lower-middle-income countries", "Lower-middle-income countries",
+            "Upper-middle-income countries", "Upper-middle-income countries",
+            "High-income countries",
+        ]
+        income_csv = self._income_csv(
+            tmp_path / "income.csv", {f"C{i}": tiers[i] for i in range(7)}
+        )
+        out_dir = tmp_path / "bundle"
+
+        written = build_vulnerability_asset(
+            income_path=income_csv, inequality_path=inequality_path, out_dir=out_dir
+        )
+        assert set(written) == {VULNERABILITY_STRATA_ASSET, VULNERABILITY_SUMMARY_ASSET}
+        assert (out_dir / VULNERABILITY_STRATA_ASSET).exists()
+        summary = json.loads((out_dir / VULNERABILITY_SUMMARY_ASSET).read_text())
+        assert summary["available"] is True
+        assert summary["coverage"]["n_countries"] == 7
+        assert "holds" in summary["triple_inequality"]
+
+    def test_skips_when_income_csv_absent(self, tmp_path, caplog):
+        import logging
+
+        out_dir = tmp_path / "bundle"
+        with caplog.at_level(logging.WARNING):
+            written = build_vulnerability_asset(
+                income_path=tmp_path / "absent.csv", out_dir=out_dir
+            )
+        assert written == {}
+        assert not out_dir.exists() or not any(out_dir.iterdir())
+        assert "income CSV absent" in caplog.text
