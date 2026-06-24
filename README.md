@@ -167,7 +167,13 @@ moves most. The area-weighted lens overturns the headline — the
 warming↔responsibility coupling collapses (Spearman ρ **+0.36 → +0.01**) once land
 area is weighted honestly rather than station density — a result **independently
 confirmed against ERA5 reanalysis**
-([`docs/era5_validation_results.md`](docs/era5_validation_results.md)).
+([`docs/era5_validation_results.md`](docs/era5_validation_results.md)). A
+**Who suffers, not who warms** page then stratifies that de-artifacted exposure by
+**World Bank income group** (an ordinal stratifier, *not* a new PCS projection): the
+*triple inequality* holds — responsibility climbs steeply with income (ρ **+0.885**)
+while area-weighted warming stays flat (ρ **−0.145**, n.s.) and, per person, the
+**poorest countries warm the most** (+0.205 vs +0.182 °C/decade)
+([`docs/vulnerability_results.md`](docs/vulnerability_results.md)).
 **Foundations** (how the inputs were built): the interpolated warming surface
 with a city-station toggle; a city explorer (any location's anomaly series and
 fitted trend); the emissions-vs-warming scatter; an out-of-sample validation
