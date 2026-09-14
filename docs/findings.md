@@ -163,7 +163,10 @@ AR(1) error, trained through 2013 ([`physical_model.md`](physical_model.md)):
 | ONI sensitivity | 0.064 °C per index unit (0.03–0.10) |
 
 The greenhouse-gas forcings are collinear, so the individual CO₂, CH₄ and N₂O
-coefficients are only partly identified (the N₂O interval spans −0.1 to 6.6).
+coefficients are only partly identified; the N₂O point estimate (3.2 °C per
+W/m², interval −0.1 to 6.6) is an artefact of that collinearity and carries no
+physical meaning on its own. The volcanic and ENSO terms are the tightly
+estimated ones.
 The model describes the global trajectory and is kept apart from the
 cross-country analysis: a global signal has no cross-country variance to
 explain.

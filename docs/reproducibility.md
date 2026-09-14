@@ -43,7 +43,7 @@ classification tables. Sizes are approximate.
 |---|---|---|---|
 | Berkeley Earth city temperatures (Kaggle) | `GlobalLandTemperaturesByCity.csv` | 500 MB | `src.data_io.download_raw_data()` (kagglehub, no credentials) |
 | Berkeley Earth 1°×1° gridded land anomalies | `berkeley_gridded/Complete_TAVG_LatLong1.nc` | 200 MB | downloaded by `src.validation` |
-| OWID CO₂ and population | `owid/owid-co2-data.csv` | 14 MB | downloaded by `src.emissions` (live file; revisions change the numbers, see §7) |
+| OWID CO₂ and population | `owid/owid-co2-data.csv` | 14 MB | downloaded by `src.emissions` from a pinned commit of `owid/co2-data` (2026-06-02 release) and verified against its SHA-256; see §7 |
 | OWID continents | `owid/continents.csv` | | **committed** (`data/raw/owid/NOTICE.md`) |
 | World Bank income groups (OWID mirror) | `worldbank/world-bank-income-groups.csv` | 350 KB | **committed** (`data/raw/worldbank/NOTICE.md`) |
 | ETOPO 2022 elevation, 60 arc-second | `etopo/ETOPO_2022_v1_60s_N90W180_surface.nc` | 480 MB | downloaded by `src.explain` |
@@ -186,20 +186,34 @@ the numbers. The full threats-to-validity list is in
   types, fixed row order, zstd); the bundle's `city_trends`, `city_anomalies`
   and `trend_surface` files are written with pandas in a fixed sort order.
 - Every committed JSON summary passes through `data_io.round_floats`, which
-  rounds floats to 10 significant figures at serialization. Rebuilding the
-  same inputs on a different platform reproduces these files byte for byte,
-  with one exception: the residual Moran's I in `stability_summary.json`
-  depends on nearest-neighbour tie-breaking in the KD-tree and moves by about
-  1e-4 between macOS and Linux. Parquet files carrying unrounded floats
-  (`coupling*.parquet`, `physical_trajectory.parquet`, the `intercept` column
-  of `city_trends.parquet`) reproduce to within 1e-11 across platforms and
-  byte for byte on the same platform. `stats.json` carries unrounded OLS
-  statistics that differ at 1e-16 across platforms.
-- The pipeline does not pin upstream data vintages except for the vendored
-  tables. OWID revises its CO₂ series, and the Kaggle and Berkeley Earth files
-  are snapshots; the committed bundle was built from files retrieved in
-  June 2026, and `physical_summary.json` records the SHA-256 of the forcings
-  table it was fit on.
+  rounds floats to 10 significant figures at serialization. On the same
+  platform a rebuild of unchanged inputs reproduces every file byte for byte.
+  Across platforms (the committed bundle was compared between a Linux build
+  and a macOS rebuild) the picture is:
+  - the inequality, decomposition, coupling, ERA5 and vulnerability summaries
+    reproduce byte for byte (their arithmetic differs at ~1e-16, absorbed by
+    the rounding);
+  - the residual Moran's I in `stability_summary.json` moves by about 1e-4,
+    because nearest-neighbour ties in the KD-tree break differently; the
+    bootstrap intervals in the same file reproduce;
+  - `physical_summary.json` reproduces to about 1e-8 relative in the ridge
+    precision λ and to 1e-9 to 1e-7 relative in the sensitivities (largest
+    for the poorly identified N₂O interval). The marginal likelihood is
+    flat near its maximum, so the maximiser is only determined to that
+    precision in floating point; the reported digits (three to four
+    significant figures) are stable;
+  - parquet files carrying unrounded floats (`coupling*.parquet`,
+    `physical_trajectory.parquet`, the `intercept` column of
+    `city_trends.parquet`) agree to within 1e-9 or better;
+  - `stats.json` carries unrounded OLS statistics that differ at 1e-16.
+- Upstream vintages. The OWID CO₂ file is fetched from a pinned commit
+  (`src.emissions.OWID_CO2_COMMIT`) and its SHA-256 is checked before use, so
+  a different release cannot enter the country table unnoticed; the pinned
+  commit, retrieval date and digest are written into `stats.json` under
+  `provenance`. The income and continent tables are vendored. The Kaggle,
+  Berkeley Earth gridded, ETOPO, Köppen, GPW and forcing files are snapshots
+  retrieved in June 2026 and are not hash-checked; `physical_summary.json`
+  records the SHA-256 of the forcings table it was fit on.
 
 To check a rebuild:
 

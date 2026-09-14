@@ -434,6 +434,8 @@ class TestBuildInequalityAnalysis:
             # (the real 199 MB grid is never touched in tests). The dedicated
             # test below passes synthetic Berkeley + national-id grids.
             "berkeley_grid_path": tmp_path / "absent_berkeley.nc",
+            # Synthetic OWID file: not the pinned vintage, so skip the digest check.
+            "expected_sha256": None,
         }
 
     def test_pipeline_end_to_end(self, paths):
@@ -553,3 +555,22 @@ class TestLoaders:
     def test_load_continents_missing_file_raises(self, tmp_path):
         with pytest.raises(FileNotFoundError, match="download"):
             load_continents(tmp_path / "absent.csv")
+
+
+class TestOwidVintagePin:
+    def test_matching_digest_passes_and_returns_it(self, tmp_path):
+        from src.emissions import sha256_file, verify_owid_co2
+
+        path = tmp_path / "owid.csv"
+        path.write_text("country,year,co2\nA,2013,1.0\n")
+        digest = sha256_file(path)
+        assert verify_owid_co2(path, expected=digest) == digest
+        assert verify_owid_co2(path, expected=None) == digest
+
+    def test_other_vintage_raises(self, tmp_path):
+        from src.emissions import verify_owid_co2
+
+        path = tmp_path / "owid.csv"
+        path.write_text("country,year,co2\nA,2013,1.0\n")
+        with pytest.raises(RuntimeError, match="pinned OWID vintage"):
+            verify_owid_co2(path, expected="0" * 64)

@@ -171,7 +171,7 @@ class TestBundleContents:
             synthetic_bundle["paths"][STATS_ASSET].read_text(encoding="utf-8")
         )
         assert set(payload) == {
-            "trends", "interpolation", "inequality",
+            "provenance", "trends", "interpolation", "inequality",
             "validation", "explain",
         }
         trends = payload["trends"]
