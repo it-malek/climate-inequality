@@ -19,6 +19,7 @@ from pathlib import Path
 
 import duckdb
 import kagglehub
+import numpy as np
 import pandas as pd
 import requests
 
@@ -86,22 +87,23 @@ def write_typed_parquet(
         con.close()
 
 
-def round_floats(obj: object, ndigits: int = 12) -> object:
+def round_floats(obj: object, ndigits: int = 10) -> object:
     """Recursively round every float in a JSON-serializable structure.
 
-    Counterpart to :func:`write_typed_parquet` for the project's committed
-    *JSON* artifacts (the inequality and Shapley/LMG decomposition summaries).
-    ``numpy.linalg.lstsq`` and the BLAS beneath it differ in their last bits
-    across platforms and library versions, so an unrounded Shapley share like
-    ``0.08409736784540636`` reproduces as ``...633`` on a rebuild elsewhere --
-    a spurious diff in a file that is meant to be regenerated deterministically.
-    Rounding to `ndigits` (far finer than the ~3 significant figures these
-    shares actually carry, and invisible to the dashboard's ``.0%`` formatting)
-    makes the serialized artifact byte-stable across environments. Strings,
-    ints and bools pass through untouched.
+    Rounds to `ndigits` *significant figures* (not decimal places, so a p-value
+    of 3.8e-06 keeps its digits rather than collapsing to 0.0). Applied at the
+    serialization chokepoint of every committed JSON summary: the last bits of
+    ``numpy.linalg.lstsq``, BLAS and bounded optimizers differ across platforms,
+    and without rounding a rebuild elsewhere produces spurious diffs in files
+    that are meant to be regenerated deterministically. Ten significant figures
+    is far finer than any reported precision and absorbs the observed drift
+    (up to ~1e-9 relative in the physical-model summary). Strings, ints and
+    bools pass through untouched.
     """
     if isinstance(obj, float):
-        return round(obj, ndigits)
+        if obj == 0.0 or not np.isfinite(obj):
+            return obj
+        return float(f"{obj:.{ndigits}g}")
     if isinstance(obj, dict):
         return {k: round_floats(v, ndigits) for k, v in obj.items()}
     if isinstance(obj, (list, tuple)):
