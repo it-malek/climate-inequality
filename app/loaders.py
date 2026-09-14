@@ -10,21 +10,14 @@ both locally and on Streamlit Community Cloud.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import streamlit as st
 
-# src.cleaning is pandas-only, safe for the deployed environment (the app
-# already imports src.figures, which depends on it).
+from src import bundle
+from src.bundle import APP_DATA_DIR  # noqa: F401  (tests point this at a synthetic bundle)
 from src.cleaning import parse_window
-
-# Must equal src.app_assets.APP_DATA_DIR (tests assert agreement); the app
-# cannot import src.app_assets because its pipeline dependencies are absent
-# from the deployed environment. Tests monkeypatch this to a synthetic
-# bundle and clear the caches.
-APP_DATA_DIR = Path(__file__).resolve().parent / "data"
 
 
 def _read_bundle_parquet(name: str, required: tuple[str, ...]) -> pd.DataFrame:
@@ -48,7 +41,7 @@ def _read_bundle_parquet(name: str, required: tuple[str, ...]) -> pd.DataFrame:
 def load_city_trends() -> pd.DataFrame:
     """Per-city-location trends with ``city_id``, ``label``, ``intercept``."""
     return _read_bundle_parquet(
-        "city_trends.parquet",
+        bundle.TRENDS_ASSET,
         required=(
             "City", "Country", "Latitude", "Longitude", "n_obs", "coverage",
             "slope_c_per_decade", "ci_low", "ci_high", "ols_slope",
@@ -61,7 +54,7 @@ def load_city_trends() -> pd.DataFrame:
 def load_anomalies() -> pd.DataFrame:
     """All monthly anomalies, keyed by ``city_id``."""
     return _read_bundle_parquet(
-        "city_anomalies.parquet", required=("city_id", "dt", "anomaly")
+        bundle.ANOMALIES_ASSET, required=("city_id", "dt", "anomaly")
     )
 
 
@@ -81,7 +74,7 @@ def load_surface() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     (land-masked upstream).
     """
     long_form = _read_bundle_parquet(
-        "trend_surface.parquet", required=("lat", "lon", "value")
+        bundle.SURFACE_ASSET, required=("lat", "lon", "value")
     )
     wide = (
         long_form.pivot(index="lat", columns="lon", values="value")
@@ -99,7 +92,7 @@ def load_surface() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
 def load_inequality() -> pd.DataFrame:
     """The country-level inequality table (one row per matched country)."""
     return _read_bundle_parquet(
-        "country_inequality.parquet",
+        bundle.INEQUALITY_ASSET,
         required=(
             "Country", "continent", "n_cities",
             "trend_c_per_decade", "cum_co2_t_per_capita",
@@ -109,9 +102,9 @@ def load_inequality() -> pd.DataFrame:
 
 @st.cache_data
 def load_coupling() -> pd.DataFrame:
-    """The Layer 3 responsibility-impact comparison table (one row per country)."""
+    """The responsibility-impact comparison table (one row per country)."""
     return _read_bundle_parquet(
-        "coupling.parquet",
+        bundle.COUPLING_ASSET,
         required=(
             "Country", "responsibility_index_v1", "impact_index_v1",
             "responsibility_rank", "impact_rank", "rank_gap", "z_gap",
@@ -122,15 +115,15 @@ def load_coupling() -> pd.DataFrame:
 @st.cache_data
 def load_stats() -> dict:
     """Headline statistics computed at bundle-build time (stats.json)."""
-    return json.loads((APP_DATA_DIR / "stats.json").read_text(encoding="utf-8"))
+    return json.loads((APP_DATA_DIR / bundle.STATS_ASSET).read_text(encoding="utf-8"))
 
 
 def _load_optional_json(name: str) -> dict | None:
     """Read an optional bundle JSON, returning None when it is absent.
 
-    The decomposition/inequality/stability summaries are produced by separate
-    pipeline steps; a page degrades to a 'not built yet' state rather than
-    erroring when its summary has not been copied into the bundle.
+    Several summaries depend on inputs that may not have been built; a page
+    degrades to a 'not built yet' state rather than erroring when its summary
+    is missing from the bundle.
     """
     path = APP_DATA_DIR / name
     if not path.exists():
@@ -141,50 +134,49 @@ def _load_optional_json(name: str) -> dict | None:
 @st.cache_data
 def load_inequality_summary() -> dict | None:
     """Descriptive warming-inequality metrics (``inequality_summary.json``)."""
-    return _load_optional_json("inequality_summary.json")
+    return _load_optional_json(bundle.INEQUALITY_SUMMARY_ASSET)
 
 
 @st.cache_data
 def load_decomposition_summary() -> dict | None:
     """Group LMG/Shapley variance shares (``decomposition_summary.json``)."""
-    return _load_optional_json("decomposition_summary.json")
+    return _load_optional_json(bundle.DECOMPOSITION_SUMMARY_ASSET)
 
 
 @st.cache_data
 def load_stability_summary() -> dict | None:
-    """Decomposition/coefficient sensitivity diagnostics, if present.
+    """Bootstrap / leave-one-out / Moran's I diagnostics, if present.
 
-    Returns ``None`` until a ``stability_summary.json`` is added to the
-    bundle (the stability layer is a deferred pipeline step), so the
-    sensitivity page renders an explicit pending state rather than failing.
+    Returns ``None`` when ``stability_summary.json`` is absent so the page
+    renders a pending state rather than failing.
     """
-    return _load_optional_json("stability_summary.json")
+    return _load_optional_json(bundle.STABILITY_SUMMARY_ASSET)
 
 
 @st.cache_data
 def load_physical_summary() -> dict | None:
-    """Layer 1 physical-model summary (``physical_summary.json``), if present.
+    """Physical-model summary (``physical_summary.json``), if present.
 
-    Returns ``None`` until the L1 artifacts are added to the bundle (they require
+    Returns ``None`` until the physical-model artifacts are added to the bundle (they require
     the network-derived ``forcings.parquet``), so the physical-model page renders an
     explicit pending state rather than failing.
     """
-    return _load_optional_json("physical_summary.json")
+    return _load_optional_json(bundle.PHYSICAL_SUMMARY_ASSET)
 
 
 @st.cache_data
 def load_physical_trajectory() -> pd.DataFrame | None:
-    """Layer 1 observed-vs-predicted temperature trajectory, if present.
+    """Observed-vs-predicted global temperature trajectory, if present.
 
     Returns ``None`` when ``physical_trajectory.parquet`` is absent from the bundle
-    (the L1 page degrades to a pending state). When present, the expected columns are
+    (the page degrades to a pending state). When present, the expected columns are
     validated so a stale bundle surfaces one clear error.
     """
-    path = APP_DATA_DIR / "physical_trajectory.parquet"
+    path = APP_DATA_DIR / bundle.PHYSICAL_TRAJECTORY_ASSET
     if not path.exists():
         return None
     return _read_bundle_parquet(
-        "physical_trajectory.parquet",
+        bundle.PHYSICAL_TRAJECTORY_ASSET,
         required=("year", "observed", "predicted_mean", "lower95", "upper95", "in_sample"),
     )
 
@@ -197,7 +189,7 @@ def load_coupling_summary() -> dict | None:
     the responsibility-vs-impact page renders an explicit pending state rather
     than failing.
     """
-    return _load_optional_json("coupling_summary.json")
+    return _load_optional_json(bundle.COUPLING_SUMMARY_ASSET)
 
 
 @st.cache_data
@@ -208,21 +200,21 @@ def load_coupling_consumption_summary() -> dict | None:
     bundle (it needs the additive consumption columns in the country table), so
     the responsibility page's consumption comparison degrades gracefully.
     """
-    return _load_optional_json("coupling_consumption_summary.json")
+    return _load_optional_json(bundle.COUPLING_CONSUMPTION_SUMMARY_ASSET)
 
 
 @st.cache_data
 def load_coupling_consumption() -> pd.DataFrame | None:
-    """The Layer 3 consumption-lens wide diagnostic table, if present.
+    """The consumption-lens diagnostic table, if present.
 
     Returns ``None`` when ``coupling_consumption.parquet`` is absent; when present,
     the expected columns are validated so a stale bundle surfaces one clear error.
     """
-    path = APP_DATA_DIR / "coupling_consumption.parquet"
+    path = APP_DATA_DIR / bundle.COUPLING_CONSUMPTION_ASSET
     if not path.exists():
         return None
     return _read_bundle_parquet(
-        "coupling_consumption.parquet",
+        bundle.COUPLING_CONSUMPTION_ASSET,
         required=(
             "Country", "impact_index_v1", "responsibility_index_consumption",
             "responsibility_index_production_matched", "production_matched_rank",
@@ -240,17 +232,17 @@ def load_coupling_exposure_summary() -> dict | None:
     needs the people-weighted column, which needs the population grid at build
     time), so the responsibility page's exposure comparison degrades gracefully.
     """
-    return _load_optional_json("coupling_exposure_summary.json")
+    return _load_optional_json(bundle.COUPLING_EXPOSURE_SUMMARY_ASSET)
 
 
 @st.cache_data
 def load_coupling_exposure() -> pd.DataFrame | None:
-    """The Layer 3 people-weighted exposure wide diagnostic table, if present."""
-    path = APP_DATA_DIR / "coupling_exposure.parquet"
+    """The people-weighted exposure diagnostic table, if present."""
+    path = APP_DATA_DIR / bundle.COUPLING_EXPOSURE_ASSET
     if not path.exists():
         return None
     return _read_bundle_parquet(
-        "coupling_exposure.parquet",
+        bundle.COUPLING_EXPOSURE_ASSET,
         required=(
             "Country", "responsibility_index_v1", "impact_index_v1",
             "impact_index_population_weighted", "station_rank", "people_rank",
@@ -268,17 +260,17 @@ def load_coupling_area_summary() -> dict | None:
     needs the area-weighted column, which needs the Berkeley grid at build time),
     so the responsibility page's area comparison degrades gracefully.
     """
-    return _load_optional_json("coupling_area_summary.json")
+    return _load_optional_json(bundle.COUPLING_AREA_SUMMARY_ASSET)
 
 
 @st.cache_data
 def load_coupling_area() -> pd.DataFrame | None:
-    """The Layer 3 area-weighted exposure wide diagnostic table, if present."""
-    path = APP_DATA_DIR / "coupling_area.parquet"
+    """The area-weighted exposure diagnostic table, if present."""
+    path = APP_DATA_DIR / bundle.COUPLING_AREA_ASSET
     if not path.exists():
         return None
     return _read_bundle_parquet(
-        "coupling_area.parquet",
+        bundle.COUPLING_AREA_ASSET,
         required=(
             "Country", "responsibility_index_v1", "impact_index_v1",
             "impact_index_area_weighted", "station_rank", "area_rank",
@@ -296,7 +288,7 @@ def load_era5_validation_summary() -> dict | None:
     needs the ERA5 grid fetched via ``scripts/fetch_era5.py`` at build time), so the
     validation page's cross-check panel degrades gracefully.
     """
-    return _load_optional_json("era5_validation_summary.json")
+    return _load_optional_json(bundle.ERA5_VALIDATION_SUMMARY_ASSET)
 
 
 @st.cache_data
@@ -307,7 +299,7 @@ def load_vulnerability_summary() -> dict | None:
     the in-repo World Bank income CSV at build time), so the triple-inequality page
     renders an explicit pending state rather than failing.
     """
-    return _load_optional_json("vulnerability_summary.json")
+    return _load_optional_json(bundle.VULNERABILITY_SUMMARY_ASSET)
 
 
 @st.cache_data
@@ -318,11 +310,11 @@ def load_vulnerability_strata() -> pd.DataFrame | None:
     (the page degrades to a pending state). When present, the expected columns are
     validated so a stale bundle surfaces one clear error.
     """
-    path = APP_DATA_DIR / "vulnerability_strata.parquet"
+    path = APP_DATA_DIR / bundle.VULNERABILITY_STRATA_ASSET
     if not path.exists():
         return None
     return _read_bundle_parquet(
-        "vulnerability_strata.parquet",
+        bundle.VULNERABILITY_STRATA_ASSET,
         required=(
             "owid_country", "continent", "income_group", "income_rank",
             "population", "cum_co2_t_per_capita", "trend_c_per_decade_area_weighted",
@@ -348,9 +340,9 @@ def load_country_latitudes() -> pd.DataFrame:
 
 @st.cache_data
 def load_validation_frame() -> pd.DataFrame:
-    """Per-city residual-map data from Phase 6 validation."""
+    """Per-city residual-map data from the out-of-sample validation."""
     return _read_bundle_parquet(
-        "validation.parquet",
+        bundle.VALIDATION_ASSET,
         required=("City", "Country", "Latitude", "Longitude",
                   "mean_residual", "overlap_r", "gate_pass"),
     )
@@ -358,17 +350,17 @@ def load_validation_frame() -> pd.DataFrame:
 
 @st.cache_data
 def load_validation_global() -> pd.DataFrame:
-    """Monthly global observed vs predicted anomalies from Phase 6."""
+    """Monthly global observed vs predicted anomalies from the validation stage."""
     return _read_bundle_parquet(
-        "validation_global.parquet", required=("dt", "observed", "predicted")
+        bundle.VALIDATION_GLOBAL_ASSET, required=("dt", "observed", "predicted")
     )
 
 
 @st.cache_data
 def load_explain_features() -> pd.DataFrame:
-    """Slim city-features table from Phase 7 (for the drivers scatter)."""
+    """Slim city-features table (for the drivers scatter)."""
     return _read_bundle_parquet(
-        "explain_features.parquet",
+        bundle.EXPLAIN_FEATURES_ASSET,
         required=("City", "Country", "abs_latitude", "slope_c_per_decade", "koppen"),
     )
 

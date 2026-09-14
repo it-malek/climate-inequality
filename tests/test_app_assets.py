@@ -14,7 +14,6 @@ from scipy import stats
 
 from src.app_assets import (
     ANOMALIES_ASSET,
-    APP_DATA_DIR,
     COUPLING_ASSET,
     COUPLING_CONSUMPTION_ASSET,
     COUPLING_CONSUMPTION_SUMMARY_ASSET,
@@ -35,12 +34,7 @@ from src.app_assets import (
     VALIDATION_GLOBAL_ASSET,
     VULNERABILITY_STRATA_ASSET,
     VULNERABILITY_SUMMARY_ASSET,
-    _EXPLAIN_BUNDLE_PATH,
-    _EXPLAIN_SUMMARY_PATH,
     _STABILITY_SUMMARY_PATH,
-    _VALIDATION_BUNDLE_PATH,
-    _VALIDATION_GLOBAL_PATH,
-    _VALIDATION_SUMMARY_PATH,
     build_app_assets,
     build_coupling_consumption_asset,
     build_coupling_area_asset,
@@ -177,7 +171,7 @@ class TestBundleContents:
             synthetic_bundle["paths"][STATS_ASSET].read_text(encoding="utf-8")
         )
         assert set(payload) == {
-            "generated_at", "trends", "interpolation", "inequality",
+            "trends", "interpolation", "inequality",
             "validation", "explain",
         }
         trends = payload["trends"]
@@ -194,11 +188,6 @@ class TestBundleContents:
         assert {"coef", "se", "ci_low", "ci_high", "p_value", "r2"} == set(
             ineq["ols_fe"]
         )
-
-    def test_data_dir_constant_matches_app_loaders(self):
-        from app import loaders
-
-        assert APP_DATA_DIR == loaders.APP_DATA_DIR
 
 
 class TestIntegrityChecks:
@@ -233,31 +222,6 @@ class TestIntegrityChecks:
 
 
 class TestOptionalFindingsConstants:
-    """app_assets re-declares validation/explain path constants from PROCESSED_DIR
-    to avoid a circular import; these tests verify that the re-declared copies
-    stay in sync with the source-of-truth constants in validation.py / explain.py.
-    """
-
-    def test_validation_summary_path_matches_source(self):
-        from src.validation import DEFAULT_VALIDATION_SUMMARY_PATH
-        assert _VALIDATION_SUMMARY_PATH == DEFAULT_VALIDATION_SUMMARY_PATH
-
-    def test_validation_bundle_path_matches_source(self):
-        from src.validation import DEFAULT_VALIDATION_BUNDLE_PATH
-        assert _VALIDATION_BUNDLE_PATH == DEFAULT_VALIDATION_BUNDLE_PATH
-
-    def test_validation_global_path_matches_source(self):
-        from src.validation import DEFAULT_VALIDATION_GLOBAL_PATH
-        assert _VALIDATION_GLOBAL_PATH == DEFAULT_VALIDATION_GLOBAL_PATH
-
-    def test_explain_summary_path_matches_source(self):
-        from src.explain import DEFAULT_EXPLAIN_SUMMARY_PATH
-        assert _EXPLAIN_SUMMARY_PATH == DEFAULT_EXPLAIN_SUMMARY_PATH
-
-    def test_explain_bundle_path_matches_source(self):
-        from src.explain import DEFAULT_EXPLAIN_BUNDLE_PATH
-        assert _EXPLAIN_BUNDLE_PATH == DEFAULT_EXPLAIN_BUNDLE_PATH
-
     def test_stability_summary_path_matches_source(self):
         from src.stability import DEFAULT_SUMMARY_PATH
         assert _STABILITY_SUMMARY_PATH == DEFAULT_SUMMARY_PATH

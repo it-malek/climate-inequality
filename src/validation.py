@@ -1,4 +1,4 @@
-"""Out-of-sample validation of the stored trends (Phase 6).
+"""Out-of-sample validation of the stored trends.
 
 Every trend in this project is fit on city data ending 2013-09 (the
 analysis window stored in ``city_trends.parquet``). The Berkeley Earth
@@ -28,7 +28,7 @@ intercepts were slope-verified at build time by
 Dataset quirk (do not rediscover): the NetCDF time axis is fractional
 decimal years in Berkeley's mid-month convention (2014.041666... =
 January 2014) with units ``"year A.D."``, which CF decoding cannot
-parse -- see :func:`decode_fractional_years`. Layout:
+parse -- see :func:`src.grids.decode_fractional_years`. Layout:
 ``temperature(time, latitude, longitude)`` float32 anomalies in °C,
 NaN over ocean; the separate ``climatology`` variable is unused because
 the pipeline also works in anomaly space on the same baseline.
@@ -38,7 +38,6 @@ from __future__ import annotations
 
 import json
 import logging
-from collections.abc import Sequence
 from pathlib import Path
 
 import numpy as np
@@ -46,7 +45,7 @@ import pandas as pd
 import xarray as xr
 from scipy import stats
 
-from src.app_assets import ANOMALIES_ASSET, APP_DATA_DIR, TRENDS_ASSET
+from src.bundle import ANOMALIES_ASSET, APP_DATA_DIR, TRENDS_ASSET
 from src.cleaning import parse_window, to_decimal_decades
 from src.data_io import (
     OUTPUTS_DIR,
@@ -56,7 +55,7 @@ from src.data_io import (
     write_typed_parquet,
 )
 from src.figures import render_residual_map, render_validation_series
-from src.grids import nearest_cell_indices
+from src.grids import decode_fractional_years, nearest_cell_indices
 from src.trends import CITY_KEYS
 
 logger = logging.getLogger(__name__)
@@ -187,42 +186,6 @@ def write_validation_summary(
     )
 
     return {"summary": summary_path, "bundle": bundle_path, "global": global_path}
-
-
-def decode_fractional_years(values: Sequence[float] | np.ndarray) -> pd.DatetimeIndex:
-    """Convert Berkeley Earth fractional decimal years to month timestamps.
-
-    The gridded files encode time as ``year + (month - 0.5) / 12``
-    (mid-month decimals, e.g. 2014.041666... = January 2014) -- the same
-    convention as :func:`src.cleaning.to_decimal_decades`, in years
-    instead of decades. xarray's CF decoding cannot parse it, so the
-    axis is decoded manually to first-of-month timestamps matching the
-    pipeline's ``dt`` column.
-
-    Args:
-        values: Fractional-year floats.
-
-    Returns:
-        DatetimeIndex of first-of-month timestamps.
-
-    Raises:
-        ValueError: if any value does not sit on the mid-month grid
-            (e.g. a start-of-month ``year + (month - 1) / 12`` axis).
-    """
-    arr = np.asarray(values, dtype=float)
-    years = np.floor(arr)
-    month_float = (arr - years) * 12.0 + 0.5
-    months = np.rint(month_float)
-    off_grid = np.abs(month_float - months) > 0.01
-    if off_grid.any():
-        raise ValueError(
-            f"{int(off_grid.sum())} time value(s) are not mid-month decimal "
-            f"years, e.g. {arr[off_grid][:3]}"
-        )
-    parts = pd.DataFrame(
-        {"year": years.astype(int), "month": months.astype(int), "day": 1}
-    )
-    return pd.DatetimeIndex(pd.to_datetime(parts))
 
 
 def sample_grid_series(
@@ -543,7 +506,7 @@ def run_validation(
     bundle_path: Path = DEFAULT_VALIDATION_BUNDLE_PATH,
     global_path: Path = DEFAULT_VALIDATION_GLOBAL_PATH,
 ) -> dict:
-    """Run the Phase 6 validation end to end and write its outputs.
+    """Run the validation end to end and write its outputs.
 
     Reads the committed bundle (trends with slope-verified intercepts,
     plus the per-city anomalies), samples the gridded NetCDF at each
