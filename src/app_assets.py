@@ -1,32 +1,25 @@
-"""Build the committed dashboard asset bundle in ``app/data/`` (Phase 5).
+"""Build the committed dashboard bundle in ``app/data/``.
 
-The Streamlit app must run on Streamlit Community Cloud, which sees only
-the git repository: the 112 MB DuckDB database and the ~500 MB raw Kaggle
-download cannot ship there. This module distills the phase 1-4 outputs
-into a small bundle (parquet + JSON, ~10 MB, dominated by the per-city
-anomaly series) that the app reads identically on a laptop and in the
-cloud. Committing ``app/data/`` is a deliberate, documented exception to
-the project's "never commit data files" rule, which continues to apply to
-``data/`` and ``outputs/``.
+The Streamlit app runs on Streamlit Community Cloud, which sees only the git
+repository: the DuckDB database and the raw downloads cannot ship there. This
+module distills the pipeline outputs into a small bundle (parquet + JSON, ~5 MB,
+dominated by the per-city anomaly series) that the app reads identically on a
+laptop and in the cloud. Committing ``app/data/`` is the one deliberate
+exception to the rule that ``data/`` and ``outputs/`` are never committed.
 
-Bundle contents:
+:func:`build_app_assets` writes the core assets (trends with ``city_id``,
+``label`` and the Theil-Sen ``intercept``; monthly anomalies; the interpolated
+surface; the country table; ``stats.json``) and folds in the validation and
+explanatory summaries when they exist. The remaining ``build_*`` functions
+each write one optional group of artifacts (decomposition, stability, the
+coupling lenses, the ERA5 cross-check, the vulnerability strata, the physical
+model) and skip with a warning when their inputs are absent, so a partial
+pipeline still yields a working bundle and the dashboard shows a pending
+state for the missing pages. :func:`main` runs all of them.
 
-- ``city_trends.parquet``  -- phase 2 trends + ``city_id``, a per-country
-  unique ``label``, and the Theil-Sen ``intercept`` (so the dashboard can
-  draw the exact fitted line without scipy at runtime).
-- ``city_anomalies.parquet`` -- monthly anomalies per city-location
-  (float32, zstd), keyed by ``city_id``.
-- ``trend_surface.parquet`` -- the phase 3 winning interpolation on the
-  land-masked grid, long form (lat, lon, value; NaN over ocean).
-- ``country_inequality.parquet`` -- the phase 4 country table, as is.
-- ``stats.json`` -- headline numbers the dashboard displays: phase 2
-  sanity stats, phase 3 cross-validation, phase 4 inequality fits.
-
-Rebuilding the anomalies re-runs the exact phase 2 computation, so the
-builder cross-checks the refit Theil-Sen slopes against the stored ones
-and refuses to publish a bundle from a stale or inconsistent pipeline.
-
-Run after any pipeline change that alters published numbers:
+Rebuilding the anomalies re-runs the trend computation, so the builder
+cross-checks the refit Theil-Sen slopes against the stored ones and refuses to
+publish from a stale or inconsistent pipeline state.
 
     uv run python -m src.app_assets
 """
@@ -37,7 +30,6 @@ import hashlib
 import json
 import logging
 from dataclasses import asdict
-from datetime import datetime, timezone
 from pathlib import Path
 
 import duckdb
@@ -46,106 +38,111 @@ import pandas as pd
 from scipy import stats
 from shapely import Geometry
 
+from src.bundle import (
+    ANOMALIES_ASSET,
+    APP_DATA_DIR,
+    COUPLING_AREA_ASSET,
+    COUPLING_AREA_SUMMARY_ASSET,
+    COUPLING_ASSET,
+    COUPLING_CONSUMPTION_ASSET,
+    COUPLING_CONSUMPTION_SUMMARY_ASSET,
+    COUPLING_EXPOSURE_ASSET,
+    COUPLING_EXPOSURE_SUMMARY_ASSET,
+    COUPLING_SUMMARY_ASSET,
+    DECOMPOSITION_SUMMARY_ASSET,
+    ERA5_AREA_TRENDS_ASSET,
+    ERA5_VALIDATION_SUMMARY_ASSET,
+    EXPLAIN_FEATURES_ASSET,
+    INEQUALITY_ASSET,
+    INEQUALITY_SUMMARY_ASSET,
+    PHYSICAL_SUMMARY_ASSET,
+    PHYSICAL_TRAJECTORY_ASSET,
+    STABILITY_SUMMARY_ASSET,
+    STATS_ASSET,
+    SURFACE_ASSET,
+    TRENDS_ASSET,
+    VALIDATION_ASSET,
+    VALIDATION_GLOBAL_ASSET,
+    VULNERABILITY_STRATA_ASSET,
+    VULNERABILITY_SUMMARY_ASSET,
+)
 from src.cleaning import parse_window, to_decimal_decades
-from src.data_io import DEFAULT_DB_PATH, OUTPUTS_DIR, PROCESSED_DIR, PROJECT_ROOT
-from src.emissions import DEFAULT_INEQUALITY_PATH, quantify_inequality
+from src.coupling import (
+    COUPLING_AREA_SCHEMA,
+    COUPLING_CONSUMPTION_SCHEMA,
+    COUPLING_EXPOSURE_SCHEMA,
+    COUPLING_SCHEMA,
+    area_summary_payload,
+    compute_area_coupling,
+    compute_consumption_coupling,
+    compute_coupling,
+    compute_exposure_coupling,
+    consumption_summary_payload,
+    exposure_summary_payload,
+)
+from src.coupling import summary_payload as coupling_payload
+from src.data_io import DEFAULT_DB_PATH, OUTPUTS_DIR, PROCESSED_DIR, write_typed_parquet
+from src.decomposition import COUNTRY_COL, build_country_design, group_lmg_shares
+from src.decomposition import summary_payload as decomp_payload
+from src.emissions import (
+    CONSUMPTION_COLUMNS,
+    DEFAULT_INEQUALITY_PATH,
+    OWID_CO2_PATH,
+    quantify_inequality,
+)
+from src.era5_validation import ERA5_GRID_PATH, build_era5_validation
+from src.explain import (
+    DEFAULT_EXPLAIN_BUNDLE_PATH,
+    DEFAULT_EXPLAIN_SUMMARY_PATH,
+    DEFAULT_FEATURES_PATH,
+    EXPLAIN_BUNDLE_SCHEMA,
+    INCOME_PATH,
+    load_income_groups,
+)
+from src.forcings import DEFAULT_FORCINGS_PATH
+from src.inequality import country_warming_inequality
+from src.inequality import summary_payload as ineq_payload
 from src.interpolate import (
     DEFAULT_GRID_RESOLUTION,
     DEFAULT_K_NEIGHBORS,
     build_interpolated_surface,
 )
+from src.physical_model import TRAJECTORY_SCHEMA, compute_physical_model
+from src.physical_model import summary_payload as physical_payload
+from src.projections import (
+    ID_COL,
+    area_coverage,
+    consumption_window,
+    population_coverage,
+    resolve_area_projections,
+    resolve_consumption_projections,
+    resolve_exposure_projections,
+    resolve_projections,
+)
+from src.stability import DEFAULT_N_BOOT, build_stability_summary
+from src.stability import summary_payload as stability_payload
 from src.trends import (
     CITY_KEYS,
     DEFAULT_MIN_COVERAGE,
     DEFAULT_TRENDS_PATH,
     compute_anomalies,
 )
+from src.validation import (
+    DEFAULT_VALIDATION_BUNDLE_PATH,
+    DEFAULT_VALIDATION_GLOBAL_PATH,
+    DEFAULT_VALIDATION_SUMMARY_PATH,
+    VALIDATION_BUNDLE_SCHEMA,
+    VALIDATION_GLOBAL_SCHEMA,
+)
+from src.vulnerability import NDGAIN_PATH, build_vulnerability
 
 logger = logging.getLogger(__name__)
-
-# Must equal app.loaders.APP_DATA_DIR; the app cannot import this module
-# (heavy pipeline dependencies), so the path is defined on both sides and
-# tests assert they agree.
-APP_DATA_DIR = PROJECT_ROOT / "app" / "data"
 
 ARCTIC_LATITUDE = 60.0
 # Refit slopes must match the stored parquet to float-noise levels; real
 # drift (stale parquet vs database) shows up orders of magnitude larger.
 SLOPE_CONSISTENCY_ATOL = 1e-8
 
-TRENDS_ASSET = "city_trends.parquet"
-ANOMALIES_ASSET = "city_anomalies.parquet"
-SURFACE_ASSET = "trend_surface.parquet"
-INEQUALITY_ASSET = "country_inequality.parquet"
-STATS_ASSET = "stats.json"
-
-# Headline decomposition-page summaries. Built by build_decomposition_summaries
-# (not build_app_assets) because the LMG/Shapley decomposition needs the Phase-7
-# city features and the income table; main() runs both so a single
-# `python -m src.app_assets` regenerates the entire committed bundle.
-INEQUALITY_SUMMARY_ASSET = "inequality_summary.json"
-DECOMPOSITION_SUMMARY_ASSET = "decomposition_summary.json"
-STABILITY_SUMMARY_ASSET = "stability_summary.json"
-
-# Layer 3 coupling assets (responsibility-impact comparator). Built
-# unconditionally: the only input is the country table, which always ships.
-COUPLING_ASSET = "coupling.parquet"
-COUPLING_SUMMARY_ASSET = "coupling_summary.json"
-
-# Layer 3 consumption lens (PCS v2 wide registry). Built best-effort: needs the
-# additive consumption columns in the country table; when absent (a pre-v2 table)
-# the builder skips so the dashboard degrades to its pending state.
-COUPLING_CONSUMPTION_ASSET = "coupling_consumption.parquet"
-COUPLING_CONSUMPTION_SUMMARY_ASSET = "coupling_consumption_summary.json"
-
-# Layer 3 exposure lens (PCS v2 wide registry). Built best-effort: needs the
-# additive people-weighted column (population grid present at build time); when
-# absent the builder skips and the dashboard degrades to its pending state.
-COUPLING_EXPOSURE_ASSET = "coupling_exposure.parquet"
-COUPLING_EXPOSURE_SUMMARY_ASSET = "coupling_exposure_summary.json"
-
-# Layer 3 area-weighted lens (PCS v2 wide registry). Built best-effort: needs the
-# additive area-weighted column (Berkeley grid present at build time); when absent
-# the builder skips and the dashboard degrades to its pending state.
-COUPLING_AREA_ASSET = "coupling_area.parquet"
-COUPLING_AREA_SUMMARY_ASSET = "coupling_area_summary.json"
-
-# ERA5 reanalysis cross-check of the area-weighted finding (src.era5_validation).
-# Built best-effort: needs the ~200 MB ERA5 grid fetched via scripts/fetch_era5.py,
-# so the builder skips when it is absent and the validation page omits the panel.
-ERA5_AREA_TRENDS_ASSET = "era5_area_trends.parquet"
-ERA5_VALIDATION_SUMMARY_ASSET = "era5_validation_summary.json"
-
-# Exposure x vulnerability lens (src.vulnerability): income-stratified warming and
-# responsibility distributions + the triple-inequality test. Built best-effort off
-# the in-repo World Bank income CSV, so it normally always builds; skips (with a
-# warning) only if that CSV is missing.
-VULNERABILITY_STRATA_ASSET = "vulnerability_strata.parquet"
-VULNERABILITY_SUMMARY_ASSET = "vulnerability_summary.json"
-
-# Layer 1 physical-driver assets (global temperature vs effective radiative
-# forcings). Built best-effort: the input forcings.parquet is network-derived and
-# not committed, so the builder skips when it is absent (a no-network bundle build
-# still succeeds), mirroring the optional validation/explain assets.
-PHYSICAL_TRAJECTORY_ASSET = "physical_trajectory.parquet"
-PHYSICAL_SUMMARY_ASSET = "physical_summary.json"
-
-# Phase 6/7 optional bundle assets (present only when the heavy pipeline has run).
-VALIDATION_ASSET = "validation.parquet"
-VALIDATION_GLOBAL_ASSET = "validation_global.parquet"
-EXPLAIN_FEATURES_ASSET = "explain_features.parquet"
-
-# Source paths for the slim summary artifacts written by src.validation /
-# src.explain. Defined here (not imported from those modules) to avoid a
-# circular import: validation.py imports app_assets, so app_assets must not
-# import validation/explain at module scope. Tests that assert agreement
-# between these constants and the source-of-truth constants in validation.py /
-# explain.py live in tests/test_app_assets.py.
-_VALIDATION_SUMMARY_PATH = PROCESSED_DIR / "validation_summary.json"
-_VALIDATION_BUNDLE_PATH = PROCESSED_DIR / "validation_bundle.parquet"
-_VALIDATION_GLOBAL_PATH = PROCESSED_DIR / "validation_global.parquet"
-_EXPLAIN_SUMMARY_PATH = PROCESSED_DIR / "explain_summary.json"
-_EXPLAIN_BUNDLE_PATH = PROCESSED_DIR / "explain_features.parquet"
 _STABILITY_SUMMARY_PATH = PROCESSED_DIR / "stability_summary.json"
 
 
@@ -184,7 +181,7 @@ def attach_city_ids(
     written in.
 
     Args:
-        trends: Phase 2 output, one row per city-location.
+        trends: one row per city-location (``city_trends.parquet``).
         anomalies: Output of :func:`src.trends.compute_anomalies`.
 
     Returns:
@@ -231,7 +228,7 @@ def theil_sen_intercepts(
 ) -> pd.Series:
     """Refit Theil-Sen per city to recover intercepts, verifying slopes.
 
-    Phase 2 stored only slopes; the dashboard needs intercepts to draw the
+    The trends table stores only slopes; the dashboard needs intercepts to draw the
     fitted line. Refitting on the identical anomalies must reproduce the
     stored slopes to within float noise -- a build-time integrity check
     that the bundle is being built from a consistent pipeline state.
@@ -286,7 +283,7 @@ def _surface_to_long_form(
 
 
 def _sanity_stats(trends: pd.DataFrame) -> dict:
-    """Phase 2 headline numbers (the README validation checkpoints)."""
+    """Headline trend numbers (the sanity checkpoints)."""
     global_mean = float(trends["slope_c_per_decade"].mean())
     arctic = trends.loc[trends["Latitude"] > ARCTIC_LATITUDE, "slope_c_per_decade"]
     return {
@@ -328,23 +325,17 @@ def _merge_optional_findings(
     explain_summary_path: Path,
     explain_bundle_path: Path,
 ) -> None:
-    """Merge Phase 6/7 summary artifacts into the bundle, if present.
+    """Merge the validation and explanatory summaries into the bundle, if present.
 
     Reads the small JSON + parquet artifacts written by
     ``python -m src.validation`` and ``python -m src.explain``, and:
     - adds ``stats_payload["validation"]`` / ``["explain"]`` keys;
     - copies the slim parquets into `out_dir`.
 
-    If both artifacts for a phase are absent, logs a warning and skips
-    that phase (the resulting bundle is a graceful 3-page bundle). If only
-    one of the pair exists, raises RuntimeError to flag a stale pipeline.
+    If both artifacts for a stage are absent, logs a warning and skips that
+    stage. If only one of the pair exists, raises RuntimeError to flag a
+    stale pipeline.
     """
-    # Schemas are the source of truth for the slim parquet columns; lazy-import
-    # so the (circular) validation/explain modules stay out of app_assets's
-    # module scope, matching the re-declared path constants above.
-    from src.explain import EXPLAIN_BUNDLE_SCHEMA
-    from src.validation import VALIDATION_BUNDLE_SCHEMA, VALIDATION_GLOBAL_SCHEMA
-
     for (
         phase, summary_path, bundle_path, global_path,
         asset, global_asset, key, bundle_cols, global_cols,
@@ -376,9 +367,9 @@ def _merge_optional_findings(
         expected = [p for p in (summary_path, bundle_path) if p is not None]
         if len(present) == 0:
             logger.warning(
-                "%s summaries not found; bundle will omit the Phase %s pages -- "
+                "%s summaries not found; bundle will omit that page -- "
                 "run python -m src.%s first",
-                phase, "6" if phase == "validation" else "7", phase,
+                phase, phase,
             )
             continue
         if len(present) < len(expected):
@@ -416,29 +407,29 @@ def build_app_assets(
     resolution: float = DEFAULT_GRID_RESOLUTION,
     min_coverage: float = DEFAULT_MIN_COVERAGE,
     land: Geometry | None = None,
-    validation_summary_path: Path = _VALIDATION_SUMMARY_PATH,
-    validation_bundle_path: Path = _VALIDATION_BUNDLE_PATH,
-    validation_global_path: Path = _VALIDATION_GLOBAL_PATH,
-    explain_summary_path: Path = _EXPLAIN_SUMMARY_PATH,
-    explain_bundle_path: Path = _EXPLAIN_BUNDLE_PATH,
+    validation_summary_path: Path = DEFAULT_VALIDATION_SUMMARY_PATH,
+    validation_bundle_path: Path = DEFAULT_VALIDATION_BUNDLE_PATH,
+    validation_global_path: Path = DEFAULT_VALIDATION_GLOBAL_PATH,
+    explain_summary_path: Path = DEFAULT_EXPLAIN_SUMMARY_PATH,
+    explain_bundle_path: Path = DEFAULT_EXPLAIN_BUNDLE_PATH,
 ) -> dict:
-    """Build the dashboard asset bundle from the phase 1-4 outputs.
+    """Build the core bundle assets.
 
-    Recomputes the phase 2 anomalies (windows read from the trends parquet
-    itself), verifies them against the stored slopes, re-runs the phase 3
+    Recomputes the anomalies (windows read from the trends parquet itself),
+    verifies them against the stored slopes, re-runs the interpolation
     cross-validation and surface (also refreshing
-    ``outputs/trend_surface.html``), and re-quantifies the phase 4
-    inequality fits, then writes the five bundle files to `out_dir`.
+    ``outputs/trend_surface.html``), and re-quantifies the emissions fits,
+    then writes the five core files to `out_dir`.
 
     Args:
         db_path: DuckDB database with the ingested city temperatures.
-        trends_path: Phase 2 ``city_trends.parquet``.
-        inequality_path: Phase 4 ``country_inequality.parquet``.
+        trends_path: ``city_trends.parquet``.
+        inequality_path: ``country_inequality.parquet``.
         out_dir: Bundle destination, normally the committed ``app/data/``.
-        surface_out_dir: Where the phase 3 HTML figure is (re)written.
+        surface_out_dir: Where the surface HTML figure is (re)written.
         k: Interpolation neighborhood size.
         resolution: Surface grid spacing in degrees.
-        min_coverage: Phase 2 coverage gate (must match the trends build).
+        min_coverage: Coverage gate (must match the trends build).
         land: Land geometry override for tests; None downloads Natural
             Earth polygons.
 
@@ -485,7 +476,6 @@ def build_app_assets(
     inequality_result = quantify_inequality(inequality)
 
     stats_payload = {
-        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "trends": _sanity_stats(trends_out),
         "interpolation": {
             "winner": str(surface_result["winner"]),
@@ -558,25 +548,16 @@ def build_decomposition_summaries(
 ) -> dict[str, Path]:
     """Write the headline inequality + LMG/Shapley summaries into the bundle.
 
-    These two JSON artifacts power the dashboard's headline *decomposition* page
-    but are deliberately not produced by :func:`build_app_assets`: the
-    decomposition consumes the Phase-7 city-feature table and the World Bank
-    income groups, neither of which ships to the cloud. Wiring them here means a
-    single ``python -m src.app_assets`` regenerates the *entire* committed
-    bundle deterministically, replacing the old manual copy from
-    ``data/processed/``.
-
     ``inequality_summary.json`` needs only the country table, so it is always
     written. ``decomposition_summary.json`` additionally needs the city features
     and income groups; when either input is absent it is skipped with a warning
-    and the dashboard renders its explicit "not built yet" state. Both summaries
-    are float-rounded at serialization (:func:`src.data_io.round_floats`) so the
-    committed JSON is byte-stable across platforms.
+    and the dashboard renders its "not built yet" state. Both summaries are
+    float-rounded at serialization (:func:`src.data_io.round_floats`).
 
     Args:
-        inequality_path: Phase 4 ``country_inequality.parquet``.
+        inequality_path: ``country_inequality.parquet``.
         out_dir: Bundle destination, normally the committed ``app/data/``.
-        city_features_path: Phase 7 ``city_features.parquet`` override (tests);
+        city_features_path: ``city_features.parquet`` override (tests);
             ``None`` uses ``src.explain.DEFAULT_FEATURES_PATH``.
         income_path: World Bank income-groups CSV override (tests); ``None``
             uses ``src.explain.INCOME_PATH``.
@@ -585,15 +566,6 @@ def build_decomposition_summaries(
         Dict of asset-name -> written Path (omits the decomposition summary when
         its inputs are missing).
     """
-    # Lazy imports: keep the decomposition/inequality/explain stack out of this
-    # module's import graph (build_app_assets is the heavy entry point) and
-    # mirror the existing _merge_optional_findings discipline.
-    from src.decomposition import build_country_design, group_lmg_shares
-    from src.decomposition import summary_payload as decomp_payload
-    from src.explain import DEFAULT_FEATURES_PATH, INCOME_PATH, load_income_groups
-    from src.inequality import country_warming_inequality
-    from src.inequality import summary_payload as ineq_payload
-
     city_features_path = city_features_path or DEFAULT_FEATURES_PATH
     income_path = income_path or INCOME_PATH
 
@@ -645,19 +617,15 @@ def build_stability_summary_asset(
 ) -> dict[str, Path]:
     """Write the decomposition's perturbation-stability summary into the bundle.
 
-    Mirrors :func:`build_decomposition_summaries`: it needs the Phase-7 city
-    features (for the design *and* the country centroids the residual Moran's I
-    uses) and the World Bank income groups; when either is absent it is skipped
-    with a warning and the sensitivity page keeps its explicit pending state. The
-    country/continent bootstraps run here, offline, so the deployed app gains no
-    runtime dependency -- only the small JSON ships (``docs/stability_roadmap.md``
-    §2, §9). Floats are rounded at serialization so the committed summary is
-    byte-stable.
+    Needs the city features (for the design and for the country centroids the
+    residual Moran's I uses) and the income groups; when either is absent it is
+    skipped with a warning and the page keeps its pending state. The bootstraps
+    run here, offline; only the small JSON ships.
 
     Args:
-        inequality_path: Phase 4 ``country_inequality.parquet``.
+        inequality_path: ``country_inequality.parquet``.
         out_dir: Bundle destination, normally the committed ``app/data/``.
-        city_features_path: Phase 7 ``city_features.parquet`` override (tests);
+        city_features_path: ``city_features.parquet`` override (tests);
             ``None`` uses ``src.explain.DEFAULT_FEATURES_PATH``.
         income_path: World Bank income-groups CSV override (tests); ``None`` uses
             ``src.explain.INCOME_PATH``.
@@ -667,14 +635,6 @@ def build_stability_summary_asset(
     Returns:
         ``{STABILITY_SUMMARY_ASSET: path}`` when written, else ``{}``.
     """
-    # Lazy imports mirror build_decomposition_summaries: keep the decomposition /
-    # stability stack out of this module's import graph (build_app_assets is the
-    # heavy entry point) and avoid a circular import.
-    from src.decomposition import COUNTRY_COL, build_country_design
-    from src.explain import DEFAULT_FEATURES_PATH, INCOME_PATH, load_income_groups
-    from src.stability import DEFAULT_N_BOOT, build_stability_summary
-    from src.stability import summary_payload as stability_payload
-
     city_features_path = city_features_path or DEFAULT_FEATURES_PATH
     income_path = income_path or INCOME_PATH
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -718,28 +678,19 @@ def build_coupling_summary_asset(
     inequality_path: Path = DEFAULT_INEQUALITY_PATH,
     out_dir: Path = APP_DATA_DIR,
 ) -> dict[str, Path]:
-    """Write the Layer 3 coupling artifacts into the bundle.
+    """Write the station-based coupling artifacts into the bundle.
 
-    The responsibility-impact comparator's only input is the country table that
-    already ships, so -- unlike the decomposition/stability summaries -- it is
-    built unconditionally. The PCS v1 projections are resolved in-memory (identity
-    binding) and the deterministic comparator writes ``coupling.parquet`` and
-    ``coupling_summary.json`` into `out_dir`; both are byte-stable.
+    The comparator's only input is the country table that always ships, so this
+    is built unconditionally: the v1 projections are resolved in memory and the
+    comparator writes ``coupling.parquet`` and ``coupling_summary.json``.
 
     Args:
-        inequality_path: Phase 4 ``country_inequality.parquet``.
+        inequality_path: ``country_inequality.parquet``.
         out_dir: Bundle destination, normally the committed ``app/data/``.
 
     Returns:
         Dict of asset-name -> written Path.
     """
-    # Lazy imports mirror build_decomposition_summaries: keep the coupling stack
-    # out of this module's import graph (build_app_assets is the heavy entry point).
-    from src.coupling import COUPLING_SCHEMA, compute_coupling
-    from src.coupling import summary_payload as coupling_payload
-    from src.data_io import write_typed_parquet
-    from src.projections import ID_COL, resolve_projections
-
     inequality = pd.read_parquet(inequality_path)
     projections = resolve_projections(inequality)
     table, result = compute_coupling(projections)
@@ -759,55 +710,28 @@ def build_coupling_summary_asset(
     return {COUPLING_ASSET: table_dest, COUPLING_SUMMARY_ASSET: summary_dest}
 
 
-# Country-table columns the consumption lens needs (additive, v2). Re-declared
-# here (not imported) to keep the heavy emissions stack out of this module's
-# import graph, mirroring the path-constant discipline elsewhere in this file.
-_CONSUMPTION_SOURCE_COLUMNS = (
-    "consumption_start_year",
-    "cum_consumption_t_per_capita",
-    "cum_co2_window_t_per_capita",
-)
-
-
 def build_coupling_consumption_asset(
     inequality_path: Path = DEFAULT_INEQUALITY_PATH,
     out_dir: Path = APP_DATA_DIR,
 ) -> dict[str, Path]:
-    """Write the Layer 3 consumption-lens artifacts into the bundle (best-effort).
+    """Write the consumption-lens coupling artifacts into the bundle (best-effort).
 
-    Mirrors :func:`build_coupling_summary_asset` but for the PCS v2 wide registry:
-    resolves the wide projections in-memory, runs the two-pass comparator
-    (consumption-vs-impact and the window-matched production->consumption
-    rank-shift), and writes ``coupling_consumption.parquet`` +
-    ``coupling_consumption_summary.json`` (both byte-stable). When the country
-    table predates the additive consumption columns, or no country has a
-    consumption window, it logs and returns ``{}`` so the dashboard degrades to
-    its pending state rather than failing.
+    Runs the two-pass comparator (consumption vs impact, and the window-matched
+    production-to-consumption rank shift) and writes
+    ``coupling_consumption.parquet`` + ``coupling_consumption_summary.json``.
+    When the country table lacks the consumption columns, or no country has a
+    consumption window, it logs and returns ``{}``.
 
     Args:
-        inequality_path: Phase 4 ``country_inequality.parquet``.
+        inequality_path: ``country_inequality.parquet``.
         out_dir: Bundle destination, normally the committed ``app/data/``.
 
     Returns:
         Dict of asset-name -> written Path, or ``{}`` when the consumption lens
         cannot be built.
     """
-    # Lazy imports mirror build_coupling_summary_asset: keep the coupling stack
-    # out of this module's import graph (build_app_assets is the heavy entry point).
-    from src.coupling import (
-        COUPLING_CONSUMPTION_SCHEMA,
-        compute_consumption_coupling,
-        consumption_summary_payload,
-    )
-    from src.data_io import write_typed_parquet
-    from src.projections import (
-        ID_COL,
-        consumption_window,
-        resolve_consumption_projections,
-    )
-
     inequality = pd.read_parquet(inequality_path)
-    missing = [c for c in _CONSUMPTION_SOURCE_COLUMNS if c not in inequality.columns]
+    missing = [c for c in CONSUMPTION_COLUMNS if c not in inequality.columns]
     if missing or inequality["cum_consumption_t_per_capita"].notna().sum() == 0:
         logger.warning(
             "consumption columns absent/empty (missing=%s); bundle will omit the "
@@ -858,36 +782,21 @@ def build_coupling_exposure_asset(
     inequality_path: Path = DEFAULT_INEQUALITY_PATH,
     out_dir: Path = APP_DATA_DIR,
 ) -> dict[str, Path]:
-    """Write the Layer 3 people-weighted exposure artifacts into the bundle.
+    """Write the people-weighted exposure coupling artifacts (best-effort).
 
-    Mirrors :func:`build_coupling_consumption_asset` for the exposure lens:
-    resolves the exposure projections, runs the two passes (station-vs-people
-    rank-shift and the people-weighted climate-inequality Lorenz), and writes
-    ``coupling_exposure.parquet`` + ``coupling_exposure_summary.json``. Skips
-    (returns ``{}``) when the country table carries no people-weighting (the
-    population grid was absent at ``country_inequality`` build time), so the
-    dashboard degrades to its pending state.
+    Runs the two passes (station-vs-people rank shift and the people-weighted
+    inequality) and writes ``coupling_exposure.parquet`` +
+    ``coupling_exposure_summary.json``. Returns ``{}`` when the country table
+    carries no people-weighting (the population grid was absent at build time).
 
     Args:
-        inequality_path: Phase 4 ``country_inequality.parquet``.
+        inequality_path: ``country_inequality.parquet``.
         out_dir: Bundle destination, normally the committed ``app/data/``.
 
     Returns:
         Dict of asset-name -> written Path, or ``{}`` when the exposure lens
         cannot be built.
     """
-    from src.coupling import (
-        COUPLING_EXPOSURE_SCHEMA,
-        compute_exposure_coupling,
-        exposure_summary_payload,
-    )
-    from src.data_io import write_typed_parquet
-    from src.projections import (
-        ID_COL,
-        population_coverage,
-        resolve_exposure_projections,
-    )
-
     inequality = pd.read_parquet(inequality_path)
     if (
         "trend_c_per_decade_pop_weighted" not in inequality.columns
@@ -941,36 +850,21 @@ def build_coupling_area_asset(
     inequality_path: Path = DEFAULT_INEQUALITY_PATH,
     out_dir: Path = APP_DATA_DIR,
 ) -> dict[str, Path]:
-    """Write the Layer 3 area-weighted exposure artifacts into the bundle.
+    """Write the area-weighted exposure coupling artifacts (best-effort).
 
-    Mirrors :func:`build_coupling_exposure_asset` for the area-weighted lens:
-    resolves the area projections, runs the two passes (station-vs-area rank-shift
-    and the area-weighted climate-inequality Lorenz), and writes
-    ``coupling_area.parquet`` + ``coupling_area_summary.json``. Skips (returns
-    ``{}``) when the country table carries no area-weighting (the Berkeley grid
-    was absent at ``country_inequality`` build time), so the dashboard degrades to
-    its pending state.
+    Runs the two passes (station-vs-area rank shift and the area-weighted
+    inequality) and writes ``coupling_area.parquet`` +
+    ``coupling_area_summary.json``. Returns ``{}`` when the country table
+    carries no area-weighting (the Berkeley grid was absent at build time).
 
     Args:
-        inequality_path: Phase 4 ``country_inequality.parquet``.
+        inequality_path: ``country_inequality.parquet``.
         out_dir: Bundle destination, normally the committed ``app/data/``.
 
     Returns:
         Dict of asset-name -> written Path, or ``{}`` when the area lens cannot
         be built.
     """
-    from src.coupling import (
-        COUPLING_AREA_SCHEMA,
-        area_summary_payload,
-        compute_area_coupling,
-    )
-    from src.data_io import write_typed_parquet
-    from src.projections import (
-        ID_COL,
-        area_coverage,
-        resolve_area_projections,
-    )
-
     inequality = pd.read_parquet(inequality_path)
     if (
         "trend_c_per_decade_area_weighted" not in inequality.columns
@@ -1024,20 +918,15 @@ def build_era5_validation_asset(
 ) -> dict[str, Path]:
     """Write the ERA5 cross-check artifacts into the bundle (best-effort).
 
-    Recomputes the area-weighted warming off the independent ERA5 reanalysis grid
-    and the station/Berkeley/ERA5 coupling reproduction (:mod:`src.era5_validation`),
-    writing ``era5_area_trends.parquet`` + ``era5_validation_summary.json``. Skips
-    (returns ``{}``) when the ~200 MB ERA5 grid is absent (fetch it via
-    ``scripts/fetch_era5.py``), so the no-grid bundle build still succeeds and the
-    validation page degrades to its pending state -- mirroring the area-lens skip.
+    Recomputes the area-weighted warming on the ERA5 grid and the
+    station/Berkeley/ERA5 coupling comparison (:mod:`src.era5_validation`),
+    writing ``era5_area_trends.parquet`` + ``era5_validation_summary.json``.
+    Returns ``{}`` when the ~200 MB ERA5 grid is absent (fetch it with
+    ``scripts/fetch_era5.py``); the validation page then omits the panel.
 
     Returns:
         Dict of asset-name -> written Path, or ``{}`` when the grid is absent.
     """
-    # Lazy import: src.era5_validation pulls src.emissions; keep it out of module
-    # scope to match the area/physical builders and avoid any import-order surprise.
-    from src.era5_validation import ERA5_GRID_PATH, build_era5_validation
-
     grid_path = ERA5_GRID_PATH if era5_grid_path is None else era5_grid_path
     if not grid_path.exists():
         logger.warning(
@@ -1071,13 +960,12 @@ def build_vulnerability_asset(
 ) -> dict[str, Path]:
     """Write the income x vulnerability lens artifacts into the bundle (best-effort).
 
-    Runs :func:`src.vulnerability.build_vulnerability` against the committed
-    ``country_inequality.parquet`` and the in-repo World Bank income CSV, writing
+    Runs :func:`src.vulnerability.build_vulnerability` against the country table
+    and the vendored World Bank income CSV, writing
     ``vulnerability_strata.parquet`` + ``vulnerability_summary.json``. The ND-GAIN
-    block is added when the vendored ND-GAIN CSV + OWID CO2 table are present. Skips
-    (returns ``{}``) only when the income CSV is absent, so the bundle build still
-    succeeds and the dashboard page degrades to its pending state -- mirroring the
-    ERA5/area-lens skips.
+    block is added when the vendored ND-GAIN CSV and the OWID CO2 table (the
+    ISO3 bridge) are both present. Returns ``{}`` only when the income CSV is
+    absent.
 
     Args:
         income_path: World Bank income CSV; ``None`` uses
@@ -1093,11 +981,6 @@ def build_vulnerability_asset(
     Returns:
         Dict of asset-name -> written Path, or ``{}`` when the income CSV is absent.
     """
-    # Lazy import: src.vulnerability pulls src.explain/src.emissions; keep it out of
-    # module scope to match the era5/physical builders.
-    from src.emissions import DEFAULT_INEQUALITY_PATH, OWID_CO2_PATH
-    from src.vulnerability import INCOME_PATH, NDGAIN_PATH, build_vulnerability
-
     income = INCOME_PATH if income_path is None else income_path
     inequality = DEFAULT_INEQUALITY_PATH if inequality_path is None else inequality_path
     ndgain = NDGAIN_PATH if ndgain_path is None else ndgain_path
@@ -1141,14 +1024,12 @@ def build_physical_summary_asset(
     forcings_path: Path | None = None,
     out_dir: Path = APP_DATA_DIR,
 ) -> dict[str, Path]:
-    """Write the Layer 1 physical-model artifacts into the bundle (best-effort).
+    """Write the physical-model artifacts into the bundle (best-effort).
 
-    Reads the assembled ``forcings.parquet``, refits the deterministic physical
-    driver model and writes ``physical_trajectory.parquet`` + ``physical_summary.json``
-    into `out_dir` (both byte-stable). Unlike the coupling builder, the input is the
-    network-derived forcings table, which is *not* committed; when it is absent the
-    builder logs and returns ``{}`` so a no-network bundle build still succeeds (the
-    L1 dashboard page then degrades to its "not built yet" state).
+    Reads ``forcings.parquet``, refits the model and writes
+    ``physical_trajectory.parquet`` + ``physical_summary.json``. The forcings
+    table is network-derived and not committed; when it is absent the builder
+    logs and returns ``{}``.
 
     Args:
         forcings_path: the assembled ``forcings.parquet`` (defaults to
@@ -1158,26 +1039,14 @@ def build_physical_summary_asset(
     Returns:
         Dict of asset-name -> written Path, or ``{}`` when forcings are absent.
     """
-    # Lazy imports mirror build_coupling_summary_asset: keep the L1 stack out of
-    # this module's import graph (build_app_assets is the heavy entry point).
-    from src.data_io import write_typed_parquet
-    from src.forcings import DEFAULT_FORCINGS_PATH
-    from src.physical_model import (
-        TRAJECTORY_SCHEMA,
-        compute_physical_model,
-        summary_payload as physical_payload,
-    )
-
     forcings_path = forcings_path or DEFAULT_FORCINGS_PATH
     if not forcings_path.exists():
         logger.info("physical: skipped (no %s; run python -m src.forcings)", forcings_path)
         return {}
 
     forcings = pd.read_parquet(forcings_path)
-    # Provenance anchor (§4 audit finding): stamp the exact forcings vintage this
-    # trajectory was fit on so a stale committed bundle is *observable* -- the
-    # network-derived forcings table is gitignored, so without this the committed
-    # L1 artifacts have no reproducible link back to their input.
+    # The forcings table is gitignored, so stamp its hash into the summary: the
+    # committed artifact then names the exact input vintage it was fit on.
     forcings_hash = _sha256_file(forcings_path)
     trajectory, result = compute_physical_model(forcings)
     result.check()
@@ -1185,8 +1054,6 @@ def build_physical_summary_asset(
     out_dir.mkdir(parents=True, exist_ok=True)
     traj_dest = out_dir / PHYSICAL_TRAJECTORY_ASSET
     write_typed_parquet(trajectory, traj_dest, TRAJECTORY_SCHEMA, order_by=("year",))
-    # forcings_hash is bundle-build provenance, not an estimator output -- inject it
-    # at this layer rather than polluting the pure physical_model.summary_payload.
     payload = {**physical_payload(result), "forcings_hash": forcings_hash}
     summary_dest = out_dir / PHYSICAL_SUMMARY_ASSET
     summary_dest.write_text(
@@ -1386,14 +1253,14 @@ def main() -> None:
         )
         h = physical_summary["hindcast"]
         print(
-            f"physical (L1): n={physical_summary['n_years']}, "
+            f"physical: n={physical_summary['n_years']}, "
             f"train<={physical_summary['train_end']}, AR(1) rho "
             f"{physical_summary['ar1_rho']:+.3f}, train R^2 {h['train_r2']:.3f}, "
             f"test band coverage {h['test_band_coverage']:.0%} "
-            "(predictive association, non-causal)"
+            "(predictive association)"
         )
     else:
-        print("physical (L1): skipped (forcings.parquet not built)")
+        print("physical: skipped (forcings.parquet not built)")
 
     all_paths = {
         **out["paths"], **summaries, **stability, **coupling,

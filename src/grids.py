@@ -1,21 +1,51 @@
-"""Shared nearest-cell lookup and sampling for regular lat/lon grids.
+"""Shared helpers for regular lat/lon grids.
 
-:mod:`src.validation` (Phase 6, the Berkeley Earth gridded temperature
-NetCDF), :mod:`src.explain` (Phase 7, the ETOPO elevation and Koeppen
-climate-class NetCDFs) and :mod:`src.population` (the population grid) all map
-city-location coordinates onto the nearest cell of a static ``(lat, lon)``
-grid. This module factors out that idiom -- the nearest-cell lookup plus the
-longitude-convention handling and NetCDF point sampling built on it -- so every
-call site (and its determinism/boundary-case tests) shares one implementation.
+Several stages sample a static ``(lat, lon)`` grid at city coordinates
+(:mod:`src.validation` for the Berkeley Earth gridded temperatures,
+:mod:`src.explain` for ETOPO elevation and Koeppen classes,
+:mod:`src.population` for the GPW population grid) and two decode Berkeley's
+fractional-year time axis (:mod:`src.validation`, :mod:`src.area_weighting`).
+This module holds those pieces once: the nearest-cell lookup, the
+longitude-convention handling, lazy NetCDF point sampling, and the time decoder.
 """
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import xarray as xr
+
+
+def decode_fractional_years(values: Sequence[float] | np.ndarray) -> pd.DatetimeIndex:
+    """Convert Berkeley Earth fractional decimal years to month timestamps.
+
+    The gridded files encode time as ``year + (month - 0.5) / 12`` (mid-month
+    decimals, e.g. 2014.041666... = January 2014), the same convention as
+    :func:`src.cleaning.to_decimal_decades` in years instead of decades. xarray's
+    CF decoding cannot parse the ``"year A.D."`` unit, so the axis is decoded
+    here to first-of-month timestamps matching the pipeline's ``dt`` column.
+
+    Raises:
+        ValueError: if any value does not sit on the mid-month grid (e.g. a
+            start-of-month ``year + (month - 1) / 12`` axis).
+    """
+    arr = np.asarray(values, dtype=float)
+    years = np.floor(arr)
+    month_float = (arr - years) * 12.0 + 0.5
+    months = np.rint(month_float)
+    off_grid = np.abs(month_float - months) > 0.01
+    if off_grid.any():
+        raise ValueError(
+            f"{int(off_grid.sum())} time value(s) are not mid-month decimal "
+            f"years, e.g. {arr[off_grid][:3]}"
+        )
+    parts = pd.DataFrame(
+        {"year": years.astype(int), "month": months.astype(int), "day": 1}
+    )
+    return pd.DatetimeIndex(pd.to_datetime(parts))
 
 
 def nearest_cell_indices(
