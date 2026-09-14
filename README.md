@@ -1,299 +1,159 @@
-# Climate Inequality: Mapping Where Warming Hits Hardest
+# Climate inequality
 
-> Which regions are warming fastest — and is warming proportional to
-> emissions responsibility?
+Where has land warmed fastest since 1950, and how does that pattern line up with
+who is responsible for the emissions?
 
-**Status:** ✅ Complete and **deployed:
-[climate-inequality.streamlit.app](https://climate-inequality.streamlit.app/)**.
-The pipeline runs from the raw data through trend fitting, spatial
-interpolation, the emissions join, out-of-sample validation and explanatory
-variables to the headline **cross-country variance decomposition** — a
-group-level Shapley/LMG attribution over the frozen `SCHEMA_V1` feature
-contract. Design and scope boundary:
-[`docs/decomposition_design_memo.md`](docs/decomposition_design_memo.md);
-end-to-end reproduction: [`docs/reproducibility.md`](docs/reproducibility.md);
-results: [`docs/key_findings.md`](docs/key_findings.md) /
-[`docs/research_summary.md`](docs/research_summary.md); next-phase roadmap:
-[`docs/stability_roadmap.md`](docs/stability_roadmap.md) and
-[`docs/future_work.md`](docs/future_work.md).
+Live dashboard: [climate-inequality.streamlit.app](https://climate-inequality.streamlit.app/)
 
-*Originally proposed as an undergraduate research fellowship project (2022);
-rebuilt and substantially upgraded in 2026.*
+The project fits a warming trend to every Berkeley Earth city record, aggregates
+those trends to countries, and then asks three questions of the result:
 
-## Question
+1. **How is warming distributed across countries, and what structures it?**
+   A group-level Shapley (LMG) decomposition of the cross-country variance in
+   warming rate over four fixed axes: emissions responsibility, physical
+   geography, socioeconomic development, and population. With bootstrap and
+   leave-one-out stability checks.
+2. **Does warming track historical responsibility?** Rank correlation and a
+   Lorenz-style inequality coefficient between cumulative per-capita CO₂ and
+   warming rate, under station-, population- and area-weighted definitions of a
+   country's warming, cross-checked against ERA5 reanalysis.
+3. **Who is most vulnerable?** The same quantities stratified by World Bank
+   income group and by ND-GAIN vulnerability.
 
-Global warming is not geographically uniform. This project (1) quantifies
-per-city warming rates from 1950–2013 using the Berkeley Earth surface
-temperature dataset, (2) interpolates those rates into continuous spatial
-surfaces, and (3) tests whether the countries warming fastest are the ones
-most responsible for cumulative CO₂ emissions.
+A separate, deliberately isolated module fits the global mean temperature
+series to effective radiative forcings (a closed-form Bayesian AR(1) regression
+with an out-of-sample hindcast); it explains the global trajectory, not the
+cross-country pattern, and is never combined with the decomposition.
 
-## Methods
+Everything is descriptive. CO₂ is well mixed, so a country's own emissions do
+not preferentially heat its own territory; every statistic here measures how
+warming *aligns* with a country attribute, not what caused the warming.
 
-- **Data layer.** The 8.6M-row Berkeley Earth by-city CSV is ingested into
-  DuckDB with hemisphere-suffixed coordinates parsed to signed floats.
-  Because 18 same-named (City, Country) pairs exist at multiple grid
-  coordinates, every step keys on the full (City, Country, Latitude,
-  Longitude) identity — 3,510 city-locations. Analysis window: 1950-01 to
-  2013-09 (the dataset's end), where coverage is strong.
-- **Trends.** Monthly anomalies relative to each location's 1951–1980
-  monthly climatology (deseasonalization), gated on ≥90% non-null monthly
-  coverage, then a per-location Theil–Sen slope in °C/decade with a 95%
-  confidence interval (OLS fit alongside for comparison).
-- **Interpolation.** Inverse-distance weighting (own implementation, on
-  great-circle distances) vs ordinary kriging (pykrige, local k=30
-  neighborhoods under a single globally-fit variogram — a global kriging
-  system over 3,510 points is ill-conditioned). Methods are compared with
-  leave-*location*-out cross-validation, which holds out entire
-  same-coordinate groups: Berkeley Earth's grid-snapped coordinates would
-  otherwise leak bit-identical duplicate values into their own folds. IDW
-  wins (RMSE 0.0083 vs 0.0099 °C/decade) and renders the published surface,
-  masked to Natural Earth land polygons.
-- **Inequality analysis.** Per-country warming = unweighted mean of its
-  city-location trends (no city-population data in the project datasets —
-  see limitations). Emissions responsibility = cumulative production-based
-  CO₂ summed through 2013, divided by 2013 population (OWID). Relationship
-  quantified by Spearman rank correlation plus OLS of warming on log₁₀
-  emissions — pooled and with continent fixed effects — using HC1 robust
-  standard errors, so effects read as °C/decade per 10× emissions.
-- **Variance decomposition (the headline).** The cross-country variance in
-  country-mean warming trend is attributed to four *structural axes* —
-  emissions, geography, socioeconomic development, population — plus an
-  explicit residual, using a group-level LMG / Shapley-Owen R² decomposition
-  (each axis's incremental R² averaged over every ordering, so correlated
-  axes split their shared variance fairly rather than by entry order). The
-  axes are fixed by a frozen feature contract (`src/feature_schema.py`,
-  `SCHEMA_V1`); nothing outside the contract may enter a model. The shares are
-  **descriptive variance attribution, not causal climate attribution** — there
-  is deliberately no physical/driver layer (see the design memo's scope
-  boundary). This demotes the earlier single "emissions coefficient" to one
-  axis among several.
+## What the data say
 
-## Findings
+Numbers are from the committed `app/data/` bundle; see
+[`docs/findings.md`](docs/findings.md) for the full tables.
 
-**The headline: cross-country warming inequality is overwhelmingly geographic.**
-A group-level Shapley/LMG decomposition of the variance in country-mean warming
-trend (n = 154 countries, total R² = 0.63) attributes **46% of total variance
-to physical geography** (latitude foremost), **8% to emissions
-responsibility**, 6% to socioeconomic development and 4% to
-population/urbanization, leaving a **37% residual** that none of the four axes
-explains. Of the *explained* variance, geography is ≈72% and emissions ≈13%.
-Emissions' standalone R² is 0.13, but most of that overlaps geography once both
-are present — so the decomposition turns the latitude-vs-emissions confound
-into a *measured overlap* rather than a caveat. The shares are a descriptive
-variance attribution, **not** causal climate attribution (CO₂ is well-mixed; a
-country's emissions do not preferentially heat its own territory). Full numbers
-and interpretation: [`docs/key_findings.md`](docs/key_findings.md).
+- **Warming is universal but uneven.** All 3,510 city-locations warmed over
+  1950–2013 (land mean 0.146 °C/decade; 5th–95th percentile 0.06–0.25). Above
+  60°N the mean is 0.23 °C/decade; the fastest cluster is the Iranian plateau
+  and Central Asia, not the Arctic.
+- **Cross-country inequality is mostly geography.** Across 154 countries the
+  four axes explain 63% of the variance in country-mean warming; geography
+  takes 46 points of that, emissions 8, socioeconomic 6, population 4, and 37%
+  is unexplained. The residual is regionally clustered (Moran's I 0.33,
+  p = 0.005). Geography is the largest share in every one of 2,000 bootstrap
+  resamples.
+- **The station-based emissions–warming link is a sampling artefact.** With
+  each country's warming defined as the mean over its stations, warming rate
+  and cumulative per-capita CO₂ correlate at Spearman ρ = +0.36. Weighting
+  every square kilometre equally (a per-cell trend on the Berkeley Earth 1°
+  grid, cos-latitude weighted) collapses this to ρ = +0.01; the same
+  computation on ERA5 gives ρ = +0.12, also not significant. Stations sit
+  where people and infrastructure are, which happens to be where high emitters
+  warm fastest.
+- **Vulnerability runs the other way.** Responsibility rises steeply with
+  income (ρ = +0.89) and falls with ND-GAIN vulnerability (ρ = −0.88), while
+  area-weighted warming is flat across both (ρ = −0.15 and +0.02, neither
+  significant). Per resident, low-income countries warm slightly faster than
+  high-income ones (0.205 vs 0.182 °C/decade).
+- **The 1950–2013 trends underpredict what came after.** Against gridded
+  Berkeley Earth observations through 2024, the stored lines run 0.48 °C below
+  observed anomalies on average; refitting on the full record raises the mean
+  slope from 0.147 to 0.200 °C/decade.
+- **A forcing regression reproduces the global series.** Trained through 2013,
+  the physical model explains 91% of the annual variance and its 95% band
+  covers 10 of the 11 held-out years (2014–2024); the CO₂ sensitivity is
+  0.37 °C per W/m² (95% interval 0.06–0.68).
 
-**Warming is universal across the sample, but far from uniform.** Every one
-of the 3,510 city-locations shows a positive 1950–2013 trend, and for 99.1%
-of them the entire Theil–Sen 95% confidence interval sits above zero. The
-land mean is **0.146 °C/decade**; the middle half of locations spans
-0.11–0.18, and the tails differ by a factor of four (5th percentile 0.06,
-95th percentile 0.25 °C/decade).
+## How it is built
 
-**The fastest warming is at high northern latitudes — with a notable
-mid-latitude hotspot.** Mean trends rise with northern latitude: 0.10
-°C/decade in the northern tropics, 0.15 at 23.5–45°N, 0.21 at 45–60°N, and
-**0.23 °C/decade above 60°N — 1.56× the land mean**, the expected
-Arctic-amplification signature. (The textbook ~2× ratio is measured against
-the *land+ocean* global mean; a land-only baseline is itself elevated, which
-compresses the ratio, and only 25 stations sit above 60°N.) The single
-fastest-warming cluster is not Arctic, though: the Iranian plateau and
-Central Asia (Mashhad, Herat, Ashgabat — up to 0.34 °C/decade), alongside
-Siberia's Norilsk (0.33). The slowest warming is along the southern coast
-of China (~0.02–0.03 °C/decade).
-
-**Countries with greater historical emissions responsibility warm faster.**
-Across 157 countries, country-mean warming correlates positively with
-cumulative per-capita CO₂ through 2013 (Spearman ρ = +0.36, p ≈ 4×10⁻⁶).
-The top emissions quartile warmed 0.196 °C/decade on average against 0.149
-in the bottom quartile. Regressing warming on log₁₀ emissions gives
-**+0.021 °C/decade per tenfold increase in cumulative per-capita CO₂**
-(95% CI [+0.013, +0.029], HC1 robust SEs) pooled, and **+0.029** (95% CI
-[+0.014, +0.045], p = 2×10⁻⁴, R² = 0.27) with continent fixed effects —
-the relationship holds *within* continents, not just between them.
-
-**Interpretation: this is geography, not local retribution.** CO₂ is
-well-mixed, so a country's own emissions do not preferentially heat its own
-territory. The association arises mostly because historically high-emitting
-industrialized countries sit at the mid-to-high northern latitudes where
-amplification is strongest, while the lowest cumulative emitters (Burundi:
-0.9 t/person, vs ~1,180 t/person for the US and UK — a 1,300-fold range)
-cluster in the slower-warming tropics. Continent fixed effects absorb part,
-but not all, of that latitude confound. The honest headline is therefore:
-**the countries most responsible for cumulative emissions are not escaping
-warming — if anything their territories warm faster in annual-mean terms —
-yet the temperature trend alone understates climate inequality**, because
-impacts scale with heat exposure, vulnerability, and adaptive capacity,
-which concentrate in low-emitting tropical countries (see Limitations and
-`docs/future_work.md`).
-
-**A methodological finding worth keeping:** naive leave-one-out CV reverses
-the interpolation-method ranking. Berkeley Earth's grid-snapped coordinates
-put 2,821 of the 3,510 locations into 677 shared-coordinate groups; with
-plain row-wise folds, a held-out point's coordinate twin stays in the
-training set and leaks a near-exact answer (IDW RMSE 0.0057 vs kriging
-0.0160 °C/decade — a property of the duplicates, not the methods). Holding
-out entire coordinate groups removes the leak and most of the gap (0.0083
-vs 0.0099); IDW still wins, but narrowly and for honest reasons.
-
-## Dashboard
-
-**Live at [climate-inequality.streamlit.app](https://climate-inequality.streamlit.app/).**
-
-Streamlit app in two sections. **Decomposition** (the headline): the
-inequality-decomposition page — Gini/Theil of country warming, the Shapley
-variance-share bar, and an emissions-only / geography-only / full-model
-explorer; the country warming map; a "How confident are we?" panel showing the
-decomposition's own stability — bootstrap 95% CIs on the Shapley shares
-(geography is the largest axis in 100% of country bootstrap resamples),
-leave-one-country-out influence per share, and Moran's I on the model residual
-(I ≈ 0.33, p = 0.005 — the 37% residual is regionally clustered, not noise; see
-`docs/stability_roadmap.md`); and a
-**Responsibility vs impact** page (Layer 3) comparing each country's emissions
-responsibility against its warming exposure — Spearman ρ, the Lorenz/Gini
-inequality coefficient, and the mismatch leaders. Three **PCS v2** lenses extend
-it: a **consumption-based** responsibility view (emissions counted where goods
-are consumed, window-matched to OWID's 1990+ consumption series), a
-**people-weighted exposure** view that re-weights each country's warming by where
-its residents actually live (population sampled from the SEDAC **GPW v4**
-15-arc-minute grid at each city-location's coordinates), and an **area-weighted
-exposure** view computed off the Berkeley Earth 1°×1° grid (cos-latitude-weighted,
-so every km² of land counts equally). A toggle switches the Lorenz curve and
-inequality coefficient between **Station-Based**, **People-Weighted**, and
-**Area-Weighted**; a rank-shift view flags the countries whose exposure ranking
-moves most. The area-weighted lens overturns the headline — the
-warming↔responsibility coupling collapses (Spearman ρ **+0.36 → +0.01**) once land
-area is weighted honestly rather than station density — a result **independently
-confirmed against ERA5 reanalysis**
-([`docs/era5_validation_results.md`](docs/era5_validation_results.md)). A
-**Who suffers, not who warms** page then stratifies that de-artifacted exposure by
-**World Bank income group** (an ordinal stratifier, *not* a new PCS projection): the
-*triple inequality* holds — responsibility climbs steeply with income (ρ **+0.885**)
-while area-weighted warming stays flat (ρ **−0.145**, n.s.) and, per person, the
-**poorest countries warm the most** (+0.205 vs +0.182 °C/decade). A second,
-**ND-GAIN vulnerability** axis measures "adapt least" directly (not by income proxy):
-responsibility **falls** with vulnerability (ρ **−0.882**) while warming stays flat
-(ρ **+0.02**, n.s.), confirming the triple inequality across 155 countries
-([`docs/vulnerability_results.md`](docs/vulnerability_results.md)).
-**Foundations** (how the inputs were built): the interpolated warming surface
-with a city-station toggle; a city explorer (any location's anomaly series and
-fitted trend); the emissions-vs-warming scatter; an out-of-sample validation
-page (did the 1950–2013 trends hold post-2013?, which also carries the independent
-**ERA5 reanalysis cross-check** of the area-weighted lens); and a drivers page
-(what explains where warming is fastest?). A fixed interpretation banner on every
-page states the variance-attribution-only boundary.
-
-```bash
-uv run streamlit run app/streamlit_app.py
+```
+Berkeley Earth city CSV ─► DuckDB ─► monthly anomalies ─► Theil–Sen trend per city-location
+                                                              │
+        ┌─────────────────────────────────────────────────────┼──────────────────┐
+        ▼                                                     ▼                  ▼
+  IDW / kriging surface                     country means (station / people / area weighted)
+  (leave-location-out CV)                                     │
+                                       OWID CO₂ + population, continents, income groups, ETOPO,
+                                       Köppen, GPW population + national-identifier grids
+                                                              │
+                              ┌───────────────────────────────┼─────────────────────────┐
+                              ▼                               ▼                         ▼
+                 Gini / Theil + Shapley decomposition   responsibility–impact         income and
+                 + bootstrap / jackknife / Moran's I    coupling (3 weightings,        ND-GAIN
+                                                        consumption lens, ERA5)       strata
+                                                              │
+GISTEMP + AR6 ERF + ONI ─► forcings table ─► AR(1) ridge regression ─► hindcast
+                                                              │
+                                          app/data/ bundle (≈5 MB, committed) ─► Streamlit
 ```
 
-The app reads only the committed `app/data/` bundle (~5 MB, built by
-`uv run python -m src.app_assets`), so it runs identically on a fresh
-clone and on Streamlit Community Cloud — no raw-data download needed.
+Each stage is a module under `src/` with a `python -m src.<module>` entry
+point; every published number is produced by tested code, and the bundle
+builder refuses to publish from a stale or inconsistent pipeline state. The
+methods, parameters and integrity checks are documented in
+[`docs/reproducibility.md`](docs/reproducibility.md); the scientific rationale
+for the decomposition is in
+[`docs/decomposition_design_memo.md`](docs/decomposition_design_memo.md).
 
-**Deployment:** the app is deployed from `it-malek/climate-inequality`,
-branch `main`, main file path `app/streamlit_app.py`, Python 3.11. The
-cloud environment installs `app/requirements.txt` (the dependency file in
-the entrypoint's directory takes precedence over root-level files) and
-redeploys automatically on push to `main`.
+## Running it
 
-## Limitations
-
-- **Station sampling bias.** Trends exist only where Berkeley Earth has
-  city series: dense in populous mid-latitudes, sparse over the Arctic
-  (25 locations >60°N), the Sahara, Amazonia, and Siberia. The default
-  country mean is **station-weighted** (each city-location counts equally);
-  the Layer 3 **people-weighted exposure** lens additionally re-weights by
-  population sampled from the SEDAC GPW v4 grid at each location's coordinates
-  (population counts used directly — no cos-latitude bias), so the headline can
-  be read either way.
-- **Land-only, ending September 2013 (analysis window).** Ocean warming is
-  absent (which is also why the Arctic ratio reads 1.56× rather than the
-  canonical ~2×). Post-2013 Berkeley Earth gridded data is used in Phase 6
-  to validate the fitted trends; warming has accelerated beyond what the
-  1950–2013 lines forecast (see the "Did the trends hold?" dashboard page).
-- **Grid-snapped coordinates.** Multiple cities share identical lat/lon,
-  and (City, Country) is not a unique key; the pipeline keys on the full
-  coordinate identity and the CV holds out whole coordinate groups, but
-  the underlying location precision is still ~1°.
-- **Measurement uncertainty not propagated.** The dataset's
-  `AverageTemperatureUncertainty` column is not used to weight the trend
-  fits; early-window months are noisier than recent ones.
-- **Emissions accounting choices.** Responsibility = cumulative
-  *production-based, territorial* CO₂ — no consumption-based correction
-  for traded goods, no land-use-change CO₂, no non-CO₂ gases — divided by
-  *2013* population, which understates the historical responsibility of
-  countries whose populations have since grown slowly (and vice versa).
-  Puerto Rico and Réunion drop out (no OWID series; 157 of 159 countries
-  matched).
-- **Correlation, not attribution.** Warming at any location is driven by
-  global forcing plus regional dynamics, not by that country's own
-  emissions; the latitude/industrialization confound is only partially
-  absorbed by continent fixed effects. The regression describes who
-  experiences faster warming, not what caused it locally.
-- **Smooth surfaces.** The IDW surface (k=30, 2° grid) understates local
-  variability between stations, and the CV RMSE measures how well the
-  *trend field* interpolates — not the accuracy of the trends themselves.
-
-## Future work
-
-A prioritized roadmap lives in [`docs/future_work.md`](docs/future_work.md). The
-out-of-sample validation (Phase 6), the Layer 1 physical-drivers model, the
-stability layer, and the Layer 3 PCS v2 lenses (consumption-based responsibility,
-people-weighted exposure on GPW v4, **area-weighted gridded warming** on the
-Berkeley Earth 1°×1° product) plus Lorenz/Gini framing are all built. The
-area-weighted lens (v1.2) closed the project's main external-validity gap (station
-sampling bias) and overturned the headline — the warming↔responsibility coupling
-collapses (Spearman ρ +0.36 → +0.01) once every km² counts equally — and that
-result has since been **independently confirmed against ERA5 reanalysis**
-([`docs/era5_validation_results.md`](docs/era5_validation_results.md)): the collapse
-holds on both products. Still ahead: extreme-heat (vs mean) inequality via
-GHCN-Daily, an exposure × vulnerability (ND-GAIN) join, and gradient-boosted trees
-+ SHAP vs the Phase 7 OLS.
-
-## Reproducing
+The dashboard and the test suite need no data download: the app reads only the
+committed bundle, and the tests run on synthetic fixtures.
 
 ```bash
 uv sync --extra dev
-uv run pytest    # no data needed — tests run on synthetic fixtures
-uv run ruff check src tests app
-
-# Build the data layer (public Kaggle datasets, no credentials needed):
-uv run python -c "from src.data_io import download_raw_data; download_raw_data()"
-uv run python -c "from src.data_io import load_city_temperatures, city_csv_path; load_city_temperatures(city_csv_path())"
-
-# Pipeline modules (each prints its sanity checks):
-uv run python -m src.trends         # city_trends.parquet
-uv run python -m src.interpolate    # outputs/trend_surface.html
-uv run python -m src.emissions      # country_inequality.parquet + scatter
-uv run python -m src.validation     # data/processed/validation_*.{json,parquet}
-uv run python -m src.explain        # city_features.parquet + explain_*.{json,parquet}
-uv run python -m src.feature_schema # regenerate docs/feature_schema_v1.yaml mirror
-uv run python -m src.inequality     # inequality_summary.json (Gini/Theil)
-uv run python -m src.decomposition  # decomposition_summary.json (Shapley/LMG)
-uv run python -m src.pcs            # regenerate docs/pcs_v1.yaml (PCS v1 registry mirror)
-uv run python -m src.projections    # projections_v1.parquet (PCS v1 instantiation)
-uv run python -m src.coupling       # coupling_summary.json + coupling.parquet (Layer 3)
-uv run python -m src.app_assets     # app/data/ bundle — folds in ALL of the above
-
+uv run pytest -q
 uv run streamlit run app/streamlit_app.py
 ```
 
-`src.app_assets` is the single bundle builder: it recomputes the trends,
-interpolation and inequality assets *and* (when the upstream `city_features`
-and income inputs exist) the headline `inequality_summary.json` and
-`decomposition_summary.json`, so one `python -m src.app_assets` regenerates the
-entire committed `app/data/` bundle.
+Rebuilding the bundle from the raw sources takes a few hours of downloads and
+computation; the step-by-step sequence is in
+[`docs/reproducibility.md`](docs/reproducibility.md).
 
-The dashboard bundle is committed, so the app (and its tests) work without
-any of the above data steps. On a fresh machine, start with
-`docs/new_machine_setup.md`.
+## Documentation
+
+| Document | What it covers |
+|----------|----------------|
+| [`docs/findings.md`](docs/findings.md) | Results, with the numbers behind every claim above |
+| [`docs/reproducibility.md`](docs/reproducibility.md) | Data sources, pipeline stages, parameters, determinism and integrity checks |
+| [`docs/decomposition_design_memo.md`](docs/decomposition_design_memo.md) | Why a variance decomposition, why these axes, what it can and cannot support |
+| [`docs/stability.md`](docs/stability.md) | Bootstrap, leave-one-out and spatial diagnostics on the decomposition |
+| [`docs/era5_validation_results.md`](docs/era5_validation_results.md) | The area-weighting result re-tested on ERA5 reanalysis |
+| [`docs/vulnerability_results.md`](docs/vulnerability_results.md) | Income and ND-GAIN stratification |
+| [`docs/physical_model.md`](docs/physical_model.md) | The forcing regression: model, fit, hindcast |
+| [`docs/future_work.md`](docs/future_work.md) | Open questions and known gaps |
+
+## Limitations
+
+- **Station sampling.** Trends exist only where Berkeley Earth has city
+  records: dense in the populated mid-latitudes, sparse over the Arctic,
+  Sahara, Amazon and Siberia. This is the single largest caveat on the
+  station-based results and the reason the area-weighted lens exists.
+- **Land only, monthly means, ending September 2013.** Ocean warming, heat
+  extremes and the post-2013 acceleration are outside the trend fits (the
+  validation stage measures the last of these).
+- **Coordinates are grid-snapped to about 1°**, so 18 same-named city pairs
+  share coordinates with other cities; the pipeline keys on the full
+  (city, country, latitude, longitude) identity and the interpolation CV holds
+  out whole coordinate groups.
+- **Responsibility is production-based cumulative CO₂ per 2013 resident.** No
+  land-use change, no non-CO₂ gases, and a population basis that flatters
+  countries whose populations grew late. A window-matched consumption-based
+  variant is provided for 114 countries.
+- **Measurement uncertainty is not propagated** into the trend fits.
+- **Correlation, not attribution.** The physical model explains the global
+  mean; the decomposition and coupling describe cross-country alignment. Neither
+  identifies a causal effect of a country's emissions on its own warming.
 
 ## Data
 
-- [Berkeley Earth — Climate Change: Earth Surface Temperature Data](https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data)
-- [Our World in Data — CO₂ and Greenhouse Gas Emissions](https://github.com/owid/co2-data) (production- and consumption-based CO₂)
-- [SEDAC — Gridded Population of the World (GPW) v4.11, UN WPP-adjusted population count](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4) (15-arc-minute; people-weighted exposure)
-- [Natural Earth — 110m land polygons](https://www.naturalearthdata.com/downloads/110m-physical-vectors/) (land mask)
+- [Berkeley Earth: Climate Change — Earth Surface Temperature Data](https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data) (Kaggle) and the [Berkeley Earth 1°×1° gridded land product](https://berkeleyearth.org/data/)
+- [Our World in Data: CO₂ and Greenhouse Gas Emissions](https://github.com/owid/co2-data), continents, and the World Bank income classification
+- [SEDAC GPW v4.11](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4) population count and national identifier grids
+- [ETOPO 2022](https://www.ncei.noaa.gov/products/etopo-global-relief-model) elevation, [Beck et al. 2018](https://www.gloh2o.org/koppen/) Köppen–Geiger classes, [Natural Earth](https://www.naturalearthdata.com/) land polygons
+- [ND-GAIN Country Index](https://gain.nd.edu/our-work/country-index/), [NASA GISTEMP v4](https://data.giss.nasa.gov/gistemp/), [Forster et al. ERF time series](https://github.com/ClimateIndicator/forcing-timeseries), [NOAA ONI](https://www.cpc.ncep.noaa.gov/data/indices/), [ERA5](https://cds.climate.copernicus.eu/) (optional cross-check)
+
+The project began as a 2022 undergraduate research proposal to map warming
+from the Berkeley Earth city data; the current pipeline was built in 2026.

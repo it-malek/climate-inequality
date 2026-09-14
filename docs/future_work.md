@@ -1,145 +1,49 @@
-# Future work
+# Open questions
 
-Concrete next steps, roughly in order of value-for-effort. Each item names
-the data it needs and the question it answers; none requires restructuring
-the existing pipeline — they extend it.
+Items are ordered roughly by value for effort. None requires restructuring the
+pipeline; each extends it.
 
-## 1. Validate the fitted trends out of sample (Phase 6, highest value)
+## Data
 
-> ~~**Built** — `src/validation.py` + the "Did the trends hold?" dashboard page;
-> the 1950–2013 lines *underpredict* (full-record land slope 0.200 vs fitted 0.147
-> °C/decade, Δ +0.053, mean post-2013 residual +0.48 °C — warming accelerated).~~
-> ✅ shipped. The remaining upgrade below is still open.
+- **ERA5 cell-level disagreement.** The Berkeley and ERA5 area-weighted country
+  rankings agree only at ρ = 0.62. Mapping where the two products disagree at
+  the cell level would locate station inhomogeneities and reanalysis biases;
+  the per-cell slopes already exist in memory during the ERA5 cross-check.
+- **Extreme heat, not mean warming.** Monthly means hide heat extremes, and
+  tropical countries sit closer to physiological thresholds. GHCN-Daily would
+  support an extreme-heat-days outcome; it is large and not in the repository,
+  so storage and download need scoping first.
+- **Urban heat island.** These are city series. Comparing against Berkeley
+  Earth's rural-only flagged stations would bound how much of the
+  0.146 °C/decade station mean is urban rather than climatic.
+- **Measurement uncertainty.** The `AverageTemperatureUncertainty` column is
+  unused. Weighted fits, or a check that early-window noise does not bias the
+  Theil–Sen slopes, would close a documented limitation.
 
-The dataset ends September 2013, so every trend here is a *backcast*. The
-strongest possible upgrade is to test them against the twelve years of
-observations that now exist:
+## Method
 
-- **Data:** Berkeley Earth's current station/city series
-  ([berkeleyearth.org/data](https://berkeleyearth.org/data/), updated
-  monthly) or NOAA GHCN-M v4. Both overlap the Kaggle snapshot's cities.
-- **Method:** extend each city's anomaly series through ~2025 (same
-  1951–1980 climatology), then ask two questions per location:
-  (a) *Does the 1950–2013 Theil–Sen line predict 2014–2025 anomalies?*
-  (forecast residuals vs the fit's CI); (b) *Has the trend accelerated?*
-  (refit on the full window, compare slopes; 2015–16 and 2023–24 El Niño
-  years will dominate, so report both with and without ENSO adjustment).
-- **Expected story:** global land warming has accelerated post-2013, so the
-  fitted lines should systematically *underpredict* — a finding in itself,
-  and an honest stress test of the whole pipeline.
+- **Construction sensitivity for the decomposition.** Median instead of mean
+  aggregation of city slopes, alternative cutoff years, total instead of
+  per-capita emissions, and area-weighted country warming as the outcome
+  (the area-weighted column exists; the decomposition has only been run on the
+  station mean).
+- **Spatially honest inference for the legacy coefficient.** Conley standard
+  errors and a spline latitude control were prototyped on an abandoned branch
+  but never shipped; the decomposition sidestepped the need, but a reader
+  comparing with the single-coefficient literature would want them.
+- **Era-weighted responsibility.** Cumulative emissions divided by the
+  population of the emitting era rather than by 2013 population.
+- **Within-country inequality.** The per-city trends allow a within- versus
+  between-country variance split; which countries contain both fast- and
+  slow-warming regions?
+- **Kriging refinements.** Anisotropic variograms and a nugget fixed from
+  measurement uncertainty would make the interpolation comparison fairer
+  before IDW is declared the winner.
+- **Rolling-window trends.** Piecewise or 30-year rolling Theil–Sen fits would
+  map where warming is accelerating, not just where it is fast.
 
-## 2. Better warming data
+## Physical model
 
-All three items in this section have shipped:
-
-- ~~**Berkeley Earth 1°×1° gridded area-weighted lens (v1.2)**~~ ✅ shipped — true
-  **cos(latitude)** area-weighted country means off the gridded field, cells assigned
-  via the GPW national-identifier band; ships as `impact_index_area_weighted` in the
-  PCS v2 registry. cos(lat) is REQUIRED (a trend is an *intensive* field — the exact
-  mirror of the GPW population-**count** rule). Collapsed the warming↔responsibility
-  coupling ρ +0.36 → +0.01 (`src/area_weighting.py`).
-- ~~**ERA5 reanalysis 2 m temperature cross-check**~~ ✅ shipped — independent re-test
-  of that collapse on a model-assimilated field with no station gaps (same operator,
-  window and cos(lat); only the data source differs). **The collapse holds**: the
-  significant station coupling (ρ +0.364) is non-significant under both products after
-  area-weighting (Berkeley ρ +0.011 p=0.89; ERA5 ρ +0.118 p=0.15) and the Gini rise
-  reproduces. Kept as a cross-check artifact, *not* a PCS projection (`PCS_V2` stays
-  at six). `src/era5_weighting.py` + `src/era5_validation.py`; full result in
-  [`docs/era5_validation_results.md`](era5_validation_results.md).
-- ~~**Population weighting** (Layer 3 exposure lens)~~ ✅ shipped — SEDAC **GPW v4.11**
-  population-*count* weighting (`src/population.py`); counts used directly, **no
-  cos(lat)** (an extensive count already embeds meridian convergence).
-
-- **ERA5 cell-level disagreement** (still open): where ERA5 and Berkeley disagree at
-  the *cell* level, station inhomogeneities are suspect — a finer-grained follow-on
-  to the country-level cross-check above.
-
-## 3. Better inequality metrics
-
-The current metric (country warming vs cumulative per-capita CO₂) measures
-*who warms*, not *who suffers*. Variants that sharpen the question:
-
-- ~~**Consumption-based emissions** (Layer 3 consumption lens, PCS v2)~~ ✅ shipped —
-  OWID `consumption_co2`, window-matched production-vs-consumption cumulatives.
-- ~~**Lorenz/Gini framing**~~ ✅ shipped — cumulative warming-exposure (station- or
-  people-weighted) vs emissions-responsibility share + the Gini-style coefficient on
-  the Layer 3 page.
-- ~~**Exposure × vulnerability** (income-first)~~ ✅ shipped — World Bank income
-  groups as an ordinal **stratifier** (not a PCS projection; `PCS_V2` stays frozen)
-  over the existing station/people/area exposure and responsibility columns
-  (`src/vulnerability.py`). The *triple inequality* **holds** under the de-artifacted
-  area lens: responsibility climbs steeply with income (ρ +0.885, perm p=0.001) while
-  area-weighted warming is flat/non-significant (ρ −0.145, perm p=0.06), and
-  per-person the **poorest tier warms the most** (+0.205 vs +0.182 °C/decade for
-  high income). Significance via a deterministic label-permutation test (the honest
-  ordinal small-stratum tool; Conley §5 is orthogonal — it targets the continuous
-  OLS slope, not a rank statistic). Full result in
-  [`docs/vulnerability_results.md`](vulnerability_results.md).
-- ~~**Exposure × vulnerability** (ND-GAIN, the direct axis)~~ ✅ shipped — the
-  **ND-GAIN Country Index** *vulnerability* score added as a **continuous** second
-  stratifier in the same lens (joined via the OWID→ISO3 bridge; vendored slim CSV via
-  `scripts/fetch_ndgain.py`). Measures "adapt least" directly: across 155 countries
-  responsibility **falls** steeply with vulnerability (ρ −0.882, perm p=0.001) while
-  area-weighted warming is flat (ρ +0.019, n.s.) — the direct triple inequality holds,
-  more cleanly than the income proxy. Readiness is the secondary axis.
-- **Era-weighted responsibility:** divide cumulative emissions by
-  population *of the emitting era* (e.g., population-year-weighted), not
-  2013 population — fairer to fast-growing countries.
-- **Degrees per benefit:** warming experienced per unit of cumulative GDP
-  generated by fossil energy — the "who got the upside" framing.
-
-## 4. New questions this data can spotlight
-
-- **Extremes vs means — follow-on epic (after the gridded v1.2).** Monthly means
-  hide heat extremes. With daily data (GHCN-Daily), is inequality in *extreme-heat
-  days* larger than in mean warming? (Almost certainly yes — tropical countries sit
-  closer to physiological thresholds.) NOTE: GHCN-Daily is **not in-repo** and is
-  large — scope the download/storage first; lower priority than the zero-friction
-  gridded epic above.
-- **Within-country inequality:** the per-city trends already exist —
-  variance decomposition of warming within vs between countries; which
-  countries contain both fast- and slow-warming regions?
-- **The Iranian-plateau hotspot:** the fastest-warming cluster in the data
-  (≈0.32–0.34 °C/decade around 31–38°N in Iran/Central Asia) is a real,
-  documented semi-arid amplification signal — worth a focused writeup
-  (aridity feedback, Caspian influence, station quality?).
-- **Urban heat island contamination:** these are *city* series. Compare
-  city trends against Berkeley Earth's rural-only flagged series to bound
-  how much of the 0.146 °C/decade is UHI rather than climate.
-- **Trend acceleration:** piecewise or rolling-window Theil–Sen (e.g.,
-  30-year windows) to map *where* warming is accelerating, not just where
-  it is fast.
-
-## 5. Method upgrades
-
-- **Uncertainty-weighted fits:** use `AverageTemperatureUncertainty` as
-  weights (weighted least squares alongside Theil–Sen) — currently a
-  documented limitation.
-- **Spatially-honest regression:** country warming observations are
-  spatially correlated, so HC1 SEs are optimistic; add a latitude term and
-  Conley (spatial HAC) standard errors, or fit a spatial error model.
-- **Temporal surfaces:** the original 2022 proposal imagined interpolated
-  temperature *over time*; an animated decade-by-decade anomaly surface
-  (same IDW machinery, one frame per decade) would close that loop and
-  make a striking dashboard page.
-- **Kriging refinements:** anisotropic variograms (E–W correlation lengths
-  exceed N–S in temperature fields) and a nugget fixed from measurement
-  uncertainty would make the kriging comparison fairer before declaring
-  IDW the winner.
-
-## 6. Layer 1 — physical-drivers model (a new layer)
-
-> ~~**Built** — `src/physical_model.py` + `src/forcings.py` produce `forcings.parquet`,
-> `physical_trajectory.parquet` and `physical_summary.json`, wired into the bundle and
-> dashboard (train R² 0.91, hindcast band coverage 91%, AR(1) ρ ≈ 0).~~ ✅ shipped.
-
-A genuinely *physical* layer: global mean temperature as a response to radiative
-forcings (CO₂/CH₄/N₂O/aerosol/volcanic/solar) plus ENSO, fit as a closed-form
-Bayesian linear state-space model with AR(1) inertia and hindcast validation. It is
-specified in the `climate-inequality-instructions` repo (`03-models.md`,
-`07-data-schemas.md`) and *extends* rather than
-restructures the pipeline (layers never merge; artifact-only communication). The
-toolchain decision for that build — **Python (NumPy/SciPy) at the core, statsmodels as a
-test-time cross-check, Wolfram as a design-time symbolic oracle; Julia and the
-climate-emulator stack rejected for the specified model** — is recorded in
-[`docs/l1_toolchain_survey.md`](l1_toolchain_survey.md).
+- Alternative forcing vintages and an explicit test of the fixed one-year lag.
+- A two-box energy-balance variant as a separate artifact, if a physical
+  simulator is ever wanted alongside the regression.

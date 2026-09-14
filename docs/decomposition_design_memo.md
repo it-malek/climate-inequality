@@ -1,10 +1,10 @@
-# Design memo: variance attribution of global warming inequality
+# Design memo: variance attribution of warming inequality
 
-**Status:** design document. Pairs with the frozen feature contract in
-`src/feature_schema.py` (`SCHEMA_V1`, *candidate* maturity) and governs the
-`src/inequality.py` and `src/decomposition.py` modules (now implemented).
-**Audience:** anyone reading or extending the decomposition. **Author/date:**
-2026-06-18.
+Written in June 2026 while the decomposition was being built. It pairs with
+the feature contract in `src/feature_schema.py` (`SCHEMA_V1`) and governs
+`src/inequality.py` and `src/decomposition.py`. Results are in
+[`findings.md`](findings.md); the stability diagnostics it calls for are in
+[`stability.md`](stability.md).
 
 ---
 
@@ -87,8 +87,9 @@ The candidate outcomes, and why we rank them:
    between-/within-continent split, which we will report alongside the
    regression-based decomposition as an independent cross-check.
 4. **Population-weighted heat *exposure* or extreme-heat trends** — the
-   policy-relevant impact outcomes. **Out of scope** for v1: we lack city
-   populations and daily data. Flagged in §7 as the main external-validity gap.
+   policy-relevant impact outcomes. Out of scope for the decomposition itself;
+   population- and area-weighted country warming were later added as separate
+   lenses in the coupling stage, and extreme heat remains open.
 
 So two outcomes coexist by design: a **scalar inequality measure** of the
 country trends (the headline "how unequal"), and the **per-country trend** as
@@ -191,8 +192,8 @@ Three properties make this the right tool and bound its interpretation:
 - A measure of how much the emissions and geography axes *overlap*, making the
   latitude/industrialization confound a measured quantity rather than a caveat.
 - The size of the **residual** share, i.e. how much country warming inequality
-  our four axes leave unexplained — and (via the stability layer) whether that
-  residual is spatially structured.
+  our four axes leave unexplained — and (via the stability diagnostics) whether
+  that residual is spatially structured.
 
 **Cannot support:**
 - **Causal claims.** Nothing here identifies a causal effect of emissions,
@@ -214,7 +215,9 @@ Three properties make this the right tool and bound its interpretation:
    series — dense mid-latitudes, sparse Arctic/Sahara/Amazonia/Siberia. Country
    means are station-weighted, not area- or population-weighted. This can bias
    both the inequality magnitude and every axis share; it is the single largest
-   threat.
+   threat. (The coupling stage later showed how large: the station-based
+   emissions–warming correlation disappears under area weighting. The
+   decomposition has not been re-run on the area-weighted outcome.)
 2. **Collinearity of the axes.** Emissions, latitude, and income are strongly
    correlated. Shapley handles this *fairly* (it is the reason we use it) but
    cannot *separate* what is genuinely entangled: a dominant geography share
@@ -230,14 +233,14 @@ Three properties make this the right tool and bound its interpretation:
    `cum_co2_total` is offered alongside per-capita to bound this.
 6. **Residual spatial autocorrelation.** Country residuals are likely spatially
    dependent; naive SEs overstate precision. The decomposition (R² shares) is
-   less affected than coefficient inference, but the stability layer must
-   measure this (Moran's I / Conley HAC) before any share is trusted as
-   precise.
+   less affected than coefficient inference, but the stability diagnostics
+   must measure this (Moran's I, block bootstrap) before any share is trusted
+   as precise.
 7. **Construction choices.** Unweighted vs population/area-weighted country
    means; mean vs median aggregation of city slopes; cutoff year; Köppen and
    elevation sampled at ~1° grid-snapped coordinates. Each is a researcher
-   degree of freedom the stability layer will perturb; a share that moves under
-   these is a finding, not a nuisance.
+   degree of freedom; a share that moves under these is a finding, not a
+   nuisance. Only the weighting choice has been explored so far.
 
 **Leading alternative explanation to keep in view:** the entire cross-country
 warming inequality may be *physically* structured (latitude/land/ocean), with
@@ -249,11 +252,10 @@ when (especially when) the emissions share turns out to be small.
 
 ## 8. Expected findings / hypotheses
 
-These are *pre-registered priors*, stated before running the decomposition so
-that a result matching them is not mistaken for a result engineered to match
+Expectations written down at design time, before the shares were inspected,
+so that a result matching them is not mistaken for one engineered to match
 them. They are predictions about a **descriptive** decomposition; none is a
-causal hypothesis. We will report where the data confirm, contradict, or leave
-them undetermined.
+causal hypothesis. How each fared is recorded in [`findings.md`](findings.md).
 
 - **H1 — warming inequality is real but moderate.** The Gini of country-mean
   warming trends is well above zero but far below income-style inequality
