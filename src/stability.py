@@ -28,7 +28,7 @@ sensitivity page (``app/views/sensitivity.py``) renders:
 Contract: the input is the schema-named design from
 :func:`src.decomposition.build_country_design`, so the layer never sees a feature
 outside :data:`SCHEMA_V1`; the schema is perturbed in *sampling*, never in
-membership. See ``docs/stability_roadmap.md`` for the full blueprint.
+membership. See ``docs/stability.md``.
 """
 
 from __future__ import annotations
