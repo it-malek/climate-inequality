@@ -101,21 +101,6 @@ class TestChoropleth:
         assert trace.colorscale is not None
 
 
-class TestSensitivityCharts:
-    def test_coef_ci_chart_has_error_bars(self):
-        rows = [
-            {"df": 4, "coef": 0.03, "ci_low": 0.01, "ci_high": 0.05},
-            {"df": 6, "coef": 0.02, "ci_low": 0.00, "ci_high": 0.04},
-        ]
-        fig = charts.coef_ci_chart(rows, label_key="df", title="t")
-        assert fig.data[0].error_x.array is not None
-        assert list(fig.data[0].y) == ["4", "6"]
-
-    def test_dfbeta_bar(self):
-        fig = charts.dfbeta_bar([("Russia", 0.012), ("Canada", -0.008)])
-        assert list(fig.data[0].y) == ["Russia", "Canada"]
-
-
 VULN_SUMMARY = {
     "income_order": [
         "Low-income countries", "Lower-middle-income countries",

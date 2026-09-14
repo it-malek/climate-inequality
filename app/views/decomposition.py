@@ -13,9 +13,9 @@ import streamlit as st
 from app import charts, loaders, theme
 
 _NOT_BUILT = (
-    "The decomposition bundle has not been built yet. Run `python -m "
-    "src.inequality` and `python -m src.decomposition`, then copy their "
-    "`*_summary.json` into `app/data/`."
+    "The decomposition summaries have not been built yet. They need the city "
+    "features and income table; run `python -m src.explain` and then rebuild the "
+    "bundle (`python -m src.app_assets`)."
 )
 
 _VIEW_OPTIONS = {
@@ -42,7 +42,7 @@ _VIEW_CAPTION = {
 
 def render() -> None:
     """Render the warming-inequality decomposition dashboard."""
-    st.title("Global Warming Inequality Decomposition")
+    st.title("Warming inequality decomposition")
 
     ineq = loaders.load_inequality_summary()
     decomp = loaders.load_decomposition_summary()
@@ -143,7 +143,7 @@ def render() -> None:
                 f"· features used: `{', '.join(decomp['group_features'].get(key, []))}`"
             )
 
-    with st.expander("✅ What this can say · ❌ what it cannot"):
+    with st.expander("What this can and cannot say"):
         st.markdown(
             "**It can say** how unequally observed warming is distributed across "
             "countries, and how much that inequality *aligns* with each kind of "
