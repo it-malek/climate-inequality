@@ -142,51 +142,6 @@ def warming_choropleth(df: pd.DataFrame) -> go.Figure:
     return theme.apply_base_layout(fig, margin={"l": 0, "r": 0, "t": 10, "b": 0})
 
 
-def coef_ci_chart(
-    rows: list[dict],
-    label_key: str,
-    title: str,
-    color: str | None = None,
-) -> go.Figure:
-    """Horizontal coefficient ± 95% CI chart (one row per spec).
-
-    Shared by the GAM df-sensitivity and the HC1-vs-Conley comparison. Each
-    ``row`` needs ``coef``, ``ci_low``, ``ci_high`` and the field named by
-    `label_key`.
-    """
-    labels = [str(r[label_key]) for r in rows]
-    coefs = [float(r["coef"]) for r in rows]
-    lo = [float(r["ci_low"]) for r in rows]
-    hi = [float(r["ci_high"]) for r in rows]
-    color = color or theme.group_color("emissions")
-
-    fig = go.Figure(
-        go.Scatter(
-            x=coefs,
-            y=labels,
-            mode="markers",
-            marker={"color": color, "size": 10},
-            error_x={
-                "type": "data",
-                "symmetric": False,
-                "array": [h - c for h, c in zip(hi, coefs)],
-                "arrayminus": [c - low for c, low in zip(coefs, lo)],
-                "color": color,
-            },
-            hovertemplate="<b>%{y}</b><br>coef %{x:.4f}<extra></extra>",
-        )
-    )
-    fig.add_vline(x=0.0, line={"dash": "dot", "color": theme.NEUTRAL_FAINT})
-    fig.update_layout(
-        title=title,
-        xaxis={"title": "coefficient (°C/decade per 10× emissions)"},
-        yaxis={"autorange": "reversed"},
-        height=80 + 46 * len(rows),
-        showlegend=False,
-    )
-    return theme.apply_base_layout(fig)
-
-
 def share_ci_chart(
     groups: dict[str, dict],
     block_groups: dict[str, dict] | None = None,
@@ -259,8 +214,8 @@ def influence_bar(
 ) -> go.Figure:
     """Horizontal bar of the most influential countries by |Δ share|.
 
-    The share-level analogue of :func:`dfbeta_bar`: one bar per country, signed
-    by how the named share moves when that country is dropped.
+    One bar per country, signed by how the named share moves when that
+    country is dropped.
     """
     names = [str(n) for n, _ in items]
     vals = [float(v) for _, v in items]
@@ -420,31 +375,7 @@ def mismatch_scatter(table: pd.DataFrame) -> go.Figure:
     return theme.apply_base_layout(fig)
 
 
-def dfbeta_bar(top_dfbeta: list[tuple[str, float]]) -> go.Figure:
-    """Horizontal bar of the most influential countries by |DFBETA|."""
-    names = [str(n) for n, _ in top_dfbeta]
-    vals = [float(v) for _, v in top_dfbeta]
-    fig = go.Figure(
-        go.Bar(
-            x=vals,
-            y=names,
-            orientation="h",
-            marker={"color": theme.group_color("emissions")},
-            hovertemplate="<b>%{y}</b><br>DFBETA %{x:+.4f}<extra></extra>",
-        )
-    )
-    fig.add_vline(x=0.0, line={"dash": "dot", "color": theme.NEUTRAL_FAINT})
-    fig.update_layout(
-        title="Most influential countries (DFBETA on the emissions term)",
-        xaxis={"title": "DFBETA"},
-        yaxis={"autorange": "reversed"},
-        height=80 + 34 * max(len(names), 1),
-        showlegend=False,
-    )
-    return theme.apply_base_layout(fig)
-
-
-# Physical band reuses the geography blue so the L1 page is visually distinct
+# The physical-model page reuses the geography blue so it is visually distinct
 # from the emissions-vermillion decomposition pages.
 _PHYSICAL_COLOR = "#0072B2"
 _PHYSICAL_BAND = "rgba(0,114,178,0.15)"
@@ -458,7 +389,7 @@ def physical_trajectory_chart(
 ) -> go.Figure:
     """Observed vs predicted global temperature with the 95% predictive band.
 
-    The hero of the L1 page: the model mean (``predicted_mean``) inside its
+    The model mean (``predicted_mean``) inside its
     ``lower95``/``upper95`` band, observed annual anomalies as markers, the
     out-of-sample region (``year > train_end``) shaded, and the major volcanic
     eruptions in `eruptions` marked so the transient cooling dips the model

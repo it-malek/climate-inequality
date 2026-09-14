@@ -1,12 +1,9 @@
-"""Physical climate-model page: the Layer 1 driver model (forcings → temperature).
+"""Physical model page: global temperature as a response to radiative forcing.
 
-Reads the committed ``physical_summary.json`` and ``physical_trajectory.parquet``
-bundle artifacts; renders a pending state if they are absent. The page leads with the
-*physical fingerprint* — the model reproduces the transient cooling after major
-volcanic eruptions, not just the secular warming trend — then shows the out-of-sample
-hindcast skill, with the driver sensitivities and recent-year uncertainty below the
-fold. Everything here is a descriptive predictive association validated by hindcast
-skill, never a causal detection-and-attribution claim.
+Reads ``physical_summary.json`` and ``physical_trajectory.parquet``; renders a
+pending state if they are absent. Leads with the trajectory (the model reproduces
+the cooling after major eruptions, not just the secular trend), then the
+out-of-sample hindcast skill, then the driver sensitivities.
 """
 
 from __future__ import annotations
@@ -27,7 +24,7 @@ ERUPTIONS = [(1963, "Agung"), (1982, "El Chichón"), (1991, "Pinatubo")]
 
 
 def render() -> None:
-    """Render the Layer 1 physical-driver model page."""
+    """Render the physical-model page."""
     summary = loaders.load_physical_summary()
     trajectory = loaders.load_physical_trajectory()
     if summary is None or trajectory is None:
@@ -37,7 +34,7 @@ def render() -> None:
     train_end = summary["train_end"]
     last_year = int(trajectory["year"].max())
 
-    st.title("The physical climate engine")
+    st.title("Global temperature and radiative forcing")
     st.markdown(
         "A deterministic model of the global temperature anomaly as a response to "
         "effective radiative forcings (CO₂, CH₄, N₂O, aerosol, volcanic, solar) plus "
@@ -83,7 +80,7 @@ def render() -> None:
         st.markdown(
             "The 95% predictive band over the out-of-sample tail spans roughly "
             f"±{half_width.mean():.2f} °C (±{half_width.max():.2f} °C at its widest), "
-            "the model's honest confidence about warming it was not fit on."
+            "the model's uncertainty about warming it was not fit on."
         )
 
     with st.expander("Trajectory table"):

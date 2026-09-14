@@ -1,4 +1,4 @@
-"""Responsibility vs impact page: the Layer 3 deterministic projection comparator.
+"""Responsibility vs impact page: the responsibility-impact comparator.
 
 Reads the committed ``coupling_summary.json`` and ``coupling.parquet`` bundle
 artifacts; renders a pending state if the summary is absent.

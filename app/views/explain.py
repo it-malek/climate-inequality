@@ -34,10 +34,11 @@ def render() -> None:
     # ------------------------------------------------------------------
     st.subheader("Does the emissions–warming link survive a latitude control?")
     st.markdown(
-        "The stored finding is **+0.029 °C/decade per 10× cumulative per-capita CO₂** "
-        "within continents. Phase 7 tests whether that survives controlling for the "
-        "fact that historically high-emitting countries also sit at higher latitudes — "
-        "where Arctic amplification pushes warming up independently of emissions."
+        "Within continents, country warming rises by about **+0.029 °C/decade per "
+        "10× cumulative per-capita CO₂**. This page asks whether that survives a "
+        "control for the fact that historically high-emitting countries also sit "
+        "at higher latitudes, where polar amplification raises warming regardless "
+        "of emissions."
     )
 
     pooled = next((s for s in country_specs if s["spec_name"] == "pooled"), None)
@@ -64,7 +65,7 @@ def render() -> None:
             help=(
                 f"°C/decade per 10× CO₂, continent fixed effects + HC1 SEs. "
                 f"95% CI [{em['ci_low']:+.3f}, {em['ci_high']:+.3f}], "
-                f"p = {em['p_value']:.2g}. This is the README headline result."
+                f"p = {em['p_value']:.2g}."
             ),
         )
     if lat_cont and lat_cont["emissions"]:

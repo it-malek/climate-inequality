@@ -1,4 +1,4 @@
-"""Streamlit dashboard package (Phase 5).
+"""Streamlit dashboard package.
 
 Entry point: ``app/streamlit_app.py``. Pages are functions in
 ``app.views``; data access goes through the cached loaders in

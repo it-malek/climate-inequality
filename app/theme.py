@@ -68,7 +68,7 @@ NEUTRAL_FAINT = "rgba(128, 128, 128, 0.40)"    # zero / reference lines
 # that adaptation (and a dark `#222` would vanish on a dark background).
 BASE_FONT = {"family": "Inter, system-ui, sans-serif", "size": 13}
 
-# The exact, non-negotiable interpretation banner (visible on every page).
+# Interpretation banner shown at the top of every page.
 BANNER_TEXT = (
     "This is a structural variance decomposition of observed warming trends. "
     "It does not estimate causal effects or climate physics."
@@ -102,22 +102,20 @@ def group_color(key: str) -> str:
 
 
 def interpretation_banner() -> None:
-    """Render the always-on, non-flashy interpretation banner.
+    """Render the interpretation banner (called once, from the entry point).
 
-    Called once per script run (from the entry point), so it appears at the
-    top of every page. A subtle left-accent strip, not an alert color block —
-    present and legible, never shouty.
+    A left-accent strip with a translucent background and inherited text color,
+    so it reads the same on the light and dark Streamlit themes.
     """
     st.markdown(
         f"""
         <div style="
             border-left: 4px solid #0072B2;
-            background: #f4f7fa;
+            background: rgba(0, 114, 178, 0.08);
             padding: 0.55rem 0.9rem;
             margin: 0 0 0.9rem 0;
             border-radius: 4px;
             font-size: 0.86rem;
-            color: #33414d;
             line-height: 1.35;">
             <strong>Interpretation —</strong> {BANNER_TEXT}
         </div>

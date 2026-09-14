@@ -146,7 +146,7 @@ class TestEntryPoint:
         at.run()
         assert not at.exception, at.exception
         # Default page is now the decomposition dashboard.
-        assert at.title[0].value == "Global Warming Inequality Decomposition"
+        assert at.title[0].value == "Warming inequality decomposition"
 
     def test_interpretation_banner_on_entry(self, bundle_dir):
         at = AppTest.from_file("app/streamlit_app.py", default_timeout=10)
@@ -161,7 +161,7 @@ class TestEntryPoint:
 class TestDecompositionPage:
     def test_renders_metrics_and_shares(self, bundle_dir):
         at = run_page("app.views.decomposition")
-        assert at.title[0].value == "Global Warming Inequality Decomposition"
+        assert at.title[0].value == "Warming inequality decomposition"
         labels = [m.label for m in at.metric]
         assert "Gini of warming" in labels
         assert "Residual (unexplained)" in labels
@@ -282,7 +282,7 @@ class TestPhysicalPage:
     def test_renders_metrics_and_sections(self, bundle_dir):
         # The synthetic bundle now carries L1 artifacts (forcings -> physical model).
         at = run_page("app.views.physical")
-        assert at.title[0].value == "The physical climate engine"
+        assert at.title[0].value == "Global temperature and radiative forcing"
         labels = [m.label for m in at.metric]
         assert {"Train R²", "Test RMSE", "Band coverage", "AR(1) ρ"} <= set(labels)
         # Hero chart carries its own title (no Streamlit subheader); the hindcast
@@ -307,33 +307,6 @@ class TestSensitivityPage:
         assert at.title[0].value == "How confident are we?"
         assert len(at.info) == 1
         assert len(at.subheader) == 0  # no diagnostic sections rendered
-
-    def test_renders_when_summary_present(self, bundle_dir, tmp_path, monkeypatch):
-        import json
-
-        populated = tmp_path / "stab_bundle"
-        shutil.copytree(bundle_dir, populated)
-        summary = {
-            "interpretation": "descriptive only",
-            "df_sensitivity": [
-                {"df": 4, "coef": 0.03, "ci_low": 0.01, "ci_high": 0.05},
-                {"df": 6, "coef": 0.028, "ci_low": 0.008, "ci_high": 0.048},
-                {"df": 8, "coef": 0.026, "ci_low": 0.004, "ci_high": 0.048},
-            ],
-            "uncertainty": [
-                {"method": "HC1", "coef": 0.03, "ci_low": 0.015, "ci_high": 0.045},
-                {"method": "Conley HAC", "coef": 0.03, "ci_low": -0.005, "ci_high": 0.065},
-            ],
-            "influence": {"spec": "lat_continent", "top_dfbeta": [["Russia", 0.012], ["Canada", -0.008]]},
-        }
-        (populated / "stability_summary.json").write_text(json.dumps(summary))
-        monkeypatch.setattr(loaders, "APP_DATA_DIR", populated)
-        st.cache_data.clear()
-        at = run_page("app.views.sensitivity")
-        assert not at.exception
-        assert not at.info  # no pending banner
-        assert len(at.subheader) == 3  # df-sensitivity, uncertainty, influence
-        st.cache_data.clear()
 
     def test_renders_share_stability_blocks(self, bundle_dir, tmp_path, monkeypatch):
         # The stability layer's own schema (bootstrap share CIs, leave-one-out
