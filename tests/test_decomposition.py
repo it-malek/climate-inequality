@@ -110,7 +110,7 @@ def test_summary_payload_carries_interpretation():
     assert payload["interpretation"] == INTERPRETATION_NOTE
     # Shares are rounded for byte-stable JSON (src.data_io.round_floats), so the
     # payload matches the in-memory result only to within that rounding.
-    assert payload["shares"] == pytest.approx(result.shares, abs=1e-11)
+    assert payload["shares"] == pytest.approx(result.shares, rel=1e-9)
 
 
 def test_out_of_schema_column_rejected():

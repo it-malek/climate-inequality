@@ -35,6 +35,15 @@ class TestRoundFloats:
     def test_does_not_perturb_displayed_precision(self):
         assert round_floats(0.6306936568351258) == pytest.approx(0.6306936568351258)
 
+    def test_rounds_significant_figures_not_decimal_places(self):
+        # A p-value of 3.8e-06 keeps its digits (decimal-place rounding at 12
+        # digits would have truncated 1e-17 to 0.0 and 3.8469599984e-06 to
+        # 3.84696e-06).
+        assert round_floats(3.8469599984498665e-06) == 3.846959998e-06
+        assert round_floats(1.234567890123e-17) == 1.23456789e-17
+        assert round_floats(0.0) == 0.0
+        assert round_floats(float("nan")) != round_floats(float("nan"))  # NaN passes through
+
 
 HEADER = (
     "dt,AverageTemperature,AverageTemperatureUncertainty,"
