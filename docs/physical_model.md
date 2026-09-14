@@ -73,9 +73,14 @@ Training window 1951–2013 (63 years), test window 2014–2024 (11 years).
 | Solar | 0.40 | −0.05 to 0.84 |
 | ONI (per index unit) | 0.064 | 0.028 to 0.100 |
 
-The greenhouse-gas forcings rise together over the period, so their individual
-coefficients are only partly identified; the ridge prior stabilises the joint
-fit without resolving the split. The estimated ρ is close to zero, which means
+Read the intervals, not the points. The greenhouse-gas forcings rise together
+over the period, so their individual coefficients are only partly identified;
+the ridge prior stabilises the joint fit without resolving the split. The N₂O
+estimate is the clearest case: a point value of 3.2 °C per W/m² with an
+interval spanning zero is not a physical sensitivity, it is the regression's
+attempt to apportion a shared trend among three collinear series, and it
+should never be quoted without its interval. The CO₂ interval excludes zero
+but is wide for the same reason. The estimated ρ is close to zero, which means
 that once the forcings are in the model there is little year-to-year
 persistence left in the residual at annual resolution. The volcanic term
 reproduces the cooling after Agung (1963), El Chichón (1982) and Pinatubo

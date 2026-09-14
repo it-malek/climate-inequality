@@ -26,7 +26,6 @@ publish from a stale or inconsistent pipeline state.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
 from dataclasses import asdict
@@ -87,8 +86,12 @@ from src.decomposition import summary_payload as decomp_payload
 from src.emissions import (
     CONSUMPTION_COLUMNS,
     DEFAULT_INEQUALITY_PATH,
+    OWID_CO2_COMMIT,
     OWID_CO2_PATH,
+    OWID_CO2_RETRIEVED,
+    OWID_CO2_SHA256,
     quantify_inequality,
+    sha256_file,
 )
 from src.era5_validation import ERA5_GRID_PATH, build_era5_validation
 from src.explain import (
@@ -280,6 +283,21 @@ def _surface_to_long_form(
             "value": np.asarray(surface, dtype=float).ravel().astype("float32"),
         }
     )
+
+
+def _owid_provenance(co2_path: Path = OWID_CO2_PATH) -> dict:
+    """The OWID CO2 vintage behind the country table, for stats.json.
+
+    Records the pinned commit, retrieval date and digest, plus the digest of the
+    local file when it is present, so a bundle built from a different vintage is
+    visible in the committed JSON.
+    """
+    return {
+        "owid_co2_commit": OWID_CO2_COMMIT,
+        "owid_co2_retrieved": OWID_CO2_RETRIEVED,
+        "owid_co2_sha256_pinned": OWID_CO2_SHA256,
+        "owid_co2_sha256_local": sha256_file(co2_path) if co2_path.exists() else None,
+    }
 
 
 def _sanity_stats(trends: pd.DataFrame) -> dict:
@@ -476,6 +494,7 @@ def build_app_assets(
     inequality_result = quantify_inequality(inequality)
 
     stats_payload = {
+        "provenance": _owid_provenance(),
         "trends": _sanity_stats(trends_out),
         "interpolation": {
             "winner": str(surface_result["winner"]),
@@ -1011,15 +1030,6 @@ def build_vulnerability_asset(
     }
 
 
-def _sha256_file(path: Path) -> str:
-    """SHA-256 hex digest of a file's bytes (streamed, so large inputs are cheap)."""
-    digest = hashlib.sha256()
-    with open(path, "rb") as handle:
-        for chunk in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
 def build_physical_summary_asset(
     forcings_path: Path | None = None,
     out_dir: Path = APP_DATA_DIR,
@@ -1047,7 +1057,7 @@ def build_physical_summary_asset(
     forcings = pd.read_parquet(forcings_path)
     # The forcings table is gitignored, so stamp its hash into the summary: the
     # committed artifact then names the exact input vintage it was fit on.
-    forcings_hash = _sha256_file(forcings_path)
+    forcings_hash = sha256_file(forcings_path)
     trajectory, result = compute_physical_model(forcings)
     result.check()
 

@@ -20,6 +20,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -57,9 +58,19 @@ from src.trends import DEFAULT_TRENDS_PATH
 
 logger = logging.getLogger(__name__)
 
+# OWID revises its CO2 series with every Global Carbon Budget release, which
+# moves the cumulative-emissions and population columns for many countries.
+# The URL is therefore pinned to the commit of github.com/owid/co2-data that the
+# committed bundle was built from, and the download is verified against the
+# SHA-256 of that file so a different vintage cannot enter silently. To move to
+# a newer release: change the commit in the URL, update the hash and date, and
+# rebuild the bundle (expect the numbers to change).
+OWID_CO2_COMMIT = "382ee6c662b0ece26e111f263b44c029afad7787"  # 2026-06-02 release
 OWID_CO2_URL = (
-    "https://raw.githubusercontent.com/owid/co2-data/master/owid-co2-data.csv"
+    f"https://raw.githubusercontent.com/owid/co2-data/{OWID_CO2_COMMIT}/owid-co2-data.csv"
 )
+OWID_CO2_SHA256 = "7f78e2b218ce4bb8c538bbec04fdc9a7982e8d40bff972e650df603899edd5f6"
+OWID_CO2_RETRIEVED = "2026-06-11"
 OWID_CO2_PATH = RAW_DIR / "owid" / "owid-co2-data.csv"
 CONTINENTS_URL = (
     "https://ourworldindata.org/grapher/continents-according-to-our-world-in-data.csv"
@@ -113,6 +124,39 @@ CONSUMPTION_COLUMNS = (
     "cum_consumption_t_per_capita",
     "cum_co2_window_t_per_capita",
 )
+
+
+def sha256_file(path: Path) -> str:
+    """SHA-256 hex digest of a file, streamed."""
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def verify_owid_co2(csv_path: Path = OWID_CO2_PATH, expected: str | None = OWID_CO2_SHA256) -> str:
+    """Return the SHA-256 of the OWID CO2 file, raising if it is not the pinned vintage.
+
+    Args:
+        csv_path: the downloaded ``owid-co2-data.csv``.
+        expected: the pinned digest; ``None`` skips the check (accepting a new
+            vintage deliberately).
+
+    Raises:
+        RuntimeError: if the file's digest differs from `expected`.
+    """
+    actual = sha256_file(csv_path)
+    if expected is not None and actual != expected:
+        raise RuntimeError(
+            f"{csv_path} has SHA-256 {actual[:12]}..., not the pinned OWID vintage "
+            f"{expected[:12]}... (commit {OWID_CO2_COMMIT[:12]}, retrieved "
+            f"{OWID_CO2_RETRIEVED}). A different release changes the cumulative "
+            "emissions; delete the file to re-download the pinned vintage, or pass "
+            "expected_sha256=None and update OWID_CO2_COMMIT / OWID_CO2_SHA256 to "
+            "adopt the new one."
+        )
+    return actual
 
 
 def load_owid_co2(csv_path: Path = OWID_CO2_PATH) -> pd.DataFrame:
@@ -481,6 +525,7 @@ def build_inequality_analysis(
     pop_year: int = GPW_DEFAULT_YEAR,
     berkeley_grid_path: Path = BERKELEY_GRID_PATH,
     natid_lookup_path: Path = GPW_NATID_LOOKUP_PATH,
+    expected_sha256: str | None = OWID_CO2_SHA256,
 ) -> dict:
     """Build the country table end to end.
 
@@ -497,12 +542,15 @@ def build_inequality_analysis(
         table_path: Destination parquet for the joined country table.
         cutoff_year: Last year of cumulative emissions; None derives the
             analysis-window end year from the trends file.
+        expected_sha256: pinned digest of the OWID CO2 file (see
+            :func:`verify_owid_co2`); ``None`` accepts any vintage.
 
     Returns:
         Dict with keys `table` (DataFrame), `result` (InequalityResult),
         `figure_path` and `table_path` (Paths).
     """
     download_file(OWID_CO2_URL, co2_path)
+    verify_owid_co2(co2_path, expected_sha256)
     download_file(CONTINENTS_URL, continents_path)
 
     trends = pd.read_parquet(trends_path)

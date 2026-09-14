@@ -73,6 +73,13 @@ def render() -> None:
     left, right = st.columns(2)
     with left:
         st.plotly_chart(charts.sensitivity_forest(summary["sensitivity"]), width="stretch")
+        st.caption(
+            "Read the intervals, not the points. The CO₂, CH₄ and N₂O forcings rise "
+            "together over the period, so their individual coefficients are only "
+            "partly identified: the N₂O estimate in particular is a large number with "
+            "an interval that spans zero. The volcanic and ENSO terms, driven by "
+            "sharp uncorrelated signals, are the tightly estimated ones."
+        )
     with right:
         out = trajectory[trajectory["year"] > train_end]
         half_width = (out["upper95"] - out["lower95"]) / 2.0
