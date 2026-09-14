@@ -1,8 +1,7 @@
-"""Layer 1 input assembly: build ``forcings.parquet`` from public climate data.
+"""Assemble ``forcings.parquet``, the input of the physical model.
 
-This module produces the annual driver table that :mod:`src.physical_model`
-consumes -- one contiguous row per year carrying the global temperature anomaly
-and the effective radiative forcings (ERF) that the L1 estimator regresses it on:
+One contiguous row per year carrying the global temperature anomaly and the
+effective radiative forcings (ERF) that :mod:`src.physical_model` regresses it on:
 
   * ``temp_anomaly``      -- NASA GISTEMP v4 global ``J-D`` mean (native 1951-1980
                              baseline), re-centred on the baseline window. GISTEMP
@@ -21,8 +20,8 @@ Three remote sources are downloaded once into ``data/raw/forcings/`` (idempotent
 cache, via :func:`src.data_io.download_file`); Berkeley is read from the committed
 ``data/raw/`` tree. The transforms are pure and the row order is fixed, so the parquet
 is byte-stable on-platform (written through :func:`src.data_io.write_typed_parquet`).
-``temp_uncertainty`` and ``erf_total`` are schema-contract columns the estimator does
-not read; they round out :mod:`07-data-schemas` without affecting the fit.
+``temp_uncertainty`` and ``erf_total`` are carried for completeness; the estimator
+does not read them.
 """
 
 from __future__ import annotations
@@ -77,7 +76,7 @@ ERF_COLUMN_MAP: dict[str, str] = {
     "total": "erf_total",
 }
 
-# On-disk schema of forcings.parquet (DuckDB types), in order (07-data-schemas.md).
+# On-disk schema of forcings.parquet (DuckDB types), in order.
 FORCINGS_SCHEMA: dict[str, str] = {
     "year": "BIGINT",
     "temp_anomaly": "DOUBLE",
@@ -273,7 +272,7 @@ class ForcingsCrossCheckError(ForcingsError):
     correlation almost always means an upstream source silently changed its on-disk
     format, or the year alignment skewed during the join. Raising a distinct, named
     error here surfaces that *at assembly time* instead of letting it masquerade as an
-    "odd" L1 model fit to be debugged much later.
+    "odd" model fit to be debugged much later.
     """
 
 
@@ -318,7 +317,7 @@ class ForcingsResult:
                 f"{self.cross_check_corr!r} is below the {MIN_CROSS_CORR} tolerance "
                 "over their overlap: a source format change or skewed year alignment "
                 "is the likely cause -- inspect the raw sources before trusting any "
-                "L1 fit derived from this table."
+                "fit derived from this table."
             )
         lo, hi = TEMP_MAGNITUDE_BAND
         if not (lo <= self.recent_temp_mean <= hi):  # NaN (absent window) also trips
@@ -429,7 +428,7 @@ def main() -> None:
     out = build_forcings()
     r = out["result"]
     print(
-        f"L1 forcings table: {r.n_years} years {r.year_min}-{r.year_max} "
+        f"forcings table: {r.n_years} years {r.year_min}-{r.year_max} "
         f"({r.n_uncertainty_filled} uncertainty-filled tail years)"
     )
     print(f"  GISTEMP/Berkeley anomaly corr : {r.cross_check_corr:.3f}")

@@ -23,7 +23,7 @@ class TestRegistry:
             pcs.validate_registry(extra)
 
     def test_no_forbidden_variant_suffix(self):
-        with pytest.raises(ValueError, match="forbidden variant"):
+        with pytest.raises(ValueError, match="variant suffix"):
             pcs.ProjectionContract(
                 name="impact_index_v1_enhanced",
                 version="v1",

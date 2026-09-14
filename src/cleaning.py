@@ -8,7 +8,8 @@ from __future__ import annotations
 
 import pandas as pd
 
-# Default analysis window — see README "Known dataset quirks"
+# Default analysis window: the Kaggle snapshot ends 2013-09; coverage is
+# dense from 1950 on.
 DEFAULT_START = "1950-01-01"
 DEFAULT_END = "2013-09-01"
 
@@ -139,7 +140,7 @@ def coverage_by_city(
     Returns one row per `group_keys` with `n_obs`, `n_possible`,
     `coverage`, and a boolean `keep` flag for groups meeting
     `min_fraction` non-null monthly coverage. Use this to decide which
-    cities are eligible for trend fitting (Phase 2).
+    cities are eligible for trend fitting.
 
     Note: (City, Country) alone is not a unique city identifier — 18
     same-named pairs sit at 2-3 grid coordinates each, which pools and

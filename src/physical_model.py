@@ -1,4 +1,4 @@
-"""Layer 1: physical climate driver model (closed-form Bayesian ridge-GLS).
+"""Global temperature vs radiative forcing: a closed-form Bayesian AR(1) regression.
 
 Fits annual global mean temperature anomaly ``T(t)`` to effective radiative
 forcings (CO2, CH4, N2O, aerosol, volcanic, solar) plus the ENSO ONI index:
@@ -6,8 +6,7 @@ forcings (CO2, CH4, N2O, aerosol, volcanic, solar) plus the ENSO ONI index:
     T(t) = b0 + sum_i b_i * F_i(t - l_i) + eps_t,
     eps_t = rho * eps_{t-1} + u_t,   u_t ~ N(0, sigma^2)
 
-The estimator is the spec's closed-form recipe (``03-models.md`` Layer 1), with
-**no MCMC and no sampling seed**:
+The estimator is closed-form throughout (no sampler, no seed):
 
   1. Lag each forcing by its fixed physical lag and standardize on the training
      moments (an intercept column is prepended afterwards).
@@ -19,16 +18,18 @@ The estimator is the spec's closed-form recipe (``03-models.md`` Layer 1), with
   5. Re-estimate rho from the lag-1 autocorrelation of the un-whitened residuals
      and iterate 2-5 to convergence (Cochrane-Orcutt / Prais-Winsten).
 
-Outputs (the layer contract, see ``07-data-schemas.md``): per-driver sensitivity
+Outputs: per-driver sensitivity
 (posterior mean +/- sd and 95% credible interval, deg C per W/m^2), a predicted
 trajectory with Student-t predictive bands, and hindcast skill (train year<=2013,
 test year>2013: out-of-sample RMSE, band coverage, AR(1) rho). Two artifacts are
 written: ``physical_summary.json`` and ``physical_trajectory.parquet``.
 
-**Framing.** L1 is a *predictive association* of the temperature trajectory with
-forcing proxies, validated by out-of-sample hindcast -- it is **not** formal
+This is a predictive association of the temperature trajectory with forcing
+proxies, validated by out-of-sample hindcast; it is not formal
 detection-and-attribution and makes no causal claim. The ``interpretation`` field
-in the summary carries this disclaimer.
+in the summary says so. The model explains the global mean over time and is kept
+apart from the cross-country decomposition, which it cannot inform: a global
+signal has no cross-country variance.
 
 Determinism: the fit is entirely closed-form (numpy/scipy, float64); ``lambda`` is
 optimized over a fixed bracket with bounded Brent; linear systems are solved by
@@ -60,7 +61,7 @@ DRIVERS: tuple[str, ...] = ("co2", "ch4", "n2o", "aerosol", "volcanic", "solar",
 ERF_DRIVERS: tuple[str, ...] = DRIVERS[:6]
 
 # Fixed physical lags (years): slow ocean-mediated GHG/aerosol forcings lag one
-# year; fast volcanic/solar/ENSO effects are contemporaneous (spec 03-models.md).
+# year; fast volcanic/solar/ENSO effects are contemporaneous.
 DEFAULT_LAGS: dict[str, int] = {
     "co2": 1,
     "ch4": 1,
@@ -113,7 +114,7 @@ def driver_column(driver: str) -> str:
 
 
 # ---------------------------------------------------------------------
-# Design assembly and standardization (spec 03-models.md, eqn for T(t))
+# Design assembly and standardization
 # ---------------------------------------------------------------------
 
 
@@ -204,7 +205,7 @@ def standardize(
 
 
 # ---------------------------------------------------------------------
-# Prais-Winsten AR(1) whitening (spec 03-models.md, "AR(1)-whitened")
+# Prais-Winsten AR(1) whitening
 # ---------------------------------------------------------------------
 
 
@@ -237,7 +238,7 @@ def prais_winsten_whiten(matrix: np.ndarray, rho: float) -> np.ndarray:
 
 
 # ---------------------------------------------------------------------
-# Normal-Inverse-Gamma posterior + evidence (spec 03-models.md, conjugate NIG)
+# Normal-Inverse-Gamma posterior + evidence
 # ---------------------------------------------------------------------
 
 
@@ -334,9 +335,12 @@ def select_lambda(
 ) -> float:
     """Empirical-Bayes ridge precision: maximize the log evidence over log10(lambda).
 
-    Bounded Brent over ``log10(lambda) in LAMBDA_LOG10_BOUNDS`` -- deterministic
-    (fixed bracket + tolerance) and reconciles the spec's "Brent's method" with
-    its search bracket.
+    Bounded Brent over ``log10(lambda) in LAMBDA_LOG10_BOUNDS`` at SciPy's default
+    tolerance. The evidence is flat near its maximum (curvature about -12 per
+    unit of log10(lambda) against float noise of ~1e-14), so a tighter tolerance
+    would only chase noise; the maximiser is reproducible to roughly 1e-8 in
+    log10(lambda) across platforms and the serialized summary is rounded
+    accordingly.
     """
 
     def neg_log_evidence(log10_lam: float) -> float:
@@ -362,7 +366,7 @@ def estimate_rho(residuals: np.ndarray) -> float:
 
 
 # ---------------------------------------------------------------------
-# Iterative Prais-Winsten / NIG fit (spec 03-models.md, "estimated by iteration")
+# Iterative Prais-Winsten / NIG fit
 # ---------------------------------------------------------------------
 
 
@@ -427,7 +431,7 @@ def fit_nig_ar1(
 
 
 # ---------------------------------------------------------------------
-# Back-transform to natural units + predictive trajectory (spec Outputs)
+# Back-transform to natural units + predictive trajectory
 # ---------------------------------------------------------------------
 
 
@@ -540,7 +544,7 @@ def predict_trajectory(
 
 @dataclass(frozen=True)
 class PhysicalModelResult:
-    """The L1 layer contract: AR(1) rho, ridge lambda, sensitivities, hindcast."""
+    """Fit summary: AR(1) rho, ridge lambda, sensitivities, hindcast skill."""
 
     outcome: str
     n_years: int
@@ -653,7 +657,7 @@ def build_physical_model(
     summary_path=DEFAULT_SUMMARY_PATH,
     trajectory_path=DEFAULT_TRAJECTORY_PATH,
 ) -> dict:
-    """Read forcings, fit the model, and write the two L1 artifacts.
+    """Read forcings, fit the model, and write the two artifacts.
 
     Returns:
         Dict with ``trajectory`` (DataFrame), ``result``
@@ -682,8 +686,8 @@ def main() -> None:
     r = out["result"]
     h = r.hindcast
     print(
-        f"L1 physical driver model ({r.outcome}, n={r.n_years}, "
-        f"train<= {r.train_end}, deterministic / predictive-association)"
+        f"physical model ({r.outcome}, n={r.n_years}, "
+        f"train<= {r.train_end}, predictive association)"
     )
     print(f"  AR(1) rho          : {r.ar1_rho:+.3f}")
     print(f"  ridge lambda       : {r.lambda_:.3g}")
