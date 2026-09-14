@@ -30,3 +30,6 @@ kaggle.json
 .vscode/
 .idea/
 
+
+# Private study notes (not part of the repository)
+notes/
