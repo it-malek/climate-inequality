@@ -14,6 +14,9 @@ dependencies = [
     "kagglehub>=0.3",
     "requests>=2.31",
     "statsmodels>=0.14",
+    "xarray>=2026.4.0",
+    "netcdf4>=1.7.4",
+    "pillow>=10.0",
 ]
 
 [project.optional-dependencies]
@@ -22,18 +25,10 @@ dev = [
     "pytest-cov>=5.0",
     "ruff>=0.4",
     "jupyter",
-    "xarray>=2026.4.0",
-    "netcdf4>=1.7.4",
 ]
-# ERA5 reanalysis cross-check (scripts/fetch_era5.py + src.era5_validation).
-# Self-contained: includes the xarray/netcdf4 the fetch and validation need to read
-# the grid, so `uv sync --extra era5` works on its own (no dependency on `dev`).
-# Optional / never imported in CI.
-era5 = [
-    "cdsapi>=0.7",
-    "xarray>=2026.4.0",
-    "netcdf4>=1.7.4",
-]
+# Copernicus client for scripts/fetch_era5.py (the ERA5 cross-check); never
+# imported by src or the tests.
+era5 = ["cdsapi>=0.7"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -41,6 +36,4 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 88
 target-version = "py311"
-# Exploratory / archival Jupyter notebooks are not held to the production lint
-# bar (setup-cell imports, scratch unused imports); the pipeline is src/tests/app.
 extend-exclude = ["notebooks"]

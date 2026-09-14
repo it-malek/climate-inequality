@@ -12,9 +12,9 @@ group-level Shapley/LMG attribution over the frozen `SCHEMA_V1` feature
 contract. Design and scope boundary:
 [`docs/decomposition_design_memo.md`](docs/decomposition_design_memo.md);
 end-to-end reproduction: [`docs/reproducibility.md`](docs/reproducibility.md);
-results: [`docs/key_findings.md`](docs/key_findings.md) /
-[`docs/research_summary.md`](docs/research_summary.md); next-phase roadmap:
-[`docs/stability_roadmap.md`](docs/stability_roadmap.md) and
+results: `docs/key_findings.md` (historical document, absent from this snapshot) /
+`docs/research_summary.md` (historical document, absent from this snapshot); next-phase roadmap:
+`docs/stability_roadmap.md` (historical document, absent from this snapshot) and
 [`docs/future_work.md`](docs/future_work.md).
 
 *Originally proposed as an undergraduate research fellowship project (2022);
@@ -83,7 +83,7 @@ are present, so the decomposition turns the latitude-vs-emissions confound
 into a *measured overlap* rather than a caveat. The shares are a descriptive
 variance attribution, **not** causal climate attribution (CO₂ is well-mixed; a
 country's emissions do not preferentially heat its own territory). Full numbers
-and interpretation: [`docs/key_findings.md`](docs/key_findings.md).
+and interpretation: `docs/key_findings.md` (historical document, absent from this snapshot).
 
 **Warming is universal across the sample, but far from uniform.** Every one
 of the 3,510 city-locations shows a positive 1950–2013 trend, and for 99.1%

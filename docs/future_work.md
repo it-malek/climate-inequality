@@ -142,4 +142,4 @@ restructures the pipeline (layers never merge; artifact-only communication). The
 toolchain decision for that build, **Python (NumPy/SciPy) at the core, statsmodels as a
 test-time cross-check, Wolfram as a design-time symbolic oracle; Julia and the
 climate-emulator stack rejected for the specified model**, is recorded in
-[`docs/l1_toolchain_survey.md`](l1_toolchain_survey.md).
+`docs/l1_toolchain_survey.md` (historical document, absent from this snapshot).
