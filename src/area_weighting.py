@@ -1,39 +1,31 @@
-"""Area-weighted gridded warming exposure from the Berkeley Earth grid.
+"""Area-weighted country warming from the Berkeley Earth 1° gridded field.
 
-``docs/future_work.md`` §2: the project's #1 external-validity gap is *station
-sampling bias*. The country warming mean
-(:func:`src.emissions.aggregate_trends_by_country`) is *station-weighted*, so
-dense mid-latitude station clusters dominate and the Arctic / Sahara / Amazonia
-are under-sampled. This module replaces that with a **true area-weighted**
-country mean computed directly off the Berkeley Earth 1°×1° gridded field: a
-per-cell Theil-Sen trend (the SAME operator and 1950-01..2013-09 window as the
-station pipeline, so the only difference is the weighting), each land cell
-assigned to a country via the GPW v4 **National Identifier Grid**, then reduced
-to a country mean weighted by ``cos(latitude)``.
+The station-based country mean (:func:`src.emissions.aggregate_trends_by_country`)
+weights every city-location equally, so dense mid-latitude station clusters
+dominate and the Arctic, Sahara and Amazon interiors barely count. This module
+computes the alternative: a Theil-Sen trend for every land cell of the Berkeley
+Earth 1°×1° grid (the same estimator, time axis and 1950-01..2013-09 window as
+the station pipeline, so only the weighting differs), each cell assigned to a
+country through the GPW v4 national-identifier grid, then averaged per country
+with cos(latitude) weights so that every unit of land area counts equally.
 
-**cos(latitude) IS REQUIRED here.** A warming *trend* is an **intensive** field;
-on a regular lat/lon grid pole-ward cells cover less area, so an honest country
-mean weights each cell by ``cos(lat)`` (:func:`src.population.latitude_area_weights`).
-This is the EXACT MIRROR of the GPW population-**count** rule in
-:mod:`src.population`, where cos(lat) is *forbidden* because a count is
-**extensive** (it already embeds meridian convergence). The two must never be
-confused: intensive field → cos-weight; extensive count → never cos-weight.
+The cos(latitude) weight is required because a trend is an intensive quantity
+sampled on a grid whose cells shrink toward the poles. It is the mirror image of
+:mod:`src.population`, where population *counts* are used as weights without any
+latitude correction because a count is extensive and already reflects cell area.
 
-**Country assignment.** Reuse band 11 of the already-committed GPW NetCDF (the
-"National Identifier Grid", numeric ISO codes per cell) sampled at each Berkeley
-cell center -- no new polygon dataset. The numeric codes resolve to ISO3 via the
-sibling lookup table, the canonical bridge to OWID's ``iso_code``.
+Country assignment reuses band 11 of the GPW NetCDF (numeric national codes per
+cell), resolved to ISO3 through the lookup table shipped beside it; ISO3 is also
+the join key to OWID's ``iso_code``, so no name matching is involved.
 
-**Memory-safe.** The full 1950-2013 window over the global grid would be a
-~190 MB float array, so the per-cell trends are computed by streaming the grid in
-**latitude-band chunks** (native-lazy ``xarray``; peak memory is one band, never
-the whole window). No dask dependency, matching the GPW decision.
+The 1950-2013 window over the whole grid is ~190 MB of float32, so the per-cell
+fit streams the file in latitude bands; peak memory is one band.
 """
 
 from __future__ import annotations
 
 import logging
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 from pathlib import Path
 
 import numpy as np
@@ -43,7 +35,7 @@ from scipy import stats
 
 from src.cleaning import DEFAULT_END, DEFAULT_START, to_decimal_decades
 from src.data_io import RAW_DIR
-from src.grids import sample_static_grid
+from src.grids import decode_fractional_years, sample_static_grid
 from src.population import (
     GPW_DIR,
     GPW_ENGINE,
@@ -57,8 +49,7 @@ from src.population import (
 logger = logging.getLogger(__name__)
 
 # Berkeley Earth 1°×1° gridded monthly anomalies (gitignored, ~199 MB; the same
-# file src.validation reads). Defined here -- not imported from src.validation --
-# so this module stays out of the validation->app_assets->emissions import cycle.
+# file src.validation reads).
 BERKELEY_GRID_PATH = RAW_DIR / "berkeley_gridded" / "Complete_TAVG_LatLong1.nc"
 GRID_VAR = "temperature"
 GRID_DIMS = ("time", "latitude", "longitude")
@@ -79,29 +70,6 @@ ISO3_COL = "iso3"
 AREA_WEIGHTED_COL = "trend_c_per_decade_area_weighted"
 AREA_COVERAGE_COL = "area_cell_coverage"
 AREA_COLUMNS = (ISO3_COL, AREA_WEIGHTED_COL, AREA_COVERAGE_COL)
-
-
-def _decode_fractional_years(values: Sequence[float] | np.ndarray) -> pd.DatetimeIndex:
-    """Berkeley fractional decimal years -> first-of-month timestamps.
-
-    Mirrors :func:`src.validation.decode_fractional_years` (re-implemented here to
-    avoid the validation->app_assets->emissions->area_weighting import cycle): the
-    grid encodes time as ``year + (month - 0.5) / 12`` (mid-month).
-    """
-    arr = np.asarray(values, dtype=float)
-    years = np.floor(arr)
-    month_float = (arr - years) * 12.0 + 0.5
-    months = np.rint(month_float)
-    off_grid = np.abs(month_float - months) > 0.01
-    if off_grid.any():
-        raise ValueError(
-            f"{int(off_grid.sum())} time value(s) are not mid-month decimal years, "
-            f"e.g. {arr[off_grid][:3]}"
-        )
-    parts = pd.DataFrame(
-        {"year": years.astype(int), "month": months.astype(int), "day": 1}
-    )
-    return pd.DatetimeIndex(pd.to_datetime(parts))
 
 
 def load_national_id_lookup(path: Path = GPW_NATID_LOOKUP_PATH) -> dict[int, str]:
@@ -128,7 +96,7 @@ def load_national_id_lookup(path: Path = GPW_NATID_LOOKUP_PATH) -> dict[int, str
     return out
 
 
-def _grid_coords(nc_path: Path) -> tuple[np.ndarray, np.ndarray]:
+def grid_coords(nc_path: Path) -> tuple[np.ndarray, np.ndarray]:
     """Return the (latitude, longitude) coordinate arrays of a Berkeley grid."""
     ds = xr.open_dataset(nc_path, decode_times=False)
     try:
@@ -197,7 +165,7 @@ def cell_trends(
     lat_chunk: int = DEFAULT_LAT_CHUNK,
     var: str = GRID_VAR,
     decode_times: bool = False,
-    time_to_months: Callable[[np.ndarray], pd.DatetimeIndex] = _decode_fractional_years,
+    time_to_months: Callable[[np.ndarray], pd.DatetimeIndex] = decode_fractional_years,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Per-cell Theil-Sen warming slope over the analysis window (streamed).
 
@@ -319,7 +287,7 @@ def area_weighted_country_trends(
         ``area_cell_coverage`` (fraction of the country's assigned land cells that
         were successfully fit).
     """
-    lats, lons = _grid_coords(nc_path)
+    lats, lons = grid_coords(nc_path)
     lookup = load_national_id_lookup(lookup_path)
     mask = assign_cell_iso3(lats, lons, gpw_path, lookup)
     lats, lons, slopes = cell_trends(
@@ -398,7 +366,7 @@ def world_land_mean(nc_path: Path = BERKELEY_GRID_PATH, **kwargs) -> float:
     """
     gpw_path = kwargs.pop("gpw_path", GPW_PATH)
     lookup_path = kwargs.pop("lookup_path", GPW_NATID_LOOKUP_PATH)
-    lats, lons = _grid_coords(nc_path)
+    lats, lons = grid_coords(nc_path)
     mask = assign_cell_iso3(lats, lons, gpw_path, load_national_id_lookup(lookup_path))
     lats, lons, slopes = cell_trends(nc_path, mask, **kwargs)
     return land_mean_from_slopes(lats, slopes)
