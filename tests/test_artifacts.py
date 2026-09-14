@@ -28,9 +28,9 @@ from src import app_assets
 from src.coupling import (
     IMPACT_INDEX,
     RESPONSIBILITY_INDEX,
-    _inequality_coefficient,
-    _rank_desc,
-    _zscore,
+    inequality_coefficient,
+    rank_desc,
+    zscore,
 )
 from src.coupling import compute_coupling
 from src.coupling import summary_payload as coupling_summary_payload
@@ -182,8 +182,8 @@ class TestCoupling:
         r = table[RESPONSIBILITY_INDEX].to_numpy(dtype=float)
         im = table[IMPACT_INDEX].to_numpy(dtype=float)
         # ranks recomputed from the values (descending, ties = min).
-        assert table["responsibility_rank"].to_numpy() == pytest.approx(_rank_desc(r))
-        assert table["impact_rank"].to_numpy() == pytest.approx(_rank_desc(im))
+        assert table["responsibility_rank"].to_numpy() == pytest.approx(rank_desc(r))
+        assert table["impact_rank"].to_numpy() == pytest.approx(rank_desc(im))
         # rank_gap is exactly impact_rank - responsibility_rank. (It need NOT sum
         # to zero: with tied values, method="min" ranks compress unequally between
         # the two projections; z_gap below is the tie-robust zero-sum analogue.)
@@ -191,7 +191,7 @@ class TestCoupling:
             table["impact_rank"].to_numpy() - table["responsibility_rank"].to_numpy()
         )
         # z_gap consistent with the z-score operator; zero mean by construction.
-        assert table["z_gap"].to_numpy() == pytest.approx(_zscore(im) - _zscore(r), abs=ABS)
+        assert table["z_gap"].to_numpy() == pytest.approx(zscore(im) - zscore(r), abs=ABS)
         assert table["z_gap"].mean() == pytest.approx(0.0, abs=ABS)
 
     def test_summary_matches_table(self, bundle):
@@ -203,7 +203,7 @@ class TestCoupling:
             float(stats.spearmanr(r, im)[0]), abs=ABS
         )
         assert summary["inequality_coefficient"] == pytest.approx(
-            _inequality_coefficient(r, im), abs=ABS
+            inequality_coefficient(r, im), abs=ABS
         )
         assert summary["n_high_impact_low_responsibility"] == int(
             (table["z_gap"].to_numpy() > 0.0).sum()
