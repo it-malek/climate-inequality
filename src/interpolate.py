@@ -1,4 +1,4 @@
-"""Spatial interpolation of per-city warming trends (Phase 3).
+"""Spatial interpolation of per-city warming trends.
 
 Two interpolators over :data:`src.trends.DEFAULT_TRENDS_PATH` (one row per
 city-location, in ``slope_c_per_decade``):
@@ -97,7 +97,7 @@ def _to_unit_sphere(lon: np.ndarray, lat: np.ndarray) -> np.ndarray:
     return np.column_stack([x, y, z])
 
 
-def _knn_indices(
+def knn_indices(
     known_lon: np.ndarray,
     known_lat: np.ndarray,
     query_lon: np.ndarray,
@@ -154,7 +154,7 @@ def idw_interpolate(
         )
         values = np.broadcast_to(known_value[None, :], dist.shape)
     else:
-        idx = _knn_indices(known_lon, known_lat, query_lon, query_lat, k)
+        idx = knn_indices(known_lon, known_lat, query_lon, query_lat, k)
         dist = haversine_km(
             query_lon[:, None], query_lat[:, None], known_lon[idx], known_lat[idx]
         )
@@ -259,7 +259,7 @@ def ordinary_kriging_interpolate(
             known_lon, known_lat, known_value, variogram_model=variogram_model
         )
 
-    idx = _knn_indices(known_lon, known_lat, query_lon, query_lat, k)
+    idx = knn_indices(known_lon, known_lat, query_lon, query_lat, k)
     z = np.empty(len(query_lon))
     var = np.empty(len(query_lon))
     for i, neighbors in enumerate(idx):
@@ -335,7 +335,7 @@ def leave_one_out_cv(
             f"largest coordinate group={max_excluded}"
         )
 
-    neighbor_idx = _knn_indices(lon, lat, lon, lat, k_eff + max_excluded)
+    neighbor_idx = knn_indices(lon, lat, lon, lat, k_eff + max_excluded)
     variogram_parameters = fit_variogram_parameters(
         lon, lat, value, variogram_model=variogram_model
     )
@@ -456,7 +456,7 @@ def build_interpolated_surface(
     resolution: float = DEFAULT_GRID_RESOLUTION,
     land: Geometry | None = None,
 ) -> dict:
-    """Run the Phase 3 pipeline: LOO-CV, pick a winner, render its surface.
+    """Cross-validate both interpolators, pick a winner, render its surface.
 
     The winner is the method with lower leave-location-out CV RMSE (see
     :func:`leave_one_out_cv`); the classic leave-row-out CV is computed
@@ -544,7 +544,7 @@ def build_interpolated_surface(
 
 
 def main() -> None:
-    """Run the Phase 3 pipeline and print the LOO-CV comparison."""
+    """Build the surface and print the cross-validation comparison."""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     result = build_interpolated_surface()
     print("leave-location-out CV (winner selection):")

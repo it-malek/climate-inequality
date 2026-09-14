@@ -1,28 +1,18 @@
-"""ERA5 vs Berkeley cross-check: does the area-weighted coupling collapse survive?
+"""ERA5 cross-check of the area-weighting result.
 
-v1.2's headline (``src.area_weighting`` + ``src.coupling.compute_area_coupling``):
-moving from *station-weighted* to **area-weighted** country warming collapses the
-warming<->responsibility coupling from Spearman rho **+0.36 -> +0.01** and raises
-inequality (Gini 0.563 -> 0.607). This module re-tests that on a fully independent
-gridded product -- **ERA5 reanalysis** (:mod:`src.era5_weighting`) -- and reports
-the three lenses side by side on one common country set:
+Moving from station-weighted to area-weighted country warming collapses the
+warming-responsibility rank correlation (Spearman rho +0.36 -> +0.01) and raises
+the inequality coefficient (0.56 -> 0.61). This module re-runs that comparison
+with ERA5 reanalysis (:mod:`src.era5_weighting`) in place of the Berkeley Earth
+grid and reports three things on one common country set: the world land-mean
+slope (an ingest sanity check against Berkeley's ~0.19 °C/decade), the rank
+agreement between the two products, and the coupling of each lens with
+responsibility (Spearman rho plus the coupling stage's inequality coefficient).
 
-- **world-land sanity:** ERA5's cos(lat) global-land mean should land near
-  Berkeley's ~0.19 degC/decade -- an independent match validates the ERA5 ingest
-  the way Berkeley's 0.1926 validated v1.2.
-- **rank agreement:** Spearman rho of ERA5-area vs Berkeley-area (expected high if
-  the two products agree) and vs station (expected lower).
-- **coupling reproduction:** Spearman rho of each lens vs responsibility, plus the
-  Gini, computed on the identical common set via the *same* operators as the L3
-  comparator (:func:`src.coupling._inequality_coefficient` + scipy Spearman). If
-  ERA5-area's rho is near zero like Berkeley-area's, the collapse is robust to the
-  data source; if it is ~+0.36 like the station lens, the collapse was
-  Berkeley-specific (an equally publishable finding).
-
-This is a **cross-check artifact**, a sibling to :mod:`src.validation` -- NOT a new
-PCS projection. ``PCS_V2`` stays frozen at six projections; the comparison reuses
-the standalone coupling helpers directly rather than entering the registry-bound
-comparator, so no semantic-registry growth is needed.
+It is a cross-check artifact, not a registered projection: it reuses the
+coupling operators directly and writes ``era5_area_trends.parquet`` and
+``era5_validation_summary.json``. When the (gitignored) ERA5 grid is absent it
+writes an ``{"available": false}`` summary so a bundle build still succeeds.
 """
 
 from __future__ import annotations
@@ -37,18 +27,19 @@ from src.area_weighting import (
     BERKELEY_GRID_PATH,
     GPW_NATID_LOOKUP_PATH,
     ISO3_COL,
+    land_mean_from_slopes,
     world_land_mean,
 )
 from src.cleaning import DEFAULT_END, DEFAULT_START
-from src.coupling import _inequality_coefficient
+from src.coupling import inequality_coefficient
 from src.data_io import PROCESSED_DIR, round_floats, write_typed_parquet
 from src.emissions import DEFAULT_INEQUALITY_PATH, OWID_CO2_PATH, load_owid_co2
 from src.era5_weighting import (
     ERA5_AREA_COL,
     ERA5_COVERAGE_COL,
     ERA5_GRID_PATH,
-    era5_area_weighted_country_trends,
-    era5_world_land_mean,
+    era5_cell_slopes,
+    reduce_era5_slopes,
 )
 from src.population import GPW_PATH
 
@@ -61,8 +52,8 @@ STATION_COL = "trend_c_per_decade"
 RESPONSIBILITY_COL = "cum_co2_t_per_capita"
 BERKELEY_AREA_COL = "trend_c_per_decade_area_weighted"
 
-# Berkeley Earth's documented 1950-2013 global *land* trend -- the anchor v1.2's
-# world-land mean (0.1926) matched; ERA5's independent mean is compared to it.
+# Berkeley Earth's published 1950-2013 global land trend, which the area-weighted
+# Berkeley world-land mean (0.193) matches; ERA5's mean is compared to it too.
 BERKELEY_GLOBAL_LAND_REFERENCE = 0.19
 
 DEFAULT_ERA5_TRENDS_PATH = PROCESSED_DIR / "era5_area_trends.parquet"
@@ -87,13 +78,13 @@ def _spearman(a: pd.Series, b: pd.Series) -> dict:
 
 
 def _gini(responsibility: pd.Series, impact: pd.Series) -> float | None:
-    """Gini-style coupling coefficient via the L3 operator, on the finite pairs."""
+    """The coupling stage's inequality coefficient, on the finite pairs."""
     pair = pd.concat(
         [responsibility.rename("r"), impact.rename("i")], axis=1
     ).dropna()
     if len(pair) < _MIN_PAIRS:
         return None
-    return float(_inequality_coefficient(pair["r"].to_numpy(), pair["i"].to_numpy()))
+    return float(inequality_coefficient(pair["r"].to_numpy(), pair["i"].to_numpy()))
 
 
 def compute_era5_validation(
@@ -146,8 +137,6 @@ def compute_era5_validation(
     return {
         "reference": {
             "berkeley_global_land_trend_c_per_decade": BERKELEY_GLOBAL_LAND_REFERENCE,
-            "v1_2_station_vs_area_spearman": [0.359, 0.011],
-            "v1_2_station_vs_area_gini": [0.563, 0.607],
         },
         "coverage": {
             "n_inequality_countries": int(len(inequality)),
@@ -219,14 +208,14 @@ def build_era5_validation(
         .drop_duplicates("country")
         .set_index("country")["iso_code"]
     )
-    era5_trends = era5_area_weighted_country_trends(
+    # One pass over the ERA5 grid serves both the country table and the land mean.
+    mask, lats, slopes = era5_cell_slopes(
         era5_grid_path, gpw_path, start=start, end=end, lookup_path=lookup_path
     )
+    era5_trends = reduce_era5_slopes(mask, lats, slopes)
     summary = compute_era5_validation(era5_trends, inequality, iso_by_owid)
     summary["world_land_mean"] = {
-        "era5_area": era5_world_land_mean(
-            era5_grid_path, gpw_path, start=start, end=end, lookup_path=lookup_path
-        ),
+        "era5_area": land_mean_from_slopes(lats, slopes),
         "berkeley_area": (
             world_land_mean(
                 berkeley_grid_path, gpw_path=gpw_path,

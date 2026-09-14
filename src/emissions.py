@@ -1,9 +1,6 @@
-"""Country-level climate inequality: warming rates vs emissions responsibility.
+"""Country table: warming rates joined to emissions responsibility.
 
-Phase 4 pipeline, answering the project's second question -- is warming
-proportional to cumulative emissions responsibility?
-
-1. Aggregate per-city-location Theil-Sen trends (Phase 2) to country level.
+1. Aggregate per-city-location Theil-Sen trends to country level.
    The mean is deliberately **unweighted**: no city-population data exists
    in the project datasets, so population weighting would need a third
    dataset with fragile city-name matching (documented limitation; see
@@ -53,7 +50,7 @@ from src.data_io import (
 from src.figures import render_inequality_scatter
 from src.population import (
     GPW_DEFAULT_YEAR,
-    POP_GRID_PATH,
+    GPW_PATH,
     population_weighted_country_mean,
 )
 from src.trends import DEFAULT_TRENDS_PATH
@@ -87,9 +84,9 @@ BERKELEY_TO_OWID = {
 }
 
 # On-disk schema of country_inequality.parquet (DuckDB types), in order. The
-# consumption-lens columns are appended additively (the v1 columns and their
-# order are frozen): a country with no OWID consumption series carries NULLs in
-# the three trailing columns and is dropped only by the v2 consumption consumers.
+# lens columns after ``cum_co2_t_per_capita`` are nullable: a country with no
+# OWID consumption series, population weighting or grid cells carries NULLs
+# there and is dropped only by the lens that needs the column.
 INEQUALITY_SCHEMA = {
     "Country": "VARCHAR",
     "owid_country": "VARCHAR",
@@ -169,7 +166,7 @@ def aggregate_trends_by_country(
     count more than their land area would.
 
     Args:
-        trends: Phase 2 output, one row per city-location.
+        trends: one row per city-location (``city_trends.parquet``).
         value_col: Trend column to average.
 
     Returns:
@@ -480,14 +477,14 @@ def build_inequality_analysis(
     out_dir: Path = OUTPUTS_DIR,
     table_path: Path = DEFAULT_INEQUALITY_PATH,
     cutoff_year: int | None = None,
-    pop_grid_path: Path = POP_GRID_PATH,
+    pop_grid_path: Path = GPW_PATH,
     pop_year: int = GPW_DEFAULT_YEAR,
     berkeley_grid_path: Path = BERKELEY_GRID_PATH,
     natid_lookup_path: Path = GPW_NATID_LOOKUP_PATH,
 ) -> dict:
-    """Run the Phase 4 pipeline end to end.
+    """Build the country table end to end.
 
-    Downloads the OWID inputs if missing, aggregates Phase 2 trends to
+    Downloads the OWID inputs if missing, aggregates the city trends to
     country level, joins against cumulative per-capita emissions and
     continents, quantifies the relationship, and writes the country table
     plus the scatter figure.
@@ -515,16 +512,15 @@ def build_inequality_analysis(
         logger.info("cutoff year %d derived from analysis_window", cutoff_year)
 
     country_trends = aggregate_trends_by_country(trends)
-    # People-weighted exposure (additive). Best-effort: the population grid is a
-    # committed static raster; when it is absent the columns are NULL and only
-    # the v2 exposure lens degrades, mirroring the consumption-null handling.
+    # People-weighted exposure, best-effort: when the (gitignored) population
+    # grid is absent the columns are NULL and only the exposure lens degrades.
     if pop_grid_path.exists():
         pop_weighted = population_weighted_country_mean(trends, pop_grid_path, pop_year)
         country_trends = country_trends.merge(pop_weighted, on="Country", how="left")
     else:
         logger.warning(
             "population grid absent (%s); people-weighted exposure columns will "
-            "be NULL -- commit the grid to enable the L3 exposure lens",
+            "be NULL -- commit the grid to enable the people-weighted lens",
             pop_grid_path,
         )
         country_trends = country_trends.assign(
@@ -533,13 +529,11 @@ def build_inequality_analysis(
 
     owid = load_owid_co2(co2_path)
 
-    # Area-weighted exposure (additive, best-effort): a per-cell Theil-Sen trend
-    # off the Berkeley gridded field, reduced to a country mean weighted by
-    # cos(lat) -- the honest answer to station sampling bias -- with cells
-    # assigned to countries via the GPW national-id band. Joined on ISO3 <->
-    # OWID iso_code (the exact bridge, no name matching); skipped to NULLs when
-    # the ~199 MB grid is absent, mirroring the population-null path so a no-grid
-    # build still succeeds.
+    # Area-weighted exposure, best-effort: a per-cell Theil-Sen trend on the
+    # Berkeley gridded field, reduced to a cos(lat)-weighted country mean, with
+    # cells assigned to countries via the GPW national-id band and joined on
+    # ISO3 <-> OWID iso_code (no name matching). NULL when the ~199 MB grid is
+    # absent, so a no-grid build still succeeds.
     if berkeley_grid_path.exists() and pop_grid_path.exists():
         area = area_weighted_country_trends(
             berkeley_grid_path, pop_grid_path,
@@ -557,7 +551,7 @@ def build_inequality_analysis(
         logger.warning(
             "Berkeley grid absent (%s) or population grid absent (%s); "
             "area-weighted exposure columns will be NULL -- commit the grid to "
-            "enable the L3 area-weighted lens",
+            "enable the area-weighted lens",
             berkeley_grid_path, pop_grid_path,
         )
         country_trends = country_trends.assign(
@@ -592,7 +586,7 @@ def build_inequality_analysis(
 
 
 def main() -> None:
-    """Run the Phase 4 pipeline and print effect sizes with uncertainty."""
+    """Build the country table and print effect sizes with uncertainty."""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     out = build_inequality_analysis()
     r = out["result"]
