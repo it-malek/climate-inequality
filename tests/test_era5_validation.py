@@ -3,7 +3,7 @@
 Pure synthetic frames (no grids, no network): ``compute_era5_validation`` is
 exercised against a hand-built inequality table + ERA5 trends + ISO bridge, with
 expectations recomputed via the same operators it uses (scipy Spearman and the
-reused :func:`src.coupling._inequality_coefficient`). The best-effort null path is
+reused :func:`src.coupling.inequality_coefficient`). The best-effort null path is
 checked with an absent grid path.
 """
 
@@ -14,7 +14,7 @@ import pandas as pd
 import pytest
 from scipy import stats
 
-from src.coupling import _inequality_coefficient
+from src.coupling import inequality_coefficient
 from src.era5_validation import (
     BERKELEY_AREA_COL,
     ERA5_AREA_COL,
@@ -77,7 +77,7 @@ class TestComputeEra5Validation:
         resp = np.array([1.0, 2.0, 4.0, 8.0])
         era5_vals = np.array([0.25, 0.19, 0.33, 0.24])
         rho, _ = stats.spearmanr(era5_vals, resp)
-        gini = _inequality_coefficient(resp, era5_vals)
+        gini = inequality_coefficient(resp, era5_vals)
         era5_block = out["coupling_common"]["era5_area"]
         assert out["coupling_common"]["n"] == 4
         assert era5_block["spearman_vs_responsibility"]["rho"] == pytest.approx(rho)

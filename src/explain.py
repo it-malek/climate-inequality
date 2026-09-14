@@ -1,35 +1,30 @@
-"""Phase 7: explanatory variables for warming trends.
+"""Explanatory variables for the warming trends.
 
-Two questions, building on the per-city-location trends from Phase 2
-(``data/processed/city_trends.parquet``, keyed on
-:data:`src.trends.CITY_KEYS`):
+Two questions, building on the per-city-location trends
+(``data/processed/city_trends.parquet``, keyed on :data:`src.trends.CITY_KEYS`):
 
-1. **City level**: which geographic variables explain the spatial pattern
-   of ``slope_c_per_decade``? Latitude (the tropics -> Arctic gradient) and
-   aridity (the Iranian-plateau / Central-Asia hotspot) are the README's
-   two candidates.
-2. **Country level (the important one)**: does the stored
-   +0.029 °C/decade-per-10x-emissions, continent-fixed-effects result
-   (``app/data/stats.json``, README lines 80-82) survive a
-   mean-|latitude| control?
+1. **City level**: which geographic variables explain the spatial pattern of
+   ``slope_c_per_decade``? Latitude (the tropics-to-Arctic gradient) and aridity
+   (the Iranian-plateau / Central-Asia hotspot) are the two candidates.
+2. **Country level**: does the +0.029 °C/decade-per-10x-emissions
+   continent-fixed-effects coefficient survive a mean-|latitude| control?
 
-This module introduces several new external grids and geometries (ETOPO
-elevation, Koeppen climate classes, Natural Earth coastlines) feeding
-straight into a regression whose result may revise a headline finding.
-Before any of that is trusted, :func:`run_geo_preflight` -- a guardrail,
-not new analysis -- verifies coordinate conventions, spot-checks three
-known cities, checks grid-sampling determinism/NaN rates, and checks the
-country-name joins. :func:`main` runs it first and aborts if it fails.
+The feature assembly joins several external grids and geometries (ETOPO
+elevation, Koeppen climate classes, Natural Earth coastlines). Before any of it
+is trusted, :func:`run_geo_preflight` checks coordinate conventions, spot-checks
+three known cities, checks grid-sampling determinism and NaN rates, and checks
+the country-name joins; :func:`main` runs it first and aborts if it fails.
+
+The city-feature table this module writes is also the input to the country
+design of :mod:`src.decomposition` (aggregated per country there).
 
 Sections, in execution order:
     1. Constants / paths.
-    2. Coordinate-system helpers (shared by the preflight and the
-       feature samplers).
-    3. Feature assembly (-> ``city_features.parquet``).
-    4. Geo + data integrity preflight (gates everything below).
-    5. City-level model (3 specs + Moran's I diagnostic).
-    6. Country-level coefficient-stability model (6 specs).
-    7. ``main()``.
+    2. Feature assembly (-> ``city_features.parquet``).
+    3. Geo + data integrity preflight (gates everything below).
+    4. City-level model (3 specs + Moran's I diagnostic).
+    5. Country-level coefficient-stability model (6 specs).
+    6. Serialization for the app bundle; ``main()``.
 """
 
 from __future__ import annotations
@@ -57,12 +52,10 @@ from src.emissions import (
     BERKELEY_TO_OWID,
     DEFAULT_INEQUALITY_PATH,
 )
-# Grid samplers moved to src.grids (their natural home) so the lean
-# emissions/population path can use them without importing this heavy module.
 from src.grids import check_coordinate_orientation, sample_static_grid
 from src.interpolate import (
     LAND_ZIP_PATH,
-    _knn_indices,
+    knn_indices,
     haversine_km,
     load_land_geometry,
 )
@@ -143,12 +136,7 @@ FEATURES_COLUMNS = list(FEATURES_SCHEMA)
 
 
 # ---------------------------------------------------------------------
-# 2. Coordinate-system helpers
-# ---------------------------------------------------------------------
-
-
-# ---------------------------------------------------------------------
-# 3. Feature assembly
+# 2. Feature assembly
 # ---------------------------------------------------------------------
 
 
@@ -369,11 +357,10 @@ def add_station_density(
     """Add `station_density`, the count of nearby city-locations.
 
     For each location, counts how many of its `k` nearest neighbors
-    (by great-circle distance, via :func:`src.interpolate._knn_indices`)
+    (by great-circle distance, via :func:`src.interpolate.knn_indices`)
     fall within `radius_km` (excluding itself). If a location's true
-    neighbor count within `radius_km` exceeds `k`, this undercounts --
-    an accepted approximation for a "first to drop" feature at
-    city-location density (handdown Phase 7 table, feature 5).
+    neighbor count within `radius_km` exceeds `k`, this undercounts -- an
+    accepted approximation for a low-priority feature.
 
     Args:
         df: Frame with `Longitude`/`Latitude` columns.
@@ -387,7 +374,7 @@ def add_station_density(
     lat = df["Latitude"].to_numpy()
     n = len(df)
     k_query = min(k + 1, n)  # +1: the nearest "neighbor" is the point itself
-    idx = _knn_indices(lon, lat, lon, lat, k=k_query)
+    idx = knn_indices(lon, lat, lon, lat, k=k_query)
 
     density = np.empty(n, dtype=float)
     for i in range(n):
@@ -397,12 +384,9 @@ def add_station_density(
     return df.assign(station_density=density)
 
 
-# Berkeley Earth -> World Bank income-table ("OWID-mirrored") country-name
-# overrides. Empty: country_inequality.parquet's `owid_country` column
-# (already overridden via BERKELEY_TO_OWID for the emissions join) matches
-# the income table's `owid_country` for all 157 countries -- verified at
-# session time. Kept for the same reason as BERKELEY_TO_OWID: a documented
-# seam if a future income-table refresh renames a country.
+# OWID-name -> income-table name overrides. Empty: the income table is also
+# OWID-named, so all 157 countries match; the seam exists in case a refresh of
+# either table renames a country.
 BERKELEY_TO_WORLDBANK: dict[str, str] = {}
 
 
@@ -477,9 +461,8 @@ def build_city_features(
             to :func:`src.interpolate.load_land_geometry`.
         etopo_path: Passed to :func:`add_elevation`.
         koppen_path: Passed to :func:`add_koppen`.
-        include_density: If False, `station_density` is all-NaN (the
-            feature is excludable from model formulas with one flag, per
-            the handdown's drop order).
+        include_density: If False, `station_density` is all-NaN so the
+            feature can be dropped from the model formulas with one flag.
 
     Returns:
         The feature DataFrame, columns :data:`FEATURES_COLUMNS`.
@@ -503,7 +486,7 @@ def build_city_features(
 
 
 # ---------------------------------------------------------------------
-# 4. Geo + data integrity preflight (gates Sections 5-6)
+# 3. Geo + data integrity preflight (gates Sections 4-5)
 # ---------------------------------------------------------------------
 
 # (City, Country) pairs spot-checked by print_city_sanity_checks.
@@ -724,7 +707,7 @@ def run_geo_preflight(
     koppen_path: Path = KOPPEN_PATH,
     land: Geometry | None = None,
 ) -> bool:
-    """Run the Phase 7 geo + data integrity preflight.
+    """Run the geo + data integrity preflight.
 
     A guardrail, not new analysis: confirms coordinate conventions, three
     known cities' sampled features, grid-sampling determinism/NaN rates,
@@ -813,7 +796,7 @@ def run_geo_preflight(
 
 
 # ---------------------------------------------------------------------
-# 5. City-level model
+# 4. City-level model
 # ---------------------------------------------------------------------
 
 
@@ -865,7 +848,7 @@ def morans_i(
 
     Uses row-standardized k-nearest-neighbor weights (each point weighted
     ``1/k`` against its `k` nearest neighbors by great-circle distance, via
-    :func:`src.interpolate._knn_indices`). With row-standardized weights
+    :func:`src.interpolate.knn_indices`). With row-standardized weights
     ``S0 = n``, so
 
         I = sum_i(z_i * mean(z_neighbors_i)) / sum(z_i^2)
@@ -885,7 +868,7 @@ def morans_i(
     """
     n = len(residuals)
     z = np.asarray(residuals, dtype=float) - np.mean(residuals)
-    idx = _knn_indices(lon, lat, lon, lat, k=min(k + 1, n))
+    idx = knn_indices(lon, lat, lon, lat, k=min(k + 1, n))
     neighbor_idx = np.array([row[row != i][:k] for i, row in enumerate(idx)])
 
     def _compute(zz: np.ndarray) -> float:
@@ -1065,7 +1048,7 @@ def compare_city_specs(
 
 
 # ---------------------------------------------------------------------
-# 6. Country-level coefficient-stability model
+# 5. Country-level coefficient-stability model
 # ---------------------------------------------------------------------
 
 
@@ -1139,7 +1122,7 @@ class CountryModelResult:
 
 
 # Six specs for the log10_emissions coefficient-stability table. "pooled"
-# and "continent_fe" reproduce the stored README result (+0.021, +0.029
+# and "continent_fe" reproduce the src.emissions result (+0.021, +0.029
 # [+0.014, +0.045]); "lat_continent" is the key spec -- does +0.029 survive
 # a mean-|latitude| control within continents?
 COUNTRY_MODEL_SPECS: dict[str, str] = {
@@ -1170,8 +1153,8 @@ def fit_country_model(
         One :class:`CountryModelResult` per spec, in `specs` order. The
         `log10_emissions` term's coefficient/CI across specs *is* the
         coefficient-stability table: compare `pooled` and `continent_fe`
-        against the stored README result, then check whether
-        `lat_continent` changes it.
+        against the src.emissions result, then check whether `lat_continent`
+        changes it.
     """
     results = []
     for name, formula in specs.items():
@@ -1189,7 +1172,7 @@ def fit_country_model(
 
 
 # ---------------------------------------------------------------------
-# 7. Serialization helpers (for the app bundle)
+# 6. Serialization helpers (for the app bundle)
 # ---------------------------------------------------------------------
 
 
@@ -1329,16 +1312,15 @@ def write_explain_summary(
 
 
 # ---------------------------------------------------------------------
-# 8. main()
+# main()
 # ---------------------------------------------------------------------
 
 
 def main() -> None:
-    """Run the Phase 7 pipeline: preflight, features, then both models.
+    """Preflight, build the features, then fit both models.
 
-    Aborts before building `city_features.parquet` or fitting any model
-    if :func:`run_geo_preflight` fails (the execution-order rule from the
-    geo + data integrity preflight).
+    Aborts before building `city_features.parquet` or fitting any model if
+    :func:`run_geo_preflight` fails.
     """
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 

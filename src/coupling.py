@@ -1,23 +1,27 @@
-"""Layer 3: deterministic projection comparator over the two PCS v1 projections.
+"""Responsibility-impact coupling: how far warming departs from responsibility.
 
-L3 is a pure deterministic functional ``(R_c, I_c) -> metrics`` where
-``R_c = responsibility_index_v1`` and ``I_c = impact_index_v1`` are the only inputs --
-read through the artifact boundary (``projections_v1.parquet``), never by re-deriving
-how they were computed (semantic closure). It performs **only** the closed operator set:
+Compares, per country, a responsibility projection ``R`` (cumulative CO2 per
+capita) against an impact projection ``I`` (warming rate) using a small fixed
+set of operations, so that every lens in the dashboard is computed the same
+way:
 
-  A. ranking      -- sort descending, ``rank(method="min")``;
-  B. z-score      -- fixed operator ``z(x) = (x - mean(x)) / std(x, ddof=0)``;
-  C. differences  -- ``rank_gap = impact_rank - responsibility_rank``,
-                     ``z_gap = z(I) - z(R)``;
-  D. Lorenz       -- sort by responsibility only, cumulative sums normalized to [0,1],
-                     no interpolation / smoothing / curve fitting;
-  E. one scalar   -- ``inequality_coefficient`` = ``2 * |Lorenz area|``, bounded [0,1].
+- descending ranks with ``method="min"`` and the ``rank_gap = rank(I) - rank(R)``;
+- z-scores with ``ddof=0`` and the ``z_gap = z(I) - z(R)``;
+- Spearman rho between ``R`` and ``I``;
+- a Lorenz-style ``inequality_coefficient``: order countries by ``R`` only,
+  take the cumulative shares of ``R`` (x) and ``I`` (y), and report twice the
+  absolute area between that empirical curve and the diagonal, clamped to
+  [0, 1] (0 = impact tracks responsibility, 1 = maximally divergent);
+- the ten largest and ten smallest ``z_gap`` countries.
 
-It additionally reports the rank correlation ``spearman_rho`` and the z_gap-ordered
-mismatch lists. No feature engineering, no regression, no optimization, no latent
-structure -- any operation not listed above is forbidden. It writes exactly two
-artifacts, ``coupling.parquet`` and ``coupling_summary.json``; the summary carries only
-the permitted fields and **no** interpretation / narrative / commentary.
+The inputs are read from the projection tables written by :mod:`src.projections`
+(``Country`` plus registered projection columns only, checked by
+:func:`validate_projection_frame`), never from the country table directly, so a
+lens cannot quietly pick up an extra column. The station-based comparison runs
+the operators once; the consumption, people-weighted and area-weighted lenses
+run them twice (a rank-shift pass and an inequality pass) and write wide
+diagnostic tables. Summaries carry the numbers only; interpretation lives in the
+docs and the dashboard.
 """
 
 from __future__ import annotations
@@ -70,8 +74,7 @@ DEFAULT_EXPOSURE_COUPLING_PATH = PROCESSED_DIR / "coupling_exposure.parquet"
 DEFAULT_AREA_SUMMARY_PATH = PROCESSED_DIR / "coupling_area_summary.json"
 DEFAULT_AREA_COUPLING_PATH = PROCESSED_DIR / "coupling_area.parquet"
 
-# The default admissible set is the v1 closure (Country + the two v1 projections);
-# v2 consumers pass the registered subset for their artifact instead.
+# Admissible column sets: Country plus the registered projections of each lens.
 V1_ADMISSIBLE: frozenset[str] = frozenset({ID_COL, RESPONSIBILITY_INDEX, IMPACT_INDEX})
 WIDE_ADMISSIBLE: frozenset[str] = frozenset(PROJECTIONS_CONSUMPTION_COLUMNS)
 EXPOSURE_ADMISSIBLE: frozenset[str] = frozenset(PROJECTIONS_EXPOSURE_COLUMNS)
@@ -144,14 +147,11 @@ COUPLING_AREA_COLUMNS = tuple(COUPLING_AREA_SCHEMA)
 def validate_projection_frame(
     columns, admissible: frozenset[str] = V1_ADMISSIBLE
 ) -> None:
-    """Semantic-closure guard: only ``Country`` + registered projections may appear.
+    """Require exactly ``Country`` plus the registered projection columns.
 
-    Implements Invariant 1: the comparator operates *only* on the PCS-resolved
-    scalars; a stray column (e.g. continent, population) would be forbidden
-    feature leakage and must raise rather than enter a computation. `admissible`
-    defaults to the v1 closure (exactly the two v1 projections); v2 callers pass
-    the wider registered set, so closure widens from "exactly the two" to "exactly
-    the registered set" without being dropped.
+    A stray column (continent, population, ...) would be an unregistered input
+    to the comparison and raises rather than entering a computation. `admissible`
+    defaults to the station-based pair; the other lenses pass their own set.
 
     Raises:
         ValueError: if any column is outside `admissible`, or a registered
@@ -162,32 +162,31 @@ def validate_projection_frame(
     if unknown:
         raise ValueError(
             f"projection frame carries non-PCS column(s) {sorted(unknown)}; the "
-            f"comparator operates only on {sorted(admissible)} (semantic closure)"
+            f"comparator operates only on {sorted(admissible)}"
         )
     missing = sorted(admissible - set(cols))
     if missing:
         raise ValueError(f"projection frame missing PCS column(s) {missing}")
 
 
-def _rank_desc(values: np.ndarray) -> np.ndarray:
-    """Strict descending rank, ties via ``method="min"`` (operator A)."""
+def rank_desc(values: np.ndarray) -> np.ndarray:
+    """Descending rank, ties via ``method="min"``."""
     return pd.Series(values).rank(method="min", ascending=False).astype("int64").to_numpy()
 
 
-def _zscore(values: np.ndarray) -> np.ndarray:
-    """Fixed z-score operator ``z(x) = (x - mean(x)) / std(x, ddof=0)`` (operator B)."""
+def zscore(values: np.ndarray) -> np.ndarray:
+    """``z(x) = (x - mean(x)) / std(x, ddof=0)``."""
     return (values - values.mean()) / values.std(ddof=0)
 
 
-def _inequality_coefficient(responsibility: np.ndarray, impact: np.ndarray) -> float:
+def inequality_coefficient(responsibility: np.ndarray, impact: np.ndarray) -> float:
     """Gini-style scalar: ``2 * |area between the Lorenz curve and the diagonal|``.
 
-    Operator D/E: order countries by responsibility only; take the cumulative
-    responsibility share (x) and cumulative impact share (y), each normalized to
-    [0, 1]; the coefficient is twice the absolute area between that empirical curve
-    and the 45-degree line (the discrete Lorenz area -- no interpolation, smoothing,
-    or curve fitting), clamped to [0, 1]. Both projections must be positive for the
-    share construction; any non-positive row is dropped (logged) first.
+    Order countries by responsibility only; take the cumulative responsibility
+    share (x) and cumulative impact share (y); the coefficient is twice the
+    absolute area between that empirical curve and the 45-degree line (trapezoid
+    rule, no smoothing), clamped to [0, 1]. Both projections must be positive for
+    the share construction; any non-positive row is dropped (logged) first.
     """
     positive = (responsibility > 0.0) & (impact > 0.0)
     n_drop = int((~positive).sum())
@@ -210,7 +209,7 @@ def _inequality_coefficient(responsibility: np.ndarray, impact: np.ndarray) -> f
 
 @dataclass(frozen=True)
 class CouplingResult:
-    """Deterministic responsibility-impact comparison metrics (the L3 contract)."""
+    """Summary metrics of one responsibility-impact comparison."""
 
     spearman_rho: float
     n_high_impact_low_responsibility: int
@@ -219,7 +218,7 @@ class CouplingResult:
     top_cause_least_suffer: list[tuple[str, float]] = field(default_factory=list)
 
     def check(self, atol: float = 1e-9) -> None:
-        """Assert the inequality coefficient is bounded [0, 1] (§5.1.E)."""
+        """Assert the inequality coefficient is bounded [0, 1]."""
         if not (0.0 - atol <= self.inequality_coefficient <= 1.0 + atol):
             raise AssertionError(
                 f"inequality_coefficient {self.inequality_coefficient!r} outside [0, 1]"
@@ -232,14 +231,12 @@ def compute_coupling(
     y_col: str = IMPACT_INDEX,
     admissible: frozenset[str] = V1_ADMISSIBLE,
 ) -> tuple[pd.DataFrame, CouplingResult]:
-    """Run the closed operator set over a chosen pair of registered projections.
+    """Run the comparison operators over one pair of registered projections.
 
-    The operators are unchanged; only the two columns they run on are
-    parametrized. ``x_col`` plays the **responsibility** role (the Lorenz ordering
-    axis and the z/rank baseline); ``y_col`` plays the **impact** role (the
-    compared quantity). Defaults reproduce the v1 responsibility-vs-impact
-    comparison exactly; v2 callers pass a wider `admissible` set and any registered
-    pair (e.g. production-matched vs consumption).
+    ``x_col`` plays the responsibility role (the Lorenz ordering axis and the
+    z/rank baseline); ``y_col`` plays the impact role (the compared quantity).
+    Defaults reproduce the station-based responsibility-vs-impact comparison;
+    the other lenses pass their own `admissible` set and pair.
 
     Args:
         projections: one row per country, closed over `admissible`.
@@ -267,13 +264,13 @@ def compute_coupling(
     responsibility = work[x_col].to_numpy(dtype=float)  # responsibility role
     impact = work[y_col].to_numpy(dtype=float)  # impact role
 
-    responsibility_rank = _rank_desc(responsibility)
-    impact_rank = _rank_desc(impact)
+    responsibility_rank = rank_desc(responsibility)
+    impact_rank = rank_desc(impact)
     rank_gap = impact_rank - responsibility_rank
-    z_gap = _zscore(impact) - _zscore(responsibility)
+    z_gap = zscore(impact) - zscore(responsibility)
 
     spearman_rho = float(stats.spearmanr(responsibility, impact)[0])
-    inequality_coefficient = _inequality_coefficient(responsibility, impact)
+    coefficient = inequality_coefficient(responsibility, impact)
     n_high_impact_low_responsibility = int((z_gap > 0.0).sum())
 
     table = pd.DataFrame(
@@ -297,7 +294,7 @@ def compute_coupling(
     result = CouplingResult(
         spearman_rho=spearman_rho,
         n_high_impact_low_responsibility=n_high_impact_low_responsibility,
-        inequality_coefficient=inequality_coefficient,
+        inequality_coefficient=coefficient,
         top_suffer_least_cause=top_suffer_least_cause,
         top_cause_least_suffer=top_cause_least_suffer,
     )
@@ -306,12 +303,7 @@ def compute_coupling(
 
 
 def summary_payload(result: CouplingResult) -> dict:
-    """JSON payload of the result, float-rounded for byte-stability.
-
-    Carries only the permitted fields and **no** interpretation / narrative
-    (§8). Floats are rounded (:func:`src.data_io.round_floats`) so the committed
-    JSON is byte-stable across platforms.
-    """
+    """JSON payload of the result, float-rounded for byte-stability."""
     return round_floats(asdict(result))
 
 
@@ -320,10 +312,10 @@ def build_coupling(
     summary_path=DEFAULT_SUMMARY_PATH,
     table_path=DEFAULT_COUPLING_PATH,
 ) -> dict:
-    """Read the projection table, compare, and write the two L3 artifacts.
+    """Read the projection table, compare, and write the two artifacts.
 
     Args:
-        projections_path: the L1 ``projections_v1.parquet``.
+        projections_path: ``projections_v1.parquet``.
         summary_path: destination ``coupling_summary.json``.
         table_path: destination ``coupling.parquet``.
 
@@ -348,7 +340,7 @@ def build_coupling(
 
 
 # ---------------------------------------------------------------------
-# Consumption lens (PCS v2 wide registry) -- the two-pass comparator
+# Consumption lens -- the two-pass comparator
 # ---------------------------------------------------------------------
 
 
@@ -357,7 +349,7 @@ def compute_consumption_coupling(
 ) -> tuple[pd.DataFrame, CouplingResult, CouplingResult]:
     """Run the comparator twice over the wide consumption projection frame.
 
-    Same closed operators, two registered pairs:
+    Two registered pairs:
 
     - **Pass 1** ``(responsibility_index_consumption, impact_index_v1)`` -- the
       consumption-based climate-inequality coefficient (consumption responsibility
@@ -441,7 +433,7 @@ def build_coupling_consumption(
     summary_path=DEFAULT_CONSUMPTION_SUMMARY_PATH,
     table_path=DEFAULT_CONSUMPTION_COUPLING_PATH,
 ) -> dict:
-    """Read the wide projection table, run both passes, and write the L3 v2 artifacts.
+    """Read the wide projection table, run both passes, and write both artifacts.
 
     Args:
         projections_path: the wide ``projections_consumption.parquet``.
@@ -487,7 +479,7 @@ def build_coupling_consumption(
 
 
 # ---------------------------------------------------------------------
-# Exposure lens (PCS v2 wide registry) -- people-weighted warming exposure
+# Exposure lens -- people-weighted warming
 # ---------------------------------------------------------------------
 
 
@@ -496,7 +488,7 @@ def compute_exposure_coupling(
 ) -> tuple[pd.DataFrame, CouplingResult, CouplingResult]:
     """Run the comparator twice over the exposure projection frame.
 
-    Same closed operators, two registered pairs:
+    Two registered pairs:
 
     - **Pass A** ``(impact_index_v1, impact_index_population_weighted)`` -- the
       station-weighted vs people-weighted exposure rank-shift. A positive
@@ -566,7 +558,7 @@ def build_coupling_exposure(
     summary_path=DEFAULT_EXPOSURE_SUMMARY_PATH,
     table_path=DEFAULT_EXPOSURE_COUPLING_PATH,
 ) -> dict:
-    """Read the exposure projection table, run both passes, write the L3 artifacts.
+    """Read the exposure projection table, run both passes, write both artifacts.
 
     Args:
         projections_path: the ``projections_exposure.parquet``.
@@ -612,7 +604,7 @@ def build_coupling_exposure(
 
 
 # ---------------------------------------------------------------------
-# Area-weighted lens (PCS v2 wide registry) -- gridded cos-latitude exposure
+# Area-weighted lens -- gridded cos-latitude warming
 # ---------------------------------------------------------------------
 
 
@@ -621,7 +613,7 @@ def compute_area_coupling(
 ) -> tuple[pd.DataFrame, CouplingResult, CouplingResult]:
     """Run the comparator twice over the area-weighted projection frame.
 
-    Same closed operators, two registered pairs:
+    Two registered pairs:
 
     - **Pass A** ``(impact_index_v1, impact_index_area_weighted)`` -- the
       station-weighted vs area-weighted exposure rank-shift. A positive
@@ -691,7 +683,7 @@ def build_coupling_area(
     summary_path=DEFAULT_AREA_SUMMARY_PATH,
     table_path=DEFAULT_AREA_COUPLING_PATH,
 ) -> dict:
-    """Read the area projection table, run both passes, write the L3 artifacts.
+    """Read the area projection table, run both passes, write both artifacts.
 
     Args:
         projections_path: the ``projections_area.parquet``.
@@ -735,7 +727,7 @@ def build_coupling_area(
 
 
 def main() -> None:
-    """Run the comparator on the L1 projection table and print the headline."""
+    """Run the comparator on the projection table and print the headline."""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     out = build_coupling()
     r = out["result"]

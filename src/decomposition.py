@@ -65,7 +65,7 @@ CATEGORICAL_FEATURES = frozenset(
 )
 
 
-def _feature_block(data: pd.DataFrame, feature: str) -> tuple[np.ndarray, list[str]]:
+def feature_block(data: pd.DataFrame, feature: str) -> tuple[np.ndarray, list[str]]:
     """Numeric design block (n, k) for one schema feature.
 
     Numeric features are a single (optionally log10) column; categoricals are
@@ -184,7 +184,7 @@ def group_lmg_shares(
     group_blocks: dict[str, list[np.ndarray]] = {}
     univariate: dict[str, float] = {}
     for key, names in used.items():
-        blocks = [_feature_block(complete, name)[0] for name in names]
+        blocks = [feature_block(complete, name)[0] for name in names]
         group_blocks[key] = blocks
         univariate[key] = _r2(blocks, y)
 
@@ -296,7 +296,7 @@ def build_country_design(
 
     Args:
         inequality: ``country_inequality.parquet``.
-        city_features: ``city_features.parquet`` (Phase 7).
+        city_features: ``city_features.parquet``.
         income: ``owid_country`` -> ``income_group`` table
             (:func:`src.explain.load_income_groups`).
         schema: the contract whose names the output uses.

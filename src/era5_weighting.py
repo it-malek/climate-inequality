@@ -1,32 +1,18 @@
-"""ERA5 area-weighted warming -- the independent reanalysis cross-check.
+"""Area-weighted country warming from ERA5 reanalysis 2 m temperature.
 
-``docs/future_work.md`` §2: v1.2's area-weighted lens (:mod:`src.area_weighting`)
-overturned the headline coupling (warming<->responsibility Spearman rho **+0.36 ->
-+0.01**) by weighting every km^2 equally instead of every station. That result
-rests on a single gridded product (Berkeley Earth). This module recomputes the
-*same* area-weighted country warming off **ERA5 reanalysis 2 m temperature** -- a
-model-assimilated field with no station-sampling gaps -- as a fully independent
-check: if ERA5 reproduces the collapse it is robust to the data source; if it does
-not, the collapse was Berkeley-specific (an equally publishable finding).
+The area-weighted lens (:mod:`src.area_weighting`) rests on one gridded product.
+This module recomputes it on ERA5, ECMWF's model-assimilated reanalysis, which
+has no station-sampling gaps, as an independent check of the area-weighting
+result. The estimator, window, country assignment and cos(latitude) reduction are
+imported unchanged from :mod:`src.area_weighting`; only ERA5's conventions are
+handled here:
 
-**Same operator, same window, same weighting** as :mod:`src.area_weighting` -- only
-the data source differs. The reusable machinery (streamed Theil-Sen
-:func:`~src.area_weighting.cell_trends`, GPW band-11 ISO3 assignment, the cos(lat)
-country reduce) is imported from there; this module supplies only the ERA5-specific
-quirks:
-
-- **Absolute Kelvin, not anomalies** -- irrelevant for a *slope* (1 K = 1 degC per
-  decade), so no baseline conversion is needed.
-- **CF datetime axis** -- decoded by xarray (``decode_times=True``) and snapped to
-  first-of-month, matching the station/Berkeley monthly convention so the
-  decimal-decade trend axis is identical.
-- **0-360 longitudes** -- normalized to ``[-180, 180)`` *only* for the GPW
-  national-identifier sampler (which expects geographic longitudes); the data array
-  keeps its native column order, so the slope grid and the ISO3 mask stay
-  positionally aligned.
-- **cos(lat) area-weighting is REQUIRED** (a warming trend is an intensive field),
-  exactly as in :mod:`src.area_weighting` -- the mirror of the GPW population-count
-  rule, never to be confused.
+- absolute Kelvin rather than anomalies (irrelevant to a slope; 1 K = 1 °C per
+  decade);
+- a CF datetime axis, decoded by xarray and snapped to first-of-month;
+- 0-360 longitudes, normalized to [-180, 180) only when sampling the GPW
+  national-identifier grid, so the ISO3 mask stays aligned with the native
+  column order of the data.
 """
 
 from __future__ import annotations
@@ -41,7 +27,7 @@ from src.area_weighting import (
     DEFAULT_MIN_COVERAGE,
     GPW_NATID_LOOKUP_PATH,
     ISO3_COL,
-    _grid_coords,
+    grid_coords,
     assign_cell_iso3,
     cell_trends,
     land_mean_from_slopes,
@@ -94,7 +80,7 @@ def era5_cell_iso3(lats, lons, gpw_path=GPW_PATH, lookup=None) -> np.ndarray:
     return assign_cell_iso3(lats, normalize_longitudes(lons), gpw_path, lookup)
 
 
-def era5_area_weighted_country_trends(
+def era5_cell_slopes(
     nc_path=ERA5_GRID_PATH,
     gpw_path=GPW_PATH,
     *,
@@ -103,51 +89,56 @@ def era5_area_weighted_country_trends(
     min_coverage: float = DEFAULT_MIN_COVERAGE,
     lat_chunk: int = DEFAULT_LAT_CHUNK,
     lookup_path=GPW_NATID_LOOKUP_PATH,
-) -> pd.DataFrame:
-    """cos(lat) area-weighted ERA5 warming slope per country (the cross-check).
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Per-cell ERA5 Theil-Sen slopes plus the ISO3 mask (one pass over the grid).
 
-    Mirrors :func:`src.area_weighting.area_weighted_country_trends` exactly --
-    same operator, window and cos(lat) reduce -- but reads ERA5 ``t2m`` (CF time,
-    0-360 longitudes). Countries with no successfully-fit cell are omitted.
+    The grid pass is the expensive step (a Theil-Sen fit per land cell), so it is
+    done once here and both the country table and the world land mean are reduced
+    from its result.
+
+    Returns:
+        ``(mask, lats, slopes)`` -- the ``(n_lat, n_lon)`` ISO3 assignment, the
+        latitude axis and the ``(n_lat, n_lon)`` slope array (NaN where unfit).
+    """
+    lats, lons = grid_coords(nc_path)
+    lookup = load_national_id_lookup(lookup_path)
+    mask = era5_cell_iso3(lats, lons, gpw_path, lookup)
+    lats, _, slopes = cell_trends(
+        nc_path, mask, start=start, end=end,
+        min_coverage=min_coverage, lat_chunk=lat_chunk,
+        var=ERA5_VAR, decode_times=True, time_to_months=era5_time_to_months,
+    )
+    return mask, lats, slopes
+
+
+def reduce_era5_slopes(mask: np.ndarray, lats: np.ndarray, slopes: np.ndarray) -> pd.DataFrame:
+    """cos(lat) area-weighted ERA5 slope per country from a grid pass.
 
     Returns:
         One row per ISO3 (sorted), columns :data:`ERA5_COLUMNS`: ``iso3``,
         ``trend_c_per_decade_era5_area`` and ``era5_cell_coverage``.
     """
-    lats, lons = _grid_coords(nc_path)
-    lookup = load_national_id_lookup(lookup_path)
-    mask = era5_cell_iso3(lats, lons, gpw_path, lookup)
-    lats, lons, slopes = cell_trends(
-        nc_path, mask, start=start, end=end,
-        min_coverage=min_coverage, lat_chunk=lat_chunk,
-        var=ERA5_VAR, decode_times=True, time_to_months=era5_time_to_months,
-    )
     return reduce_cells_to_country(
-        mask, lats, slopes,
-        value_col=ERA5_AREA_COL, coverage_col=ERA5_COVERAGE_COL,
+        mask, lats, slopes, value_col=ERA5_AREA_COL, coverage_col=ERA5_COVERAGE_COL,
     )
 
 
-def era5_world_land_mean(
-    nc_path=ERA5_GRID_PATH,
-    gpw_path=GPW_PATH,
-    *,
-    start: str = DEFAULT_START,
-    end: str = DEFAULT_END,
-    min_coverage: float = DEFAULT_MIN_COVERAGE,
-    lat_chunk: int = DEFAULT_LAT_CHUNK,
-    lookup_path=GPW_NATID_LOOKUP_PATH,
-) -> float:
-    """cos(lat) area-weighted ERA5 world land-mean slope (the headline sanity check).
+def era5_area_weighted_country_trends(nc_path=ERA5_GRID_PATH, gpw_path=GPW_PATH, **kwargs) -> pd.DataFrame:
+    """cos(lat) area-weighted ERA5 warming slope per country.
 
-    Should land near Berkeley's ~0.19 degC/decade global-land trend; an independent
-    match validates the whole ERA5 ingest the way Berkeley's 0.1926 did for v1.2.
+    Same operator, window and reduction as
+    :func:`src.area_weighting.area_weighted_country_trends`, on ERA5 ``t2m``.
+    Countries with no successfully-fit cell are omitted. Accepts the keyword
+    arguments of :func:`era5_cell_slopes`.
     """
-    lats, lons = _grid_coords(nc_path)
-    mask = era5_cell_iso3(lats, lons, gpw_path, load_national_id_lookup(lookup_path))
-    lats, lons, slopes = cell_trends(
-        nc_path, mask, start=start, end=end,
-        min_coverage=min_coverage, lat_chunk=lat_chunk,
-        var=ERA5_VAR, decode_times=True, time_to_months=era5_time_to_months,
-    )
+    return reduce_era5_slopes(*era5_cell_slopes(nc_path, gpw_path, **kwargs))
+
+
+def era5_world_land_mean(nc_path=ERA5_GRID_PATH, gpw_path=GPW_PATH, **kwargs) -> float:
+    """cos(lat) area-weighted ERA5 world land-mean slope (the ingest sanity check).
+
+    Should land near Berkeley Earth's ~0.19 °C/decade global-land trend. Accepts
+    the keyword arguments of :func:`era5_cell_slopes`.
+    """
+    _, lats, slopes = era5_cell_slopes(nc_path, gpw_path, **kwargs)
     return land_mean_from_slopes(lats, slopes)

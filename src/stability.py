@@ -28,7 +28,7 @@ sensitivity page (``app/views/sensitivity.py``) renders:
 Contract: the input is the schema-named design from
 :func:`src.decomposition.build_country_design`, so the layer never sees a feature
 outside :data:`SCHEMA_V1`; the schema is perturbed in *sampling*, never in
-membership. See ``docs/stability_roadmap.md`` for the full blueprint.
+membership. See ``docs/stability.md``.
 """
 
 from __future__ import annotations
@@ -46,7 +46,7 @@ from src.decomposition import (
     COUNTRY_COL,
     OUTCOME_COL,
     DecompositionResult,
-    _feature_block,
+    feature_block,
     build_country_design,
     group_lmg_shares,
 )
@@ -118,7 +118,7 @@ def _full_model_residuals(
     all_features = [name for names in used.values() for name in names]
     complete = _complete_case(design, schema, status)
     y = complete[OUTCOME_COL].to_numpy(dtype=float)
-    blocks = [_feature_block(complete, name)[0] for name in all_features]
+    blocks = [feature_block(complete, name)[0] for name in all_features]
     intercept = np.ones((len(y), 1))
     matrix = np.hstack([intercept, *blocks]) if blocks else intercept
     coef, *_ = np.linalg.lstsq(matrix, y, rcond=None)

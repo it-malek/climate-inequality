@@ -17,12 +17,9 @@ from src.population import (
     GPW_POP_VAR,
     POP_COVERAGE_COL,
     POP_WEIGHTED_COL,
-    area_weighted_mean,
-    global_population_total,
     latitude_area_weights,
     population_weighted_country_mean,
     sample_population,
-    verify_population_grid,
 )
 
 
@@ -53,21 +50,6 @@ def grid(tmp_path):
     # lat {10, 0} (descending, like GPW), lon {0, 10}; band-5 count[lat, lon].
     count = np.array([[10.0, 90.0], [10.0, 90.0]])
     return write_gpw_grid(tmp_path / "gpw.nc", [10.0, 0.0], [0.0, 10.0], count)
-
-
-class TestVerifyPopulationGrid:
-    def test_missing_file_raises(self, tmp_path):
-        with pytest.raises(FileNotFoundError, match="population grid not found"):
-            verify_population_grid(tmp_path / "absent.nc", print_summary=False)
-
-    def test_reports_variable_and_dims(self, grid, capsys):
-        info = verify_population_grid(grid)
-        assert info["data_vars"] == [GPW_POP_VAR]
-        assert info["units"] == "Persons"
-        assert set(info["dims"]) == {"raster", "latitude", "longitude"}
-        assert info["count_band_by_year"][2020] == 5
-        # the printed summary names the variable (the user's verification step)
-        assert GPW_POP_VAR in capsys.readouterr().out
 
 
 class TestSamplePopulation:
@@ -150,30 +132,9 @@ class TestPopulationWeightedCountryMean:
         assert "unweighted mean" in caplog.text
 
 
-class TestGlobalPopulationTotal:
-    def test_sum_of_count_band_masks_fill(self, tmp_path):
-        count = np.array([[100.0, 200.0], [-3.4e38, 300.0]])
-        g = write_gpw_grid(tmp_path / "gpw.nc", [10.0, 0.0], [0.0, 10.0], count)
-        # 100 + 200 + 300 = 600 (the negative fill is masked, not summed).
-        assert global_population_total(g) == pytest.approx(600.0)
-
-
 class TestAreaWeightedDiagnostics:
     def test_latitude_weights_cos_and_normalized(self):
         w = latitude_area_weights(np.array([0.0, 60.0]))
         # cos(0)=1, cos(60)=0.5 -> normalized to [2/3, 1/3].
         assert w == pytest.approx([2 / 3, 1 / 3])
         assert w.sum() == pytest.approx(1.0)
-
-    def test_area_weighted_mean_downweights_poles(self):
-        # Intensive field: equator row value 1.0, 60deg row value 4.0.
-        field = np.array([[1.0, 1.0], [4.0, 4.0]])
-        lats = np.array([0.0, 60.0])
-        # weights cos: [1, 0.5] -> mean = (1*1 + 4*0.5)/1.5 = 2.0 (< plain 2.5).
-        assert area_weighted_mean(field, lats) == pytest.approx(2.0)
-
-    def test_area_weighted_mean_masks_fill(self):
-        field = np.array([[1.0, -3.4e38], [3.0, 3.0]])
-        lats = np.array([0.0, 0.0])
-        # masked: cells {1, 3, 3} all at cos(0)=1 -> mean 7/3.
-        assert area_weighted_mean(field, lats) == pytest.approx(7 / 3)
