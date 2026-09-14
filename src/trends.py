@@ -1,6 +1,6 @@
 """Per-city warming trends from deseasonalized temperature anomalies.
 
-Phase 2 pipeline: compute each city-location's monthly climatology over a
+Compute each city-location's monthly climatology over a
 baseline window (DuckDB), subtract it from observed monthly means to get
 anomalies, gate on observation coverage, and fit a robust Theil-Sen trend
 (°C/decade, 95% CI) plus an OLS slope per location. Heavy filtering and
@@ -37,8 +37,8 @@ from src.data_io import (
 
 logger = logging.getLogger(__name__)
 
-# Climatology baseline — see README "Known dataset quirks". 1951–1980 is
-# the conventional 30-year reference period (GISTEMP's standard), densely
+# Climatology baseline. 1951–1980 is the conventional 30-year reference period
+# (GISTEMP's standard), densely
 # covered inside the analysis window. Unlike the analysis window it is a
 # constant, not a pipeline parameter: the baseline only anchors anomaly
 # *levels* (each location-month gets a constant offset), so the fitted
@@ -254,7 +254,7 @@ def build_city_trends(
     end: str = DEFAULT_END,
     min_coverage: float = DEFAULT_MIN_COVERAGE,
 ) -> pd.DataFrame:
-    """Run the Phase 2 pipeline end to end and write city_trends.parquet.
+    """Compute anomalies, fit per-location trends, write city_trends.parquet.
 
     Opens `db_path` read-only, computes anomalies for locations passing the
     coverage gate, fits per-location trends, and deterministically
@@ -304,7 +304,7 @@ def build_city_trends(
 
 
 def main() -> None:
-    """Build the default trends table and print README sanity checks."""
+    """Build the default trends table and print the sanity checks."""
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     trends = build_city_trends()
     global_mean = trends["slope_c_per_decade"].mean()

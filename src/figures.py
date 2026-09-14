@@ -6,8 +6,8 @@ numpy/pandas/plotly plus :mod:`src.cleaning` -- never duckdb, scipy,
 geopandas, or pykrige. Heavy computation happens upstream (``src.trends``,
 ``src.interpolate``, ``src.app_assets``); functions here only draw.
 
-Conventions (README): trend maps use the colorblind-safe diverging
-RdBu_r scale centered at 0; categorical colors use plotly's Safe palette.
+Conventions: trend maps use the colorblind-safe diverging RdBu_r scale
+centered at 0; categorical colors use plotly's Safe palette.
 """
 
 from __future__ import annotations
@@ -38,7 +38,7 @@ def render_trend_surface(
     """Plotly heatmap of an interpolated trend surface.
 
     Uses a diverging RdBu_r colorscale centered at zero (warming positive
-    in red, cooling negative in blue), per README plotting conventions.
+    in red, cooling negative in blue).
 
     Args:
         grid_lon, grid_lat: 1D axes of grid-cell centers, in degrees.
@@ -190,7 +190,7 @@ def render_city_anomaly_series(
     Three traces: the monthly anomalies (faint), a centered rolling mean
     for readability, and the fitted trend evaluated from `slope` and
     `intercept` on the :func:`src.cleaning.to_decimal_decades` axis -- the
-    same axis the slope was fit on, so the line is exactly the Phase 2 fit.
+    same axis the slope was fit on, so the line is exactly the stored fit.
 
     Args:
         series: One city's rows with `date_col` and `value_col`.
