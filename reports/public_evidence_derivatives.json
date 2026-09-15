@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "prepared_on": "2026-10-23",
+  "status": "Labeled public derivatives of historical execution metadata; original records remain in private recovery",
+  "files": {
+    "research/model_v2/outputs/m1b_amendment1_stopped_build/m1b_amendment1_stop_record.json": {
+      "original_sha256": "a8a5b55072587077dc633f95bff1b7c6cb6488d310082b784eb615e20e0ff12a",
+      "public_sha256": "aed031dac49c5eee2ec8e8aaa4ed8ae8ac3005e8615dea6fb992bb8bb740eb52",
+      "protected_sha256": "e020d01951b0a249abfd2b76bcbfbdaa5e27bafae8a0af3006aa298090d6aa92",
+      "edits": [
+        {
+          "pointer": "/determinism/runs/build_a/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/determinism/runs/build_b/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/determinism/runs/build_b/argv/1",
+          "public_value": "${RUN_ROOT}/m1b_build_b",
+          "original_value_sha256": "beed1f4cdf8d886a7cc751963124e0b4485537a5608dcf043e9366f96d4bba44",
+          "reason": "Incidental assistant scratch-directory identity is not needed to reproduce the recorded script, input hashes, parameters or numerical outputs. Retain the run-relative suffix and explicit placeholder; do not claim this portable public derivative was the original execution location."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m1b_amendment1_stopped_build/m1b_build_run.json": {
+      "original_sha256": "2a60fedeaddfa6660dc2ca652ef6539b44f81483d11ce5d3113cb0c7ef1f9561",
+      "public_sha256": "8a877037528cc3653daafe222d8f4dc6e8555eb5fbf712a153c23b1adf0e693a",
+      "protected_sha256": "d8e675a634ec9af19225269a14b957573881104ce8249fedb29bb6ff13f9da31",
+      "edits": [
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m1b_amendment1_stopped_build/m1b_build_run_b.json": {
+      "original_sha256": "f8d6e3510c7c613f7758e87c8de4bdc862f780d6e60805cd35d105d8c38ec925",
+      "public_sha256": "46bdb691015ad0f3309687ce13bca9bcaca5c79ff62fd5ac56b0e0db69e27a54",
+      "protected_sha256": "6e4cd106fdd9a6533a371081b85e000a995b861e63a4cdaac104ca69c9f74280",
+      "edits": [
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/1",
+          "public_value": "${RUN_ROOT}/m1b_build_b",
+          "original_value_sha256": "beed1f4cdf8d886a7cc751963124e0b4485537a5608dcf043e9366f96d4bba44",
+          "reason": "Incidental assistant scratch-directory identity is not needed to reproduce the recorded script, input hashes, parameters or numerical outputs. Retain the run-relative suffix and explicit placeholder; do not claim this portable public derivative was the original execution location."
+        }
+      ]
+    }
+  }
+}
