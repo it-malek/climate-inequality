@@ -1167,9 +1167,9 @@
     "research/model_v2/M1B_AMENDMENT1_BUILD_STOP.md": {
       "format": "utf8-markdown",
       "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
-      "original_sha256": "b453c6fcc5871e799e997b80fdaff39a080aaa3e21708b57b77b731f13b03fb9",
-      "public_sha256": "f412a957612437c9495269359776a86e09ec363fa2da867e450f25f6520a4784",
-      "protected_sha256": "1e23bfff0b301bb6ce870d3c2b99e46caa3cb5c6e046ff998815e6a36546c6b5",
+      "original_sha256": "f30d6a0284377d774dbfb4b875969967c7d7ffd6828a18d0059275d214bfa96f",
+      "public_sha256": "028a03dd49d47cf58bfe2d8d00d4e24db5277c6cafec7c371303089b5a5a025b",
+      "protected_sha256": "f7c74c82d2406614150320076d4973459fb66cbff73069a7128ab16afb39ec25",
       "edits": [
         {
           "original_start": 0,
