@@ -19,6 +19,7 @@ def run_cell(geom, r0, c0, z, koppen=None, n_countries=1):
     kg = np.zeros((360, 720), dtype=np.int8) if koppen is None else koppen
     sums = g.Sums(n_countries)
     g.accumulate(records, sums, country, lambda r, c: z(r, c), kg, NoCoast(), g.pixel_area_rows(1))
+    g.finalize_elevation(sums, lambda r, c: z(r, c))
     return sums
 
 
@@ -29,23 +30,51 @@ def test_pixel_lattice_area_conserves_the_sphere():
 
 
 def test_negative_land_elevation_retained_and_negative_ocean_excluded():
-    # One 0.25° cell at 10–10.25°N, 20–20.25°E; land is the western part up to 20.1°E,
-    # a boundary running through pixel interiors.
+    # One 0.25° cell at 10–10.25°N, 20–20.25°E; land ends at 20.09°E, inside the pixel
+    # 20.0833–20.1°E whose centre (20.0917°E) is water.
     r0, c0 = (90 + 10) * g.PIX, (180 + 20) * g.PIX
-    land = shapely.box(20, 10, 20.1, 10.25)
+    land = shapely.box(20, 10, 20.09, 10.25)
 
     def z(r, c):
         lon = -180 + (c + .5) / g.PIX
-        return np.where(lon < 20.1, -5.0, -50.0)
+        return np.where(lon < 20.0834, -5.0, -50.0)
 
     sums = run_cell(land, r0, c0, z)
     qa = g.features_from_sums(sums, ['AAA'])
-    expected_area = g.row_band_area_km2(10, 10.25, .1)
-    assert sums.area[0] == pytest.approx(expected_area, rel=1e-9)
-    assert qa.elevation_if_computed[0] == pytest.approx(-5.0)       # ocean samples never enter
-    assert sums.neg_land_area[0] == pytest.approx(sums.elev_area[0])  # genuine negative land kept
-    assert sums.water_centred_area[0] > 0                            # partial pixels with water centres
-    assert sums.elev_area[0] + sums.water_centred_area[0] == pytest.approx(sums.area[0])
+    assert sums.area[0] == pytest.approx(g.row_band_area_km2(10, 10.25, .09), rel=1e-9)
+    assert qa.elevation_original_centre_only[0] == pytest.approx(-5.0)    # genuine negative land kept
+    assert qa.elevation_original_coverage[0] < 1                           # original centre rule misses the sliver
+    assert qa.elevation_coverage[0] == pytest.approx(1.0)                  # Amendment 1 completes it
+    assert qa.elevation[0] == pytest.approx(-5.0)                          # from adjacent land, never the -50 water value
+    assert qa.elevation_unresolved_area_km2[0] == 0
+    assert qa.elevation_s1_completed_at_0m[0] > -5.0
+
+
+def test_isolated_islet_stays_unresolved_and_ring2_is_only_a_sensitivity():
+    r0, c0 = (90 + 10) * g.PIX, (180 + 20) * g.PIX
+    main = shapely.box(20, 10, 20.05, 10.25)                     # land-centred pixels, z = 7
+    islet = shapely.box(20.1 + .002, 10.1 + .002, 20.1 + .006, 10.1 + .006)  # inside one water-centred pixel
+    far = shapely.box(20.2 + .002, 10.1 + .002, 20.2 + .006, 10.1 + .006)
+    sums = run_cell(shapely.union_all([main, islet, far]), r0, c0, lambda r, c: np.full(len(r), 7.0))
+    qa = g.features_from_sums(sums, ['ISL'])
+    islets = sums.completion['unresolved_area'][0]
+    assert islets == pytest.approx(shapely.area(islet) / shapely.area(main) * sums.elev_area[0] * 2, rel=.02)
+    assert qa.elevation[0] == pytest.approx(7.0) and qa.elevation_coverage[0] < 1
+    assert qa.elevation_s2_unresolved_at_0m[0] < 7.0
+    assert np.isnan(qa.elevation_s4_unresolved_at_completed_min[0])  # no completed values: bound undefined
+    assert qa.elevation_s3_coverage[0] == pytest.approx(qa.elevation_coverage[0])  # 3 pixels away: not ring 2 either
+
+
+def test_completion_never_crosses_analytical_units():
+    resolved = np.zeros((g.N_ROWS, g.N_COLS), dtype=np.int16)
+    resolved[100, 100] = 2          # country index 1
+    resolved[100, 102] = 1          # country index 0
+    z = lambda r, c: np.where(c == 100, 50.0, 9.0)  # noqa: E731
+    got = g.neighbour_mean(np.array([100, 100]), np.array([101, 101]), np.array([0, 1]), resolved, z, 1)
+    assert got.tolist() == [9.0, 50.0]
+    edge = np.zeros_like(resolved)
+    edge[5, g.N_COLS - 1] = 1       # longitude wraps
+    assert g.neighbour_mean(np.array([5]), np.array([0]), np.array([0]), edge, lambda r, c: np.full(len(r), 3.), 1)[0] == 3.
 
 
 def test_mean_absolute_latitude_differs_from_centroid_and_hemisphere_majority():
@@ -56,6 +85,7 @@ def test_mean_absolute_latitude_differs_from_centroid_and_hemisphere_majority():
     sums = g.Sums(1)
     g.accumulate(records, sums, country, lambda r, c: np.zeros(len(r)), np.zeros((360, 720), np.int8),
                  NoCoast(), g.pixel_area_rows(1))
+    g.finalize_elevation(sums, lambda r, c: np.zeros(len(r)))
     qa = g.features_from_sums(sums, ['EQX'])
     assert qa.abs_latitude[0] == pytest.approx((0.5 + 1 * 2 * 1.0) / 3, abs=2e-3)  # mean |lat| ≈ 0.833
     assert qa.hemisphere[0] == 'N'
@@ -70,15 +100,17 @@ def test_hemisphere_tie_uses_north():
         sums.dist[b][0][:] = 2.0
     sums.elev_area[:] = 2.0
     sums.koppen[0, 0] = 2.0
+    g.finalize_elevation(sums, lambda r, c: np.zeros(len(r)))
     assert g.features_from_sums(sums, ['TIE']).hemisphere[0] == 'N'
 
 
-def test_climate_dominance_gates():
+def test_climate_identifiability_rule():
     assert g.dominant_climate(np.array([5, 3, 0, 0, 0, 0.])) == ('A', '')
-    assert g.dominant_climate(np.array([5, 5, 0, 0, 0, 0.])) == ('A', '')           # full-coverage tie: alphabetical
-    assert g.dominant_climate(np.array([50, 48, 0, 0, 0, 3.]))[0] is None           # margin 2 <= unclassified 3
-    assert g.dominant_climate(np.array([60, 30, 0, 0, 0, 2.]))[0] == 'A'            # margin 30 > 2, coverage 97.8%
-    assert 'coverage' in g.dominant_climate(np.array([80, 10, 0, 0, 0, 10.]))[1]    # 90% classified
+    assert g.dominant_climate(np.array([5, 5, 0, 0, 0, 0.]))[0] is None            # exact tie is not a measurement
+    assert g.dominant_climate(np.array([50, 48, 0, 0, 0, 3.]))[0] is None          # 50 <= 48 + 3
+    assert g.dominant_climate(np.array([60, 30, 0, 0, 0, 29.]))[0] == 'A'          # 60 > 59, only 51% classified
+    assert g.dominant_climate(np.array([0, 97, 96, 0, 0, 2.]))[0] is None           # 98% classified but not identifiable
+    assert g.dominant_climate(np.array([9700.6, 1622.1, 0, 0, 0, 2103.3]))[0] == 'A'  # Bahamas-like margin
 
 
 def test_lake_hierarchy_and_full_block_detection():
@@ -149,6 +181,7 @@ def test_block_centroid_distance_quadrature_matches_pixels_for_a_linear_field():
     sums = g.Sums(1)
     g.accumulate(records, sums, country, lambda r, c: np.zeros(len(r)), np.zeros((360, 720), np.int8),
                  Linear(), g.pixel_area_rows(1), check_idx=[0])
+    g.finalize_elevation(sums, lambda r, c: np.zeros(len(r)))
     qa = g.features_from_sums(sums, ['LIN'])
     assert qa.continentality[0] == pytest.approx(qa.continentality_60s_check[0], abs=1e-4)
     assert qa.continentality_5min[0] == pytest.approx(qa.continentality_60s_check[0], abs=1e-4)
