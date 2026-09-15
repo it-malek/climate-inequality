@@ -58,6 +58,8 @@ geographic measurement alignment. V1's original decomposition remains separate.
 physical concepts. Station-derived predictors and the area-weighted outcome
 currently describe different spatial supports. No M1a result exists yet.
 
+**Result (2026-09-15, `M1A_REPORT.md`):** the summary is "neither". Spatial-CV RMSE 0.042873 → 0.045215 (95% CI of Δ −0.00035 to +0.00526); the M49 and worst-region vetoes fail; residual Moran's I is essentially unchanged (+0.047 in-sample); the group conclusion is stable. By the gate below, M1a does not become the base (see the report's §10 for the unnamed-case ambiguity).
+
 **Gate M1a → M1.** Report the scorecard. If M1a is a genuine improvement over
 M0, or is not worse (ΔRMSE interval covers zero) and removes the large-country
 pattern (Canada, Brazil, Russia, Algeria out-of-fold errors), M1a becomes the

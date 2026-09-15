@@ -65,7 +65,9 @@ wrong sign even when it improves fit.
    interaction is identified because 29 SH countries span 1–47°.
 9. **Group meaning.** Unchanged; it stays inside geography.
 
-## H2. Geography remeasured over terrestrial area — stage M1a, specification only
+## H2. Geography remeasured over terrestrial area — stage M1a, evaluated
+
+**Result (`M1A_REPORT.md`):** not supported as a model improvement. Area-consistent remeasurement (under pre-result Amendment 1) did not improve transfer or reduce residual spatial autocorrelation; the group conclusion is unchanged.
 
 1. **Verified evidence.** 26/151 station-modal versus area-dominant Köppen
    differences; 17 negative country-mean elevation values, not a complete

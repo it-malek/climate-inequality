@@ -140,6 +140,9 @@ Current primary CV: `uv run python -m research.model_v2.run_territory_correction
   before M1a measurement or scoring.
 - `M1A_FEASIBILITY_AUDIT.md`: original-gate measurement build (147/151 pass), kept as
   the evidence for the pre-result `M1A_MEASUREMENT_SPEC.md` Amendment 1.
+- `M1A_MEASUREMENT_RECORD.md`: amended measurements frozen before scoring.
+- `M1A_REPORT.md`: M1a scorecards and verdict (neither improved generalization nor
+  spatial specification; conclusion stable).
 
 All public V1 values and artifacts are unchanged. The two-product comparison
 does not tune or select predictors and must be repeated after V2 is frozen.

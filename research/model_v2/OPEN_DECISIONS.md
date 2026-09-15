@@ -11,6 +11,22 @@
    before any M1a measurement or score. That file also records the product-audit
    guardrail for later predictors.
 
+## Open before any genuinely new physical covariate (after M1a, 2026-09-15)
+
+1. **Base measurements for later stages.** M1a is neither a genuine improvement nor
+   a removal of the large-country error pattern. It is also not a genuine
+   deterioration, a case the plan's M1a gate does not name explicitly. Confirm that
+   later stages build on M0's station-based geography under the approved contract.
+   The alternative is the M1a measurements, justified on measurement-validity grounds
+   rather than scores.
+2. **Whether to open M1 at all, and with which pre-registered entries.** Under the
+   `M1A_EVALUATION_CONTRACT.md` §6 guardrail, any new covariate needs product-robust
+   residual evidence, a strong independently specified physical hypothesis, or both,
+   fixed before fitting. H4 (aerosols) rests on a cluster premise that is not
+   product-robust.
+3. **Push policy** for commits after `9fb56e1`: `e3e5901`, `ff67545`, `10e117b`,
+   `a7dea34` and the M1a result commit are local only.
+
 No territorial-unit, 500 km threshold, M49, random-reference, unseen-level or
 scorecard decision is reopened. No new physical covariate is authorized. Items in
 the historical register below are not current authorizations.
