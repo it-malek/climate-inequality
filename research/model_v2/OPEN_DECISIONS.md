@@ -11,21 +11,25 @@
    before any M1a measurement or score. That file also records the product-audit
    guardrail for later predictors.
 
-## Open before any genuinely new physical covariate (after M1a, 2026-09-15)
+## Resolved after M1a (owner, 2026-09-15)
 
-1. **Base measurements for later stages.** M1a is neither a genuine improvement nor
-   a removal of the large-country error pattern. It is also not a genuine
-   deterioration, a case the plan's M1a gate does not name explicitly. Confirm that
-   later stages build on M0's station-based geography under the approved contract.
-   The alternative is the M1a measurements, justified on measurement-validity grounds
-   rather than scores.
-2. **Whether to open M1 at all, and with which pre-registered entries.** Under the
-   `M1A_EVALUATION_CONTRACT.md` §6 guardrail, any new covariate needs product-robust
-   residual evidence, a strong independently specified physical hypothesis, or both,
-   fixed before fitting. H4 (aerosols) rests on a cluster premise that is not
-   product-robust.
-3. **Push policy** for commits after `9fb56e1`: `e3e5901`, `ff67545`, `10e117b`,
-   `a7dea34` and the M1a result commit are local only.
+3. **M1a not promoted.** Primary V2 development stays on M0\* (full-rank station
+   geography). M1a is the registered area-consistent geography measurement sensitivity.
+4. **Push.** The M1a history `e3e5901`…`7003ff4` was pushed without rewriting.
+
+## Open before any new physical predictor is computed
+
+M1b is narrowed to C2 baseline hydroclimatic dryness (owner, 2026-09-15). The decisions
+are recorded in `M1B_DESIGN.md`:
+* land-area support;
+* 1920-01 to 1949-12 window;
+* CRU TS v4.10;
+* baseline hydroclimate group;
+* no Bonferroni and no joint model;
+* sensitivities only for a surviving model.
+
+The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`. The
+remaining gate is owner go-ahead for CRU acquisition and construction.
 
 No territorial-unit, 500 km threshold, M49, random-reference, unseen-level or
 scorecard decision is reopened. No new physical covariate is authorized. Items in

@@ -60,6 +60,8 @@ currently describe different spatial supports. No M1a result exists yet.
 
 **Result (2026-09-15, `M1A_REPORT.md`):** the summary is "neither". Spatial-CV RMSE 0.042873 → 0.045215 (95% CI of Δ −0.00035 to +0.00526); the M49 and worst-region vetoes fail; residual Moran's I is essentially unchanged (+0.047 in-sample); the group conclusion is stable. By the gate below, M1a does not become the base (see the report's §10 for the unnamed-case ambiguity).
 
+**Decision (owner, 2026-09-15):** not promoted. Primary development stays on M0\* (the approved full-rank station-geography baseline, row C0 of `M1A_REPORT.md`). M1a remains the registered area-consistent geography measurement sensitivity.
+
 **Gate M1a → M1.** Report the scorecard. If M1a is a genuine improvement over
 M0, or is not worse (ΔRMSE interval covers zero) and removes the large-country
 pattern (Canada, Brazil, Russia, Algeria out-of-fold errors), M1a becomes the
@@ -68,7 +70,20 @@ covariates are added to M0's measurements and the deterioration is reported as
 a finding about station-based versus area-based measurement. Either way M0
 remains the comparison row.
 
-## M1 — pre-registered physical covariates (H3, H6; H4 only with approval)
+## M1b — first new physical information: M1b = M0\* + H (design stage; nothing fitted)
+
+M1b supersedes the candidate list of the original M1 section below.
+
+**Current step.** M1b = M0\* + baseline hydroclimatic dryness (C2 only; C1 and C3 held). The design is in `M1B_DESIGN.md` and `M1B_HYPOTHESIS_REGISTER.md`; the rules are frozen in `M1B_EVALUATION_CONTRACT.md` before any acquisition.
+
+**Rules.**
+* **Base.** Primary development uses M0\*. No candidate is tested under both M0\* and M1a to pick the better combination.
+* **Entry to the shortlist.** A candidate needs a physical rationale specified independently of the Berkeley residuals, or product-robust residual evidence; both is preferred.
+* **H4 aerosols** are not advanced on their cluster premise.
+* **Before any computation.** No predictor data are downloaded or computed until the owner approves the shortlist and a frozen M1b evaluation contract.
+* **Frozen elsewhere.** The improvement, rejection and overfitting definitions above, and the M4 stopping rule, still apply.
+
+## M1 — pre-registered physical covariates (H3, H6; H4 only with approval) — original Session 1 text, superseded by M1b
 
 **Change.** Add, one at a time and then jointly, the registered baseline
 quantities: baseline aridity index (H3), synoptic-scale ocean fraction (H6);

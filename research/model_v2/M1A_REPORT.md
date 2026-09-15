@@ -203,3 +203,20 @@ Artifacts:
 * No ERA5 scoring.
 * No retuning of any measurement rule, source, gate, fold or threshold after the result.
 * No change to V1, the bundle, the dashboard or public findings.
+
+## 13. Owner decision (2026-09-15, after this report)
+
+**M1a is complete and is not promoted.** It did not satisfy the preregistered criteria for replacing M0:
+* spatial-CV R² 0.1531 → 0.0580;
+* spatial-CV RMSE 0.042873 → 0.045215;
+* in-sample residual Moran's I 0.269 → 0.315;
+* M49 performance worsened;
+* both frozen vetoes failed.
+
+The RMSE interval includes zero, so this is not described as a statistically established deterioration.
+
+**What follows from the decision:**
+* **Primary V2 development** stays anchored to the approved full-rank M0-equivalent station-geography baseline, **M0\*** (row C0 above).
+* **M1a is retained permanently** as the registered **area-consistent geography measurement sensitivity**. After an M1b specification is approved and frozen, its result is replicated with the frozen M1a measurements. The two measurement sets are never searched jointly.
+* **Scientific result preserved:** remeasuring the existing geography variables consistently over national land area materially changes several country measurements, but does not improve spatial generalization or residual spatial structure. Geography nevertheless remains the dominant variance group, and the historical-responsibility contribution remains small.
+* **Not a validity judgement:** this decision does not mean station-based geography is physically or conceptually more correct because it predicts better.

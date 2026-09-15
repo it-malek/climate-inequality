@@ -28,6 +28,8 @@ classified and remain unresolved.
 
 These statuses govern only which evidence may *motivate* a hypothesis. They do
 not approve any H-entry for testing.
+**M1b (2026-09-15):** H3, H5 and H6 are re-specified in `M1B_HYPOTHESIS_REGISTER.md` on independent physical rationale. Their Session 1 residual evidence was Berkeley-derived and is not relied on. H4 is not advanced.
+
 The binding guardrail, which requires product-robust evidence and/or a strong
 independent physical hypothesis before any new covariate and forbids post-hoc
 searches against Berkeley residuals, is in `M1A_EVALUATION_CONTRACT.md` §6.
