@@ -1,4 +1,7 @@
-"""Minimum inter-territory distances between countries, from the 1° cell assignment.
+"""LEGACY 1° cell-centre distances: not a territorial clearance guarantee.
+
+Current Model V2 CV uses ``territory.py``. This module is retained solely to
+reproduce Session 1 diagnostic/candidate artifacts, which must not be overwritten.
 
 A buffer on centroid distance leaves the neighbours of a large country in its
 training fold (the centroid of Russia, Canada, the United States or Mexico is more

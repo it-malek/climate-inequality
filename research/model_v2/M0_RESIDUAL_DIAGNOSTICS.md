@@ -78,7 +78,7 @@ positive dependence to about 1500 km (I = 0.39 below 500 km, 0.30 at 500–1000,
 0.14 at 1000–1500, all p ≤ 0.005), nothing at 1500–2000 km (0.04, p = 0.38), and
 **significantly negative dependence at 2000–4000 km** (−0.13 and −0.14,
 p = 0.001). The semivariogram rises to its sill between 2000 and 3000 km. Measured
-instead on the minimum distance between territories (`borders.py`,
+instead on the legacy 1° cell-centre approximation to territory distance (`borders.py`,
 `outputs/border_distance_correlogram.json`), the positive dependence is
 confined to the 0–500 km ring (I = 0.33, p = 0.001; 0.03 at 500–1000 km) and
 turns negative beyond 1000 km: what the centroid metric spreads to 1500 km is

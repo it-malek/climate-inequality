@@ -1,8 +1,13 @@
 Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.
 
-# Open methodological decisions
+# Session 1 methodological decisions (historical register)
 
-Items that need the recorded methodological judgement before M1 starts. Each has a
+**Status update:** items 1–4 are adopted and frozen in the recorded decision. The territorial
+implementation is corrected in `TERRITORIAL_CV_CORRECTION.md`, using the approved
+GPW/ISO analytical units. The options below retain their Session 1 wording as
+history and are not requests to reopen those decisions.
+
+Items that needed the recorded methodological judgement before M1 starts. Each has a
 recommendation; none has been acted on.
 
 1. **Approve the primary protocol.** Leave-one-country-out with a 500 km

@@ -1,5 +1,9 @@
 # The frozen scorecard
 
+> Current primary M0: `outputs/m0_scorecard_territory_corrected.json`.
+> Session 1 CV numbers below are legacy 1° centre-approximation results.
+> See `TERRITORIAL_CV_CORRECTION.md`; intended protocol and score definitions unchanged.
+
 Every model stage (M0, M1a, M1, M2, M3, and the M4 table) reports the same
 metrics, computed by `research/model_v2/cv.py::scorecard` and
 `region_errors` from the same 151-country design, under the protocols in

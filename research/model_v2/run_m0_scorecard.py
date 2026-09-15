@@ -1,4 +1,4 @@
-"""The frozen M0 scorecard row: in-sample values plus the spatial-CV metrics.
+"""M0 scorecard entry: corrected territorial implementation; legacy logic retained.
 
 Primary protocol: leave-one-country-out with a 500 km exclusion buffer on the
 minimum inter-territory distance (every country any part of whose land lies within
@@ -6,7 +6,9 @@ minimum inter-territory distance (every country any part of whose land lies with
 test: leave-one-UN-M49-sub-region-out. Reference (not a test): random 10-fold,
 seed 0. Sensitivities (reported, never criteria): a 1000 km border buffer and a
 1500 km buffer on land-area-centroid distance. Unseen categorical levels receive
-the mean training level effect. Writes ``outputs/m0_scorecard.json``.
+the mean training level effect. The current entry writes ``outputs/m0_scorecard_territory_corrected.json``.
+``legacy_main`` retains Session 1 code for provenance; do not run it to replace
+the committed legacy scorecard.
 """
 
 from __future__ import annotations
@@ -29,7 +31,7 @@ MIN_REGION_N = 3  # the worst-region headline ignores sub-regions with fewer cou
 N_PERMUTATIONS = 999
 
 
-def main() -> dict:
+def legacy_main() -> dict:
     table = pd.read_csv(COUNTRY_TABLE_PATH)
     inequality, city_features, income = load_inputs()
     design = m0_complete_design(inequality, city_features, income)
@@ -69,11 +71,13 @@ def main() -> dict:
     return out
 
 
+def main() -> dict:
+    """Current M0 scorer; legacy files are never overwritten by this entry point."""
+    from research.model_v2.run_territory_correction import main as corrected_main
+
+    return corrected_main()
+
+
 if __name__ == "__main__":
     out = main()
-    for name, s in out["protocols"].items():
-        print(f"{name:36s} R2_cv {s['cv_r2']:.3f} RMSE {s['cv_rmse']:.4f} MAE {s['cv_mae']:.4f} slope {s['calibration_slope']:.2f} "
-              f"I_cv {s['residual_morans_i_cv']:.3f} worst {s['worst_region']['region']} ({s['worst_region']['rmse']:.4f}, n={s['worst_region']['n']})")
-    p = out["protocols"]["primary_border_buffered_loo_500km"]
-    print("in-sample R2", p["in_sample_r2"], "shares", {k: round(v, 4) for k, v in p.items() if k.startswith("share_")}, "residual", p["residual_share"])
-    print("region rmse (primary):", {k: round(v, 4) for k, v in sorted(p["region_rmse"].items(), key=lambda kv: -kv[1])})
+    print(out["corrected_primary"])
