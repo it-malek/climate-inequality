@@ -5,6 +5,8 @@ import os
 import subprocess
 import sys
 
+from pathlib import Path
+
 import netCDF4
 import numpy as np
 import pandas as pd
@@ -319,7 +321,7 @@ def test_variable_states_and_structural_eligibility():
         assert not h.structural_mask_cells(c, b).item() and not h.structural_mask_cells(b, b).item()
 
 
-def test_non_structural_invalid_support_is_unresolved_and_stops():
+def test_non_structural_invalid_support_stays_unresolved_counts_against_coverage_and_does_not_stop():
     native, x, _ = empty_grids()
     native_cell(native, x, 200, 101, 0.4)
     searched = np.zeros((N_LAT, N_LON), bool)
@@ -333,7 +335,103 @@ def test_non_structural_invalid_support_is_unresolved_and_stops():
     ones = np.ones((N_LAT, N_LON))
     qa = h.aggregate(resolved, ones, ones, ones, ones, np.zeros((N_LAT, N_LON), bool), 1)
     assert qa.loc[0, 'coverage'] == pytest.approx(0.99) and qa.loc[0, 'non_structural_invalid_area_km2'] == 1.0
-    assert any('non-structural' in s['rule'] for s in h.hard_stops(qa, ['AAA']))
+    assert qa.loc[0, 'unresolved_area_km2'] == 1.0 and qa.loc[0, 'n_non_structural_invalid_cells'] == 1
+    assert h.hard_stops(qa, ['AAA']) == []                 # Amendment 3: presence alone no longer stops
+
+
+def test_non_structural_cells_never_donate():
+    native, x, targets = empty_grids()
+    x[200, 101] = 0.9                                        # a finite value in a non-native cell is never a candidate
+    targets[200, 100] = True
+    donors = h.one_ring_donors(targets, native, x)
+    assert donor_row(donors, 200, 100).donor_lat_index == -1
+
+
+def test_resolved_coverage_of_exactly_0_98_passes_and_below_fails():
+    native, x, _ = empty_grids()
+    native_cell(native, x, 200, 100, 0.1)
+    native_cell(native, x, 250, 100, 0.1)
+    structural = np.zeros((N_LAT, N_LON), bool)             # the invalid cells are non-structural
+    ones = np.ones((N_LAT, N_LON))
+    for native_area, missing, expected in [(98.0, 2.0, []), (97.9, 2.1, ['coverage < 0.98'])]:
+        cells = cells_frame([(0, 200, 100, native_area), (0, 300, 300, missing)])
+        resolved = h.resolve_support(cells, x, native, structural, h.one_ring_donors(structural, native, x))
+        qa = h.aggregate(resolved, ones, ones, ones, ones, np.zeros((N_LAT, N_LON), bool), 1)
+        assert bool(qa.loc[0, 'coverage'] == 0.98) is (native_area == 98.0)
+        assert [s['rule'] for s in h.hard_stops(qa, ['AAA'])] == expected
+
+
+def test_unresolved_area_is_structural_plus_non_structural_and_the_table_lists_every_row():
+    rng = np.random.default_rng(11)
+    native, x, _ = empty_grids()
+    rows = [(c, int(rng.integers(100, 140)), int(rng.integers(0, 40)), float(rng.uniform(1, 50))) for c in range(5)
+            for _ in range(60)]
+    cells = cells_frame(rows).groupby(['idx', 'i', 'k'], as_index=False, sort=True).area.sum()
+    for i, k in sorted(set(zip(cells.i, cells.k)))[::3]:
+        native_cell(native, x, i, k, float(rng.normal()))
+    invalid = sorted(set(zip(cells.i, cells.k)) - set(zip(*np.nonzero(native))))
+    structural = np.zeros((N_LAT, N_LON), bool)
+    for i, k in invalid[::2]:
+        structural[i, k] = True
+    resolved = h.resolve_support(cells, x, native, structural, h.one_ring_donors(structural, native, x))
+    ones = np.ones((N_LAT, N_LON))
+    qa = h.aggregate(resolved, ones, ones, ones, ones, np.zeros((N_LAT, N_LON), bool), 5)
+    assert (qa.non_structural_invalid_area_km2 > 0).all() and (qa.unresolved_structural_area_km2 >= 0).all()
+    np.testing.assert_allclose(qa.unresolved_structural_area_km2 + qa.non_structural_invalid_area_km2,
+                               qa.unresolved_area_km2, rtol=AREA_RTOL, atol=0)
+    np.testing.assert_allclose(qa.native_valid_area_km2 + qa.harmonized_area_km2 + qa.unresolved_area_km2,
+                               qa.total_land_area_km2, rtol=AREA_RTOL, atol=0)
+    codes = ['AAA', 'BBB', 'CCC', 'DDD', 'EEE']
+    states = np.full((N_LAT, N_LON), h.MASKED, dtype=object)
+    table = h.unresolved_support(h.cell_audit(resolved, codes, states, states))
+    assert len(table) == int((resolved.status == h.UNRESOLVED).sum())
+    assert set(table.reason) <= {h.STRUCTURAL, h.NON_STRUCTURAL}
+    by_country = table.groupby('iso3').target_land_area_km2.sum().reindex(codes, fill_value=0.0).to_numpy()
+    np.testing.assert_allclose(by_country, qa.unresolved_area_km2, rtol=AREA_RTOL, atol=0)
+    assert table.columns.tolist() == ['target_lat_index', 'target_lon_index', 'target_lat', 'target_lon', 'iso3',
+                                      'target_land_area_km2', 'pre_state', 'pet_state', 'reason']
+
+
+def test_zero_precipitation_with_masked_pet_stays_unresolved_without_a_donor():
+    """Regression for CRU cell (164, 200) in Peru: PRE exactly 0 in every month, PET fill in every month."""
+    days = np.asarray(pd.period_range('1920-01', '1949-12', freq='M').days_in_month, dtype=float)
+    pre = np.full((360, 1, 2), 30.0)                         # (164, 200) target, (164, 201) native neighbour
+    pet = np.full((360, 1, 2), 3.0)
+    pre[:, 0, 0], pet[:, 0, 0] = 0.0, np.nan
+    p_bar, e_bar, x_small, native_small, _ = h.cell_climatology(pre, pet, days)
+    record_fill = {'pre': np.array([[0, 0]]), 'pet': np.array([[1500, 0]])}
+    window_fill = {'pre': np.array([[0, 0]]), 'pet': np.array([[360, 0]])}
+    finite = {'pre': np.isfinite(pre).sum(axis=0), 'pet': np.isfinite(pet).sum(axis=0)}
+    pre_state = h.variable_state(record_fill['pre'], window_fill['pre'], finite['pre'], p_bar, 1500)
+    pet_state = h.variable_state(record_fill['pet'], window_fill['pet'], finite['pet'], e_bar, 1500)
+    assert (pre_state[0, 0], pet_state[0, 0]) == ('nonpositive_mean', 'masked')
+    assert not h.structural_mask_cells(pre_state, pet_state)[0, 0]
+    native, x, _ = empty_grids()
+    native[164, 200:202], x[164, 200:202] = native_small[0], x_small[0]
+    structural = np.zeros((N_LAT, N_LON), bool)
+    structural[164, 200:202] = h.structural_mask_cells(pre_state, pet_state)[0]
+    support = cells_frame([(0, 164, 200, 23.01253170656061), (0, 164, 201, 5000.0)])
+    donors = h.one_ring_donors(structural, native, x)
+    resolved = h.resolve_support(support, x, native, structural, donors)
+    peru = resolved[(resolved.i == 164) & (resolved.k == 200)].iloc[0]
+    assert (peru.status, peru.reason) == (h.UNRESOLVED, h.NON_STRUCTURAL)
+    assert pd.isna(peru.donor_lat_index) and np.isnan(peru.donor_c2) and np.isnan(peru.c2_value)
+    ones = np.ones((N_LAT, N_LON))
+    qa = h.aggregate(resolved, ones, ones, ones, ones, np.zeros((N_LAT, N_LON), bool), 1)
+    assert qa.loc[0, 'coverage'] == pytest.approx(5000.0 / (5000.0 + 23.01253170656061))
+    assert qa.loc[0, 'c2_harmonized'] == pytest.approx(x[164, 201], rel=1e-15) and h.hard_stops(qa, ['PER']) == []
+
+
+def test_frozen_input_pins_fail_closed(tmp_path):
+    good = tmp_path / 'input.bin'
+    good.write_bytes(b'frozen')
+    import hashlib
+    h.check_frozen_inputs({good: hashlib.sha256(b'frozen').hexdigest()})
+    with pytest.raises(ValueError):
+        h.check_frozen_inputs({good: '0' * 64})
+    assert {Path(p).name for p in h.FROZEN_INPUT_SHA256} == {'m1a_cell_land_area_km2.npz', 'm1a_geography_qa.csv',
+                                                          'gpw_v4_population_count_adjusted_rev11_15_min.nc',
+                                                          'gpw_v4_national_identifier_grid_rev11_lookup.txt'}
 
 
 def test_fill_count_distinguishes_fill_from_malformed_values(tmp_path):
@@ -463,15 +561,25 @@ def test_without_targets_the_amended_aggregate_equals_the_original_rule():
 
 
 def test_hard_stops_cover_the_coverage_gate_and_non_finite_values():
-    qa = pd.DataFrame({'coverage': [0.97999, 0.98, 1.0, np.nan], 'c2_harmonized': [0.1, np.nan, 0.2, 0.3],
-                       'native_valid_area_km2': [1.0, 1.0, 1.0, 1.0], 'n_non_structural_invalid_cells': [0, 0, 0, 0],
-                       'pre_pure_climatology_share': [0.0, 0.0, 1.0, 0.0],
-                       'unresolved_structural_area_km2': [0.1, 0.0, 0.0, 0.0],
-                       'non_structural_invalid_area_km2': [0.0, 0.0, 0.0, 0.0]})
-    stops = {(s['iso3'], s['rule'].split(':')[0]) for s in h.hard_stops(qa, ['AAA', 'BBB', 'CCC', 'DDD'])}
+    qa = pd.DataFrame({'coverage': [0.97999, 0.98, 1.0, np.nan, 1.0, 1.0],
+                       'c2_harmonized': [0.1, np.nan, 0.2, 0.3, 0.4, 0.5],
+                       'total_land_area_km2': [1.0, 1.0, 1.0, 1.0, np.nan, 1.0],
+                       'native_valid_area_km2': [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                       'harmonized_area_km2': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                       'unresolved_area_km2': [0.1, 0.0, 0.0, 0.0, 0.0, 0.0],
+                       'n_non_structural_invalid_cells': [0, 0, 0, 0, 0, 7],
+                       'pre_pure_climatology_share': [0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
+                       'unresolved_structural_area_km2': [0.1, 0.0, 0.0, 0.0, 0.0, 0.0],
+                       'non_structural_invalid_area_km2': [0.0, 0.0, 0.0, 0.0, 0.0, 0.01]})
+    stops = {(s['iso3'], s['rule'].split(':')[0]) for s in h.hard_stops(qa, ['AAA', 'BBB', 'CCC', 'DDD', 'EEE', 'FFF'])}
     assert stops == {('AAA', 'coverage < 0.98'), ('BBB', 'non-finite C2'), ('CCC', 'pathological'),
-                     ('DDD', 'coverage < 0.98')}
-    nan_share = qa.iloc[[0]].assign(coverage=1.0, pre_pure_climatology_share=np.nan)
+                     ('DDD', 'coverage < 0.98'), ('EEE', 'malformed area QA')}
+    ok = qa.iloc[[5]].reset_index(drop=True)
+    assert h.hard_stops(ok, ['FFF']) == []
+    for column, bad in [('harmonized_area_km2', -1e-9), ('non_structural_invalid_area_km2', -0.5), ('total_land_area_km2', 0.0)]:
+        assert [s['rule'] for s in h.hard_stops(ok.assign(**{column: bad}), ['FFF'])][:1] == ['malformed area QA']
+    nan_share = qa.iloc[[0]].assign(coverage=1.0, pre_pure_climatology_share=np.nan, unresolved_area_km2=0.0,
+                                     unresolved_structural_area_km2=0.0)
     assert [s['rule'].split(':')[0] for s in h.hard_stops(nan_share, ['EEE'])] == ['pathological']
 
 
