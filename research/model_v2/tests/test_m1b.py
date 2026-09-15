@@ -126,3 +126,55 @@ def test_extended_schema_reproduces_m0star_design_when_c2_absent():
                                rtol=0, atol=1e-13)
     with_c2 = frame.assign(baseline_dryness=np.linspace(-1, 1, len(frame)))
     assert design_matrix(with_c2).shape[1] == design_matrix(frame).shape[1] + 1
+
+
+def test_redundancy_predictors_read_only_allow_listed_source_columns(monkeypatch):
+    from research.model_v2 import m1b_redundancy as r
+    requested = []
+    real = pd.read_parquet
+
+    def spy(path, columns=None, **kwargs):
+        requested.append(columns)
+        if columns is None:
+            raise AssertionError('a parquet file was read without a column allow-list')
+        return real(path, columns=columns, **kwargs)
+    if not (r.DEFAULT_INEQUALITY_PATH.exists() and r.DEFAULT_FEATURES_PATH.exists()):
+        pytest.skip('requires local frozen inputs')
+    monkeypatch.setattr(r.pd, 'read_parquet', spy)
+    countries = pd.read_csv(r.SUPPORT_RECORD, usecols=['Country']).Country
+    frame = r.m0star_predictors(countries)
+    assert requested == [r.INEQUALITY_COLUMNS, r.CITY_COLUMNS]
+    forbidden = ('trend', 'slope', 'warming', 'fitted', 'resid', 'era5', 'score', 'coverage')
+    assert not any(word in col.lower() for cols in requested for col in cols for word in forbidden)
+    assert frame.columns.tolist() == r.PREDICTOR_COLUMNS and frame.Country.tolist() == countries.tolist()
+
+
+def test_outcome_free_predictors_reproduce_the_frozen_m0star_predictor_columns():
+    # Loads the frozen V1 design (which contains the outcome) only to prove equivalence; no C2 is involved.
+    from research.model_v2 import m0
+    from research.model_v2 import m1b_redundancy as r
+    if not (m0.DEFAULT_INEQUALITY_PATH.exists() and m0.DEFAULT_FEATURES_PATH.exists()):
+        pytest.skip('requires local frozen inputs')
+    frozen = m0.m0_complete_design(*m0.load_inputs()).drop(columns=['warming_trend', 'cum_co2_per_capita'])
+    rebuilt = r.m0star_predictors(frozen.Country)
+    pd.testing.assert_frame_equal(rebuilt, frozen.reset_index(drop=True), check_exact=True)
+    np.testing.assert_array_equal(m0.design_matrix(rebuilt)[0], m0.design_matrix(frozen)[0])
+
+
+def test_redundancy_reports_rank_change_and_condition_numbers():
+    from research.model_v2.m1b_redundancy import diagnose
+    rng = np.random.default_rng(4)
+    n = 80
+    frame = pd.DataFrame({
+        'Country': [f'C{i}' for i in range(n)], 'cum_co2_total': 10 ** rng.normal(3, 1, n),
+        'abs_latitude': rng.uniform(0, 60, n), 'elevation': rng.uniform(0, 2000, n),
+        'continentality': rng.uniform(0, 900, n), 'climate_zone': rng.choice(list('ABCD'), n),
+        'hemisphere': rng.choice(list('NS'), n), 'spatial_block': rng.choice(['Africa', 'Asia', 'Europe'], n),
+        'income_group': rng.choice(['High', 'Low'], n), 'population': 10 ** rng.normal(7, 1, n),
+        'station_density': rng.uniform(0, 5, n)})
+    out = diagnose(frame, rng.normal(size=n))
+    assert out['rank_with_c2'] == out['design_rank'] + 1 == out['design_column_count'] + 1
+    for key in ['condition_number_design', 'condition_number_design_with_c2']:
+        assert set(out[key]) == {'raw', 'unit_column_scaled'} and all(np.isfinite(v) and v >= 1 for v in out[key].values())
+    assert out['condition_number_design_with_c2']['unit_column_scaled'] >= out['condition_number_design']['unit_column_scaled']
+    assert set(out['correlations']['abs_latitude']) == {'pearson', 'spearman'}
