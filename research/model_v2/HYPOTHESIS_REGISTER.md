@@ -1,5 +1,34 @@
 # Hypothesis register
 
+## M0.5 review status
+
+The entries below preserve the Session 1 hypotheses; registration is not approval
+to test new predictors. The product audit in `PRODUCT_STABILITY_AUDIT.md` now
+controls which residual patterns are eligible for later physical-hypothesis
+generation. Product-sensitive/unresolved patterns need additional evidence;
+none is a demonstrated mechanism. ERA5 is an external robustness outcome,
+not a model-selection criterion. Repeat product robustness after V2 is frozen.
+M1a's reviewed measurement contract is `M1A_MEASUREMENT_SPEC.md`; no implementation
+or new predictor has been authorized in M0.5.
+
+The table below gives the product status of the residual evidence cited in the
+Session 1 entries. Classes come from
+`outputs/product_stability_pattern_classification.csv`, where a pattern counts as
+robust only if both ERA5 constructions agree. Patterns not listed there were not
+classified and remain unresolved.
+
+| Entry | Cited evidence → M0.5 product status |
+|---|---|
+| H1 | SH latitude gradient not directly classified (unresolved). Its ingredients split: Argentina extreme and Southern Africa region robust; New Zealand sensitive; Botswana and South Africa unresolved. |
+| H3 | Central Asia and Western Africa regional patterns sensitive; Iran extreme sensitive; Turkmenistan and Mauritania unresolved; UAE HH unresolved. The Gulf's large positive residuals are ERA5-only (sensitive). |
+| H4 | Levant LL clusters (Cyprus, Jordan, Lebanon) sensitive; Egypt, Libya, Israel, Mexico, Myanmar, Romania, Slovakia extremes sensitive; Central America and Eastern Europe regions sensitive; India unresolved; South Korea extreme robust. The cluster premise is not product-robust. |
+| H5 | Canada and Estonia extremes robust; Latvia unresolved; Northern Europe region unresolved (preprocessing-dependent); Russia and Finland not classified. |
+| H6 | Argentina extreme and Southern Africa region robust; New Zealand sensitive; South Africa and Botswana unresolved. |
+| H7 | Superseded by the audit. Legacy numbers reproduce, but "LL clusters coincide with the largest disagreement" is too strong. Aligning preprocessing halves the mean bias without improving agreement. |
+
+These statuses govern only which evidence may *motivate* a hypothesis. They do
+not approve any H-entry for testing.
+
 Hypotheses generated from the M0 residual (`M0_RESIDUAL_DIAGNOSTICS.md`), written
 before any candidate variable was fetched or tested. Each entry states the
 residual evidence, the mechanism, the candidate measurement, its timing, the
@@ -33,34 +62,28 @@ wrong sign even when it improves fit.
    interaction is identified because 29 SH countries span 1–47°.
 9. **Group meaning.** Unchanged; it stays inside geography.
 
-## H2. Geography features re-measured over the land area — stage M1a (measurement)
+## H2. Geography remeasured over terrestrial area — stage M1a, specification only
 
-1. **Residual pattern.** The two largest residuals are the two countries whose
-   station network is most displaced from their land (Canada 14°, Brazil 9° of
-   latitude); \|e\| grows with land area (ρ = +0.16); 26 countries' modal station
-   Köppen class differs from the area-dominant class; 17 countries have
-   bathymetric station "elevations".
-2. **Mechanism.** The outcome is an area average; the predictors are station
-   averages. For large or unevenly sampled countries the predictors describe a
-   different place than the outcome.
-3. **Candidate quantities.** Same concepts, area-consistent measurement:
-   cos-latitude-weighted mean \|latitude\| of the land cells; land-only mean
-   elevation (ETOPO, 5' sample); area-weighted mean distance to coast (from the
-   land mask); area-dominant Köppen class (or the five class shares);
-   hemisphere of the land-area centroid.
-4. **Timing.** Static.
-5. **Mediator risk.** None.
-6. **Sources.** Already in the repository (GPW national grid, ETOPO 2022,
-   Beck et al. Köppen, Natural Earth land); `outputs/country_geometry.csv`
-   carries the first three.
-7. **Expected form.** Same signs as V1; the latitude coefficient should
-   strengthen for large countries.
-8. **Collinearity.** Very high with the V1 versions, which they replace rather
-   than join.
-9. **Group meaning.** Unchanged in concept. It is nonetheless a change of
-   predictor measurement and must be scored as a stage (M1a) against M0, not
-   folded into M0. Whether it is a re-measurement of `SCHEMA_V1` features or a
-   schema v2 is an open decision.
+1. **Verified evidence.** 26/151 station-modal versus area-dominant Köppen
+   differences; 17 negative country-mean elevation values, not a complete
+   independently masked bathymetry inventory; Canada's mean station |latitude|
+   is 14.1872° below its absolute land-vector-centroid latitude. The latter is
+   not yet the proposed mean absolute land latitude. See the measurement spec
+   for definitions, country lists and within/between-country distinctions.
+2. **Hypothesis.** Measuring existing geography on a support consistent with
+   the area-weighted outcome may change residual structure. This does not
+   uniquely identify station siting as a cause.
+3. **Specification.** `M1A_MEASUREMENT_SPEC.md`: mean absolute land latitude,
+   independently land-masked elevation retaining genuine negative dry land,
+   area-mean coast distance, one area-dominant Köppen category, majority-area
+   hemisphere; unchanged OWID continent category. No new physical concepts.
+4. **Sources and timing.** Exact source versions, area integration, masks,
+   coverage gates, terrain/coast caveats and contemporary climate-classification
+   leakage limitations are in the specification. No new data fetched here.
+5. **Comparison.** Use the same owner-approved full-rank contract in M0 and M1a,
+   the frozen outcome/151 countries and corrected CV folds. No measurement
+   gain has been estimated in this session.
+
 
 ## H3. Baseline aridity and land–atmosphere coupling — stage M1 (physical)
 
@@ -206,7 +229,7 @@ wrong sign even when it improves fit.
 ## H9. The unit of analysis — not pursued (estimand)
 
 Seven large countries have more internal trend variance than the residual;
-the model weights Luxembourg and Russia equally. An area-weighted regression or a
+the model gives each included country the same regression weight. An area-weighted regression or a
 cell-level hierarchical model would answer a different question (how land
 warms) rather than the V1 question (how countries as units differ). Recorded as
 an open decision, not a stage.
@@ -223,3 +246,11 @@ meaning; recorded for the owner.
 Summary by stage: M1a = H2; M1 = H3, H6 (and H4 only with an owner decision);
 M2 = H1, H5 (spline); M3 = accounting of whatever remains; M4 robustness arm =
 H7; not pursued = H8, H9, H10.
+
+### Future aerosol guardrail (no data fetched in M0.5)
+
+If aerosol history is later tested, predeclare a separate regional/external
+forcing concept, not geography. Before fitting, specify exact observable, physical
+rationale, provenance, time aggregation, forcing/inventory/proxy meaning, overlap
+with national responsibility, socioeconomic confounding and interpretation of its
+decomposition share. This record does not authorize aerosol work or any M1 input.

@@ -2,8 +2,9 @@
 
 Stages, what each is allowed to change, and the decision gates between them.
 Every stage is scored on the frozen scorecard (`SCORECARD.md`) under the frozen
-protocol (`SPATIAL_CV_PROTOCOL.md`) and compared with M0, which is never
-recalculated. Hypotheses come from `HYPOTHESIS_REGISTER.md`; nothing enters a
+protocol (`SPATIAL_CV_PROTOCOL.md`) and compared with the frozen M0 model.
+Its corrected primary CV baseline is recorded separately in commit `4263429`;
+verification refits do not change the frozen outcome or predictors. Hypotheses come from `HYPOTHESIS_REGISTER.md`; nothing enters a
 stage that is not registered there first, with its expected sign.
 
 ## Definitions used by the gates
@@ -32,23 +33,29 @@ stage that is not registered there first, with its expected sign.
 M0 model unchanged. Corrected validation row is
 `outputs/m0_scorecard_territory_corrected.json`; the Session 1 row
 `outputs/m0_scorecard.json` is legacy 1° approximation. Baseline: in-sample R² 0.636;
-primary spatial-CV R² and RMSE as recorded there; residual Moran's I 0.269;
+corrected primary spatial-CV R² 0.153080 and RMSE 0.042873 °C/decade; residual Moran's I 0.269;
 shares geography 0.513, emissions 0.021, socioeconomic 0.069, population 0.033,
 residual 0.364.
 
 ## M1a — area-consistent measurement of the existing geography features (H2)
 
-**Change.** Replace the station-based measurements of `abs_latitude`,
-`elevation`, `continentality`, `climate_zone` and `hemisphere` by the
-area-based measurements of the same concepts (land-cell mean \|latitude\|,
-land-only mean elevation, area-weighted distance to coast, area-dominant Köppen
-class, centroid hemisphere). No feature is added or removed; groups unchanged.
-The three log features and the rank-20 identity are untouched.
+**Current specification, not implemented:** `M1A_MEASUREMENT_SPEC.md` supersedes
+Session 1's preliminary measurement recipes. Remeasure station-derived
+`abs_latitude`, `elevation`, `continentality`, `climate_zone` and `hemisphere`
+over the specified terrestrial support; retain the sixth geography variable,
+OWID `spatial_block`, unchanged. Hemisphere is the majority-area category,
+not centroid sign. Climate remains one A–E category, not five numeric shares.
+Independent shoreline masking must preserve genuine below-sea-level land.
+The proposed mask is a measurement-support source, not a new predictor.
 
-**Why first.** It is the only change that removes a known inconsistency between
-outcome and predictors, it needs no new data, and every later covariate would
-otherwise be tested against predictors that describe a different place than the
-outcome.
+First obtain approval for `V2_PREDICTOR_CONTRACT.md`. Compare M1a to the matching
+rank-only M0 equivalent with the same approved primary/sensitivity representation;
+never credit changed Shapley allocation from deleting a redundant log column to
+geographic measurement alignment. V1's original decomposition remains separate.
+
+**Why first.** It isolates remeasurement of concepts already in M0 before adding
+physical concepts. Station-derived predictors and the area-weighted outcome
+currently describe different spatial supports. No M1a result exists yet.
 
 **Gate M1a → M1.** Report the scorecard. If M1a is a genuine improvement over
 M0, or is not worse (ΔRMSE interval covers zero) and removes the large-country

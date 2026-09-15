@@ -126,3 +126,16 @@ gitignored `data/processed/model_v2/`; `cells.py` checks that its country means
 reproduce the V1 `trend_c_per_decade_area_weighted` column exactly.
 
 Current primary CV: `uv run python -m research.model_v2.run_territory_correction`.
+
+## M0.5 (research only)
+
+- `RANK_DEFICIENCY_AUDIT.md`: recovered full-rank sensitivities on corrected folds.
+- `V2_PREDICTOR_CONTRACT.md`: primary/sensitivity representation proposals.
+- `PRODUCT_STABILITY_AUDIT.md`: matched-country external product audit, with
+  absolute-temperature legacy and preprocessing-aligned ERA5 arms distinguished.
+- `M1A_MEASUREMENT_SPEC.md`: specification only; five remeasurements and one
+  unchanged geography feature.
+- `OPEN_DECISIONS.md`: only contract approval and approval to start M1a remain.
+
+All public V1 values and artifacts are unchanged. The two-product comparison
+does not tune or select predictors and must be repeated after V2 is frozen.
