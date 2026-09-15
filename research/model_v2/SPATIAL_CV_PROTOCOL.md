@@ -1,5 +1,10 @@
 # Spatial cross-validation protocol (frozen)
 
+> **Implementation correction:** the original 1° distance description and scores
+> below are preserved as history. The current implementation is specified in
+> `TERRITORIAL_CV_CORRECTION.md`; the approved territory ontology is at the end
+> of this document. The intended 500 km protocol is unchanged.
+
 The validation design was chosen before any predictor work and is fixed for
 every stage M1–M4. It was chosen on design criteria; the M0 scores under each
 candidate were computed to check feasibility and noise, not to pick a winner.
@@ -142,3 +147,23 @@ For M0 the pooled RMSE has a country-bootstrap 95% interval of roughly
 differences of about 0.002–0.003. Improvements smaller than that are reported
 as point estimates and not called improvements. The per-region table is
 descriptive only; regions have 1–15 countries.
+
+## Approved implementation correction: frozen analytical territory units
+
+Recorded before corrected M0 scores are known. Territory means the frozen
+GPW/ISO country unit used for the V1 outcome. All represented land components,
+including islands and disconnected components, count; separately coded units
+remain separate. FRA does not absorb GUF. This is analytical-unit consistency,
+not a statement about sovereignty or political status. A sovereign-state
+exclusion scheme asks a different question and is not a Model V2 sensitivity.
+
+The preceding Session 1 numeric results and 1° centre-distance description are
+**legacy results of a defective approximation**, not evidence of guaranteed
+500 km territorial clearance. Their files are preserved. The intended protocol
+is still LOCO with <=500 km territory exclusion, unchanged M49 secondary,
+train-only mean-level-effect fallback and unchanged scorecard definitions.
+
+The correction uses the full footprints of the WGS84 GPW v4 rev11 15′ national
+identifier cells (band 11, the same lookup as V1), with a conservative geometric
+clearance certificate. It does not call finer cell centres exact boundaries.
+Method and refreshed results will be recorded in `TERRITORIAL_CV_CORRECTION.md`.

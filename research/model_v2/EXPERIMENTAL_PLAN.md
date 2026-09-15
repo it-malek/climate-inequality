@@ -29,7 +29,9 @@ stage that is not registered there first, with its expected sign.
 
 ## M0 — frozen baseline
 
-No changes. Row recorded (`outputs/m0_scorecard.json`): in-sample R² 0.636;
+M0 model unchanged. Corrected validation row is
+`outputs/m0_scorecard_territory_corrected.json`; the Session 1 row
+`outputs/m0_scorecard.json` is legacy 1° approximation. Baseline: in-sample R² 0.636;
 primary spatial-CV R² and RMSE as recorded there; residual Moran's I 0.269;
 shares geography 0.513, emissions 0.021, socioeconomic 0.069, population 0.033,
 residual 0.364.

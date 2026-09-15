@@ -1,5 +1,9 @@
 # Model V2: residual structure of the cross-country warming decomposition
 
+> Current primary M0: `outputs/m0_scorecard_territory_corrected.json`.
+> Session 1 artifacts retain legacy 1° centre-approximation results.
+> See `TERRITORIAL_CV_CORRECTION.md`; intended protocol and score definitions unchanged.
+
 Research line branched from the frozen V1 baseline. Nothing here changes the
 public model, the dashboard bundle or the tagged results.
 
@@ -37,7 +41,7 @@ Read from the `v1.3.0` bundle (`app/data/decomposition_summary.json`,
 | Socioeconomic share | 0.069 |
 | Population share | 0.033 |
 | Residual Moran's I | 0.269 (p = 0.005; station-centroid kNN, k = 8, 199 permutations) |
-| Spatial-CV R² / RMSE (primary protocol, added here) | 0.212 / 0.0414 °C/decade |
+| Spatial-CV R² / RMSE (primary protocol, added here) | 0.153 / 0.0429 °C/decade |
 
 Full anatomy in [`M0_BASELINE.md`](M0_BASELINE.md).
 
@@ -51,7 +55,7 @@ Full anatomy in [`M0_BASELINE.md`](M0_BASELINE.md).
 * **Reference, never a criterion**: random 10-fold (seed 0), to show the
   spatial optimism gap.
 * **Scorecard**: the fixed metric set every stage reports
-  ([`SCORECARD.md`](SCORECARD.md)); M0's row is in `outputs/m0_scorecard.json`.
+  ([`SCORECARD.md`](SCORECARD.md)); M0's corrected row is in `outputs/m0_scorecard_territory_corrected.json`.
 * **Stages and gates**: M0 → M1 (physical covariates, preceded by an
   area-consistent re-measurement of the existing geography features) → M2
   (pre-specified nonlinear terms) → M3 (explicit spatial structure) → M4
@@ -89,7 +93,9 @@ research/model_v2/
   cells.py         within-country structure of the 1° trend field (what the collapse discards)
   regions.py       UN M49 sub-regions for the 151 countries
   spatial.py       spatial weights, Moran's I, Geary's C, local Moran's I
-  borders.py       minimum inter-territory distances (the buffer metric) and the border correlogram
+  borders.py       LEGACY 1° approximation and historical correlogram
+  territory.py     certified WGS84 clearance for all GPW cell footprints
+  run_territory_correction.py  corrected scores, membership audit and provenance
   diagnostics.py   the residual diagnostics -> outputs/m0_countries.csv, m0_residual_diagnostics.json
   figures.py       research figures -> outputs/figures/ (needs matplotlib: uv run --with matplotlib ...)
   cv.py            fold constructions, the V1 estimator as fit/predict, the scorecard
@@ -99,7 +105,8 @@ research/model_v2/
   outputs/         committed tables, JSON and figures
 ```
 
-Reproduce (from the repository root, with the V1 `data/processed` artifacts and
+Historical Session 1 reproduction (these commands overwrite legacy artifacts;
+do not run for current CV). From the repository root, with the V1 `data/processed` artifacts and
 the raw grids in place):
 
 ```bash
@@ -117,3 +124,5 @@ The per-cell trend field is computed once with the V1 operator
 (`src.area_weighting.cell_trends`, about three minutes) and cached under the
 gitignored `data/processed/model_v2/`; `cells.py` checks that its country means
 reproduce the V1 `trend_c_per_decade_area_weighted` column exactly.
+
+Current primary CV: `uv run python -m research.model_v2.run_territory_correction`.

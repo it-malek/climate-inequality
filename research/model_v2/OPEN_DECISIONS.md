@@ -1,6 +1,11 @@
-# Open methodological decisions
+# Session 1 methodological decisions (historical register)
 
-Items that need the project owner's judgement before M1 starts. Each has a
+**Status update:** items 1–4 are approved and frozen by the owner. The territorial
+implementation is corrected in `TERRITORIAL_CV_CORRECTION.md`, using the approved
+GPW/ISO analytical units. The options below retain their Session 1 wording as
+history and are not requests to reopen those decisions.
+
+Items that needed the project owner's judgement before M1 starts. Each has a
 recommendation; none has been acted on.
 
 1. **Approve the primary protocol.** Leave-one-country-out with a 500 km
