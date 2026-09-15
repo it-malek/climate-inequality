@@ -135,7 +135,9 @@ Current primary CV: `uv run python -m research.model_v2.run_territory_correction
   absolute-temperature legacy and preprocessing-aligned ERA5 arms distinguished.
 - `M1A_MEASUREMENT_SPEC.md`: specification only; five remeasurements and one
   unchanged geography feature.
-- `OPEN_DECISIONS.md`: only contract approval and approval to start M1a remain.
+- `OPEN_DECISIONS.md`: both M0.5 decisions approved on 2026-09-15.
+- `M1A_EVALUATION_CONTRACT.md`: M1a comparison and interpretation rules, frozen
+  before M1a measurement or scoring.
 
 All public V1 values and artifacts are unchanged. The two-product comparison
 does not tune or select predictors and must be repeated after V2 is frozen.

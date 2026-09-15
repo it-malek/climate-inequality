@@ -28,6 +28,9 @@ classified and remain unresolved.
 
 These statuses govern only which evidence may *motivate* a hypothesis. They do
 not approve any H-entry for testing.
+The binding guardrail, which requires product-robust evidence and/or a strong
+independent physical hypothesis before any new covariate and forbids post-hoc
+searches against Berkeley residuals, is in `M1A_EVALUATION_CONTRACT.md` §6.
 
 Hypotheses generated from the M0 residual (`M0_RESIDUAL_DIAGNOSTICS.md`), written
 before any candidate variable was fetched or tested. Each entry states the

@@ -1,17 +1,19 @@
-# Decisions before M1a implementation
+# Decisions register
 
-1. **Approve the V2 representation pair:** total cumulative CO₂ plus population
-   as primary (drop per-capita), with per-capita plus population as the registered
-   sensitivity (drop total). See `RANK_DEFICIENCY_AUDIT.md` and
-   `V2_PREDICTOR_CONTRACT.md`. Neither is selected by fit or preferred group share.
-2. **Approve starting M1a under `M1A_MEASUREMENT_SPEC.md`.** The specification is
-   complete; no measurement builder or M1a fit has been implemented. Routine
-   source/weighting/coverage rules are specified there rather than left as
-   speculative approval questions.
+## Resolved on 2026-09-15 (after the M0.5 review, commit `9fb56e1`)
+
+1. **V2 representation pair: approved.** The primary uses total cumulative CO₂
+   plus population, dropping per-capita. The registered sensitivity uses
+   per-capita plus population, dropping total. See `V2_PREDICTOR_CONTRACT.md`.
+   V1's decomposition remains V1.
+2. **M1a: approved** under `M1A_MEASUREMENT_SPEC.md`, as a measurement-alignment
+   experiment only. Its evaluation rule was frozen in `M1A_EVALUATION_CONTRACT.md`
+   before any M1a measurement or score. That file also records the product-audit
+   guardrail for later predictors.
 
 No territorial-unit, 500 km threshold, M49, random-reference, unseen-level or
-scorecard decision is reopened. Future-stage items in the historical register
-below are not decisions required to begin M1a.
+scorecard decision is reopened. No new physical covariate is authorized. Items in
+the historical register below are not current authorizations.
 
 ## Session 1 methodological decisions (historical register)
 

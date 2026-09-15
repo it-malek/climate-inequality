@@ -39,7 +39,8 @@ residual 0.364.
 
 ## M1a — area-consistent measurement of the existing geography features (H2)
 
-**Current specification, not implemented:** `M1A_MEASUREMENT_SPEC.md` supersedes
+**Approved 2026-09-15; evaluation frozen in `M1A_EVALUATION_CONTRACT.md` before
+implementation.** `M1A_MEASUREMENT_SPEC.md` supersedes
 Session 1's preliminary measurement recipes. Remeasure station-derived
 `abs_latitude`, `elevation`, `continentality`, `climate_zone` and `hemisphere`
 over the specified terrestrial support; retain the sixth geography variable,
@@ -48,7 +49,7 @@ not centroid sign. Climate remains one A–E category, not five numeric shares.
 Independent shoreline masking must preserve genuine below-sea-level land.
 The proposed mask is a measurement-support source, not a new predictor.
 
-First obtain approval for `V2_PREDICTOR_CONTRACT.md`. Compare M1a to the matching
+`V2_PREDICTOR_CONTRACT.md` is approved. Compare M1a to the matching
 rank-only M0 equivalent with the same approved primary/sensitivity representation;
 never credit changed Shapley allocation from deleting a redundant log column to
 geographic measurement alignment. V1's original decomposition remains separate.
