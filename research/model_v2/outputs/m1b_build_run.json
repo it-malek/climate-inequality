@@ -1,0 +1,17 @@
+{
+  "started_utc": "2026-09-15T22:21:01+00:00",
+  "finished_utc": "2026-09-15T22:21:16+00:00",
+  "wall_seconds": 15.2,
+  "argv": [
+    "/Users/malek/projects/climate-inequality/research/model_v2/m1b_hydroclimate.py",
+    "/private/tmp/claude-501/-Users-malek-projects-climate-inequality/e00e959a-0a59-463b-b5ad-cf4433343b7e/scratchpad/m1b-a3.J1Dqth/a"
+  ],
+  "deterministic_output_sha256": {
+    "m1b_hydroclimate_features.csv": "cf33ba7cfb87c2184a94df5e5686f0951adf692819af8de27329ea698d72e1f4",
+    "m1b_hydroclimate_qa.csv": "e00cbb619d7ad1e1bac0f732c8d030bc49dd0329c2820c38e83e226c65ff54a7",
+    "m1b_harmonization_cells.csv": "bd40fa76a48842495ab76f8d3d2d67138e16426098536d4031e6d4d64a23ebfe",
+    "m1b_unresolved_support.csv": "5f8e202f4dc99deeb42e22ff1dd98b0d0d4c02a4bd5ecae317d30512a256f317",
+    "m1b_support_checkpoint.json": "405e5bdd63e84d1e74f18401f15f898dec64079aa79096e5cc25a585d792307e",
+    "m1b_measurement_manifest.json": "1974686199b9c7960ead2b105e6225f34b9b6fb33627858d2bc15239d7de4c9c"
+  }
+}

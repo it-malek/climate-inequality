@@ -151,6 +151,8 @@ Current primary CV: `uv run python -m research.model_v2.run_territory_correction
   before any amended C2 value, redundancy diagnostic or score.
 - `M1B_AMENDMENT1_BUILD_STOP.md`: the stopped Amendment 1 build (one non-structural Peru cell), resolved by
   contract Amendment 3 (non-structural support counts against coverage; package-integrity gates).
+- `M1B_PREDICTOR_PACKAGE.md`: the frozen Amendment 3 C2 package (build `58e64bf`), its integrity digests,
+  determinism and invariance evidence; frozen before any redundancy diagnostic or score.
 - `M1B_FEASIBILITY_AUDIT.md`: original-rule C2 build (148/151 pass the coverage gate),
   kept as the evidence for Amendment 1.
 
