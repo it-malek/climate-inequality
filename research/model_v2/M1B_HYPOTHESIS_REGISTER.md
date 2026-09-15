@@ -2,7 +2,7 @@
 
 **Status (2026-09-15): C2 approved as the sole M1b hypothesis; C1 and C3 held.**
 
-No predictor data have been downloaded, computed or fitted. Each entry follows the owner's required fields. The design is in `M1B_DESIGN.md`; the frozen measurement and evaluation rules are in `M1B_EVALUATION_CONTRACT.md`.
+No model has been fitted. *(Update 2026-09-15: CRU TS v4.10 was acquired and C2 was first built under the original coverage rule; see `M1B_FEASIBILITY_AUDIT.md` and contract Amendment 1.)* Each entry follows the owner's required fields. The design is in `M1B_DESIGN.md`; the frozen measurement and evaluation rules are in `M1B_EVALUATION_CONTRACT.md`.
 
 **Notation.**
 * **M0\*:** the approved full-rank station-geography baseline. It is row C0 of `M1A_REPORT.md`: primary representation (total CO₂ + population), 151 countries, corrected 500 km LOCO, spatial-CV RMSE 0.042873.
@@ -55,7 +55,7 @@ The Session 1 residual descriptions for H3/H5/H6 were Berkeley-only and are **no
 |---|---|
 | Physical mechanism | Where evaporation is water-limited, extra surface energy goes mostly into sensible heat rather than latent heat, so surface temperature responds more strongly. Soil-moisture–temperature coupling is strongest in dry and transitional regimes. |
 | Concept represented | Climatological water availability relative to atmospheric demand **before** the trend is measured. |
-| Exact observable | Per 0.5° CRU cell j: AI_j = (30-year mean annual precipitation total) / (30-year mean annual PET total), where the PET total uses days-in-month. x_j = log10(AI_j). Country value C2 = terrestrial-area-weighted mean of x_j over D_c. Exact equations and validity rules: `M1B_EVALUATION_CONTRACT.md` §2. |
+| Exact observable | Per 0.5° CRU cell j: AI_j = (30-year mean annual precipitation total) / (30-year mean annual PET total), where the PET total uses days-in-month. x_j = log10(AI_j). Country value C2 = terrestrial-area-weighted mean of x_j over D_c. Exact equations, validity and coverage rules: `M1B_EVALUATION_CONTRACT.md` §2 and Amendment 1. |
 | Source and version | CRU TS **v4.10** (released 2026-06-25; data directory `cruts.2604091129.v4.10`), full-length 1901–2025 `pre` and `pet` NetCDF files. The exact URLs, sizes and hash-recording rule are in the contract. No DOI existed at review. Not downloaded. |
 | Temporal definition | **1920-01 through 1949-12** (360 months), with no temporal overlap with the outcome, which starts in 1950. |
 | Spatial aggregation | Terrestrial area of D_c within each 0.5° CRU cell. Uses the frozen M1a support: `m1a_cell_land_area_km2.npz` with the GPW country grid; each CRU cell spans exactly 2×2 GPW cells. |

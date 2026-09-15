@@ -171,3 +171,15 @@ The audit script (`feasibility/m1b_original_coverage.py`):
 * writes the three audit files.
 
 A second run of the script reproduced its own three outputs byte-for-byte.
+
+## Addendum (2026-09-15, recorded with contract Amendment 1): the scope of the outcome statements
+
+The statements above that no warming outcome was accessed mean the following precisely.
+
+* **The original-rule build.** Builder `c6ef919` read `outputs/m0_countries.csv` with `usecols=['Country', 'iso3']` and hashed the whole file for its manifest.
+  * That file also carries warming, fitted, residual and ERA5 trend columns. They were never parsed into a data frame or used.
+  * The audit script at `c5ff9b5` reads the file the same way, so reproducing from that checkout opens it, with identifier columns only.
+  * From `81c5dca` onwards, the builder takes identifiers from the outcome-free M1a support record instead.
+* **The test suite.** This protocol runs the repository's unit-test suite. Some of its existing tests load the frozen V1 design, which contains the warming outcome, to verify M0/M0\* reproduction and the M1b evaluator's schema. None of them involves a C2 value.
+* **C2 itself.** No C2 value has been joined with, compared with or correlated with any warming outcome, fitted value, residual or score.
+* **Owner approval.** The status section's statement that the owner approved an amendment "which is recorded and committed separately" referred to approval in principle. The amendment text was committed afterwards, as `M1B_EVALUATION_CONTRACT.md` Amendment 1.

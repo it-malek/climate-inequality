@@ -1,6 +1,13 @@
 # M1b design — baseline hydroclimatic dryness
 
-**Status (2026-09-15): design approved by the owner.** Nothing has been downloaded, constructed or fitted. The measurement and evaluation rules are frozen separately in `M1B_EVALUATION_CONTRACT.md`, which is committed before any CRU acquisition. The candidate specification is in `M1B_HYPOTHESIS_REGISTER.md`.
+**Status (2026-09-15): design approved by the owner.** Nothing has been fitted.
+
+**Status update (2026-09-15).**
+* CRU TS v4.10 was acquired and hash-pinned.
+* The original-rule C2 build failed the coverage gate in three countries (`M1B_FEASIBILITY_AUDIT.md`).
+* The contract's Amendment 1 adds a one-ring structural land-mask harmonization, adopted after the feasibility audit and before any amended value, redundancy diagnostic or score.
+
+The original measurement and evaluation rules were frozen in `M1B_EVALUATION_CONTRACT.md` (`60111ae`) before any CRU acquisition; Amendment 1 is appended there. The candidate specification is in `M1B_HYPOTHESIS_REGISTER.md`.
 
 ## 1. Definition
 
@@ -52,7 +59,7 @@ It has **no** clean product-robust residual support (see the register). Its dryl
   2. Take log10 of that ratio per cell.
   3. Average the cell values over D_c, weighted by terrestrial area.
 
-  The exact equations, validity and coverage rules are in the contract, §2.
+  The exact equations, validity and coverage rules are in the contract, §2 and Amendment 1.
 
 **Provenance limitation, stated accurately.**
 * **Not independent observations.** The 1920–1949 CRU absolute fields are not purely independent pre-1950 observations.

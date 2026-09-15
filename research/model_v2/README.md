@@ -145,9 +145,12 @@ Current primary CV: `uv run python -m research.model_v2.run_territory_correction
   spatial specification; conclusion stable). Not promoted; registered as the
   area-consistent geography measurement sensitivity.
 - `M1B_DESIGN.md`, `M1B_HYPOTHESIS_REGISTER.md`: approved M1b design, baseline
-  hydroclimatic dryness only (nothing computed or fitted).
+  hydroclimatic dryness only (original-rule C2 built for the feasibility audit; nothing fitted).
 - `M1B_EVALUATION_CONTRACT.md`: C2 measurement and M1b evaluation rules, frozen before
-  any CRU acquisition.
+  any CRU acquisition. Amendment 1 (structural CRU land-mask harmonization) was adopted
+  before any amended C2 value, redundancy diagnostic or score.
+- `M1B_FEASIBILITY_AUDIT.md`: original-rule C2 build (148/151 pass the coverage gate),
+  kept as the evidence for Amendment 1.
 
 All public V1 values and artifacts are unchanged. The two-product comparison
 does not tune or select predictors and must be repeated after V2 is frozen.

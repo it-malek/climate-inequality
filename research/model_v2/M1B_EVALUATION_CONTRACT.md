@@ -4,6 +4,20 @@
 
 Nothing in this file may be revised after C2 values, the redundancy diagnostic or any M1b score have been seen. Any change must be a new, dated, separately justified pre-score record, with the original rule still reported.
 
+**Amended 2026-09-15 before any amended C2 value, redundancy diagnostic or M1b score existed.** Amendment 1 (end of this file) changes the following.
+
+For structural CRU land-mask cells only:
+* the §2.2 prohibition on neighbour and fill values (the prohibition on floors stays);
+* the §2.3 country formula and the §2.4 coverage formula, which now sum over native-valid and harmonized cells;
+* §2.4's prohibition on fill and nearest-cell substitution, and §6's prohibition on alternative coverage rules. Amendment 1's rule is the only permitted coverage rule.
+
+Globally:
+* the §2.6 QA column list and output set, where byte-identity covers the deterministic outputs and not the run-metadata file;
+* two added fail-closed stops (A1.7);
+* the manifest's provenance fields (A1.10).
+
+The original text is kept below for the audit trail. The evidence is in `M1B_FEASIBILITY_AUDIT.md`.
+
 **Hypothesis:** M1b = M0\* + baseline hydroclimatic dryness (C2).
 **Schematic model:** `y = G + H_hydroclimate + R + S + P + error`.
 
@@ -80,6 +94,8 @@ x_j  = log10(AI_j)
 
 **Valid cell:** all 360 PRE and all 360 PET values are finite and not the file's fill or missing value, **and** P̄_j > 0 **and** Ē_j > 0. Otherwise the cell is invalid, and no floor, fill or neighbour value is substituted.
 
+*(Amendment 1: for structural CRU land-mask cells only, the neighbour and fill prohibition is replaced by the one-ring native-donor rule. No floor is ever substituted. Native-valid cells and their values are unchanged.)*
+
 ### 2.3 Country aggregation over terrestrial support
 
 * **Terrestrial area.** A_{c,j} = Σ_{g ∈ c, g ⊂ j} L_g, where:
@@ -92,6 +108,8 @@ x_j  = log10(AI_j)
 ```
 C2_c = Σ_{j valid} A_{c,j} · x_j  /  Σ_{j valid} A_{c,j}
 ```
+
+*(Amendment 1 A1.6: the sums run over native-valid and harmonized cells.)*
 
 * **Primary definition.** The mean of cell-level log aridity weighted by terrestrial area, i.e. the log of the area-weighted geometric mean of AI_j.
 * **Why cell level.** The mechanism is local (land–atmosphere coupling), and the outcome is itself an area mean of cell-level trends. A national ratio of pooled precipitation and PET volumes would weight wet regions' water volumes, not the typical local regime.
@@ -107,6 +125,8 @@ coverage_c = Σ_{j valid} A_{c,j} / Σ_j A_{c,j}  ≥  0.98
 **Any failure stops the work** before the redundancy diagnostic and before any fit:
 * the country, achieved coverage, missing area and cause (CRU land-mask or small-island resolution, invalid P̄ or Ē) are reported for owner review;
 * no threshold relaxation, fill, nearest-cell substitution, source change, country removal or reduced-sample fit.
+
+*(Amendment 1 A1.6–A1.7: coverage counts native-valid and harmonized area. The 0.98 threshold and the stop are unchanged. Fill and nearest-cell substitution are permitted only through the one-ring structural-mask rule.)*
 
 ### 2.5 Pre-outcome support-quality checkpoint (saved and committed before the outcome is loaded)
 
@@ -135,6 +155,8 @@ For each country, over valid cells, weighted by A_{c,j} and averaged over the 36
   * `outputs/m1b_hydroclimate_qa.csv` (P̄/Ē area means, coverage, invalid area and reasons, §2.5 QA);
   * `outputs/m1b_measurement_manifest.json` (source hashes, checks, formula, code hash).
 * **Commit.** These are committed before §3.
+
+*(Amendment 1 A1.9 replaces the QA column list. The outputs add `m1b_harmonization_cells.csv` and the run-metadata file `m1b_build_run.json`. Byte-identity applies to the five deterministic outputs (A1.10), not to the run-metadata file, which records wall-clock times.)*
 
 ## 3. Pre-outcome redundancy diagnostic (committed before the outcome is loaded or fitted)
 
@@ -263,6 +285,7 @@ The M49 and worst-region results are essential robustness evidence. They are rep
 
 ## 6. Not permitted at any point
 * Alternative dryness windows, transforms (for example unlogged AI or PET-free precipitation), datasets (other CRU versions, GPCC, TerraClimate, CGIAR), thresholds, aggregation orders (including the pooled national P/PET ratio) or coverage rules.
+  *(Amendment 1 replaces the §2.4 coverage rule with its structural-mask rule. No other coverage rule is permitted.)*
 * Station-count exclusion thresholds, or any post-hoc support rule.
 * Changing M0\*, M1a outputs, folds, the outcome or the scorecard.
 * C1, C3, joint models, nonlinear or interaction terms, or spatial terms.
@@ -277,3 +300,190 @@ The owner approved acquisition once this amended contract is on the remote.
 3. **Pre-outcome checkpoint.** Run the support audit (§2.5) and the redundancy diagnostic (§3) **without loading the warming outcome**. Commit the measurements and both pre-fit records. Stop on any hard stop or pathology.
 4. **Score.** If all hard stops pass, score M1b under §4, then commit the result and report.
 5. **Sensitivities.** Only if the linear association is supported: run §5 and commit.
+
+## Amendment 1 — structural CRU land-mask harmonization of C2 support
+
+**Adopted 2026-09-15, before any amended C2 value was computed, before the redundancy diagnostic, and before any M1b model was fitted or scored.**
+
+Order of events:
+
+1. The measurement and evaluation contract was frozen and pushed (`60111ae`).
+2. The builder was implemented (`ef09196`), and its station-count validation was corrected to run over valid cells (`c6ef919`).
+3. The first valid C2 build failed the §2.4 coverage gate in three countries. After that failure, the project owner approved in principle a pre-outcome, global harmonization rule for structural land-mask cells.
+4. The failed build was preserved and diagnosed in `M1B_FEASIBILITY_AUDIT.md` (`c5ff9b5`). That audit's statement that the amendment "is recorded and committed separately" anticipated this record.
+5. The builder's input checks were hardened without any rule change (`81c5dca`):
+   * the source SHA-256 pins and the GPW/CRU grid nesting are now asserted;
+   * country identifiers now come from the outcome-free M1a support record instead of `m0_countries.csv`, which also carries warming, fitted and residual columns. The original build had read only that file's `Country` and `iso3` columns.
+6. This text, its implementation and tests were reviewed, committed and pushed before the amended rule was computed for any country. The rule is the owner-approved one.
+
+**Outcome boundary, stated precisely.**
+* **What was never used.** C2 construction, the feasibility audit and this amendment use no warming outcome, fitted value, residual or score. No C2 value has been joined with, compared with or correlated with any of them.
+* **What the test suite loads.** This protocol runs the repository's unit-test suite. Some of its existing tests load the frozen V1 design, which contains the warming outcome, to verify M0/M0\* reproduction and the evaluator's schema. Those tests never involve C2 values.
+* **What already exists.** Original-rule (native-only) C2 values for all 151 countries were committed with the feasibility audit (`c5ff9b5`). This rule was fixed from the mask diagnostics, not from those values.
+* **What has not run.** The §3 redundancy diagnostic has not been run. Before it runs, its inputs are restricted to predictor source columns, and that restriction is recorded separately.
+
+**Why it was needed.** Under §2.4, 148 of 151 countries passed. The failures were Bahamas (0.8865), Panama (0.9728) and the Philippines (0.9761). The audit established the cause from the raw files:
+* CRU's 0.5° PRE and PET land masks are constant over all 1,500 months;
+* every invalid terrestrial support cell is fill in every month of PRE, PET or both;
+* those cells hold small land fragments that the finer M1a support resolves;
+* no invalid support cell has partial temporal missingness or a non-positive climatological mean.
+
+The failure is therefore a mismatch between the source's land mask and the frozen terrestrial support. It is not missing observations and not a defect.
+
+**Constraints.**
+
+* **Nothing here was chosen from results.** No rule was chosen from C2 values, the outcome, residuals, redundancy, any model score or any amended coverage value.
+* **One global rule.** It applies identically to every cell and all 151 countries, with no country-specific exception.
+* **Unchanged:**
+  * the source files and pins, and the 1920-01…1949-12 window;
+  * the per-cell formula and native validity (§2.2);
+  * the M1a terrestrial support and area weights (§2.3);
+  * the 0.98 coverage threshold;
+  * the station-support audit and its stops (§2.5);
+  * the redundancy decision rule (§3);
+  * all of §4: models, protocols, interval, verdict levels and criteria.
+* **Changed, for structural CRU land-mask cells only:**
+  * §2.2: the prohibition on neighbour and fill values is replaced by the one-ring native-donor rule. No floor is ever substituted.
+  * §2.3 and §2.4: the country formula and the coverage formula sum over native-valid and harmonized cells (A1.6).
+  * §2.4 and §6: fill and nearest-cell substitution are permitted only through this rule, which becomes the only permitted coverage rule. Threshold relaxation, source change, country removal and reduced samples remain prohibited.
+* **Changed globally:**
+  * §2.6: the QA column list and output set are replaced by A1.9. Byte-identity covers the deterministic outputs only (A1.10).
+  * the manifest's provenance fields (A1.10).
+* **Added fail-closed stops (A1.7).** These can only halt work for owner review: any non-structural invalid support cell, and any country with no native-valid area.
+
+### A1.1 Native cells (unchanged)
+
+A cell is **native-valid** under §2.2:
+* all 360 PRE and PET values are finite and not fill;
+* P̄_j > 0 and Ē_j > 0.
+
+Its value x_j = log10(P̄_j / Ē_j) is never altered, replaced or averaged.
+
+### A1.2 Structural-mask target cells
+
+Each variable (PRE, PET) in each cell has one state:
+* **masked:** every raw value in every month of the pinned file (1901-01…2025-12, 1,500 months) equals the variable's declared `_FillValue` or `missing_value`. This is CRU's fixed land mask;
+* **complete:** every decoded value in the 360 window months is finite, and the climatological mean is positive (P̄ > 0 for PRE, Ē > 0 for PET);
+* **defective:** anything else, checked in this order:
+  * `nonpositive_mean`: every window month finite, mean not positive;
+  * `partial_fill`: fill in some window months, but not in every record month;
+  * `malformed`: a non-finite window value that is not the fill value.
+
+A cell is native-valid exactly when both variables are complete, and the builder asserts this equivalence.
+
+A cell is a **structural-mask target** if and only if all four conditions hold:
+
+1. the frozen M1a support assigns terrestrial area in it to at least one of the 151 countries;
+2. it is not native-valid;
+3. at least one variable is masked;
+4. each variable is masked or complete.
+
+Any other invalid support cell (a cell with a defective variable) is **not** a target. It stays unresolved, receives no value and is a hard stop for owner review (A1.7). For the pinned files, the audit found the masks constant over the full record and no such support cell.
+
+### A1.3 Donor search: one ring, native donors only
+
+* **Candidates:** exactly the eight CRU cells adjacent to the target, (i+Δi, k+Δk) for Δi, Δk ∈ {−1, 0, +1}, excluding (0, 0).
+* **Longitude wraps** (index modulo 720), so the 179.75°E and 179.75°W columns are adjacent.
+* **Latitude does not wrap.** Rows −1 and 360 do not exist, and no candidate crosses a pole, including the cell 180° away in the same polar row.
+* **Eligibility.** A candidate is eligible only if it is native-valid (A1.1).
+  * Eligibility is evaluated once, on the native grid, before any assignment.
+  * A harmonized target is therefore never a candidate. No value moves more than one cell, and there is no recursive or iterative fill.
+* **No political constraint.** The donor need not belong to the target's country, or to any of the 151 countries' support. The cell field is a continuous physical climate field, and national borders do not constrain it.
+* **No wider search.** Ring 2, the nearest valid cell elsewhere, another source or another variable is never used.
+
+### A1.4 Distance and ties
+
+* **Distance.** The geodesic distance between cell centres on the WGS84 ellipsoid, using Karney's inverse geodesic (pyproj `Geod(ellps="WGS84")`).
+  * This is the ellipsoid of the frozen territorial CV (`territory.py`).
+  * It is tabulated once per latitude row from whole-cell offsets with a non-negative longitude step, so east/west mirror-image candidates share one stored value.
+  * Rows beyond a pole have infinite distance and are never selected.
+* **Why the ellipsoid.** The owner rule asks for the geodesically nearest donor, and the sphere misorders neighbours near the equator.
+  * On a sphere the east/west neighbour is always nearer than the north/south one, by about 0.5 m at ±0.25° rising to about 330 m at ±6.25°.
+  * On WGS84 the north/south neighbour is nearer for cell-centre latitudes within ±6.25°, by about 372 m at ±0.25° falling to about 38 m at ±6.25°. From ±6.75° east/west is nearer on both.
+  * On a sphere, north and south neighbours tie exactly. On WGS84 the equatorward neighbour is nearer, by about 4 cm to 1 m within ±6.25° and by more at higher latitudes.
+  * WGS84 was fixed here before any amended value, and it is not a sensitivity.
+* **Selection.** The eligible candidate with the smallest distance.
+* **Ties.** Exact equality occurs only between east/west mirror-image candidates (E/W, NE/NW, SE/SW), which share a stored distance.
+  * A tie goes to the smaller latitude index, then the smaller longitude index.
+  * The longitude index is the wrapped index 0…719, ascending from −179.75°. Away from the antimeridian a tie therefore goes west; in columns 0 and 719 the wrapped index sends it east.
+
+### A1.5 Assigned value
+
+* **What is transferred.** A resolved target's terrestrial area carries the donor's already-computed native x_donor, as one derived value.
+* **What is never done.**
+  * PRE and PET are never borrowed or interpolated separately, and never taken from different cells.
+  * Donors are never averaged.
+  * No trend or temporal information is transferred.
+* **Shared cells.** A target cell shared by several countries has one donor and one value for all of them.
+* **Unresolved.** A target with no eligible candidate receives no value.
+
+### A1.6 Country value and coverage
+
+For country c, let N_c be its native cells, H_c its resolved (harmonized) targets and U_c its unresolved cells:
+
+```
+C2_c       = [ Σ_{j∈N_c} A_cj · x_j  +  Σ_{j∈H_c} A_cj · x_donor(j) ]  /  Σ_{j∈N_c ∪ H_c} A_cj
+coverage_c =   Σ_{j∈N_c ∪ H_c} A_cj  /  Σ_j A_cj   ≥  0.98   (threshold unchanged)
+```
+
+The area partitions exactly: native + harmonized + unresolved = terrestrial area. It is asserted to a relative 1e−10, which bounds float64 summation error over at most ~10⁵ cell addends.
+
+### A1.7 Hard stops
+
+Any one of these stops the work before §3. Every comparison is written so that a non-finite value triggers the stop.
+* coverage_c < 0.98 for any country;
+* any non-structural invalid support cell (A1.2) *(added)*;
+* any country with no native-valid terrestrial area, since its §2.5 station audit is undefined *(added)*;
+* the unchanged §2.5 stops: pure-climatology share = 1, or invalid `stn` in a native cell;
+* any non-finite C2;
+* source size or SHA-256 differing from the pins, M1a support files differing from `a7dea34`, failed GPW/CRU grid nesting, or country area not reproducing M1a to 1e−9.
+
+If a country remains below 0.98 after this rule, it is reported for owner review. No farther search, threshold change, source change, country removal, reduced sample or further amendment is introduced to force a pass.
+
+### A1.8 Station-support audit and wording
+
+* **Unchanged audit.** The §2.5 quantities are computed over native-valid cells exactly as before.
+* **Harmonized fragments.** They carry no station information of their own and are reported as area, not as station support.
+* **Wording.** C2 is **CRU-reconstructed 1920–1949 baseline hydroclimatic dryness**. It is never described as purely observed pre-1950 dryness, or as built only from information available before 1950.
+
+### A1.9 Reported QA
+
+**Per country** (`m1b_hydroclimate_qa.csv`):
+* total, native-valid, harmonized and unresolved terrestrial area and their fractions, with unresolved area split into structural and non-structural;
+* cell counts by status;
+* unweighted mean, area-weighted mean and maximum donor distance;
+* cross-border harmonized cells and area;
+* C2 over native support only (the original-rule value; NA with no native area), the harmonized C2, and their difference;
+* P̄ and Ē native-area means;
+* the §2.5 quantities.
+
+**Per target cell and country** (`m1b_harmonization_cells.csv`):
+* target and donor indices and centres;
+* the PRE and PET states (A1.2);
+* donor distance and donor C2;
+* the donor cell's support countries (`none` when it supports none) and a cross-border flag;
+* the country's terrestrial area in the cell;
+* status and reason (`structural_cru_mask` or `non_structural_invalid`).
+
+Unresolved rows carry NA donor fields. Cross-border rows are kept.
+
+**Global** (manifest):
+* the number of target, harmonized and unresolved cells;
+* total harmonized and unresolved area;
+* donor-distance minimum, median, mean, 95th percentile and maximum over distinct harmonized target cells (NumPy linear interpolation);
+* cross-border counts;
+* the PRE and PET state counts over the support.
+
+**Use.** The coverage, area and non-structural columns feed the A1.7 stops. The native-only C2, the harmonization difference and the donor-distance statistics are reported only for transparency. They are not an alternative definition and are never scored.
+
+### A1.10 Provenance and determinism
+
+* **Builder checks.** It asserts the source pins and grid nesting (`81c5dca`), and the SHA-256 of the M1a land-support files at `a7dea34`.
+* **Manifest contents:**
+  * the git commit, the commit that last changed this contract, and whether the construction code path (builder, contract, and the M1a support and GPW modules it imports) matches the commit;
+  * source sizes and SHA-256, and the CRU version and run ID;
+  * the window, formula and amendment identifiers;
+  * the land-support file hashes and commit, the GPW grid and national-identifier lookup hashes, and the ordered country-list hash;
+  * the builder hash and software versions, including pyproj and PROJ.
+* **Run metadata.** Wall-clock metadata goes to a separate file, so the deterministic outputs can be compared byte-for-byte.
+* **Two builds.** After this amendment is pushed, C2 is built twice, in separate processes and into separate output roots. The deterministic outputs must be byte-identical.

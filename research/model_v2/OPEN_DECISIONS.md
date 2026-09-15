@@ -28,8 +28,18 @@ are recorded in `M1B_DESIGN.md`:
 * no Bonferroni and no joint model;
 * sensitivities only for a surviving model.
 
-The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`. The
-remaining gate is owner go-ahead for CRU acquisition and construction.
+The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`.
+
+**Status 2026-09-15.**
+* CRU TS v4.10 PRE/PET were acquired and hash-pinned.
+* The first C2 build failed the 98% coverage gate in Bahamas, Panama and the Philippines,
+  because of CRU's fixed land mask (`M1B_FEASIBILITY_AUDIT.md`).
+* The owner approved a global pre-outcome harmonization rule, recorded as contract
+  Amendment 1: one ring, native donors only, threshold unchanged.
+* Next: an amended build must pass every hard stop. The redundancy diagnostic then runs on
+  predictor columns only, once its inputs are restricted to predictor source columns.
+* The pre-outcome package is reviewed by the owner before the warming outcome is loaded
+  for M1b scoring.
 
 No territorial-unit, 500 km threshold, M49, random-reference, unseen-level or
 scorecard decision is reopened. No new physical covariate is authorized. Items in
