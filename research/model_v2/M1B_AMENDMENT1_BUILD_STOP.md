@@ -96,10 +96,12 @@ The contract text is not edited after C2 values exist; this record is the correc
 * `m1b_build_run.json` and `m1b_build_run_b.json`: wall-clock metadata;
 * `m1b_amendment1_stop_record.json`: determinism hashes, invariants, coverage, harmonization and the raw facts of the stop cell.
 
-Reproduce from `f27d0a0`:
+Reproduce as follows.
+1. Run both builds from a checkout of `f27d0a0`. The manifest records the build commit, so building at a later commit changes that one field.
+2. Run the record script, committed in `bd518a0`, against those build outputs.
 
 ```
-python -m research.model_v2.m1b_hydroclimate
-python -m research.model_v2.m1b_hydroclimate BUILD_B
+python -m research.model_v2.m1b_hydroclimate            # at f27d0a0
+python -m research.model_v2.m1b_hydroclimate BUILD_B    # at f27d0a0
 python -m research.model_v2.feasibility.m1b_amendment1_stop BUILD_B
 ```
