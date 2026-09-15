@@ -39,6 +39,12 @@ The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`.
 * Next: an amended build must pass every hard stop. The redundancy diagnostic then runs on
   predictor columns only; contract Amendment 2 restricts its inputs to allow-listed predictor
   source columns.
+* **Open owner decision: the amended build stopped (`M1B_AMENDMENT1_BUILD_STOP.md`).**
+  * All 151 countries reach ≥ 0.98 coverage (minimum Bahamas 0.9888).
+  * Hard stop A1.7 fired on one non-structural Peru cell: 23 km², PET masked, PRE identically zero
+    across the record.
+  * Resolving it needs a new pre-outcome decision. Until then the redundancy diagnostic, outcome
+    loading and scoring stay blocked.
 * Contract Amendment 2 also pre-registers one station-support sensitivity. If and only if the
   linear association is supported, the frozen comparison is repeated excluding Saudi Arabia,
   Yemen, Haiti, Oman and Chad. It cannot change either verdict level.

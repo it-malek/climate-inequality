@@ -183,3 +183,12 @@ The statements above that no warming outcome was accessed mean the following pre
 * **The test suite.** This protocol runs the repository's unit-test suite. Some of its existing tests load the frozen V1 design, which contains the warming outcome, to verify M0/M0\* reproduction and the M1b evaluator's schema. None of them involves a C2 value.
 * **C2 itself.** No C2 value has been joined with, compared with or correlated with any warming outcome, fitted value, residual or score.
 * **Owner approval.** The status section's statement that the owner approved an amendment "which is recorded and committed separately" referred to approval in principle. The amendment text was committed afterwards, as `M1B_EVALUATION_CONTRACT.md` Amendment 1.
+
+## Erratum (2026-09-15, found by the amended build)
+
+§5 item 3's statement that no invalid support cell has P̄ ≤ 0 is wrong for one cell:
+* **The cell.** CRU row 164, column 200, holding 23.01 km² of Peru.
+* **Its data.** PET is masked in every month, and PRE is exactly 0.0 in every month of the record.
+* **Why the audit missed it.** The audit script tested a non-positive mean only where both variables were complete.
+
+See `M1B_AMENDMENT1_BUILD_STOP.md` §4.
