@@ -67,6 +67,33 @@ def test_station_support_audits_valid_cells_only():
             h.support_quantities(broken, valid)
 
 
+def test_support_nesting_accepts_the_gpw_grid_and_rejects_flips_and_shifts():
+    lat_north_to_south = 89.875 - 0.25 * np.arange(720)       # GPW storage order
+    lon = -179.875 + 0.25 * np.arange(1440)
+    h.check_support_nesting(lat_north_to_south, lon)
+    for bad_lat, bad_lon in [(lat_north_to_south[::-1], lon), (lat_north_to_south + 0.125, lon),
+                             (lat_north_to_south, lon + 0.25), (lat_north_to_south[:-1], lon)]:
+        with pytest.raises(ValueError):
+            h.check_support_nesting(bad_lat, bad_lon)
+
+
+def test_pinned_source_fails_closed_on_size_or_hash_mismatch(tmp_path, monkeypatch):
+    import gzip
+    import hashlib
+    payload = b'not really netcdf'
+    gz = tmp_path / 'x.nc.gz'
+    with gzip.GzipFile(gz, 'wb', mtime=0) as f:
+        f.write(payload)
+    monkeypatch.setattr(h, 'CRU_DIR', tmp_path)
+    spec = {'path': 'var/x.nc.gz', 'bytes': gz.stat().st_size, 'gz_sha256': hashlib.sha256(gz.read_bytes()).hexdigest(),
+            'nc_bytes': len(payload), 'nc_sha256': hashlib.sha256(payload).hexdigest()}
+    nc, record = h.pinned_source(spec)
+    assert nc.read_bytes() == payload and record['nc_sha256'] == spec['nc_sha256']
+    for key, wrong in [('bytes', spec['bytes'] + 1), ('gz_sha256', '0' * 64), ('nc_bytes', 1), ('nc_sha256', '0' * 64)]:
+        with pytest.raises(ValueError):
+            h.pinned_source({**spec, key: wrong})
+
+
 def test_redundancy_diagnostic_refuses_outcome_and_stops_on_exact_redundancy():
     from research.model_v2.m1b_redundancy import diagnose
     rng = np.random.default_rng(1)

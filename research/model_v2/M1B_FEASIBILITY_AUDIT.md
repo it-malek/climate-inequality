@@ -157,7 +157,7 @@ No country is pathological under the contract's definitional stop: no country ha
 * **`m1b_original_coverage_structural_mask.json`:** global and support-level mask statistics, and the grid-alignment checks.
 * **`m1b_original_coverage_determinism.json`:** SHA-256 of the preserved outputs and two rebuilds.
 
-Reproduce with the builder at `c6ef919`:
+Reproduce from a checkout of `c5ff9b5`, where the builder is byte-identical to `c6ef919`. Later builder commits change the manifest's code hash and remove the constant the audit script reads.
 
 ```
 python -m research.model_v2.m1b_hydroclimate BUILD_A

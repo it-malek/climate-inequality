@@ -7,7 +7,9 @@ For each CRU TS v4.10 0.5° cell j, 1920-01..1949-12::
     x_j = log10(P̄_j / Ē_j)
 
 The country value is C2_c = Σ_valid A_{c,j} x_j / Σ_valid A_{c,j}, with A_{c,j} the frozen M1a
-terrestrial area. The warming outcome is never read. Writes only ``outputs/m1b_*``.
+terrestrial area. Inputs are only the frozen M1a support record (country identifiers, terrestrial
+area, per-cell land area), the GPW country grid and the pinned CRU PRE/PET files; no file holding a
+warming outcome is opened. Writes only ``outputs/m1b_*``.
 Run with ``python -m research.model_v2.m1b_hydroclimate [out_dir]``.
 """
 from __future__ import annotations
@@ -26,21 +28,29 @@ import xarray as xr
 
 from research.model_v2 import m0
 from research.model_v2.m1a_geography import gpw_country_grid
+from src.population import GPW_ENGINE, GPW_PATH
 
 OUT = m0.OUTPUT_DIR
 CRU_DIR = m0.ROOT / 'data' / 'raw' / 'cru_ts_4.10'
 BASE_URL = 'https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.10/cruts.2604091129.v4.10/'
+# Contract §1.2 pins: sizes from the pre-acquisition review, SHA-256 committed with the feasibility audit (c5ff9b5).
 FILES = {
-    'pre': {'path': 'pre/cru_ts4.10.1901.2025.pre.dat.nc.gz', 'bytes': 698_006_393, 'units': 'mm/month'},
-    'pet': {'path': 'pet/cru_ts4.10.1901.2025.pet.dat.nc.gz', 'bytes': 72_951_284, 'units': 'mm/day'},
+    'pre': {'path': 'pre/cru_ts4.10.1901.2025.pre.dat.nc.gz', 'bytes': 698_006_393, 'units': 'mm/month',
+            'gz_sha256': 'b7e7a3b74e9887db74d8db62227800708ff89ebbabeed5b11f302c99a551edaa',
+            'nc_bytes': 6_220_812_084, 'nc_sha256': 'efe27c453101fd8b98b0544a198f457b872cf983a9cadb791ecd8e9cddbb3eae'},
+    'pet': {'path': 'pet/cru_ts4.10.1901.2025.pet.dat.nc.gz', 'bytes': 72_951_284, 'units': 'mm/day',
+            'gz_sha256': 'fcc792b090a651d9a19187acf105cd726d680171d01ee48630f0a1a10816f013',
+            'nc_bytes': 1_555_211_692, 'nc_sha256': '0bc9a1319f76d93a9f8fb8517ce82399b8c5f6e59dfcf26d802f0dbbd1e00715'},
 }
+NETCDF_ENGINE = 'netcdf4'
 WINDOW = ('1920-01', '1949-12')
 N_MONTHS = 360
 COVERAGE_MIN = 0.98
 STN_MAX = 8
 LAND_AREA_NPZ = OUT / 'm1a_cell_land_area_km2.npz'
-M1A_QA = OUT / 'm1a_geography_qa.csv'
-COUNTRY_TABLE = OUT / 'm0_countries.csv'
+M1A_QA = OUT / 'm1a_geography_qa.csv'  # frozen at a7dea34; the outcome-free source of identifiers and row order
+SUPPORT_COLUMNS = ['iso3', 'Country', 'terrestrial_area_km2']
+GRID_ATOL_DEG = 1e-6  # ~0.1 m; GPW and CRU store exact multiples of 0.125°
 CONTRACT_COMMIT = '60111ae1d44bdf9da6c613852a32de541f9b2d7a'
 
 
@@ -61,6 +71,36 @@ def decompressed(gz_path):
             shutil.copyfileobj(src, dst, 1 << 24)
         tmp.rename(nc)
     return nc
+
+
+def pinned_source(spec):
+    """The decompressed file and its hash record, after size and SHA-256 checks of both files; fails closed."""
+    gz = CRU_DIR / Path(spec['path']).name
+    if gz.stat().st_size != spec['bytes']:
+        raise ValueError(f'{gz.name}: {gz.stat().st_size} bytes, contract pins {spec["bytes"]}')
+    gz_hash = sha256(gz)
+    if gz_hash != spec['gz_sha256']:
+        raise ValueError(f'{gz.name}: sha256 {gz_hash} differs from the pin')
+    nc = decompressed(gz)
+    nc_hash = sha256(nc)
+    if nc.stat().st_size != spec['nc_bytes'] or nc_hash != spec['nc_sha256']:
+        raise ValueError(f'{nc.name}: size or sha256 differs from the pin')
+    return nc, {'gz_bytes': gz.stat().st_size, 'gz_sha256': gz_hash, 'nc_bytes': nc.stat().st_size, 'nc_sha256': nc_hash}
+
+
+def check_support_nesting(gpw_lat, gpw_lon):
+    """Assert each GPW 0.25° cell lies inside CRU 0.5° cell (row // 2, col // 2) (contract §2.3).
+
+    ``gpw_lat`` is in GPW storage order (north to south), which ``gpw_country_grid`` flips to ascending.
+    Centres at -89.875 + 0.25 r and -179.875 + 0.25 c put both edges of every GPW cell on the CRU cell's
+    edges or inside it.
+    """
+    lat, lon = np.asarray(gpw_lat, dtype=float)[::-1], np.asarray(gpw_lon, dtype=float)
+    nested = (lat.shape == (720,) and lon.shape == (1440,)
+              and np.allclose(lat, -89.875 + 0.25 * np.arange(720), rtol=0, atol=GRID_ATOL_DEG)
+              and np.allclose(lon, -179.875 + 0.25 * np.arange(1440), rtol=0, atol=GRID_ATOL_DEG))
+    if not nested:
+        raise ValueError('GPW 0.25° grid does not nest 2 × 2 inside the CRU 0.5° grid')
 
 
 def window_months(times):
@@ -165,16 +205,16 @@ def distribution(series):
 
 def build(out=OUT):
     code_hash = sha256(Path(__file__))  # pinned before any work; never edit the file mid-run
-    table = pd.read_csv(COUNTRY_TABLE, usecols=['Country', 'iso3'])  # identifiers only; no outcome column read
+    table = pd.read_csv(M1A_QA, usecols=SUPPORT_COLUMNS)[SUPPORT_COLUMNS]
+    if table.columns.tolist() != SUPPORT_COLUMNS or len(table) != 151:
+        raise ValueError('M1a support record does not have the expected identifier and area columns')
     codes = table.iso3.tolist()
+    with xr.open_dataset(GPW_PATH, engine=GPW_ENGINE) as ds:
+        check_support_nesting(ds['latitude'].to_numpy(), ds['longitude'].to_numpy())
     sources, arrays = {}, {}
     for var, spec in FILES.items():
-        gz = CRU_DIR / Path(spec['path']).name
-        size = gz.stat().st_size
-        if size != spec['bytes']:
-            raise ValueError(f'{gz.name}: {size} bytes, contract pins {spec["bytes"]}')
-        nc = decompressed(gz)
-        with xr.open_dataset(nc) as ds:
+        nc, hashes = pinned_source(spec)
+        with xr.open_dataset(nc, engine=NETCDF_ENGINE) as ds:
             check_grid(ds)
             if var not in ds or ds[var].attrs.get('units') != spec['units']:
                 raise ValueError(f'{nc.name}: variable {var} with units {spec["units"]} not found')
@@ -184,8 +224,7 @@ def build(out=OUT):
             arrays[var] = ds[var].isel(time=months).to_numpy().astype(np.float64)
             if var == 'pre':
                 arrays['stn'] = ds['stn'].isel(time=months).to_numpy().astype(np.float64)
-            sources[var] = {'url': BASE_URL + spec['path'], 'gz_bytes': size, 'gz_sha256': sha256(gz),
-                            'nc_bytes': nc.stat().st_size, 'nc_sha256': sha256(nc),
+            sources[var] = {'url': BASE_URL + spec['path'], **hashes,
                             'units': ds[var].attrs.get('units'), 'global_attrs': version_attrs(ds),
                             'window_first_last': [str(pd.DatetimeIndex(ds['time'].to_numpy()[months])[i].date())
                                                   for i in (0, -1)]}
@@ -199,8 +238,7 @@ def build(out=OUT):
     qa.insert(0, 'iso3', codes)
     qa.insert(1, 'Country', table.Country)
 
-    m1a_area = pd.read_csv(M1A_QA, usecols=['iso3', 'terrestrial_area_km2']).set_index('iso3').loc[codes]
-    rel = np.abs(qa.terrestrial_area_km2.to_numpy() / m1a_area.terrestrial_area_km2.to_numpy() - 1)
+    rel = np.abs(qa.terrestrial_area_km2.to_numpy() / table.terrestrial_area_km2.to_numpy() - 1)
     if rel.max() > 1e-9:
         raise ValueError(f'CRU-cell land area does not reproduce M1a terrestrial area (max rel {rel.max():.2e})')
 
@@ -228,8 +266,7 @@ def build(out=OUT):
     manifest = {
         'contract': 'research/model_v2/M1B_EVALUATION_CONTRACT.md', 'contract_commit': CONTRACT_COMMIT,
         'sources': sources,
-        'support_inputs': {'m1a_cell_land_area_sha256': sha256(LAND_AREA_NPZ), 'm1a_geography_qa_sha256': sha256(M1A_QA),
-                           'm0_countries_sha256': sha256(COUNTRY_TABLE)},
+        'support_inputs': {'m1a_cell_land_area_sha256': sha256(LAND_AREA_NPZ), 'm1a_geography_qa_sha256': sha256(M1A_QA)},
         'window': list(WINDOW), 'n_months': N_MONTHS,
         'formula': 'x_j = log10((1/30)*sum PRE / ((1/30)*sum PET*days)); C2 = terrestrial-area-weighted mean of x_j over valid cells',
         'coverage_min': COVERAGE_MIN, 'cells_valid_global': int(valid.sum()),
