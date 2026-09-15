@@ -52,16 +52,19 @@ def test_country_value_is_log_of_area_weighted_geometric_mean_and_coverage():
     assert qa.terrestrial_area_km2[0] == pytest.approx(8.0)
 
 
-def test_station_support_rejects_invalid_counts_and_flags_pure_climatology():
-    stn = np.zeros((360, 1, 2))
+def test_station_support_audits_valid_cells_only():
+    stn = np.zeros((360, 1, 3))
     stn[:10, 0, 1] = 3
-    supported, mean_stn, pure = h.support_quantities(stn)
-    assert pure.tolist() == [[True, False]] and supported[0, 1] == pytest.approx(10 / 360)
+    stn[:, 0, 2] = np.nan                      # CRU non-land cell: fill value, invalid for C2
+    valid = np.array([[True, True, False]])
+    supported, mean_stn, pure = h.support_quantities(stn, valid)
+    assert pure.tolist() == [[True, False, False]] and supported[0, 1] == pytest.approx(10 / 360)
+    assert mean_stn[0, 1] == pytest.approx(30 / 360) and np.isnan(supported[0, 2])
     for bad in (9, -1, 0.5, np.nan):
         broken = stn.copy()
-        broken[0, 0, 0] = bad
+        broken[0, 0, 0] = bad                  # inside a valid cell: must stop
         with pytest.raises(ValueError):
-            h.support_quantities(broken)
+            h.support_quantities(broken, valid)
 
 
 def test_redundancy_diagnostic_refuses_outcome_and_stops_on_exact_redundancy():

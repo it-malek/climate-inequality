@@ -111,13 +111,23 @@ def country_cells(codes, land_area, country_of_cell):
     return frame.groupby(['idx', 'i', 'k'], as_index=False, sort=True).area.sum()
 
 
-def support_quantities(stn):
-    """Per-cell PRE station support over the window; raises on invalid station counts."""
-    if not np.isfinite(stn).all():
-        raise ValueError('PRE stn has non-finite values in the window')
-    if (stn < 0).any() or (stn > STN_MAX).any() or not np.array_equal(stn, np.round(stn)):
-        raise ValueError('PRE stn outside the documented integer 0-8 range')
-    return (stn >= 1).mean(axis=0), stn.mean(axis=0), (stn == 0).all(axis=0)
+def support_quantities(stn, valid):
+    """Per-cell PRE station support over the window, audited over valid cells (contract §2.5).
+
+    CRU stores fill values for ``stn`` in non-land cells, where PRE is also missing. Those cells
+    are already invalid for C2 and are not part of the audit. Any missing or out-of-range count in
+    a valid cell raises.
+    """
+    audited = stn[:, valid]
+    if not np.isfinite(audited).all():
+        raise ValueError('PRE stn has non-finite values in valid cells in the window')
+    if (audited < 0).any() or (audited > STN_MAX).any() or not np.array_equal(audited, np.round(audited)):
+        raise ValueError('PRE stn outside the documented integer 0-8 range in valid cells')
+    with np.errstate(invalid='ignore'):
+        supported = np.where(valid, (stn >= 1).mean(axis=0), np.nan)
+        mean_stn = np.where(valid, np.nanmean(np.where(valid, stn, 0), axis=0), np.nan)
+    pure = valid & (np.where(valid, stn, 1) == 0).all(axis=0)
+    return supported, mean_stn, pure
 
 
 def aggregate(cells, x, valid, reason, p_bar, e_bar, supported, mean_stn, pure, n):
@@ -180,7 +190,7 @@ def build(out=OUT):
                             'window_first_last': [str(pd.DatetimeIndex(ds['time'].to_numpy()[months])[i].date())
                                                   for i in (0, -1)]}
     p_bar, e_bar, x, valid, reason = cell_climatology(arrays['pre'], arrays['pet'], days)
-    supported, mean_stn, pure = support_quantities(arrays['stn'])
+    supported, mean_stn, pure = support_quantities(arrays['stn'], valid)
 
     land = np.load(LAND_AREA_NPZ)['cell_land_area_km2']
     country_of_cell, _, _ = gpw_country_grid(codes)
