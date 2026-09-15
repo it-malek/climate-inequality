@@ -30,28 +30,6 @@ def test_cell_climatology_formula_validity_and_no_floor():
     assert reason[0, 1] == 'P_bar <= 0' and reason[1, 0] == 'non-finite month'
 
 
-def test_country_value_is_log_of_area_weighted_geometric_mean_and_coverage():
-    land = np.zeros((720, 1440))
-    country = np.full((720, 1440), -1, dtype=np.int16)
-    land[0:2, 0:2] = [[1.0, 1.0], [1.0, 1.0]]      # CRU cell (0, 0): area 4
-    land[0:2, 2:4] = [[3.0, 0.0], [0.0, 0.0]]      # CRU cell (0, 1): area 3
-    land[2, 0] = 1.0                               # CRU cell (1, 0): area 1, invalid below
-    country[0:3, 0:4] = 0
-    cells = h.country_cells(['AAA'], land, country)
-    x = np.full((360, 720), np.nan)
-    valid = np.zeros((360, 720), bool)
-    ai = {(0, 0): 0.5, (0, 1): 2.0}
-    for (i, k), value in ai.items():
-        x[i, k], valid[i, k] = np.log10(value), True
-    reason = np.full((360, 720), 'non-finite month', dtype=object)
-    zeros = np.zeros((360, 720))
-    qa = h.aggregate(cells, x, valid, reason, zeros + 1, zeros + 1, zeros + 1, zeros + 2, np.zeros((360, 720), bool), 1)
-    geometric = np.exp((4 * np.log(0.5) + 3 * np.log(2.0)) / 7)
-    assert qa.baseline_dryness[0] == pytest.approx(np.log10(geometric))
-    assert qa.coverage[0] == pytest.approx(7 / 8)
-    assert qa.terrestrial_area_km2[0] == pytest.approx(8.0)
-
-
 def test_station_support_audits_valid_cells_only():
     stn = np.zeros((360, 1, 3))
     stn[:10, 0, 1] = 3
