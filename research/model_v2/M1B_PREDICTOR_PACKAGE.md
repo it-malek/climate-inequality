@@ -20,7 +20,7 @@ C2 is **CRU-reconstructed 1920–1949 baseline hydroclimatic dryness**: the terr
 | M1a support | land-area npz `642cbe5a…66cf` and QA `bdc4f1ca…25c8` at `a7dea34` |
 | Software | Python 3.11.12, NumPy 2.4.6, pandas 3.0.3, xarray 2026.4.0, netCDF4 1.7.4, pyproj 3.7.2 / PROJ 9.5.1, macOS 26.6.2 arm64 |
 
-**Package artifacts** (`outputs/`; each digest is recorded in the manifest and checked by `verify_package`):
+**Package artifacts** (`outputs/`). `verify_package` checks the first five against the digests recorded in the manifest. The manifest does not hash itself: its own digest is recorded in `m1b_package_record.json` and the redundancy provenance, and Git anchors it.
 
 | File | SHA-256 |
 |---|---|
@@ -31,7 +31,10 @@ C2 is **CRU-reconstructed 1920–1949 baseline hydroclimatic dryness**: the terr
 | `m1b_support_checkpoint.json` | `405e5bdd63e84d1e74f18401f15f898dec64079aa79096e5cc25a585d792307e` |
 | `m1b_measurement_manifest.json` | `1974686199b9c7960ead2b105e6225f34b9b6fb33627858d2bc15239d7de4c9c` |
 
-Evidence: `m1b_package_record.json` (comparison evidence), `m1b_build_run.json` and `m1b_build_run_b.json` (wall-clock run metadata; not byte-compared).
+Evidence:
+* `m1b_package_record.json`: comparison evidence;
+* `m1b_build_run.json` and `m1b_build_run_b.json`: wall-clock run metadata, not byte-compared;
+* `m1b_process_evidence.json`, committed with the redundancy package: hash seeds, exit status, `/usr/bin/time` wall time and peak memory.
 
 ## Determinism
 
@@ -60,7 +63,7 @@ All six deterministic outputs were byte-identical. Only run metadata differs. Th
 
 ## Invariance
 
-**Against the stopped Amendment 1 build (`bd518a0`):**
+**Against the stopped Amendment 1 build (built at `f27d0a0`, recorded at `bd518a0`):**
 * byte-identical: features, including the reference `cf33ba7c…`; QA; harmonization cells, so every donor and transferred value; and the station-support checkpoint;
 * hence every country C2 value, area and coverage is unchanged.
 
@@ -86,12 +89,13 @@ The manifest differs only in the declared keys:
 
 ## Reproduce
 
-At `58e64bf`:
+1. Run both builds from a clean checkout of `58e64bf`. The manifest must record that exact commit.
+2. Run the package script from `222e2c1` or later, where it was added, passing the full build commit.
 
 ```
-python -m research.model_v2.m1b_hydroclimate BUILD_A      # PYTHONHASHSEED=0
-python -m research.model_v2.m1b_hydroclimate BUILD_B      # PYTHONHASHSEED=73
-python -m research.model_v2.feasibility.m1b_amendment3_package 58e64bf… BUILD_A BUILD_B --verify-only
+PYTHONHASHSEED=0 uv run python -m research.model_v2.m1b_hydroclimate BUILD_A     # at 58e64bf
+PYTHONHASHSEED=73 uv run python -m research.model_v2.m1b_hydroclimate BUILD_B    # at 58e64bf
+uv run python -m research.model_v2.feasibility.m1b_amendment3_package 58e64bfbe6a6b12503a8b08cea51fecd5415e1a5 BUILD_A BUILD_B --verify-only
 ```
 
-Without `--verify-only`, the script installs build A into `outputs/` (refusing to overwrite) and writes `m1b_package_record.json`. Historical scripts reproduce only at their own commits.
+Without `--verify-only`, the script installs build A into `outputs/` (refusing to overwrite) and writes `m1b_package_record.json`. Its `independent_processes` field is a declared literal; the process evidence is in `m1b_process_evidence.json`. Historical scripts reproduce only at their own commits.

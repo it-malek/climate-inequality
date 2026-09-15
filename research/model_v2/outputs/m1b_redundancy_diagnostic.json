@@ -1,0 +1,244 @@
+{
+  "n": 151,
+  "design_columns": [
+    "intercept",
+    "cum_co2_total",
+    "abs_latitude",
+    "elevation",
+    "continentality",
+    "climate_zone=B",
+    "climate_zone=C",
+    "climate_zone=D",
+    "climate_zone=E",
+    "hemisphere=S",
+    "spatial_block=Asia",
+    "spatial_block=Europe",
+    "spatial_block=North America",
+    "spatial_block=Oceania",
+    "spatial_block=South America",
+    "income_group=Low-income countries",
+    "income_group=Lower-middle-income countries",
+    "income_group=Upper-middle-income countries",
+    "population",
+    "station_density"
+  ],
+  "design_column_count": 20,
+  "design_rank": 20,
+  "rank_with_c2": 21,
+  "condition_number_design": {
+    "raw": 17827.486954414824,
+    "unit_column_scaled": 100.83413499602527
+  },
+  "condition_number_design_with_c2": {
+    "raw": 17844.313753258495,
+    "unit_column_scaled": 102.07866330077407
+  },
+  "r2_full_m0star": 0.6501911562624498,
+  "adjusted_r2_full_m0star": 0.5994555224379197,
+  "vif": 2.8587041691555015,
+  "residual_sd_of_c2": 0.34291219849336174,
+  "c2_mean": -0.22270234328457494,
+  "c2_sd": 0.5418231545637627,
+  "r2_by_group_alone": {
+    "geography": 0.6214993385434432,
+    "responsibility": 1.3253815038472005e-05,
+    "socioeconomic": 0.035330707507908565,
+    "population": 0.06605055228771595
+  },
+  "correlations": {
+    "abs_latitude": {
+      "pearson": 0.01969875786391518,
+      "spearman": -0.05115473307696874
+    },
+    "elevation": {
+      "pearson": -0.15314472622587683,
+      "spearman": -0.27057360628592203
+    },
+    "continentality": {
+      "pearson": -0.16634865641251037,
+      "spearman": -0.25686847060699064
+    },
+    "log10_cum_co2_total": {
+      "pearson": 0.0036405789427326404,
+      "spearman": -0.007493900313698152
+    },
+    "log10_population": {
+      "pearson": -0.07183854711584048,
+      "spearman": -0.11811084001394215
+    },
+    "station_density": {
+      "pearson": 0.19353649356773034,
+      "spearman": 0.16061950743557665
+    }
+  },
+  "category_summaries": {
+    "climate_zone": {
+      "A": {
+        "n": 54,
+        "mean": 0.03678529085805663,
+        "sd": 0.29713212578375525
+      },
+      "B": {
+        "n": 29,
+        "mean": -1.0064950897283778,
+        "sd": 0.5257089189565658
+      },
+      "C": {
+        "n": 37,
+        "mean": -0.20183045223317822,
+        "sd": 0.4462739451806264
+      },
+      "D": {
+        "n": 30,
+        "mean": 0.020802188796022678,
+        "sd": 0.16525479264880438
+      },
+      "E": {
+        "n": 1,
+        "mean": 0.4175591285639882,
+        "sd": null
+      }
+    },
+    "hemisphere": {
+      "N": {
+        "n": 122,
+        "mean": -0.24286529741964055,
+        "sd": 0.5827171223084024
+      },
+      "S": {
+        "n": 29,
+        "mean": -0.1378788810611955,
+        "sd": 0.3100073152639129
+      }
+    },
+    "spatial_block": {
+      "Africa": {
+        "n": 47,
+        "mean": -0.42660749425802674,
+        "sd": 0.6522140982671801
+      },
+      "Asia": {
+        "n": 38,
+        "mean": -0.4005015564343529,
+        "sd": 0.6157341869322366
+      },
+      "Europe": {
+        "n": 38,
+        "mean": 0.03952235950236339,
+        "sd": 0.18608057782384124
+      },
+      "North America": {
+        "n": 14,
+        "mean": 0.030520377803671728,
+        "sd": 0.19074042197862784
+      },
+      "Oceania": {
+        "n": 3,
+        "mean": -0.01207283486170587,
+        "sd": 0.6204367036792375
+      },
+      "South America": {
+        "n": 11,
+        "mean": -0.02285080973584036,
+        "sd": 0.2603745043640055
+      }
+    },
+    "income_group": {
+      "High-income countries": {
+        "n": 47,
+        "mean": -0.1047650687533716,
+        "sd": 0.4996718376719263
+      },
+      "Low-income countries": {
+        "n": 23,
+        "mean": -0.41015825619731416,
+        "sd": 0.5446823058750415
+      },
+      "Lower-middle-income countries": {
+        "n": 40,
+        "mean": -0.26874395542995355,
+        "sd": 0.5683897886641258
+      },
+      "Upper-middle-income countries": {
+        "n": 41,
+        "mean": -0.20782189011770685,
+        "sd": 0.5447150029111488
+      }
+    }
+  },
+  "near_redundant_flag": false,
+  "hard_stops": [],
+  "status": "pass",
+  "all_hard_stops_pass": true,
+  "provenance": {
+    "measurement_manifest_sha256": "1974686199b9c7960ead2b105e6225f34b9b6fb33627858d2bc15239d7de4c9c",
+    "c2_features_sha256": "cf33ba7cfb87c2184a94df5e5686f0951adf692819af8de27329ea698d72e1f4",
+    "measurement_git_commit": "58e64bfbe6a6b12503a8b08cea51fecd5415e1a5",
+    "measurement_code_sha256": "e874a68088893027d2839b5b2add9449abbe559dc001fbc505ee121bf801e71c",
+    "measurement_gate_version": "M1B_EVALUATION_CONTRACT.md Amendment 3",
+    "predictor_input_sha256": {
+      "data/processed/country_inequality.parquet": "74bbad767106b589b486995b2373e49ba17ae32897e5e0b0cc678205460567f4",
+      "data/processed/city_features.parquet": "7d4a95fa624d2c1811073a157f9ffd145b97bbb5d69fa2f4bd97c1d666289d64",
+      "data/raw/worldbank/world-bank-income-groups.csv": "79569499049031746c4c56019e430d02c3c182ad7e9011247fb82183227d41a5",
+      "research/model_v2/outputs/m1a_geography_qa.csv": "bdc4f1caff740fea7949b636c367afb6c68b423eccebb07c9391b357358425c8"
+    },
+    "inequality_columns_read": [
+      "Country",
+      "owid_country",
+      "continent",
+      "cumulative_co2_mt",
+      "population"
+    ],
+    "city_feature_columns_read": [
+      "Country",
+      "abs_latitude",
+      "hemisphere",
+      "coast_km",
+      "elevation_m",
+      "koppen",
+      "station_density"
+    ],
+    "predictor_columns": [
+      "Country",
+      "cum_co2_total",
+      "abs_latitude",
+      "elevation",
+      "continentality",
+      "climate_zone",
+      "hemisphere",
+      "spatial_block",
+      "income_group",
+      "population",
+      "station_density"
+    ],
+    "outcome_column_present": false,
+    "country_list_sha256": "8b68ce740bf1c20e639a2f8641a7e884b058244affaac92ccc89f4bb2f27f63a",
+    "predictor_frame_sha256": "b741f2a0eef664fffa9cbbcf58389df829d2ebd25ec43d041f0f6fe113fca738",
+    "design_columns": [
+      "intercept",
+      "cum_co2_total",
+      "abs_latitude",
+      "elevation",
+      "continentality",
+      "climate_zone=B",
+      "climate_zone=C",
+      "climate_zone=D",
+      "climate_zone=E",
+      "hemisphere=S",
+      "spatial_block=Asia",
+      "spatial_block=Europe",
+      "spatial_block=North America",
+      "spatial_block=Oceania",
+      "spatial_block=South America",
+      "income_group=Low-income countries",
+      "income_group=Lower-middle-income countries",
+      "income_group=Upper-middle-income countries",
+      "population",
+      "station_density"
+    ],
+    "design_matrix_sha256": "5d3703e780c701ed358e1bf6651c15a7c9c0a2d7ca045d469358b696b84324c4",
+    "c2_vector_sha256": "dd95152122c87f544cb64c016e7aa9bf6968bce3628eedf7436c6129e44e2d47",
+    "redundancy_code_sha256": "a7155ec5004f934be06db3d61614d8bc6c2e7601afff5f5ae112a72832d9fec4",
+    "non_finite_statistics_encoding": "non-finite floats are written as the strings 'inf', '-inf' or 'nan'"
+  }
+}

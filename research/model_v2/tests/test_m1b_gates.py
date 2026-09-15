@@ -272,3 +272,16 @@ def test_redundancy_hard_stop_is_recorded_as_valid_json(tmp_path, instrumented):
     write_package(tmp_path, c2=np.ones(len(FROZEN)))                                  # zero variance
     r.main(tmp_path)
     assert json.loads((tmp_path / r.RECORD).read_text())['hard_stops'] == ['zero-variance C2']
+
+
+def test_evaluator_main_refuses_before_any_gate_or_input_read(monkeypatch):
+    from research.model_v2 import m1b_evaluate as e
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError('scoring touched a gate or an input before the disabled-scoring check')
+    for name in ('scoring_gate', 'load_inputs', 'm0_complete_design'):
+        monkeypatch.setattr(e, name, forbidden)
+    monkeypatch.setattr(pd, 'read_csv', forbidden)
+    assert e.SCORING_ENABLED is False
+    with pytest.raises(RuntimeError, match='scoring is disabled'):
+        e.main()
