@@ -16,8 +16,11 @@ unresolved::
 
 Inputs are only the frozen M1a support record (country identifiers, terrestrial area, per-cell land
 area), the GPW country grid and the pinned CRU PRE/PET files; no file holding a warming outcome is
-opened. Writes only ``outputs/m1b_*``.
-Run with ``python -m research.model_v2.m1b_hydroclimate [out_dir]``.
+opened. Under Amendment 3, invalid support that is not a structural-mask target stays unresolved and
+counts against the unchanged 0.98 coverage gate; its presence alone no longer stops the build. The
+manifest records the SHA-256 of every other package artifact, and ``verify_package`` checks them.
+Writes only ``outputs/m1b_*``. Run with ``python -m research.model_v2.m1b_hydroclimate [out_dir]``;
+the process exits with status 2 when any hard stop fires.
 """
 from __future__ import annotations
 
@@ -68,16 +71,32 @@ GRID_ATOL_DEG = 1e-6  # ~0.1 m; GPW and CRU store exact multiples of 0.125°
 CONTRACT_COMMIT = '60111ae1d44bdf9da6c613852a32de541f9b2d7a'  # the original freeze; amendments are recorded separately
 CONTRACT_PATH = Path(__file__).with_name('M1B_EVALUATION_CONTRACT.md')
 LAND_SUPPORT_COMMIT = 'a7dea346b0d808aab8d9cf84058cfac25c5796b0'
-LAND_SUPPORT_SHA256 = {LAND_AREA_NPZ: '642cbe5abe48457682f312884c03510c13b133a74bc083039b537f0b738466cf',
-                       M1A_QA: 'bdc4f1caff740fea7949b636c367afb6c68b423eccebb07c9391b357358425c8'}
+# Frozen construction inputs, asserted before any work. The M1a support files are the blobs at a7dea34. The GPW grid
+# and national-identifier lookup are the values recorded by the corrected territorial CV (4263429), both M1a
+# manifests (ff67545, a7dea34), the M0.5 product audit (9fb56e1) and the stopped Amendment 1 build (bd518a0).
+FROZEN_INPUT_SHA256 = {
+    LAND_AREA_NPZ: '642cbe5abe48457682f312884c03510c13b133a74bc083039b537f0b738466cf',
+    M1A_QA: 'bdc4f1caff740fea7949b636c367afb6c68b423eccebb07c9391b357358425c8',
+    GPW_PATH: 'e15f622851c04d0d3842e9966c30695d3b5d31050608e491d44abc5e48dab85d',
+    GPW_NATID_LOOKUP_PATH: 'bbe7b1359b48d801a5a602bb63e6315fc8b532ccd00373b1131123785762e089',
+}
 CRU_VERSION, CRU_RUN_ID = '4.10', '2604091129'
 # Local code on the construction path, checked against the build commit.
 CODE_PATH = ('research/model_v2/m1b_hydroclimate.py', 'research/model_v2/M1B_EVALUATION_CONTRACT.md',
              'research/model_v2/m0.py', 'research/model_v2/m1a_geography.py', 'research/model_v2/geometry.py',
              'research/model_v2/territory.py', 'src/population.py', 'src/area_weighting.py')
 
-# Amendment 1: one-ring structural land-mask harmonization.
-AMENDMENT = 'M1B_EVALUATION_CONTRACT.md Amendment 1 (2026-09-15)'
+# Amendment 1: one-ring structural land-mask harmonization. Amendment 3: gate on resolved coverage only.
+AMENDMENTS = ('Amendment 1 (2026-09-15): one-ring structural CRU land-mask harmonization',
+              'Amendment 2 (2026-09-15): station-support sensitivity registration; outcome-free redundancy inputs',
+              'Amendment 3 (2026-09-15): non-structural invalid support stays unresolved and counts against coverage; '
+              'no presence stop; package integrity digests')
+GATE_VERSION = 'M1B_EVALUATION_CONTRACT.md Amendment 3'
+HARD_STOP_RULES = ('coverage < 0.98 (resolved = native-valid + structurally harmonized area)',
+                   'malformed area QA (non-finite, negative or non-positive total area)',
+                   'no native-valid terrestrial area: station audit undefined',
+                   'pathological: entire terrestrial area pure climatology for all 360 months',
+                   'non-finite C2')
 N_LAT, N_LON, CELL_DEG = 360, 720, 0.5
 NEIGHBOUR_OFFSETS = tuple((di, dk) for di in (-1, 0, 1) for dk in (-1, 0, 1) if (di, dk) != (0, 0))
 NATIVE, HARMONIZED, UNRESOLVED = 'native', 'harmonized', 'unresolved'
@@ -85,8 +104,11 @@ STRUCTURAL, NON_STRUCTURAL = 'structural_cru_mask', 'non_structural_invalid'
 MASKED, COMPLETE = 'masked', 'complete'
 AREA_RTOL = 1e-10  # float64 summation error over <= ~1e5 cell addends stays below this relative bound
 FILL_CHUNK_MONTHS = 60
-DETERMINISTIC_OUTPUTS = ('m1b_hydroclimate_features.csv', 'm1b_hydroclimate_qa.csv', 'm1b_harmonization_cells.csv',
-                         'm1b_support_checkpoint.json', 'm1b_measurement_manifest.json')
+MANIFEST = 'm1b_measurement_manifest.json'
+FEATURES = 'm1b_hydroclimate_features.csv'
+PACKAGE_ARTIFACTS = (FEATURES, 'm1b_hydroclimate_qa.csv', 'm1b_harmonization_cells.csv', 'm1b_unresolved_support.csv',
+                     'm1b_support_checkpoint.json')  # each digested in the manifest; Git anchors the manifest itself
+DETERMINISTIC_OUTPUTS = (*PACKAGE_ARTIFACTS, MANIFEST)
 RUN_METADATA = 'm1b_build_run.json'  # wall-clock metadata, deliberately outside the byte-compared outputs
 
 
@@ -107,6 +129,14 @@ def decompressed(gz_path):
             shutil.copyfileobj(src, dst, 1 << 24)
         tmp.rename(nc)
     return nc
+
+
+def check_frozen_inputs(pins=None):
+    """Fail closed unless every frozen construction input matches its recorded SHA-256."""
+    for path, pin in (FROZEN_INPUT_SHA256 if pins is None else pins).items():
+        digest = sha256(path)
+        if digest != pin:
+            raise ValueError(f'{Path(path).name}: sha256 {digest} differs from the frozen record {pin}')
 
 
 def pinned_source(spec):
@@ -439,6 +469,13 @@ def cell_audit(resolved, codes, pre_state, pet_state):
     return audit.sort_values(['target_lat_index', 'target_lon_index', 'iso3'], kind='stable').reset_index(drop=True)
 
 
+def unresolved_support(audit):
+    """Every unresolved (country, CRU cell) support row of the cell audit: reason, variable states and area."""
+    rows = audit[audit.status == UNRESOLVED]
+    return rows[['target_lat_index', 'target_lon_index', 'target_lat', 'target_lon', 'iso3', 'target_land_area_km2',
+                 'pre_state', 'pet_state', 'reason']].reset_index(drop=True)
+
+
 def harmonization_summary(resolved, support):
     """Global Amendment 1 counts, areas and donor distances (distinct cells unless stated)."""
     targets = resolved[resolved.reason == STRUCTURAL]
@@ -467,17 +504,22 @@ def harmonization_summary(resolved, support):
 
 
 def hard_stops(qa, codes):
-    """Contract §2.4-§2.5 and Amendment 1 A1.7 stops, one record per country and rule (NaN fails closed)."""
+    """Contract §2.4-§2.5 and Amendment 1 A1.7 stops as amended by Amendment 3, one record per country and rule.
+
+    Amendment 3 removed the stop on the mere presence of non-structural invalid support: that area stays
+    unresolved and counts against coverage. Every comparison is written so that a non-finite value stops.
+    """
     stops = []
     for j, code in enumerate(codes):
         r = qa.iloc[j]
+        areas = np.array([r.total_land_area_km2, r.native_valid_area_km2, r.harmonized_area_km2, r.unresolved_area_km2,
+                          r.unresolved_structural_area_km2, r.non_structural_invalid_area_km2], dtype=float)
+        if not (np.all(np.isfinite(areas)) and np.all(areas >= 0) and areas[0] > 0):
+            stops.append({'iso3': code, 'rule': 'malformed area QA'})
         if not r.coverage >= COVERAGE_MIN:
             stops.append({'iso3': code, 'rule': 'coverage < 0.98', 'coverage': float(r.coverage),
                           'unresolved_structural_area_km2': float(r.unresolved_structural_area_km2),
                           'non_structural_invalid_area_km2': float(r.non_structural_invalid_area_km2)})
-        if not r.n_non_structural_invalid_cells == 0:
-            stops.append({'iso3': code, 'rule': 'non-structural invalid support cells (Amendment 1 A1.2): review',
-                          'cells': int(r.n_non_structural_invalid_cells)})
         if not r.native_valid_area_km2 > 0:
             stops.append({'iso3': code, 'rule': 'no native-valid terrestrial area: station audit undefined'})
         if not r.pre_pure_climatology_share < 1:
@@ -500,6 +542,40 @@ def write_csv(frame, path):
     Path(path).write_text(csv_text(frame))
 
 
+def read_verified(out_dir, name, manifest):
+    """The bytes of one package artifact after checking them against the manifest's recorded digest."""
+    data = (Path(out_dir) / name).read_bytes()
+    recorded = manifest.get('artifact_sha256', {}).get(name) if isinstance(manifest.get('artifact_sha256'), dict) else None
+    if not isinstance(recorded, str) or hashlib.sha256(data).hexdigest() != recorded:
+        raise ValueError(f'{name} does not match the digest recorded in the measurement manifest')
+    return data
+
+
+def verify_package(out_dir):
+    """Fail closed unless ``out_dir`` holds a passing, clean-commit measurement package whose artifacts match.
+
+    Requires ``all_hard_stops_pass is True``, an empty ``hard_stops`` list, the current gate version, a build
+    from committed code, and the recorded SHA-256 of every package artifact. Returns (manifest, manifest_sha256).
+    """
+    raw = (Path(out_dir) / MANIFEST).read_bytes()
+    manifest = json.loads(raw)
+    if not isinstance(manifest, dict):
+        raise ValueError('measurement manifest is not a JSON object')
+    if manifest.get('all_hard_stops_pass') is not True or manifest.get('hard_stops') != []:
+        raise ValueError('measurement package does not record a passing gate with an empty hard_stops list')
+    if manifest.get('gate_version') != GATE_VERSION:
+        raise ValueError(f"measurement package gate version {manifest.get('gate_version')!r} is not {GATE_VERSION!r}")
+    git = manifest.get('git')
+    if not isinstance(git, dict) or git.get('code_path_matches_commit') is not True or not isinstance(git.get('commit'), str):
+        raise ValueError('measurement package was not built from committed construction code')
+    recorded = manifest.get('artifact_sha256')
+    if not isinstance(recorded, dict) or sorted(recorded) != sorted(PACKAGE_ARTIFACTS):
+        raise ValueError('measurement manifest does not record exactly the package artifact digests')
+    for name in PACKAGE_ARTIFACTS:
+        read_verified(out_dir, name, manifest)
+    return manifest, hashlib.sha256(raw).hexdigest()
+
+
 def git_state():
     def run(*args):
         return subprocess.run(['git', *args], cwd=m0.ROOT, capture_output=True, text=True)
@@ -515,9 +591,7 @@ def git_state():
 def build(out=OUT):
     started, started_utc = time.perf_counter(), datetime.now(timezone.utc).isoformat(timespec='seconds')
     code_hash = sha256(Path(__file__))  # pinned before any work; never edit the file mid-run
-    for path, pin in LAND_SUPPORT_SHA256.items():
-        if sha256(path) != pin:
-            raise ValueError(f'{path.name} differs from the frozen M1a support at {LAND_SUPPORT_COMMIT[:7]}')
+    check_frozen_inputs()
     table = pd.read_csv(M1A_QA, usecols=SUPPORT_COLUMNS)[SUPPORT_COLUMNS]
     if table.columns.tolist() != SUPPORT_COLUMNS or len(table) != 151:
         raise ValueError('M1a support record does not have the expected identifier and area columns')
@@ -589,11 +663,13 @@ def build(out=OUT):
     audit = cell_audit(resolved, codes, pre_state, pet_state)
     manifest = {
         'contract': 'research/model_v2/M1B_EVALUATION_CONTRACT.md', 'contract_freeze_commit': CONTRACT_COMMIT,
-        'contract_sha256': sha256(CONTRACT_PATH), 'amendment': AMENDMENT, 'git': git_state(),
+        'contract_sha256': sha256(CONTRACT_PATH), 'amendments': list(AMENDMENTS), 'gate_version': GATE_VERSION,
+        'git': git_state(),
         'description': 'CRU-reconstructed 1920-1949 baseline hydroclimatic dryness (not purely observed pre-1950 dryness)',
         'sources': sources, 'cru_version': CRU_VERSION, 'cru_run_id': CRU_RUN_ID,
         'support_inputs': {'m1a_cell_land_area_sha256': sha256(LAND_AREA_NPZ), 'm1a_geography_qa_sha256': sha256(M1A_QA),
                            'land_support_commit': LAND_SUPPORT_COMMIT, 'land_support_pins_asserted': True,
+                           'gpw_and_lookup_pins_asserted': True,
                            'gpw_path': str(GPW_PATH.relative_to(m0.ROOT)), 'gpw_sha256': sha256(GPW_PATH),
                            'gpw_national_identifier_lookup_sha256': sha256(GPW_NATID_LOOKUP_PATH),
                            'country_list_sha256': hashlib.sha256(('\n'.join(codes) + '\n').encode()).hexdigest(),
@@ -619,6 +695,11 @@ def build(out=OUT):
         'harmonization': harmonization_summary(resolved, support),
         'country_area_reproduces_m1a_max_relative_error': float(rel.max()),
         'area_partition_max_relative_error': float(partition.max()),
+        'hard_stop_rules': list(HARD_STOP_RULES),
+        'unresolved_support': {'rows': int((resolved.status == UNRESOLVED).sum()),
+                               'area_km2': float(qa.unresolved_area_km2.sum()),
+                               'structural_area_km2': float(qa.unresolved_structural_area_km2.sum()),
+                               'non_structural_invalid_area_km2': float(qa.non_structural_invalid_area_km2.sum())},
         'hard_stops': stops, 'all_hard_stops_pass': not stops,
         'code_sha256': code_hash,
         'software': {'python': platform.python_version(), 'numpy': np.__version__, 'pandas': pd.__version__,
@@ -628,25 +709,28 @@ def build(out=OUT):
                      'xarray_engine': NETCDF_ENGINE, 'platform': platform.platform(), 'machine': platform.machine()},
     }
     texts = {  # serialize everything before writing, so a failure never leaves a partial output set
-        'm1b_hydroclimate_features.csv': csv_text(qa[['iso3', 'Country']].assign(baseline_dryness=qa.c2_harmonized)),
+        FEATURES: csv_text(qa[['iso3', 'Country']].assign(baseline_dryness=qa.c2_harmonized)),
         'm1b_hydroclimate_qa.csv': csv_text(qa),
         'm1b_harmonization_cells.csv': csv_text(audit),
+        'm1b_unresolved_support.csv': csv_text(unresolved_support(audit)),
         'm1b_support_checkpoint.json': json.dumps(checkpoint, indent=2, allow_nan=False) + '\n',
-        'm1b_measurement_manifest.json': json.dumps(manifest, indent=2, allow_nan=False) + '\n',
     }
+    manifest['artifact_sha256'] = {name: hashlib.sha256(text.encode('utf-8')).hexdigest() for name, text in texts.items()}
+    texts[MANIFEST] = json.dumps(manifest, indent=2, allow_nan=False) + '\n'
     if tuple(texts) != DETERMINISTIC_OUTPUTS:
         raise AssertionError('output set differs from DETERMINISTIC_OUTPUTS')
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     for name, text in texts.items():
-        (out / name).write_text(text)
+        (out / name).write_text(text, encoding='utf-8')
     run = {'started_utc': started_utc, 'finished_utc': datetime.now(timezone.utc).isoformat(timespec='seconds'),
            'wall_seconds': round(time.perf_counter() - started, 1), 'argv': sys.argv,
-           'deterministic_output_sha256': {name: hashlib.sha256(text.encode()).hexdigest() for name, text in texts.items()}}
-    (out / RUN_METADATA).write_text(json.dumps(run, indent=2) + '\n')
+           'deterministic_output_sha256': {name: hashlib.sha256(text.encode('utf-8')).hexdigest() for name, text in texts.items()}}
+    (out / RUN_METADATA).write_text(json.dumps(run, indent=2) + '\n', encoding='utf-8')
     return qa, manifest
 
 
 if __name__ == '__main__':
     qa, manifest = build(Path(sys.argv[1]) if len(sys.argv) > 1 else OUT)
     print(json.dumps({'all_hard_stops_pass': manifest['all_hard_stops_pass'], 'hard_stops': manifest['hard_stops']}, indent=2))
+    sys.exit(0 if manifest['all_hard_stops_pass'] is True else 2)

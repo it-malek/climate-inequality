@@ -1,21 +1,26 @@
 """M1b scoring under the frozen ``M1B_EVALUATION_CONTRACT.md`` (pushed ``60111ae``).
 
 M1b = M0* + ``baseline_dryness`` in a research-only ``hydroclimate`` group. Before scoring, it
-refuses to run unless measurement and redundancy hard stops pass and M0* reproduces the rank-audit
-``drop_per_capita`` card to 1e-10 through this module's schema extension.
+refuses to run unless ``scoring_gate`` verifies a passing measurement package (artifact digests, empty
+``hard_stops``, committed build) and a passing redundancy record computed from exactly that package, and
+M0* reproduces the rank-audit ``drop_per_capita`` card to 1e-10 through this module's schema extension.
 Run with ``PYTHONHASHSEED=0 python -m research.model_v2.m1b_evaluate``.
 """
 from __future__ import annotations
 
 import dataclasses
+import io
 import json
 import logging
 from dataclasses import asdict
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from research.model_v2 import cv, territory
+from research.model_v2 import m1b_hydroclimate as hydro
+from research.model_v2.m1b_redundancy import verify_record
 from research.model_v2.m0 import OUTPUT_DIR, load_inputs, m0_complete_design
 from research.model_v2.run_m0_scorecard import MIN_REGION_N, PRIMARY_BUFFER_KM
 from research.model_v2.run_territory_correction import paired_rmse_interval
@@ -163,16 +168,21 @@ def diagnostics(c0, m1b):
             'scientific_stability': 'material change' if material else 'stable', 'shares': shares}
 
 
+def scoring_gate(out_dir=OUTPUT_DIR):
+    """Fail closed before any outcome is read: the verified C2 bytes of a passing package with a matching redundancy record."""
+    manifest, manifest_sha256 = hydro.verify_package(out_dir)
+    features = hydro.read_verified(out_dir, hydro.FEATURES, manifest)
+    verify_record(out_dir, manifest_sha256, manifest['artifact_sha256'][hydro.FEATURES])
+    return features
+
+
 def main():
     logging.getLogger('src.feature_schema').setLevel(logging.ERROR)
-    for name in ['m1b_measurement_manifest.json', 'm1b_redundancy_diagnostic.json']:
-        stops = json.loads((OUTPUT_DIR / name).read_text()).get('hard_stops')
-        if stops:
-            raise RuntimeError(f'{name} hard stops: {stops}')
+    features_bytes = scoring_gate(Path(OUTPUT_DIR))
     design = m0_complete_design(*load_inputs())
     table = pd.read_csv(OUTPUT_DIR / 'm0_countries.csv')
     assert design.Country.tolist() == table.Country.tolist()
-    c2 = pd.read_csv(OUTPUT_DIR / 'm1b_hydroclimate_features.csv')
+    c2 = pd.read_csv(io.BytesIO(features_bytes))
     assert c2.iso3.tolist() == table.iso3.tolist()
     m0star = design.drop(columns='cum_co2_per_capita').reset_index(drop=True)
     m1b = m0star.copy()

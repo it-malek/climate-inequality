@@ -26,7 +26,8 @@ are recorded in `M1B_DESIGN.md`:
 * CRU TS v4.10;
 * baseline hydroclimate group;
 * no Bonferroni and no joint model;
-* sensitivities only for a surviving model.
+* sensitivities only for a surviving model (Amendment 3 A3.6: the per-capita representation is
+  reported with any M1b score unconditionally).
 
 The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`.
 
@@ -39,12 +40,17 @@ The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`.
 * Next: an amended build must pass every hard stop. The redundancy diagnostic then runs on
   predictor columns only; contract Amendment 2 restricts its inputs to allow-listed predictor
   source columns.
-* **Open owner decision: the amended build stopped (`M1B_AMENDMENT1_BUILD_STOP.md`).**
+* The amended build stopped (`M1B_AMENDMENT1_BUILD_STOP.md`).
   * All 151 countries reach ≥ 0.98 coverage (minimum Bahamas 0.9888).
   * Hard stop A1.7 fired on one non-structural Peru cell: 23 km², PET masked, PRE identically zero
     across the record.
-  * Resolving it needs a new pre-outcome decision. Until then the redundancy diagnostic, outcome
-    loading and scoring stay blocked.
+* **Resolved by the owner (contract Amendment 3, 2026-09-15).**
+  * This is a pre-outcome relaxation: non-structural invalid support stays unresolved and counts
+    against the unchanged 0.98 coverage threshold, and its presence no longer stops the build.
+  * The amendment also adds package-integrity gates, and it records that the per-capita
+    representation is reported unconditionally when M1b is scored.
+* Next: rebuild under Amendment 3 and freeze the predictor package, then run the pre-outcome
+  redundancy diagnostic. Stop for owner review before any M1b scoring.
 * Contract Amendment 2 also pre-registers one station-support sensitivity. If and only if the
   linear association is supported, the frozen comparison is repeated excluding Saudi Arabia,
   Yemen, Haiti, Oman and Chad. It cannot change either verdict level.

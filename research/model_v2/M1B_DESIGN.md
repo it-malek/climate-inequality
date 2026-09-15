@@ -98,6 +98,8 @@ This is **not** target leakage from the Berkeley warming outcome, and it does no
 
 These never determine selection. No alternative dryness window, transform, definition, dataset or threshold is tested after the primary result.
 
+*(Contract Amendment 3 A3.6, dated 2026-09-15: the per-capita representation is reported unconditionally whenever M1b is scored, as `V2_PREDICTOR_CONTRACT.md` requires. Primary acceptance uses the total-CO₂ representation alone. The M1a-geography, aligned-ERA5 and Amendment 2 five-country replications stay conditional.)*
+
 ## 6. Order of work
 
 1. This design commit (amended, pushed).
@@ -109,7 +111,7 @@ These never determine selection. No alternative dryness window, transform, defin
    * run the support checkpoint and the redundancy diagnostic without loading the outcome;
    * commit the measurements and both pre-fit records.
 4. If all hard stops pass: score M1b against M0\* under the contract; freeze the result.
-5. Only if the association is supported: run the registered sensitivities.
+5. Only if the association is supported: run the registered sensitivities. *(Amendment 3 A3.6: the per-capita representation is reported with any M1b score unconditionally.)*
 
 ## 7. What M1b must not do
 

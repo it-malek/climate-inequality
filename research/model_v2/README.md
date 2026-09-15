@@ -149,6 +149,8 @@ Current primary CV: `uv run python -m research.model_v2.run_territory_correction
 - `M1B_EVALUATION_CONTRACT.md`: C2 measurement and M1b evaluation rules, frozen before
   any CRU acquisition. Amendment 1 (structural CRU land-mask harmonization) was adopted
   before any amended C2 value, redundancy diagnostic or score.
+- `M1B_AMENDMENT1_BUILD_STOP.md`: the stopped Amendment 1 build (one non-structural Peru cell), resolved by
+  contract Amendment 3 (non-structural support counts against coverage; package-integrity gates).
 - `M1B_FEASIBILITY_AUDIT.md`: original-rule C2 build (148/151 pass the coverage gate),
   kept as the evidence for Amendment 1.
 

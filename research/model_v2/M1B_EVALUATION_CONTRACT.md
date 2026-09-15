@@ -14,9 +14,12 @@ For structural CRU land-mask cells only:
 Globally:
 * the §2.6 QA column list and output set, where byte-identity covers the deterministic outputs and not the run-metadata file;
 * two added fail-closed stops (A1.7);
+  *(Amendment 3 removes one of them, the stop on any non-structural invalid support cell.)*
 * the manifest's provenance fields (A1.10).
 
 The original text is kept below for the audit trail. The evidence is in `M1B_FEASIBILITY_AUDIT.md`.
+
+**Amended again 2026-09-15 by Amendment 3 (end of this file), after the stopped Amendment 1 build and before any passing C2 package, redundancy diagnostic or M1b score existed.** It removes the unconditional stop on non-structural invalid support. That support stays unresolved and counts against the unchanged 0.98 coverage threshold. It also hardens package integrity and reconciles the per-capita reporting rule (A3.6).
 
 **Hypothesis:** M1b = M0\* + baseline hydroclimatic dryness (C2).
 **Schematic model:** `y = G + H_hydroclimate + R + S + P + error`.
@@ -158,6 +161,8 @@ For each country, over valid cells, weighted by A_{c,j} and averaged over the 36
 
 *(Amendment 1 A1.9 replaces the QA column list. The outputs add `m1b_harmonization_cells.csv` and the run-metadata file `m1b_build_run.json`. Byte-identity applies to the five deterministic outputs (A1.10), not to the run-metadata file, which records wall-clock times.)*
 
+*(Amendment 3 A3.4 adds `m1b_unresolved_support.csv`. Byte-identity now covers the six deterministic outputs.)*
+
 ## 3. Pre-outcome redundancy diagnostic (committed before the outcome is loaded or fitted)
 
 **Inputs.** The frozen M0\* design with the `warming_trend` column **removed** (assert absent), and C2.
@@ -283,6 +288,8 @@ The M49 and worst-region results are essential robustness evidence. They are rep
 
 **Use.** Results are reported side by side and cannot change either verdict level. A gain confined to Berkeley is flagged product-sensitive. If the association is not supported, no sensitivity runs are performed.
 
+*(Amendment 3 A3.6, dated reconciliation: primary acceptance uses the total-CO₂ representation alone. The per-capita representation (item 2) is reported unconditionally whenever M1b is scored, as `V2_PREDICTOR_CONTRACT.md` requires. Items 1 and 3 and the Amendment 2 five-country replication stay conditional. No sensitivity changes a verdict.)*
+
 ## 6. Not permitted at any point
 * Alternative dryness windows, transforms (for example unlogged AI or PET-free precipitation), datasets (other CRU versions, GPCC, TerraClimate, CGIAR), thresholds, aggregation orders (including the pooled national P/PET ratio) or coverage rules.
   *(Amendment 1 replaces the §2.4 coverage rule with its structural-mask rule. No other coverage rule is permitted.)*
@@ -300,6 +307,7 @@ The owner approved acquisition once this amended contract is on the remote.
 3. **Pre-outcome checkpoint.** Run the support audit (§2.5) and the redundancy diagnostic (§3) **without loading the warming outcome**. Commit the measurements and both pre-fit records. Stop on any hard stop or pathology.
 4. **Score.** If all hard stops pass, score M1b under §4, then commit the result and report.
 5. **Sensitivities.** Only if the linear association is supported: run §5 and commit.
+   *(Amendment 3 A3.6: the per-capita representation is reported with the M1b score unconditionally; the other sensitivities stay conditional.)*
 
 ## Amendment 1 — structural CRU land-mask harmonization of C2 support
 
@@ -350,6 +358,7 @@ The failure is therefore a mismatch between the source's land mask and the froze
   * §2.6: the QA column list and output set are replaced by A1.9. Byte-identity covers the deterministic outputs only (A1.10).
   * the manifest's provenance fields (A1.10).
 * **Added fail-closed stops (A1.7).** These can only halt work for owner review: any non-structural invalid support cell, and any country with no native-valid area.
+  *(Amendment 3 removes the stop on any non-structural invalid support cell; the no-native-area stop stays.)*
 
 ### A1.1 Native cells (unchanged)
 
@@ -379,6 +388,8 @@ A cell is a **structural-mask target** if and only if all four conditions hold:
 4. each variable is masked or complete.
 
 Any other invalid support cell (a cell with a defective variable) is **not** a target. It stays unresolved, receives no value and is a hard stop for owner review (A1.7). For the pinned files, the audit found the masks constant over the full record and no such support cell.
+
+*(Superseded in part by Amendment 3: such a cell still stays unresolved and never receives a value, but its presence is no longer a hard stop. It counts against coverage. The audit statement in the last sentence was wrong for one Peru cell; see `M1B_AMENDMENT1_BUILD_STOP.md` §4.)*
 
 ### A1.3 Donor search: one ring, native donors only
 
@@ -433,6 +444,7 @@ The area partitions exactly: native + harmonized + unresolved = terrestrial area
 Any one of these stops the work before §3. Every comparison is written so that a non-finite value triggers the stop.
 * coverage_c < 0.98 for any country;
 * any non-structural invalid support cell (A1.2) *(added)*;
+  *(Removed by Amendment 3. That area stays unresolved and counts against coverage.)*
 * any country with no native-valid terrestrial area, since its §2.5 station audit is undefined *(added)*;
 * the unchanged §2.5 stops: pure-climatology share = 1, or invalid `stn` in a native cell;
 * any non-finite C2;
@@ -475,6 +487,7 @@ Unresolved rows carry NA donor fields. Cross-border rows are kept.
 * the PRE and PET state counts over the support.
 
 **Use.** The coverage, area and non-structural columns feed the A1.7 stops. The native-only C2, the harmonization difference and the donor-distance statistics are reported only for transparency. They are not an alternative definition and are never scored.
+*(Amendment 3: the non-structural columns no longer feed a stop of their own. The area columns also feed the added malformed-area-QA stop.)*
 
 ### A1.10 Provenance and determinism
 
@@ -518,3 +531,119 @@ Unresolved rows carry NA donor fields. Cross-border rows are kept.
   * the design's column count and rank before and after adding C2 (already reported);
   * the 2-norm condition number of the design without and with C2, for raw columns and for columns scaled to unit length.
 * **Unchanged.** The §3 quantities, the mathematical-redundancy and data-defect stops, and the R² > 0.9 "near-redundant" flag, which is only a flag.
+
+## Amendment 3 — non-structural invalid support counts against coverage; package integrity; reporting reconciliation
+
+**Adopted 2026-09-15, after the stopped Amendment 1 build was recorded (`bd518a0`, `9326bb2`), and before any passing C2 package, redundancy diagnostic, M1b fit or score existed.**
+
+**What this is.** This is a pre-outcome relaxation of a gate, adopted after the stopped build was observed.
+* It does not merely enforce the original contract or Amendment 1: A1.7 stopped on the presence of any non-structural invalid support cell, and this amendment removes that stop.
+* No outcome, residual, redundancy diagnostic or score informed it.
+* **C2 values had been seen.** Amendment 1 C2 values for all 151 countries were built, committed at `bd518a0` and reported in `M1B_AMENDMENT1_BUILD_STOP.md` before adoption, including harmonization ΔC2 QA and the bound on how each option could move Peru's C2. The rule was fixed from the cell's mask and zero-precipitation diagnostics, not from those values.
+* **No measurement changes.** The Peru cell was already unresolved, so the rule leaves every C2 value exactly as built. It changes admissibility, not measurements.
+
+Order of events:
+
+1. Amendments 1 and 2 were committed and pushed (`5514a86`, `f27d0a0`).
+2. Two amended builds at `f27d0a0` were byte-identical and every country reached coverage ≥ 0.98. The build stopped at A1.7 on one Peru cell (`M1B_AMENDMENT1_BUILD_STOP.md`).
+3. The project owner reviewed that evidence and approved this amendment.
+4. This text, its implementation, tests and provenance hardening were committed and pushed before any build under it.
+
+**Evidence, preserved unchanged.**
+* **Cell:** CRU (164, 200), centre 7.75°S, 79.75°W, holding 23.01253170656061 km² of Peru.
+* **PRE:** exactly 0.0 in all 1,500 record months, with `stn` ≥ 1 in 240 of the 360 window months.
+* **PET:** the declared fill value in all 1,500 months.
+* **Classification:** PRE `nonpositive_mean`, PET `masked`; status unresolved, with no donor and no value.
+* **Coverage:** Peru's resolved coverage is ≈ 0.999982.
+* **Caveat:** the station counts do not establish that zero rainfall there is physically accurate.
+
+**Historical record kept.**
+* **The audit error.** The feasibility audit's statement that no invalid support cell has a non-positive mean was wrong for this cell. `M1B_AMENDMENT1_BUILD_STOP.md` §4 explains why: the audit tested for a non-positive mean only when both variables were complete, so it missed this mixed zero-PRE/masked-PET case.
+* **Preserved files.** That record, both historical output directories and the historical scripts are unchanged.
+* **Reproduction.** Historical scripts reproduce only at their own commits. `feasibility/m1b_amendment1_stop.py` (`bd518a0`) moves build A's outputs and writes records, despite its "Read-only" docstring, and it depends on that commit's output inventory.
+
+### A3.1 Rule
+
+* **Unresolved.** Non-structural invalid support (A1.2) stays **unresolved**. It never receives a donor or a value. Numeric zero precipitation is not structural masking.
+* **Counts against coverage.** It counts against the existing coverage threshold exactly like other unresolved area:
+
+```
+A_resolved              = A_native_valid + A_structurally_harmonized
+A_nonstructural_invalid ⊆ A_unresolved
+A_total                 = A_native_valid + A_structurally_harmonized + A_unresolved
+coverage                = A_resolved / A_total  ≥  0.98
+```
+
+* **The one removed stop.** The unconditional stop on the presence of any non-structural invalid support cell (A1.7) is removed. No other stop is removed.
+* **Global.** The rule applies identically to every cell and country. It is not a Peru exception.
+
+### A3.2 Unchanged
+
+* structural eligibility and the variable-state classification (A1.2);
+* the WGS84 donor search, the one-ring radius, the tie rules, cross-border donors and non-recursion (A1.3–A1.5);
+* native validity and the log-ratio formula (§2.2);
+* all area weights, the sources, the window and the 151-country population;
+* the 0.98 threshold;
+* every other hard stop:
+  * coverage < 0.98;
+  * no native-valid terrestrial area;
+  * the pure-climatology pathology;
+  * invalid `stn` in a native cell;
+  * non-finite C2;
+  * source and support pins, grid nesting, and M1a area reproduction;
+* the redundancy rules (§3, A2.2) and the primary acceptance criteria (§4).
+
+**Expected invariance, checked before the package is frozen.**
+* A build under this amendment must reproduce the stopped Amendment 1 build's `m1b_hydroclimate_features.csv`, `m1b_hydroclimate_qa.csv`, `m1b_harmonization_cells.csv` and `m1b_support_checkpoint.json` byte for byte. The stopped features SHA-256 is `cf33ba7cfb87c2184a94df5e5686f0951adf692819af8de27329ea698d72e1f4`.
+* Only the manifest (declared gate, provenance and inventory fields) and the new `m1b_unresolved_support.csv` may differ.
+* Any other difference stops the work before the package is frozen.
+
+**Added fail-closed stop:** malformed area QA, meaning a non-finite or negative area or a non-positive total area. It can only halt work.
+
+### A3.3 Interpretation
+
+* **Resolved support only.** C2 is an average of local log aridity over **resolved** support. The 98% gate bounds how much support may be missing. It does not prove the absence of bias from the missing support.
+* **Zero-precipitation land.** Log aridity is not defined for land whose climatological precipitation is zero. Such land is left out of the C2 average and given no value; it stays unresolved and counts against coverage.
+* **Wording.** C2 remains CRU-reconstructed 1920–1949 baseline hydroclimatic dryness, not a predictor built only from information available before 1950. Passing coverage and redundancy establish neither predictive value nor a causal mechanism.
+
+### A3.4 Package integrity
+
+* **Input pins.** The builder asserts the SHA-256 of the GPW grid (`e15f622851c04d0d3842e9966c30695d3b5d31050608e491d44abc5e48dab85d`) and of the national-identifier lookup (`bbe7b1359b48d801a5a602bb63e6315fc8b532ccd00373b1131123785762e089`).
+  * These are the values recorded by the corrected territorial CV (`4263429`), both M1a manifests (`ff67545`, `a7dea34`), the M0.5 product audit (`9fb56e1`) and the stopped build (`bd518a0`).
+  * The M1a support pins stay.
+* **New artifact.** `m1b_unresolved_support.csv` is deterministic: every unresolved (country, cell) row, with its reason, variable states and terrestrial area.
+* **Manifest additions:** `gate_version`, the active stop rules, unresolved-support totals, and the SHA-256 of each package artifact (features, QA, harmonization cells, unresolved support, station-support checkpoint). The manifest does not hash itself; Git anchors it.
+* **`verify_package` fails closed unless all of these hold:**
+  * `all_hard_stops_pass is True`;
+  * `hard_stops` is an empty list;
+  * the gate version is this amendment's;
+  * the build recorded a clean construction code path at a named commit;
+  * every artifact matches its digest.
+* **Exit status.** The builder exits with status 2 when a recorded per-country stop fires. Input, provenance and validity checks (pins, grid nesting, invalid `stn`, M1a area reproduction, area partition) raise, exit non-zero and write no package. The manifest, verified by `verify_package`, is authoritative, not the exit status.
+
+### A3.5 Redundancy and scoring gates
+
+* **The redundancy diagnostic, in this order:**
+  * verifies the package;
+  * asserts the predictor inputs against their recorded SHA-256: the country table, city features and income table as recorded by `9fb56e1`, and the M1a support record at `a7dea34`;
+  * only then reads C2, from the verified bytes;
+  * checks the columns, the frozen order and the country list against the manifest.
+* **Its record** contains `status`, `all_hard_stops_pass`, `hard_stops` and provenance:
+  * the measurement-manifest and C2-feature digests, and the build commit;
+  * the input digests and the columns read;
+  * the ordered predictor-frame and design-matrix digests, the design column names and the C2 vector digest.
+* **Singular statistics.** Non-finite values are written as the strings `inf`, `-inf` or `nan`, so a singular diagnostic still leaves a valid record.
+* **Unchanged:** the §3 hard stops and the diagnostic-only flags (R² > 0.9, condition numbers).
+* **Scoring gate.** `m1b_evaluate.py` scoring must pass `scoring_gate`: a verified package plus a passing redundancy record whose recorded digests match that package. A stale, missing or malformed record fails closed.
+
+### A3.6 Reporting reconciliation (dated 2026-09-15; §5 text kept)
+
+**The conflict.** `V2_PREDICTOR_CONTRACT.md` requires the per-capita representation to be reported alongside the primary wherever shares or scores are reported. §5 listed it as conditional on the primary association being supported.
+
+**Reconciled as follows:**
+* primary M1b acceptance (§4.4) is determined by the approved total-CO₂ representation alone;
+* the per-capita representation of M0\* and M1b is reported **unconditionally** whenever M1b is scored, whether or not the primary association is supported;
+* the M1a-geography replication, the aligned-ERA5 replication and the Amendment 2 five-country station-support replication remain conditional exactly as specified (§5, A2.1);
+* no sensitivity or representation can change either verdict level.
+
+No sensitivity is run under this amendment.
