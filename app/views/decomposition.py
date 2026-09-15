@@ -220,7 +220,7 @@ def _headline_sentence(decomp: dict, outcome: str) -> str:
         f"{outcome} warming — {named[top]:.0%} of total variance "
         f"({of_explained:.0%} of the variance the model explains). Residual "
         f"(unexplained) is {decomp['residual_share']:.0%}. Shares are a "
-        "descriptive variance attribution, not causal effects."
+        "descriptive variance decomposition, not causal effects."
     )
 
 
