@@ -1536,9 +1536,9 @@
     "research/model_v2/M1B_FEASIBILITY_AUDIT.md": {
       "format": "utf8-markdown",
       "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
-      "original_sha256": "ad0bc7f61a4d91a36ba3b44cfdba9fa0478843f39db98ccf5f56bb625a1919d0",
-      "public_sha256": "52cc08314d9d6a3ff1452405e024d3a1c2df90d7faffb1bcf1b336fa7aae428b",
-      "protected_sha256": "aaae323d9c56ee8dee972e07ad501c27b76e41db3676b15fb4f98d476c1a6b09",
+      "original_sha256": "79bb68d0e786f629a5792940926861e7af4acb7e5e91e0501726b9bb3eb423f9",
+      "public_sha256": "5c1121d6014b4757315831fdcab2ffc1f57ed5a5bf7840622b5598cf9aac446e",
+      "protected_sha256": "d55206f0f679435a5c6dd97607906dee7ccdb199a31ffad637031acf86489dcc",
       "edits": [
         {
           "original_start": 0,
