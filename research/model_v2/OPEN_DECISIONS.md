@@ -17,7 +17,7 @@
    geography). M1a is the registered area-consistent geography measurement sensitivity.
 4. **Push.** The M1a history `e3e5901`…`7003ff4` was pushed without rewriting.
 
-## Open before any new physical predictor is computed
+## M1b (baseline hydroclimatic dryness): status and open decisions
 
 M1b is narrowed to C2 baseline hydroclimatic dryness (owner, 2026-09-15). The decisions
 are recorded in `M1B_DESIGN.md`:
@@ -49,8 +49,14 @@ The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`.
     against the unchanged 0.98 coverage threshold, and its presence no longer stops the build.
   * The amendment also adds package-integrity gates, and it records that the per-capita
     representation is reported unconditionally when M1b is scored.
-* Next: rebuild under Amendment 3 and freeze the predictor package, then run the pre-outcome
-  redundancy diagnostic. Stop for owner review before any M1b scoring.
+* **Pre-outcome package complete.**
+  * C2 was frozen at `222e2c1` (build `58e64bf`; all gates pass; minimum coverage Bahamas 0.9888).
+  * The redundancy diagnostic passed (`M1B_REDUNDANCY_DIAGNOSTIC.md`: R² 0.650, VIF 2.86, no hard
+    stop, no near-redundancy flag).
+  * Passing coverage and redundancy establish neither predictive value nor mechanism.
+  * No score has been computed; `m1b_evaluate.main()` refuses to run (`SCORING_ENABLED = False`).
+* **Open, for the owner, before any M1b scoring:** implement and review the per-capita
+  representation that A3.6 requires with any M1b score.
 * Contract Amendment 2 also pre-registers one station-support sensitivity. If and only if the
   linear association is supported, the frozen comparison is repeated excluding Saudi Arabia,
   Yemen, Haiti, Oman and Chad. It cannot change either verdict level.

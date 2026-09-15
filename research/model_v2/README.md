@@ -153,6 +153,8 @@ Current primary CV: `uv run python -m research.model_v2.run_territory_correction
   contract Amendment 3 (non-structural support counts against coverage; package-integrity gates).
 - `M1B_PREDICTOR_PACKAGE.md`: the frozen Amendment 3 C2 package (build `58e64bf`), its integrity digests,
   determinism and invariance evidence; frozen before any redundancy diagnostic or score.
+- `M1B_REDUNDANCY_DIAGNOSTIC.md`: pre-outcome redundancy of C2 against M0\* (pass; R² 0.650, VIF 2.86),
+  computed from verified package bytes and outcome-free predictor inputs; M1b not scored.
 - `M1B_FEASIBILITY_AUDIT.md`: original-rule C2 build (148/151 pass the coverage gate),
   kept as the evidence for Amendment 1.
 

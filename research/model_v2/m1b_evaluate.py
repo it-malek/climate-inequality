@@ -41,6 +41,9 @@ SCHEMA_M1B = dataclasses.replace(
     fs.SCHEMA_V1, version='v1+m1b-hydroclimate-research',
     groups=tuple(g for g in fs.SCHEMA_V1.groups if g.key != 'residual') + (HYDROCLIMATE,)
     + tuple(g for g in fs.SCHEMA_V1.groups if g.key == 'residual'))
+# Contract Amendment 3 A3.6 requires the per-capita representation to be reported with any M1b score, and the owner
+# reviews the frozen pre-outcome package first. main() refuses to run until both are in place.
+SCORING_ENABLED = False
 PRACTICAL = -0.002
 VETO = 0.001
 MORAN_CHANGE = 0.05
@@ -177,6 +180,9 @@ def scoring_gate(out_dir=OUTPUT_DIR):
 
 
 def main():
+    if not SCORING_ENABLED:
+        raise RuntimeError('M1b scoring is disabled: the A3.6 per-capita representation is not implemented and the '
+                           'pre-outcome package awaits owner review (M1B_REDUNDANCY_DIAGNOSTIC.md)')
     logging.getLogger('src.feature_schema').setLevel(logging.ERROR)
     features_bytes = scoring_gate(Path(OUTPUT_DIR))
     design = m0_complete_design(*load_inputs())
