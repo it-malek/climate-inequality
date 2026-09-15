@@ -1,0 +1,30 @@
+{
+  "builder_sha256": "57cf5b64ad87fab6f6e7554ce97b163567c4b32372b513212d21f94f1f70bfee",
+  "files": {
+    "m1b_hydroclimate_features.csv": {
+      "preserved": "a90bbcdb81fbc951ce875555aa599626bef155506db9aa2b81e5e174f5b2584f",
+      "build_a": "a90bbcdb81fbc951ce875555aa599626bef155506db9aa2b81e5e174f5b2584f",
+      "build_b": "a90bbcdb81fbc951ce875555aa599626bef155506db9aa2b81e5e174f5b2584f",
+      "byte_identical": true
+    },
+    "m1b_hydroclimate_qa.csv": {
+      "preserved": "747da75cef0667cafbcbf613b561640238eecdf8476186cb5cfb214efdbd7b91",
+      "build_a": "747da75cef0667cafbcbf613b561640238eecdf8476186cb5cfb214efdbd7b91",
+      "build_b": "747da75cef0667cafbcbf613b561640238eecdf8476186cb5cfb214efdbd7b91",
+      "byte_identical": true
+    },
+    "m1b_measurement_manifest.json": {
+      "preserved": "0714524f8fae3526cf09be491b61ddaa4b10aac7a1d9280aca9a19bb3a329063",
+      "build_a": "0714524f8fae3526cf09be491b61ddaa4b10aac7a1d9280aca9a19bb3a329063",
+      "build_b": "0714524f8fae3526cf09be491b61ddaa4b10aac7a1d9280aca9a19bb3a329063",
+      "byte_identical": true
+    },
+    "m1b_support_checkpoint.json": {
+      "preserved": "405e5bdd63e84d1e74f18401f15f898dec64079aa79096e5cc25a585d792307e",
+      "build_a": "405e5bdd63e84d1e74f18401f15f898dec64079aa79096e5cc25a585d792307e",
+      "build_b": "405e5bdd63e84d1e74f18401f15f898dec64079aa79096e5cc25a585d792307e",
+      "byte_identical": true
+    }
+  },
+  "all_byte_identical": true
+}

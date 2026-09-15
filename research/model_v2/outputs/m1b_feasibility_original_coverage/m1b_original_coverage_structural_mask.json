@@ -1,0 +1,101 @@
+{
+  "builder_sha256": "57cf5b64ad87fab6f6e7554ce97b163567c4b32372b513212d21f94f1f70bfee",
+  "grid_alignment": {
+    "gpw_native_latitude_descending": true,
+    "gpw_ascending_lat_centres": true,
+    "gpw_lon_centres": true,
+    "gpw_lat_edges_inside_cru_cell": true,
+    "gpw_lon_edges_inside_cru_cell": true
+  },
+  "cru_grid_cells": 259200,
+  "window_months": 360,
+  "full_record_months": 1500,
+  "pre_window": {
+    "all_valid": 67420,
+    "all_missing": 191780,
+    "partial": 0
+  },
+  "pet_window": {
+    "all_valid": 66501,
+    "all_missing": 192699,
+    "partial": 0
+  },
+  "pre_full_record": {
+    "all_valid": 67420,
+    "all_missing": 191780,
+    "partial": 0
+  },
+  "pet_full_record": {
+    "all_valid": 66501,
+    "all_missing": 192699,
+    "partial": 0
+  },
+  "land_masks_window": {
+    "pre_and_pet_land": 66501,
+    "pre_land_pet_masked": 919,
+    "pet_land_pre_masked": 0
+  },
+  "valid_c2_cells_global": 66501,
+  "valid_cells_with_nonpositive_mean": 0,
+  "support": {
+    "distinct_cru_cells": 65335,
+    "distinct_invalid_cru_cells": 2753,
+    "invalid_distinct_cells_by_class": {
+      "both_pre_and_pet_masked": 2182,
+      "pet_masked_pre_valid": 571,
+      "pre_masked_pet_valid": 0,
+      "temporal_partial": 0,
+      "nonpositive_mean": 0
+    },
+    "invalid_country_cell_area_km2_by_class": {
+      "both_pre_and_pet_masked": 103576.2317446393,
+      "pet_masked_pre_valid": 25637.72840882327,
+      "pre_masked_pet_valid": 0.0,
+      "temporal_partial": 0.0,
+      "nonpositive_mean": 0.0
+    },
+    "invalid_area_km2_total": 129213.96015346257,
+    "invalid_area_masked_all_1500_months_km2": 129213.96015346257,
+    "invalid_area_fraction_of_151_country_support": 0.001001124559460506
+  },
+  "coverage_failures": [
+    {
+      "iso3": "PHL",
+      "coverage": 0.9760707864233067,
+      "missing_area_km2": 7090.896333542737
+    },
+    {
+      "iso3": "BHS",
+      "coverage": 0.8864754768578278,
+      "missing_area_km2": 1524.1678488736202
+    },
+    {
+      "iso3": "PAN",
+      "coverage": 0.9728166280827851,
+      "missing_area_km2": 2065.1233265000233
+    }
+  ],
+  "near_threshold_passes_below_0_99": [
+    {
+      "iso3": "GRC",
+      "coverage": 0.9863825148909874,
+      "missing_area_km2": 1805.4011958369108
+    },
+    {
+      "iso3": "NLD",
+      "coverage": 0.9825319517820333,
+      "missing_area_km2": 599.5734340348844
+    },
+    {
+      "iso3": "CUB",
+      "coverage": 0.9869738434311682,
+      "missing_area_km2": 1452.16755627108
+    },
+    {
+      "iso3": "NZL",
+      "coverage": 0.9899465064761427,
+      "missing_area_km2": 2666.370841905211
+    }
+  ],
+  "warming_outcome_read": false
+}
