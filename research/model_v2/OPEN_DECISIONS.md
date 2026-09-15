@@ -37,7 +37,11 @@ The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`.
 * The owner approved a global pre-outcome harmonization rule, recorded as contract
   Amendment 1: one ring, native donors only, threshold unchanged.
 * Next: an amended build must pass every hard stop. The redundancy diagnostic then runs on
-  predictor columns only, once its inputs are restricted to predictor source columns.
+  predictor columns only; contract Amendment 2 restricts its inputs to allow-listed predictor
+  source columns.
+* Contract Amendment 2 also pre-registers one station-support sensitivity. If and only if the
+  linear association is supported, the frozen comparison is repeated excluding Saudi Arabia,
+  Yemen, Haiti, Oman and Chad. It cannot change either verdict level.
 * The pre-outcome package is reviewed by the owner before the warming outcome is loaded
   for M1b scoring.
 

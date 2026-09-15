@@ -487,3 +487,34 @@ Unresolved rows carry NA donor fields. Cross-border rows are kept.
   * the builder hash and software versions, including pyproj and PROJ.
 * **Run metadata.** Wall-clock metadata goes to a separate file, so the deterministic outputs can be compared byte-for-byte.
 * **Two builds.** After this amendment is pushed, C2 is built twice, in separate processes and into separate output roots. The deterministic outputs must be byte-identical.
+
+## Amendment 2 — registered station-support sensitivity and outcome-free redundancy inputs
+
+**Adopted 2026-09-15, after Amendment 1 was pushed and before any amended C2 value, redundancy diagnostic, M1b fit or score existed.** (The outcome boundary is as stated in Amendment 1.) The owner specified both parts. Neither changes C2, the coverage rule, the §3 decision rule or the §4 verdict.
+
+### A2.1 Registered station-support sensitivity (addition to §5)
+
+* **When.** Only if the primary linear hydroclimate association is supported (S1 and S2, at either verdict level), and only after the primary M1b result is committed.
+* **What.** The frozen §4 comparison of M0\* and M1b is repeated on the identical 146-country sample that excludes exactly five countries:
+  * Saudi Arabia;
+  * Yemen;
+  * Haiti;
+  * Oman;
+  * Chad.
+
+  It uses the same C2 values (not rebuilt), the same protocols, the same resampling interval and the same scorecard; both models are refitted on the reduced sample.
+* **Why these five.** They are the five countries with the lowest PRE station-supported share in the pre-outcome support checkpoint preserved with the feasibility audit (`c5ff9b5`). The subset comes solely from predictor-source support metadata, chosen before any C2–outcome relationship was seen. Under Amendment 1 the support audit is computed over native cells exactly as before, so the ranking is unchanged by harmonization.
+* **Use.** The result is reported alongside the primary result. It cannot change either verdict level.
+* **No threshold.** No station-support threshold (for example < 30%, < 40% or < 50%) and no other subset is defined, now or later. All numerically valid countries stay in the primary construction.
+* **If the association is not supported,** this sensitivity is not run.
+
+### A2.2 Redundancy diagnostic inputs and reports (§3)
+
+* **Inputs.** The M0\* predictors are assembled from explicit allow-lists of predictor source columns, for the 151 frozen countries in the frozen row order of the M1a support record. No warming outcome, fitted value, residual or score column is ever read into the diagnostic, and the outcome column is asserted absent. The diagnostic no longer calls the frozen design loader (`m0.load_inputs`, which reads the outcome) or reads `m0_countries.csv`.
+  * Country table columns read: `Country`, `owid_country`, `continent`, `cumulative_co2_mt`, `population`.
+  * City feature columns read: `Country`, `abs_latitude`, `hemisphere`, `coast_km`, `elevation_m`, `koppen`, `station_density`.
+  * These reproduce the M0\* primary-representation predictor columns exactly (verified by a unit test against the frozen design, which does not involve C2).
+* **Additional reports.**
+  * the design's column count and rank before and after adding C2 (already reported);
+  * the 2-norm condition number of the design without and with C2, for raw columns and for columns scaled to unit length.
+* **Unchanged.** The §3 quantities, the mathematical-redundancy and data-defect stops, and the R² > 0.9 "near-redundant" flag, which is only a flag.
