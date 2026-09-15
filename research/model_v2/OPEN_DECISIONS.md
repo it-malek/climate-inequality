@@ -1,14 +1,31 @@
 Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.
 
-# Session 1 methodological decisions (historical register)
+# Decisions before M1a implementation
+
+1. **Approve the V2 representation pair:** total cumulative CO₂ plus population
+   as primary (drop per-capita), with per-capita plus population as the registered
+   sensitivity (drop total). See `RANK_DEFICIENCY_AUDIT.md` and
+   `V2_PREDICTOR_CONTRACT.md`. Neither is selected by fit or preferred group share.
+2. **Approve starting M1a under `M1A_MEASUREMENT_SPEC.md`.** The specification is
+   complete; no measurement builder or M1a fit has been implemented. Routine
+   source/weighting/coverage rules are specified there rather than left as
+   speculative execution requirements.
+
+No territorial-unit, 500 km threshold, M49, random-reference, unseen-level or
+scorecard decision is reopened. Future-stage items in the historical register
+below are not decisions required to begin M1a.
+
+## Session 1 methodological decisions (historical register)
 
 **Status update:** items 1–4 are adopted and frozen in the recorded decision. The territorial
 implementation is corrected in `TERRITORIAL_CV_CORRECTION.md`, using the approved
 GPW/ISO analytical units. The options below retain their Session 1 wording as
 history and are not requests to reopen those decisions.
 
-Items that needed the recorded methodological judgement before M1 starts. Each has a
-recommendation; none has been acted on.
+The following is the original Session 1 register. Its 'open' and 'not acted on'
+wording reflects that session, not current authorization. Items 1–4 are approved;
+item 11 is resolved analytically by M0.5, with a separate contract-adoption decision recorded above.
+The current M1a and product-audit specifications supersede preliminary recipes.
 
 1. **Approve the primary protocol.** Leave-one-country-out with a 500 km
    exclusion buffer on the minimum inter-territory distance, unseen levels

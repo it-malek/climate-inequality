@@ -6,9 +6,9 @@
     "research/model_v2/EXPERIMENTAL_PLAN.md": {
       "format": "utf8-markdown",
       "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
-      "original_sha256": "a5362f2a4e59f57b70406c660c4ca94db10fd09d08ba23573b11f6075fcd9cfa",
-      "public_sha256": "11eaa0972c7737f3ce6327ad867442fb156345c5e880845e99363e248a3f7baf",
-      "protected_sha256": "bda33cbf6ce9150fe7af1b12499ebc671175a08031fd4809f9332967f99d9cc6",
+      "original_sha256": "0da6d84f8560931d785847bb68a78b6a2cd0be72cd0512474152b44c5753b7dd",
+      "public_sha256": "76165db5595943b26780ac8c10f9de1992c7b44690ed2073828806a8b8236507",
+      "protected_sha256": "6ef9f26fff57f60a9ae7d124552761d999f35f9b50b8c91b83143592bba8dc48",
       "edits": [
         {
           "original_start": 0,
@@ -20,137 +20,200 @@
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 3435,
-          "original_end": 3435,
+          "original_start": 2953,
+          "original_end": 2953,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 3730,
-          "public_end": 3733,
-          "public_value": " se",
+          "public_start": 3248,
+          "public_end": 3251,
+          "public_value": "rec",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 3436,
-          "original_end": 3436,
+          "original_start": 2954,
+          "original_end": 2955,
+          "original_value_sha256": "3e23e8160039594a33894f6564e1b1348bbd7a0088d42c4acb73eeaed59c009d",
+          "public_start": 3252,
+          "public_end": 3255,
+          "public_value": "rd ",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 2956,
+          "original_end": 2956,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 3734,
-          "public_end": 3754,
-          "public_value": "arately recorded sco",
+          "public_start": 3256,
+          "public_end": 3259,
+          "public_value": "he ",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 3437,
-          "original_end": 3438,
-          "original_value_sha256": "454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1",
-          "public_start": 3755,
-          "public_end": 3763,
-          "public_value": "e decisi",
+          "original_start": 2957,
+          "original_end": 2957,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 3260,
+          "public_end": 3264,
+          "public_value": "dopt",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 3439,
-          "original_end": 3442,
+          "original_start": 2958,
+          "original_end": 2958,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 3265,
+          "public_end": 3266,
+          "public_value": "o",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 2960,
+          "original_end": 2964,
+          "original_value_sha256": "8ebd2f4dc545fc0869e485010316659bb64c5db8be44556d944b73be9a7eaa1b",
+          "public_start": 3268,
+          "public_end": 3274,
+          "public_value": "decisi",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 2965,
+          "original_end": 2968,
           "original_value_sha256": "97dfc65f74283f60c606bda3f75a6a6bec3fc1e513b8b40797b5ecb86c824ee2",
-          "public_start": 3764,
-          "public_end": 3765,
+          "public_start": 3275,
+          "public_end": 3276,
           "public_value": "n",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 3633,
-          "original_end": 3635,
+          "original_start": 4070,
+          "original_end": 4070,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 4378,
+          "public_end": 4381,
+          "public_value": " se",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 4071,
+          "original_end": 4071,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 4382,
+          "public_end": 4402,
+          "public_value": "arately recorded sco",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 4072,
+          "original_end": 4073,
+          "original_value_sha256": "454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1",
+          "public_start": 4403,
+          "public_end": 4411,
+          "public_value": "e decisi",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 4074,
+          "original_end": 4077,
+          "original_value_sha256": "97dfc65f74283f60c606bda3f75a6a6bec3fc1e513b8b40797b5ecb86c824ee2",
+          "public_start": 4412,
+          "public_end": 4413,
+          "public_value": "n",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 4268,
+          "original_end": 4270,
           "original_value_sha256": "6bde0b830d8bd56dea61c5c1cb648c7ffca6ffce2923ad1db9f29079cac947e0",
-          "public_start": 3956,
-          "public_end": 3959,
+          "public_start": 4604,
+          "public_end": 4607,
           "public_value": "a r",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 3636,
-          "original_end": 3636,
+          "original_start": 4271,
+          "original_end": 4271,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 3960,
-          "public_end": 3966,
+          "public_start": 4608,
+          "public_end": 4614,
           "public_value": "corded",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 3637,
-          "original_end": 3637,
+          "original_start": 4272,
+          "original_end": 4272,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 3967,
-          "public_end": 3980,
+          "public_start": 4615,
+          "public_end": 4628,
           "public_value": "design decisi",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 3638,
-          "original_end": 3639,
+          "original_start": 4273,
+          "original_end": 4274,
           "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
-          "public_start": 3981,
-          "public_end": 3981,
+          "public_start": 4629,
+          "public_end": 4629,
           "public_value": "",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 3640,
-          "original_end": 3642,
+          "original_start": 4275,
+          "original_end": 4277,
           "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
-          "public_start": 3982,
-          "public_end": 3982,
+          "public_start": 4630,
+          "public_end": 4630,
           "public_value": "",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 6762,
-          "original_end": 6762,
+          "original_start": 7397,
+          "original_end": 7397,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 7102,
-          "public_end": 7107,
+          "public_start": 7750,
+          "public_end": 7755,
           "public_value": "a rec",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 6763,
-          "original_end": 6764,
+          "original_start": 7398,
+          "original_end": 7399,
           "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
-          "public_start": 7108,
-          "public_end": 7118,
+          "public_start": 7756,
+          "public_end": 7766,
           "public_value": "rded desig",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 6765,
-          "original_end": 6765,
+          "original_start": 7400,
+          "original_end": 7400,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 7119,
-          "public_end": 7121,
+          "public_start": 7767,
+          "public_end": 7769,
           "public_value": " d",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 6766,
-          "original_end": 6767,
+          "original_start": 7401,
+          "original_end": 7402,
           "original_value_sha256": "454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1",
-          "public_start": 7122,
-          "public_end": 7128,
+          "public_start": 7770,
+          "public_end": 7776,
           "public_value": "cision",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 6769,
-          "original_end": 6771,
+          "original_start": 7404,
+          "original_end": 7406,
           "original_value_sha256": "d53315bea08cec50d2591fcaf3b32dc5d289cdc6c16b7e8bed8c8e3f7ceaa34e",
-          "public_start": 7130,
-          "public_end": 7134,
+          "public_start": 7778,
+          "public_end": 7782,
           "public_value": "utho",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 6772,
-          "original_end": 6774,
+          "original_start": 7407,
+          "original_end": 7409,
           "original_value_sha256": "5e1c26b2f7c5b8ae6e0b3da7fcc99b841697e85d65febbb57f24b2b7a199b037",
-          "public_start": 7135,
-          "public_end": 7137,
+          "public_start": 7783,
+          "public_end": 7785,
           "public_value": "iz",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         }
@@ -159,9 +222,9 @@
     "research/model_v2/HYPOTHESIS_REGISTER.md": {
       "format": "utf8-markdown",
       "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
-      "original_sha256": "5166bde961126602d79a71f8901be20d49dd14b90adccbc20668367e3a9062e9",
-      "public_sha256": "6200fba751537565e6fcbd7b61c96d4eaf6c00284b624002e06d68537aac5b73",
-      "protected_sha256": "975cf8507e934fada35e68e5a9497c1f5cfafad734069b996cd2452957b64a86",
+      "original_sha256": "7540e40e534c3d641b49afa1a7afbc1aabf9740bdb3b78a67e46a96e60587f35",
+      "public_sha256": "4d578b208fde0e1a7e1fdd7564f9382f922b1c5483230486e9a4e4afef3783cb",
+      "protected_sha256": "bc6be6c07c2468826678c6bced32a23b88f1e723035b633a95d3cb3b3d68c7d6",
       "edits": [
         {
           "original_start": 0,
@@ -173,128 +236,200 @@
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 7316,
-          "original_end": 7318,
-          "original_value_sha256": "8815e495916491117e507166abc72304bdc0e1293820213bdc068b630357bec3",
-          "public_start": 7611,
-          "public_end": 7634,
-          "public_value": "Separate recorded desig",
+          "original_start": 112,
+          "original_end": 113,
+          "original_value_sha256": "de7d1b721a1e0632b7cf04edf5032c8ecffa9f9a08492152b926f1a5a7e765d7",
+          "public_start": 407,
+          "public_end": 410,
+          "public_value": "doe",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 7319,
-          "original_end": 7321,
-          "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
-          "public_start": 7635,
-          "public_end": 7635,
-          "public_value": "",
+          "original_start": 120,
+          "original_end": 122,
+          "original_value_sha256": "d53315bea08cec50d2591fcaf3b32dc5d289cdc6c16b7e8bed8c8e3f7ceaa34e",
+          "public_start": 417,
+          "public_end": 421,
+          "public_value": "utho",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 9875,
-          "original_end": 9875,
+          "original_start": 123,
+          "original_end": 123,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 10189,
-          "public_end": 10192,
+          "public_start": 422,
+          "public_end": 433,
+          "public_value": "ize executi",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 124,
+          "original_end": 127,
+          "original_value_sha256": "97dfc65f74283f60c606bda3f75a6a6bec3fc1e513b8b40797b5ecb86c824ee2",
+          "public_start": 434,
+          "public_end": 435,
+          "public_value": "n",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 5434,
+          "original_end": 5434,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 5742,
+          "public_end": 5745,
           "public_value": "rec",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 9876,
-          "original_end": 9877,
+          "original_start": 5435,
+          "original_end": 5438,
+          "original_value_sha256": "22ec62824c150d91dfa264e9b3e2ca50f929f3eaca3d161d8494e2b49cd468af",
+          "public_start": 5746,
+          "public_end": 5746,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 5439,
+          "original_end": 5446,
+          "original_value_sha256": "3bfecc47d842c96f4175495487c0374a2dd0b62eaf6b7a26921564ac5fce5211",
+          "public_start": 5747,
+          "public_end": 5748,
+          "public_value": "d",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 5448,
+          "original_end": 5448,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 5750,
+          "public_end": 5757,
+          "public_value": " design",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 9442,
+          "original_end": 9444,
+          "original_value_sha256": "8815e495916491117e507166abc72304bdc0e1293820213bdc068b630357bec3",
+          "public_start": 9751,
+          "public_end": 9774,
+          "public_value": "Separate recorded desig",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 9445,
+          "original_end": 9447,
+          "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
+          "public_start": 9775,
+          "public_end": 9775,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 12001,
+          "original_end": 12001,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 12329,
+          "public_end": 12332,
+          "public_value": "rec",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 12002,
+          "original_end": 12003,
           "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
-          "public_start": 10193,
-          "public_end": 10203,
+          "public_start": 12333,
+          "public_end": 12343,
           "public_value": "rded desig",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 9878,
-          "original_end": 9880,
+          "original_start": 12004,
+          "original_end": 12006,
           "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
-          "public_start": 10204,
-          "public_end": 10204,
+          "public_start": 12344,
+          "public_end": 12344,
           "public_value": "",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 12274,
-          "original_end": 12276,
+          "original_start": 14400,
+          "original_end": 14402,
           "original_value_sha256": "8815e495916491117e507166abc72304bdc0e1293820213bdc068b630357bec3",
-          "public_start": 12598,
-          "public_end": 12614,
+          "public_start": 14738,
+          "public_end": 14754,
           "public_value": "A separate desig",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 12277,
-          "original_end": 12279,
+          "original_start": 14403,
+          "original_end": 14405,
           "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
-          "public_start": 12615,
-          "public_end": 12615,
+          "public_start": 14755,
+          "public_end": 14755,
           "public_value": "",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 12288,
-          "original_end": 12288,
+          "original_start": 14414,
+          "original_end": 14414,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 12624,
-          "public_end": 12635,
+          "public_start": 14764,
+          "public_end": 14775,
           "public_value": " determines",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 13059,
-          "original_end": 13059,
+          "original_start": 15202,
+          "original_end": 15202,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 13406,
-          "public_end": 13408,
+          "public_start": 15563,
+          "public_end": 15565,
           "public_value": "me",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 13061,
-          "original_end": 13061,
+          "original_start": 15204,
+          "original_end": 15204,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 13410,
-          "public_end": 13422,
+          "public_start": 15567,
+          "public_end": 15579,
           "public_value": "odological r",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 13062,
-          "original_end": 13064,
+          "original_start": 15205,
+          "original_end": 15207,
           "original_value_sha256": "5f3ff264061a0e921b183f7e25c5d2a4df1ce7bb810228e43d0f149df5a40d97",
-          "public_start": 13423,
-          "public_end": 13426,
+          "public_start": 15580,
+          "public_end": 15583,
           "public_value": "vie",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 13065,
-          "original_end": 13068,
+          "original_start": 15208,
+          "original_end": 15211,
           "original_value_sha256": "c8e67683c9f04ef0310ce9579c189bacc7197c205d40f342ef4e78e1b4226912",
-          "public_start": 13427,
-          "public_end": 13427,
+          "public_start": 15584,
+          "public_end": 15584,
           "public_value": "",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 13135,
-          "original_end": 13135,
+          "original_start": 15278,
+          "original_end": 15278,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 13494,
-          "public_end": 13520,
+          "public_start": 15651,
+          "public_end": 15677,
           "public_value": " separately recorded desig",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 13136,
-          "original_end": 13142,
+          "original_start": 15279,
+          "original_end": 15285,
           "original_value_sha256": "e5be1239e72cd9699f97639a7362ed14d1d26a9c8fb7e130f901f9bc48088529",
-          "public_start": 13521,
-          "public_end": 13521,
+          "public_start": 15678,
+          "public_end": 15678,
           "public_value": "",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         }
@@ -390,12 +525,12 @@
         }
       ]
     },
-    "research/model_v2/OPEN_DECISIONS.md": {
+    "research/model_v2/M1A_MEASUREMENT_SPEC.md": {
       "format": "utf8-markdown",
       "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
-      "original_sha256": "3f44565a144dfb71037bd19888bf337b8963a0d3397ea7a943bd50e5b89e5d43",
-      "public_sha256": "11baef6d8b65981346c19b6d440242c01ce27c11c6595dea253b6a0518b15ae8",
-      "protected_sha256": "7039eb7c95c7a295e6e9c57179f92b75e135e56afc74e78481da788ca9cfaf01",
+      "original_sha256": "9139eefdbb0240cd234975538b0346e96fd239094cf28d20c5a425edaa008b3e",
+      "public_sha256": "739d56d504846a6966c9f2b6380973b34d9e8e9d1991545c65c97f536e92a37f",
+      "protected_sha256": "c57f73a71e09296e3fd12feea823b170cc9a21b85af870edeaa21388e46f5b0c",
       "edits": [
         {
           "original_start": 0,
@@ -407,200 +542,533 @@
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 96,
-          "original_end": 96,
+          "original_start": 239,
+          "original_end": 239,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 391,
-          "public_end": 393,
-          "public_value": "do",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 97,
-          "original_end": 101,
-          "original_value_sha256": "dd0c2c70261f62045ff1b8d639a29b945c4bf822d852f96f1d68ee9e05f3bbbc",
-          "public_start": 394,
-          "public_end": 395,
-          "public_value": "t",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 115,
-          "original_end": 117,
-          "original_value_sha256": "a7e2d26e8d15814dd9c6a1bdc90585c8d0a3170dfffeb21fc42986683113041b",
-          "public_start": 409,
-          "public_end": 411,
-          "public_value": "in",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 122,
-          "original_end": 122,
-          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 416,
-          "public_end": 419,
+          "public_start": 534,
+          "public_end": 537,
           "public_value": "rec",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 123,
-          "original_end": 124,
+          "original_start": 240,
+          "original_end": 243,
+          "original_value_sha256": "22ec62824c150d91dfa264e9b3e2ca50f929f3eaca3d161d8494e2b49cd468af",
+          "public_start": 538,
+          "public_end": 538,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 244,
+          "original_end": 251,
+          "original_value_sha256": "3bfecc47d842c96f4175495487c0374a2dd0b62eaf6b7a26921564ac5fce5211",
+          "public_start": 539,
+          "public_end": 540,
+          "public_value": "d",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 253,
+          "original_end": 253,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 542,
+          "public_end": 549,
+          "public_value": " design",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1575,
+          "original_end": 1575,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 1871,
+          "public_end": 1887,
+          "public_value": "a separately rec",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1576,
+          "original_end": 1577,
           "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
-          "public_start": 420,
-          "public_end": 432,
-          "public_value": "rded decisio",
+          "public_start": 1888,
+          "public_end": 1898,
+          "public_value": "rded\ndesig",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 125,
-          "original_end": 127,
-          "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
-          "public_start": 433,
-          "public_end": 433,
-          "public_value": "",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 384,
-          "original_end": 385,
-          "original_value_sha256": "148de9c5a7a44d19e56cd9ae1a554bf67847afb0c58f6e12fa29ac7ddfca9940",
-          "public_start": 690,
-          "public_end": 690,
-          "public_value": "",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 386,
-          "original_end": 388,
-          "original_value_sha256": "03f115c82c19c6b11fa29b0a3bb0b3e5732ee9aa9260236012bd2fb6b8673b55",
-          "public_start": 691,
-          "public_end": 691,
-          "public_value": "",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 390,
-          "original_end": 390,
+          "original_start": 1578,
+          "original_end": 1578,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 693,
-          "public_end": 701,
-          "public_value": "orded me",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 391,
-          "original_end": 392,
-          "original_value_sha256": "36a9e7f1c95b82ffb99743e0c5c4ce95d83c9a430aac59f84ef3cbfab6145068",
-          "public_start": 702,
-          "public_end": 703,
-          "public_value": "h",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 393,
-          "original_end": 399,
-          "original_value_sha256": "3f64ed85588fac4ace52fc9c24163604fe381d5baa3cf9922dd8e469fe69fc88",
-          "public_start": 704,
-          "public_end": 713,
-          "public_value": "dological",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 5095,
-          "original_end": 5095,
-          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 5409,
-          "public_end": 5417,
-          "public_value": "a separa",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 5096,
-          "original_end": 5097,
-          "original_value_sha256": "aaa9402664f1a41f40ebbc52c9993eb66aeb366602958fdfaa283b71e64db123",
-          "public_start": 5418,
-          "public_end": 5418,
-          "public_value": "",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 5098,
-          "original_end": 5098,
-          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 5419,
-          "public_end": 5421,
-          "public_value": "ly",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 5099,
-          "original_end": 5099,
-          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 5422,
-          "public_end": 5425,
-          "public_value": "rec",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 5100,
-          "original_end": 5101,
-          "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
-          "public_start": 5426,
-          "public_end": 5436,
-          "public_value": "rded desig",
-          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
-        },
-        {
-          "original_start": 5102,
-          "original_end": 5102,
-          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 5437,
-          "public_end": 5439,
+          "public_start": 1899,
+          "public_end": 1901,
           "public_value": " d",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 5103,
-          "original_end": 5103,
+          "original_start": 1579,
+          "original_end": 1585,
+          "original_value_sha256": "0e282684676c7ce9e12e94b292e131e11a60c47d79b1340971172ad2782df900",
+          "public_start": 1902,
+          "public_end": 1906,
+          "public_value": "cisi",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1586,
+          "original_end": 1589,
+          "original_value_sha256": "97dfc65f74283f60c606bda3f75a6a6bec3fc1e513b8b40797b5ecb86c824ee2",
+          "public_start": 1907,
+          "public_end": 1908,
+          "public_value": "n",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 3155,
+          "original_end": 3155,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 5440,
-          "public_end": 5447,
+          "public_start": 3474,
+          "public_end": 3477,
+          "public_value": "rec",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 3156,
+          "original_end": 3157,
+          "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
+          "public_start": 3478,
+          "public_end": 3490,
+          "public_value": "rded decisio",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 3158,
+          "original_end": 3158,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 3491,
+          "public_end": 3496,
+          "public_value": " pres",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 3160,
+          "original_end": 3174,
+          "original_value_sha256": "b35b51f8e9b0998dd031cb4e2b0cb2f51e76a1db85f36e529987c921cdc74814",
+          "public_start": 3498,
+          "public_end": 3498,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 23577,
+          "original_end": 23577,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 23901,
+          "public_end": 23904,
+          "public_value": "rec",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 23578,
+          "original_end": 23581,
+          "original_value_sha256": "22ec62824c150d91dfa264e9b3e2ca50f929f3eaca3d161d8494e2b49cd468af",
+          "public_start": 23905,
+          "public_end": 23905,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 23582,
+          "original_end": 23591,
+          "original_value_sha256": "88e00602f3b9ea8585009dad4cfab4ff8524fbb43fbd9c2c1c55a34d70f3541e",
+          "public_start": 23906,
+          "public_end": 23907,
+          "public_value": "d",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 25953,
+          "original_end": 25955,
+          "original_value_sha256": "153078218f243968d9b217d3cfb5e24122d16c7a90e8c01cf92347afa45d106b",
+          "public_start": 26269,
+          "public_end": 26274,
+          "public_value": "desig",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 25956,
+          "original_end": 25958,
+          "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
+          "public_start": 26275,
+          "public_end": 26275,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 26129,
+          "original_end": 26131,
+          "original_value_sha256": "153078218f243968d9b217d3cfb5e24122d16c7a90e8c01cf92347afa45d106b",
+          "public_start": 26446,
+          "public_end": 26452,
+          "public_value": "substa",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 26132,
+          "original_end": 26132,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 26453,
+          "public_end": 26456,
+          "public_value": "tiv",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 26133,
+          "original_end": 26134,
+          "original_value_sha256": "454349e422f05297191ead13e21d3db520e5abef52055e4964b82fb213f593a1",
+          "public_start": 26457,
+          "public_end": 26464,
+          "public_value": " design",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 26635,
+          "original_end": 26639,
+          "original_value_sha256": "8ebd2f4dc545fc0869e485010316659bb64c5db8be44556d944b73be9a7eaa1b",
+          "public_start": 26965,
+          "public_end": 26972,
+          "public_value": "executi",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 26640,
+          "original_end": 26643,
+          "original_value_sha256": "97dfc65f74283f60c606bda3f75a6a6bec3fc1e513b8b40797b5ecb86c824ee2",
+          "public_start": 26973,
+          "public_end": 26974,
+          "public_value": "n",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        }
+      ]
+    },
+    "research/model_v2/OPEN_DECISIONS.md": {
+      "format": "utf8-markdown",
+      "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
+      "original_sha256": "f8c3978e4ddc514c364c8a3adf7034c0280da43ccb6f9a2d0b53fd8cd7f6789c",
+      "public_sha256": "82c918d6cb8b8fcd8a8970174bf7d913d61ce547597983b03f06cd8ff6e1af99",
+      "protected_sha256": "fdaf55ab1fc68ac67026cc57f50ef665590fadc8cb6473d4ee21b9a93619a0e7",
+      "edits": [
+        {
+          "original_start": 0,
+          "original_end": 0,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 0,
+          "public_end": 295,
+          "public_value": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.\n\n",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 601,
+          "original_end": 611,
+          "original_value_sha256": "c88fe329ac97e70bc8f9b6adf013ad3ce442ebd283332af2bf83f0a6eeb6d2ac",
+          "public_start": 896,
+          "public_end": 900,
+          "public_value": "exec",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 612,
+          "original_end": 614,
+          "original_value_sha256": "c0bc1e08f9743b2d50d5f1607503bf4e849af0e729fca896515bea955d70a33e",
+          "public_start": 901,
+          "public_end": 901,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 618,
+          "original_end": 618,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 905,
+          "public_end": 917,
+          "public_value": " requirement",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 923,
+          "original_end": 923,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 1222,
+          "public_end": 1224,
+          "public_value": "do",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 924,
+          "original_end": 928,
+          "original_value_sha256": "dd0c2c70261f62045ff1b8d639a29b945c4bf822d852f96f1d68ee9e05f3bbbc",
+          "public_start": 1225,
+          "public_end": 1226,
+          "public_value": "t",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 942,
+          "original_end": 944,
+          "original_value_sha256": "a7e2d26e8d15814dd9c6a1bdc90585c8d0a3170dfffeb21fc42986683113041b",
+          "public_start": 1240,
+          "public_end": 1242,
+          "public_value": "in",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 949,
+          "original_end": 949,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 1247,
+          "public_end": 1250,
+          "public_value": "rec",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 950,
+          "original_end": 951,
+          "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
+          "public_start": 1251,
+          "public_end": 1263,
+          "public_value": "rded decisio",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 952,
+          "original_end": 954,
+          "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
+          "public_start": 1264,
+          "public_end": 1264,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1400,
+          "original_end": 1400,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 1710,
+          "public_end": 1721,
+          "public_value": "a separate ",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1408,
+          "original_end": 1408,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 1729,
+          "public_end": 1738,
+          "public_value": "-adoption",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1409,
+          "original_end": 1413,
+          "original_value_sha256": "8ebd2f4dc545fc0869e485010316659bb64c5db8be44556d944b73be9a7eaa1b",
+          "public_start": 1739,
+          "public_end": 1745,
+          "public_value": "decisi",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1414,
+          "original_end": 1417,
+          "original_value_sha256": "97dfc65f74283f60c606bda3f75a6a6bec3fc1e513b8b40797b5ecb86c824ee2",
+          "public_start": 1746,
+          "public_end": 1747,
+          "public_value": "n",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1420,
+          "original_end": 1425,
+          "original_value_sha256": "ac1a1c7143cb2199eb400993a5db42bc2f6d98f6769bb696d04b48d84c68a56f",
+          "public_start": 1750,
+          "public_end": 1754,
+          "public_value": "cord",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 6131,
+          "original_end": 6131,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 6460,
+          "public_end": 6468,
+          "public_value": "a separa",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 6132,
+          "original_end": 6133,
+          "original_value_sha256": "aaa9402664f1a41f40ebbc52c9993eb66aeb366602958fdfaa283b71e64db123",
+          "public_start": 6469,
+          "public_end": 6469,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 6134,
+          "original_end": 6134,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 6470,
+          "public_end": 6472,
+          "public_value": "ly",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 6135,
+          "original_end": 6135,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 6473,
+          "public_end": 6476,
+          "public_value": "rec",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 6136,
+          "original_end": 6137,
+          "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
+          "public_start": 6477,
+          "public_end": 6487,
+          "public_value": "rded desig",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 6138,
+          "original_end": 6138,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 6488,
+          "public_end": 6490,
+          "public_value": " d",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 6139,
+          "original_end": 6139,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 6491,
+          "public_end": 6498,
           "public_value": "cision ",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 5104,
-          "original_end": 5109,
+          "original_start": 6140,
+          "original_end": 6145,
           "original_value_sha256": "c40484fb67164b054696dec90b3bf7bbf71317be92b21964448b50394111bba6",
-          "public_start": 5448,
-          "public_end": 5454,
+          "public_start": 6499,
+          "public_end": 6505,
           "public_value": "equire",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 6006,
-          "original_end": 6007,
+          "original_start": 7042,
+          "original_end": 7043,
           "original_value_sha256": "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb",
-          "public_start": 6351,
-          "public_end": 6367,
+          "public_start": 7402,
+          "public_end": 7418,
           "public_value": "the recorded sco",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 6008,
-          "original_end": 6010,
+          "original_start": 7044,
+          "original_end": 7046,
           "original_value_sha256": "0510eddd781102030eb8860671503a28e6a37f5346de429bdd47c0a37c77cc7d",
-          "public_start": 6368,
-          "public_end": 6376,
+          "public_start": 7419,
+          "public_end": 7427,
           "public_value": "e decisi",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 6011,
-          "original_end": 6014,
+          "original_start": 7047,
+          "original_end": 7050,
           "original_value_sha256": "97dfc65f74283f60c606bda3f75a6a6bec3fc1e513b8b40797b5ecb86c824ee2",
-          "public_start": 6377,
-          "public_end": 6378,
+          "public_start": 7428,
+          "public_end": 7429,
+          "public_value": "n",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        }
+      ]
+    },
+    "research/model_v2/RANK_DEFICIENCY_AUDIT.md": {
+      "format": "utf8-markdown",
+      "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
+      "original_sha256": "7798b84f70d57e7d421a2bf2a5d92335034418d5d76c20224bd850161064a133",
+      "public_sha256": "f43435a4b831412cd80af2d9ebd0e07304da5a9eb78ca9e3862c83fad5676aab",
+      "protected_sha256": "69d9264cd6790a07e0bcdc05cc6df66c9455b10b45f94fcea4ededf83822ea91",
+      "edits": [
+        {
+          "original_start": 0,
+          "original_end": 0,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 0,
+          "public_end": 295,
+          "public_value": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.\n\n",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1152,
+          "original_end": 1175,
+          "original_value_sha256": "90cf80844260623175fadef8cadee56986ddcbaa86355cd394ad82161b88c4f5",
+          "public_start": 1447,
+          "public_end": 1447,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1186,
+          "original_end": 1186,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 1458,
+          "public_end": 1497,
+          "public_value": " must be adopted in a recorded decision",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 10747,
+          "original_end": 10760,
+          "original_value_sha256": "7004968a63e051d6b4aefab58c6cfea22707d2563dd7ef1967591ba3495b61a0",
+          "public_start": 11058,
+          "public_end": 11058,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 10762,
+          "original_end": 10765,
+          "original_value_sha256": "5eb50a4eaeac628268d07200700fad13e5e539f696a9d9483f57a6736197c6ec",
+          "public_start": 11060,
+          "public_end": 11072,
+          "public_value": "parately rec",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 10766,
+          "original_end": 10767,
+          "original_value_sha256": "1b16b1df538ba12dc3f97edbb85caa7050d46c148134290feba80f8236c83db9",
+          "public_start": 11073,
+          "public_end": 11077,
+          "public_value": "rded",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 10777,
+          "original_end": 10781,
+          "original_value_sha256": "8ebd2f4dc545fc0869e485010316659bb64c5db8be44556d944b73be9a7eaa1b",
+          "public_start": 11087,
+          "public_end": 11093,
+          "public_value": "decisi",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 10782,
+          "original_end": 10785,
+          "original_value_sha256": "97dfc65f74283f60c606bda3f75a6a6bec3fc1e513b8b40797b5ecb86c824ee2",
+          "public_start": 11094,
+          "public_end": 11095,
           "public_value": "n",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         }
@@ -609,9 +1077,9 @@
     "research/model_v2/README.md": {
       "format": "utf8-markdown",
       "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
-      "original_sha256": "dfe5f627006c5c369706e6c0bd33088b167fcfa69d57a2f7469935624031077f",
-      "public_sha256": "697488a18d50872534e868f7258411a3e925161a1192bf4276738de3872a01f9",
-      "protected_sha256": "18adda5d4169e70213415991b1f9d52f1cfc4bbf9db1ad0892d4b70fedb86362",
+      "original_sha256": "8a6b351653438d7d78015d4e442fbbe5096ead646e2102386a9f3eb312a9968a",
+      "public_sha256": "c2df77931ca102b1113ea83e9b20e87fb840b6d9b98178136005479b76c9d2cc",
+      "protected_sha256": "d3c9dab7bc18a2fcd4407f9c0522c9360693fa95864857d616ffdd539aa09444",
       "edits": [
         {
           "original_start": 0,
@@ -693,6 +1161,69 @@
           "public_end": 3891,
           "public_value": "",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 7299,
+          "original_end": 7299,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 7606,
+          "public_end": 7608,
+          "public_value": "do",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 7300,
+          "original_end": 7302,
+          "original_value_sha256": "0510eddd781102030eb8860671503a28e6a37f5346de429bdd47c0a37c77cc7d",
+          "public_start": 7609,
+          "public_end": 7611,
+          "public_value": "ti",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 7303,
+          "original_end": 7306,
+          "original_value_sha256": "97dfc65f74283f60c606bda3f75a6a6bec3fc1e513b8b40797b5ecb86c824ee2",
+          "public_start": 7612,
+          "public_end": 7613,
+          "public_value": "n",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 7311,
+          "original_end": 7311,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 7618,
+          "public_end": 7625,
+          "public_value": "the sep",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 7312,
+          "original_end": 7314,
+          "original_value_sha256": "d53315bea08cec50d2591fcaf3b32dc5d289cdc6c16b7e8bed8c8e3f7ceaa34e",
+          "public_start": 7626,
+          "public_end": 7626,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 7315,
+          "original_end": 7315,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 7627,
+          "public_end": 7637,
+          "public_value": "ate decisi",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 7316,
+          "original_end": 7319,
+          "original_value_sha256": "97dfc65f74283f60c606bda3f75a6a6bec3fc1e513b8b40797b5ecb86c824ee2",
+          "public_start": 7638,
+          "public_end": 7639,
+          "public_value": "n",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         }
       ]
     },
@@ -755,6 +1286,141 @@
           "public_start": 761,
           "public_end": 763,
           "public_value": "ed",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        }
+      ]
+    },
+    "research/model_v2/V2_PREDICTOR_CONTRACT.md": {
+      "format": "utf8-markdown",
+      "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
+      "original_sha256": "d8b8b0d565a15328e401eb9fe9cb44d2e94db8f3c4c66c2331f4f035c09dd5a4",
+      "public_sha256": "059d538f9a6747a45c8b5766b7dac8c60be83d83547077a5d00d3192955a57a9",
+      "protected_sha256": "e78d612a13086665ac05cfd1171438420b6f551498b4a06ef5a151e62b90d546",
+      "edits": [
+        {
+          "original_start": 0,
+          "original_end": 1,
+          "original_value_sha256": "334359b90efed75da5f0ada1d5e6b256f4a6bd0aee7eb39c0f90182a021ffc8b",
+          "public_start": 0,
+          "public_end": 6,
+          "public_value": "Public",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 2,
+          "original_end": 3,
+          "original_value_sha256": "5c62e091b8c0565f1bafad0dad5934276143ae2ccef7a5381e8ada5b1a8d26d2",
+          "public_start": 7,
+          "public_end": 12,
+          "public_value": "histo",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 4,
+          "original_end": 4,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 13,
+          "public_end": 19,
+          "public_value": "ical d",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 5,
+          "original_end": 5,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 20,
+          "public_end": 39,
+          "public_value": "cument derivative, ",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 6,
+          "original_end": 6,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 40,
+          "public_end": 130,
+          "public_value": "repared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain th",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 9,
+          "original_end": 9,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 133,
+          "public_end": 160,
+          "public_value": " of this revision; unchange",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 10,
+          "original_end": 10,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 161,
+          "public_end": 296,
+          "public_value": " passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.\n\n#",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 33,
+          "original_end": 40,
+          "original_value_sha256": "e648ae4533dfa3b76174a3b109b5ec3c58cf99e49f38afb0fbeab7bd84f4635d",
+          "public_start": 319,
+          "public_end": 325,
+          "public_value": "(histo",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 41,
+          "original_end": 43,
+          "original_value_sha256": "5e1c26b2f7c5b8ae6e0b3da7fcc99b841697e85d65febbb57f24b2b7a199b037",
+          "public_start": 326,
+          "public_end": 328,
+          "public_value": "ic",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 47,
+          "original_end": 53,
+          "original_value_sha256": "063a4c32864519ab1ced31aa495ec06b1486bcd9ff614ca38179a5842f84970b",
+          "public_start": 332,
+          "public_end": 340,
+          "public_value": "roposal)",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1718,
+          "original_end": 1718,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 2005,
+          "public_end": 2043,
+          "public_value": "a separate recorded design decision au",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1720,
+          "original_end": 1722,
+          "original_value_sha256": "f3401e2083d1f1d4a098c1091a3a9592d0c197a98d0f352d5f97be8c5ddf63d1",
+          "public_start": 2045,
+          "public_end": 2045,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1723,
+          "original_end": 1726,
+          "original_value_sha256": "22ec62824c150d91dfa264e9b3e2ca50f929f3eaca3d161d8494e2b49cd468af",
+          "public_start": 2046,
+          "public_end": 2046,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 1727,
+          "original_end": 1734,
+          "original_value_sha256": "cdb39671e47c21abaa0a598ff5cecf0e5f916f754aba8b36d6d626762600e772",
+          "public_start": 2047,
+          "public_end": 2049,
+          "public_value": "iz",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         }
       ]
