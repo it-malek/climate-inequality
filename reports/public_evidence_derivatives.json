@@ -59,6 +59,75 @@
           "reason": "Incidental assistant scratch-directory identity is not needed to reproduce the recorded script, input hashes, parameters or numerical outputs. Retain the run-relative suffix and explicit placeholder; do not claim this portable public derivative was the original execution location."
         }
       ]
+    },
+    "research/model_v2/outputs/m1b_build_run.json": {
+      "original_sha256": "8b394655fb5411d695ebce6cbf5f8f27b1cfc72f64f8d242f56b19c0bbeda9c9",
+      "public_sha256": "1b2a178439cce5833805008b6d68d9d02018683e4eb2fe4bd1c66ccceedd502b",
+      "protected_sha256": "2b662aa3671039782634616ddf4a8045c6c8c61c02c0b971693ccdae94b8ffd1",
+      "edits": [
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/1",
+          "public_value": "${RUN_ROOT}/m1b-a3.J1Dqth/a",
+          "original_value_sha256": "44c923cadf73d99aa449aef69de2174453eeac291cc304be64cdc731a7fa3142",
+          "reason": "Incidental assistant scratch-directory identity is not needed to reproduce the recorded script, input hashes, parameters or numerical outputs. Retain the run-relative suffix and explicit placeholder; do not claim this portable public derivative was the original execution location."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m1b_build_run_b.json": {
+      "original_sha256": "a77c8cad4bc30746a9bf52a1689ef07c28b191f5aaed67259e779d67c2b3c026",
+      "public_sha256": "d89ab6b245ecbb294579fc05e7760c41db4d78720fcf077a4144e538cd233fe8",
+      "protected_sha256": "8b815c57dd907ea0b7294a64802d0952a9baf4d0d07fb9e381f97f66e93e2dbb",
+      "edits": [
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/1",
+          "public_value": "${RUN_ROOT}/m1b-a3.J1Dqth/b",
+          "original_value_sha256": "2148ac3d3c5bff24db69b7e4623b9151d08a5436a3048d6ae7224ca09f1db559",
+          "reason": "Incidental assistant scratch-directory identity is not needed to reproduce the recorded script, input hashes, parameters or numerical outputs. Retain the run-relative suffix and explicit placeholder; do not claim this portable public derivative was the original execution location."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m1b_package_record.json": {
+      "original_sha256": "1126de9c0e7b818de6a3e20f3d5a2a655dd3de061342f733629d23d634946c06",
+      "public_sha256": "06b04fb9c2d4c7e945345a16c8e2f4614f96aeb816a2c2718a6cc8371c6d9795",
+      "protected_sha256": "ee4cd1dfc3f64d92b2e575f986093f969c4896567c4fc47daa4b47464955fee4",
+      "edits": [
+        {
+          "pointer": "/determinism/runs/build_a/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/determinism/runs/build_b/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/determinism/runs/build_a/argv/1",
+          "public_value": "${RUN_ROOT}/m1b-a3.J1Dqth/a",
+          "original_value_sha256": "44c923cadf73d99aa449aef69de2174453eeac291cc304be64cdc731a7fa3142",
+          "reason": "Incidental assistant scratch-directory identity is not needed to reproduce the recorded script, input hashes, parameters or numerical outputs. Retain the run-relative suffix and explicit placeholder; do not claim this portable public derivative was the original execution location."
+        },
+        {
+          "pointer": "/determinism/runs/build_b/argv/1",
+          "public_value": "${RUN_ROOT}/m1b-a3.J1Dqth/b",
+          "original_value_sha256": "2148ac3d3c5bff24db69b7e4623b9151d08a5436a3048d6ae7224ca09f1db559",
+          "reason": "Incidental assistant scratch-directory identity is not needed to reproduce the recorded script, input hashes, parameters or numerical outputs. Retain the run-relative suffix and explicit placeholder; do not claim this portable public derivative was the original execution location."
+        }
+      ]
     }
   }
 }
