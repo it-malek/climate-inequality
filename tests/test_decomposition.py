@@ -7,8 +7,12 @@ import pandas as pd
 import pytest
 
 from src.decomposition import (
+    AREA_WEIGHTED,
+    STATION_WEIGHTED,
+    STATION_WEIGHTED_ALL,
     aggregate_city_features_to_country,
     build_country_design,
+    decompose_country_warming,
     group_lmg_shares,
     summary_payload,
 )
@@ -147,6 +151,7 @@ class TestBuildCountryDesign:
                 "continent": ["Africa", "Europe", "South America"],
                 "n_cities": [4, 3, 5],
                 "trend_c_per_decade": [0.10, 0.30, 0.08],
+                "trend_c_per_decade_area_weighted": [0.12, 0.33, 0.09],
                 "cumulative_co2_mt": [50.0, 400.0, 600.0],
                 "population": [50_000_000, 5_000_000, 210_000_000],
                 "cum_co2_t_per_capita": [1.0, 80.0, 3.0],
@@ -184,9 +189,9 @@ class TestBuildCountryDesign:
         every_feature = set(feature_names(SCHEMA_V1, status=None))
         allowed = every_feature | {"Country", "warming_trend"}
         assert set(design.columns) <= allowed
-        # Maps applied correctly.
+        # Maps applied correctly; the outcome is the area-weighted trend.
         norway = design.set_index("Country").loc["Norway"]
-        assert norway["warming_trend"] == pytest.approx(0.30)
+        assert norway["warming_trend"] == pytest.approx(0.33)
         assert norway["cum_co2_per_capita"] == pytest.approx(80.0)
         assert norway["spatial_block"] == "Europe"
         assert norway["income_group"] == "High income"
@@ -197,3 +202,68 @@ class TestBuildCountryDesign:
         result = group_lmg_shares(design)
         result.check_sums_to_one()
         assert result.n == 3
+
+
+class TestOutcomeDefinitions:
+    """The primary outcome is the area-weighted country trend; the station mean is
+    retained as a controlled sensitivity on the same countries."""
+
+    def _frames(self):
+        inequality, city_features, income = TestBuildCountryDesign()._frames()
+        # Brazil has no area-weighted value (no grid cell resolves to it); the
+        # station mean exists for every country.
+        inequality["trend_c_per_decade_area_weighted"] = [0.12, 0.33, np.nan]
+        return inequality, city_features, income
+
+    def test_default_outcome_is_area_weighted(self):
+        inequality, city_features, income = self._frames()
+        design = build_country_design(inequality, city_features, income)
+        by_country = design.set_index("Country")
+        assert by_country.at["Norway", "warming_trend"] == pytest.approx(0.33)
+        assert np.isnan(by_country.at["Brazil", "warming_trend"])
+
+    def test_station_weighted_outcome_selectable(self):
+        inequality, city_features, income = self._frames()
+        design = build_country_design(
+            inequality, city_features, income, outcome_definition=STATION_WEIGHTED
+        )
+        by_country = design.set_index("Country")
+        assert by_country.at["Norway", "warming_trend"] == pytest.approx(0.30)
+        assert by_country.at["Brazil", "warming_trend"] == pytest.approx(0.08)
+
+    def test_unknown_outcome_definition_rejected(self):
+        inequality, city_features, income = self._frames()
+        with pytest.raises(ValueError, match="outcome_definition"):
+            build_country_design(
+                inequality, city_features, income, outcome_definition="median"
+            )
+
+    def test_decompose_country_warming_pairs_primary_with_sensitivity(self):
+        inequality, city_features, income = self._frames()
+        primary, sensitivity = decompose_country_warming(
+            inequality, city_features, income
+        )
+        assert primary.outcome_definition == AREA_WEIGHTED
+        assert primary.n == 2  # Brazil has no area-weighted outcome
+        # The controlled comparison uses the same countries with the station
+        # outcome; the all-countries run adds the country the primary lacks.
+        common = sensitivity[STATION_WEIGHTED]
+        assert common.outcome_definition == STATION_WEIGHTED
+        assert common.n == primary.n
+        assert sensitivity[STATION_WEIGHTED_ALL].n == primary.n + 1
+        for result in (primary, *sensitivity.values()):
+            result.check_sums_to_one()
+
+    def test_summary_payload_carries_outcome_and_sensitivity(self):
+        inequality, city_features, income = self._frames()
+        primary, sensitivity = decompose_country_warming(
+            inequality, city_features, income
+        )
+        payload = summary_payload(primary, sensitivity=sensitivity)
+        assert payload["outcome_definition"] == AREA_WEIGHTED
+        assert payload["outcome_source_column"] == "trend_c_per_decade_area_weighted"
+        block = payload["sensitivity"][STATION_WEIGHTED]
+        assert block["outcome_definition"] == STATION_WEIGHTED
+        assert block["outcome_source_column"] == "trend_c_per_decade"
+        assert set(block["shares"]) == set(payload["shares"])
+        assert block["interpretation"] == INTERPRETATION_NOTE

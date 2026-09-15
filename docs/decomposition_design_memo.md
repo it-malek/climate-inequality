@@ -4,7 +4,10 @@ Written in June 2026 while the decomposition was being built. It pairs with
 the feature contract in `src/feature_schema.py` (`SCHEMA_V1`) and governs
 `src/inequality.py` and `src/decomposition.py`. Results are in
 [`findings.md`](findings.md); the stability diagnostics it calls for are in
-[`stability.md`](stability.md).
+[`stability.md`](stability.md). The outcome was changed from the
+station-weighted to the area-weighted country mean in September 2026; the
+addendum at the end records what that changed and the original text is kept
+as written.
 
 ---
 
@@ -74,7 +77,9 @@ reorients the project around decomposing the *variance* of warming.
 The candidate outcomes, and why we rank them:
 
 1. **Country-mean warming trend** (`warming_trend`, °C/decade) — the unweighted
-   mean of a country's city-location Theil–Sen slopes. **Preferred** (§3).
+   mean of a country's city-location Theil–Sen slopes. **Preferred** (§3) at
+   the time of writing; superseded as the primary outcome by the area-weighted
+   rate (see the addendum), and kept as the sensitivity.
 2. **City-location warming trend** — the 3,510 per-location slopes themselves.
    Higher resolution, but socioeconomic/emissions/population axes are *not
    defined* at the city level in our data, so a four-axis decomposition is
@@ -217,7 +222,8 @@ Three properties make this the right tool and bound its interpretation:
    both the inequality magnitude and every axis share; it is the single largest
    threat. (The coupling stage later showed how large: the station-based
    emissions–warming correlation disappears under area weighting. The
-   decomposition has not been re-run on the area-weighted outcome.)
+   decomposition was re-run on the area-weighted outcome in September 2026
+   and that outcome is now primary; see the addendum.)
 2. **Collinearity of the axes.** Emissions, latitude, and income are strongly
    correlated. Shapley handles this *fairly* (it is the reason we use it) but
    cannot *separate* what is genuinely entangled: a dominant geography share
@@ -306,3 +312,61 @@ their headline value is making the latitude-vs-emissions confound a *measured
 overlap* rather than a caveat. The dominant risks are station sampling bias and
 axis collinearity, and the outcome (mean warming) is explicitly *not* a measure
 of climate impact or injustice.
+
+---
+
+## Addendum (September 2026): the area-weighted outcome is primary
+
+The decomposition was re-run with the area-weighted country warming rate
+(`trend_c_per_decade_area_weighted`, a per-cell trend on the Berkeley Earth
+1° grid averaged with cos-latitude weights) as the outcome, on the 151
+countries that have one, and with the station-weighted outcome on the same
+151 countries as a controlled comparison. The area-weighted decomposition is
+now the primary public result and the station-weighted one is the
+sensitivity; `src/decomposition.py` carries both, and every summary names its
+outcome.
+
+What the comparison showed ([`findings.md`](findings.md) §2):
+
+- Geography is the largest group under both outcomes (0.51 area-weighted,
+  0.46 station-weighted), the explained variance is 63–64% under both, and the
+  socioeconomic and population shares stay small.
+- The emissions group's share falls from 0.085 to 0.021 and its standalone R²
+  from 0.14 to 0.003 when the outcome changes. Under the area-weighted outcome
+  the emissions group has almost no standalone association with warming, so
+  there is no "measured overlap" between it and geography to report: the
+  reading of the station-based gap between standalone R² and Shapley share as
+  a measured emissions–geography overlap (§6, H3) does not survive the change
+  of outcome. What the decomposition now measures is that the apparent
+  emissions–warming association is sensitive to how national warming is
+  constructed.
+
+How the hypotheses in §8 fared: H1, H2, H4 and H5 hold under both outcomes.
+H3 held under the station-weighted outcome in the form predicted (a
+non-trivial raw association that shrinks once geography is credited) and
+does not hold under the area-weighted outcome, where the raw association is
+absent. H6 was right about the direction of the largest sensitivity (the
+weighting) and wrong that the shares would be robust to it: the emissions
+share is the one quantity that depends on it.
+
+Interpretation. The area-weighted outcome sets national aggregation by land
+area rather than directly by the spatial distribution of stations, which
+makes the country-level result less sensitive to station-network geography.
+It is not independent of thermometer placement: Berkeley Earth's gridded
+field is an observationally derived product built from the same station
+record. The station-versus-area difference is consistent with
+sampling/station-network effects, and the coupling and ERA5 analyses point
+the same way, but the comparison also changes observational representation
+(a gridded product against station means), so it cannot attribute every
+difference to siting alone. The finding is narrow: the historical national
+emissions/responsibility feature group contributes very little independent
+explanatory variance to cross-country differences in area-weighted
+land-warming rates. It is not a statement that emissions do not explain
+warming; greenhouse gases remain the physical driver of global warming, and
+this decomposition asks a different question.
+
+Not changed in this pass: the feature schema (station density stays in the
+population group although it partly encodes observational sampling
+structure), the temporal window, the temperature product, and the linear,
+non-spatial model form. The residual (36% of variance, spatially clustered)
+is left for a later phase.

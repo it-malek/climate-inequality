@@ -12,8 +12,7 @@ def render() -> None:
     st.title("Where warming is fastest")
     st.markdown(
         "Each country is colored by its mean 1950–2013 warming trend. Hover for "
-        "the trend, cumulative per-capita CO₂ and mean latitude — the three "
-        "quantities the decomposition relates."
+        "the trend, cumulative per-capita CO₂ and mean latitude."
     )
 
     table = loaders.load_inequality()
@@ -33,9 +32,10 @@ def render() -> None:
     st.caption(
         f"{len(df)} countries · warming trend ranges {lo:.2f}–{hi:.2f} "
         f"{theme.TREND_UNIT} (sequential **{theme.TREND_COLORSCALE}** scale). "
-        "Country means are the unweighted average of city-location trends "
-        "(station-weighted, not area- or population-weighted). Color encodes "
-        "*observed* warming only — not a modeled or causal quantity."
+        "Country means here are the unweighted average of city-location trends "
+        "(station-weighted); the decomposition page uses the area-weighted rate "
+        "as its primary outcome. Color encodes *observed* warming only — not a "
+        "modeled or causal quantity."
     )
 
     with st.expander("Country table (sortable)"):

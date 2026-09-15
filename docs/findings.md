@@ -36,8 +36,9 @@ whole coordinate group removes the leak.
 
 ## 2. Country-level inequality and its decomposition
 
-Country warming is the unweighted mean of its city-location slopes (157
-countries match the OWID emissions table; Puerto Rico and Réunion do not).
+For the inequality metrics, country warming is the unweighted mean of its
+city-location slopes (157 countries match the OWID emissions table; Puerto
+Rico and Réunion do not).
 
 | Metric | Value |
 |---|---|
@@ -47,35 +48,84 @@ countries match the OWID emissions table; Puerto Rico and Réunion do not).
 | Theil-T | 0.050, of which 18% is between continents |
 | Coefficient of variation | 0.31 |
 
-A group-level Shapley/LMG decomposition attributes the variance of country
-warming to four fixed feature groups over the 154 complete cases:
+A group-level Shapley/LMG decomposition attributes the cross-country variance
+of warming to four fixed feature groups. The outcome is the **area-weighted**
+land-warming rate: a Theil–Sen trend per Berkeley Earth 1° grid cell,
+averaged over each country's land with cos-latitude weights (§3 describes
+the construction). Its national aggregation is set by land area rather than
+directly by where the stations are, which makes the country-level result
+less sensitive to station-network geography; it remains an observational
+product, since Berkeley Earth's field is interpolated from the same station
+record. 151 countries have both an area-weighted value and complete features
+(Bahrain, Hong Kong and Singapore have no 1° land cell).
 
 | Axis | Features | Standalone R² | Shapley share | Share of explained |
 |---|---|:-:|:-:|:-:|
-| Geography | abs. latitude, elevation, coast distance, Köppen class, hemisphere, continent | 0.580 | **0.455** | 72% |
-| Emissions | log cumulative CO₂ per capita, log cumulative CO₂ total | 0.132 | 0.084 | 13% |
-| Socioeconomic | World Bank income group | 0.080 | 0.056 | 9% |
-| Population | log population, station density | 0.049 | 0.036 | 6% |
-| Residual | (1 − R²) | | **0.369** | |
+| Geography | abs. latitude, elevation, coast distance, Köppen class, hemisphere, continent | 0.597 | **0.513** | 81% |
+| Socioeconomic | World Bank income group | 0.096 | 0.069 | 11% |
+| Population | log population, station density | 0.060 | 0.033 | 5% |
+| Emissions | log cumulative CO₂ per capita, log cumulative CO₂ total | 0.003 | 0.021 | 3% |
+| Residual | (1 − R²) | | **0.364** | |
 
-Total R² is 0.631. The gap between the emissions axis's standalone R² (0.13)
-and its Shapley share (0.08) is the variance it shares with geography:
-historically high-emitting countries sit at the mid-to-high northern latitudes
-where warming is fastest.
+Total R² is 0.636. Cross-country differences in land-warming rates are
+associated primarily with geography rather than with countries' historical
+emissions responsibility, socioeconomic characteristics or population
+characteristics: the geography group contributes 0.51 of total variance, or
+roughly 81% of the variance the model explains, while the emissions group
+contributes very little independent explanatory variance (0.02 of total,
+about 3% of explained) and has almost no standalone association with the
+outcome. About 36% of the variance lies outside the model. This is a
+descriptive variance decomposition of cross-country differences, not a
+physical attribution: greenhouse gases remain the driver of global warming,
+and the question here is why warming rates differ spatially among countries.
 
-The same fragility shows in the older single-coefficient framing. Regressing
-country warming on log₁₀ cumulative per-capita CO₂ gives +0.021 °C/decade per
-tenfold increase pooled, and +0.029 (95% CI +0.014 to +0.045) with continent
-fixed effects; adding each country's mean absolute latitude within continents
-cuts it to +0.012 (CI −0.005 to +0.029). Adding income group on top brings it
-back to +0.026 (p = 0.03). The coefficient depends on which correlated controls
-enter, which is why the decomposition reports shares rather than a coefficient.
+**Outcome sensitivity.** The same decomposition on the same 151 countries
+with the station-weighted outcome (the unweighted mean of each country's
+city-location slopes) isolates the effect of the outcome construction. The
+last column is the station-weighted decomposition on all 154 countries that
+have complete features, the sample the station outcome supports.
+
+| Share of total variance | Area-weighted (primary), n = 151 | Station-weighted, same 151 | Station-weighted, all 154 |
+|---|:-:|:-:|:-:|
+| Geography | 0.513 | 0.458 | 0.455 |
+| Emissions | 0.021 | 0.085 | 0.084 |
+| Socioeconomic | 0.069 | 0.062 | 0.056 |
+| Population | 0.033 | 0.029 | 0.036 |
+| Residual | 0.364 | 0.365 | 0.369 |
+| Total R² | 0.636 | 0.635 | 0.631 |
+| Emissions standalone R² | 0.003 | 0.142 | 0.132 |
+
+Geography is the dominant group and the explained variance is 63–64% under
+both constructions; the socioeconomic and population shares stay small. What
+depends on the construction is the emissions group: under the station-weighted
+outcome it has a standalone R² of 0.14 and a share of 0.085 (13% of
+explained), under the area-weighted outcome 0.003 and 0.021. The two outcomes
+agree on country ranking only at ρ = 0.81; the countries that warm faster
+under area weighting are those whose stations sit in slower-warming
+populated fringes (the Sahel, Central Africa, Canada, the Philippines), and
+those that warm more slowly are ones whose few stations sit in fast-warming
+interiors (Central Asia, Central America, the Gulf). This pattern, together
+with the coupling and ERA5 results in §3, is consistent with station-network
+effects. The comparison also changes the observational representation (a
+gridded field against station means), so it does not isolate station siting
+as the sole cause of every difference.
+
+The older single-coefficient framing shows the same fragility. Regressing
+the station-weighted country warming on log₁₀ cumulative per-capita CO₂
+gives +0.021 °C/decade per tenfold increase pooled, and +0.029 (95% CI +0.014
+to +0.045) with continent fixed effects; adding each country's mean absolute
+latitude within continents cuts it to +0.012 (CI −0.005 to +0.029). Adding
+income group on top brings it back to +0.026 (p = 0.03). The coefficient
+depends on which correlated controls enter, which is why the decomposition
+reports shares rather than a coefficient.
 
 Stability ([`stability.md`](stability.md)): over 2,000 country-bootstrap
-resamples geography is the largest axis every time (95% interval 0.39–0.56);
-the emissions share stays positive (0.05–0.13). Moran's I on the full-model
-residual is 0.33 (permutation p = 0.005, k = 8 nearest country centroids): the
-unexplained 37% is regionally clustered rather than noise.
+resamples geography is the largest axis every time (95% interval 0.45–0.62;
+0.40–0.57 under the station-weighted outcome). The emissions share's interval
+is 0.01–0.05 area-weighted against 0.05–0.13 station-weighted; the two touch
+only at the boundary. Moran's I on the full-model residual is 0.27
+(permutation p = 0.005, k = 8 nearest country centroids; 0.31 station-weighted):
+the unexplained 36% is regionally clustered rather than noise.
 
 ## 3. Responsibility versus warming exposure
 

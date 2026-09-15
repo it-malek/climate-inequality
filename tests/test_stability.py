@@ -136,3 +136,32 @@ def test_deterministic_and_byte_stable():
     first = json.dumps(summary_payload(_summary(n_boot=120, n_perm=29)))
     second = json.dumps(summary_payload(_summary(n_boot=120, n_perm=29)))
     assert first == second
+
+
+def test_influence_can_be_skipped_for_sensitivity_runs():
+    design = make_country_design(n=60, seed=4)
+    result = build_stability_summary(
+        design, _centroids(design), n_boot=30, seed=1, k=5, n_permutations=19,
+        include_influence=False,
+    )
+    assert result.influence == {}
+    assert result.share_stability["groups"]  # the bootstrap still runs
+
+
+def test_summary_payload_carries_outcome_definition_and_sensitivity():
+    design = make_country_design(n=60, seed=5)
+    primary = build_stability_summary(
+        design, _centroids(design), n_boot=30, seed=1, k=5, n_permutations=19,
+        outcome_definition="area_weighted",
+    )
+    station = build_stability_summary(
+        design, _centroids(design), n_boot=30, seed=1, k=5, n_permutations=19,
+        outcome_definition="station_weighted", include_influence=False,
+    )
+    payload = summary_payload(primary, sensitivity={"station_weighted": station})
+    assert payload["outcome_definition"] == "area_weighted"
+    block = payload["sensitivity"]["station_weighted"]
+    assert block["outcome_definition"] == "station_weighted"
+    assert block["share_stability"]["groups"]
+    assert block["residual_spatial"]["morans_i"] is not None
+    assert "influence" not in block

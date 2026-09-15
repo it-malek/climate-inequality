@@ -679,3 +679,91 @@ class TestBuildVulnerabilityAsset:
         assert written == {}
         assert not out_dir.exists() or not any(out_dir.iterdir())
         assert "income CSV absent" in caplog.text
+
+
+def _decomposition_inputs(tmp_path):
+    """Country table, city features and income CSV for the decomposition builders.
+
+    24 synthetic countries over three continents; one (``C0``) has no
+    area-weighted outcome, so the primary sample is one smaller than the
+    station-weighted one.
+    """
+    specs = [
+        ("Africa", 0.10, [0.0, 0.4, 0.8, 1.2, 1.6, 2.0, 2.4, 2.8]),
+        ("Europe", 0.13, [1.0, 1.4, 1.8, 2.2, 2.6, 3.0, 3.4, 3.8]),
+        ("Asia", 0.11, [0.5, 0.9, 1.3, 1.7, 2.1, 2.5, 2.9, 3.3]),
+    ]
+    inequality = make_inequality_frame(noise_sd=0.01, seed=3, specs=specs)
+    inequality.loc[inequality["Country"] == "C0", "trend_c_per_decade_area_weighted"] = np.nan
+    inequality_path = tmp_path / "country_inequality.parquet"
+    inequality.to_parquet(inequality_path, index=False)
+
+    rng = np.random.default_rng(0)
+    rows = []
+    for i, country in enumerate(inequality["Country"]):
+        for j in range(3):
+            lat = rng.uniform(-60.0, 70.0)
+            rows.append(
+                {
+                    "Country": country,
+                    "Latitude": lat,
+                    "Longitude": rng.uniform(-180.0, 180.0),
+                    "abs_latitude": abs(lat),
+                    "elevation_m": rng.uniform(0.0, 1500.0),
+                    "coast_km": rng.uniform(0.0, 1500.0),
+                    "station_density": rng.uniform(0.0, 10.0),
+                    "koppen": ["A", "B", "C", "D"][(i + j) % 4],
+                    "hemisphere": "N" if lat >= 0 else "S",
+                }
+            )
+    features_path = tmp_path / "city_features.parquet"
+    pd.DataFrame(rows).to_parquet(features_path, index=False)
+
+    tiers = ["Low-income countries", "Lower-middle-income countries",
+             "Upper-middle-income countries", "High-income countries"]
+    income_path = tmp_path / "income_groups.csv"
+    pd.DataFrame({
+        "Entity": inequality["Country"],
+        "Code": [f"C{i:02d}" for i in range(len(inequality))],
+        "Year": 2022,
+        "World Bank's income classification": [tiers[i % 4] for i in range(len(inequality))],
+    }).to_csv(income_path, index=False)
+    return inequality_path, features_path, income_path
+
+
+class TestOutcomeDefinitionInBundle:
+    """The bundle's decomposition is area-weighted, with the station-weighted
+    decomposition carried as a sensitivity on the same countries."""
+
+    def test_decomposition_summary_is_area_weighted_with_station_sensitivity(self, tmp_path):
+        inequality_path, features_path, income_path = _decomposition_inputs(tmp_path)
+        written = build_decomposition_summaries(
+            inequality_path=inequality_path, out_dir=tmp_path / "bundle",
+            city_features_path=features_path, income_path=income_path,
+        )
+        payload = json.loads(written[DECOMPOSITION_SUMMARY_ASSET].read_text("utf-8"))
+        assert payload["outcome_definition"] == "area_weighted"
+        assert payload["n"] == 23
+        station = payload["sensitivity"]["station_weighted"]
+        assert station["outcome_definition"] == "station_weighted"
+        assert station["n"] == 23
+        assert payload["sensitivity"]["station_weighted_all_countries"]["n"] == 24
+        assert sum(station["shares"].values()) + station["residual_share"] == pytest.approx(1.0)
+
+    def test_stability_summary_is_area_weighted_with_station_sensitivity(self, tmp_path):
+        inequality_path, features_path, income_path = _decomposition_inputs(tmp_path)
+        written = build_stability_summary_asset(
+            inequality_path=inequality_path, out_dir=tmp_path / "bundle",
+            city_features_path=features_path, income_path=income_path, n_boot=20,
+        )
+        payload = json.loads(written[STABILITY_SUMMARY_ASSET].read_text("utf-8"))
+        assert payload["outcome_definition"] == "area_weighted"
+        assert payload["n_countries"] == 23
+        assert payload["influence"]["by_group"]
+        station = payload["sensitivity"]["station_weighted"]
+        assert station["outcome_definition"] == "station_weighted"
+        assert station["n_countries"] == 23
+        assert station["share_stability"]["groups"]["geography"]["ci_low"] <= (
+            station["share_stability"]["groups"]["geography"]["ci_high"]
+        )
+        assert "influence" not in station

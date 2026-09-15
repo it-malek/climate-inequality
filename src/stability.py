@@ -29,6 +29,12 @@ Contract: the input is the schema-named design from
 :func:`src.decomposition.build_country_design`, so the layer never sees a feature
 outside :data:`SCHEMA_V1`; the schema is perturbed in *sampling*, never in
 membership. See ``docs/stability.md``.
+
+The bundle carries the layer twice: for the primary, area-weighted outcome
+(with all three blocks) and, under a ``sensitivity`` key, for the
+station-weighted outcome on the same countries (bootstrap intervals and
+residual Moran's I only), so the reader can see how much of each interval
+depends on how national warming was constructed.
 """
 
 from __future__ import annotations
@@ -45,9 +51,11 @@ from src.data_io import PROCESSED_DIR, round_floats
 from src.decomposition import (
     COUNTRY_COL,
     OUTCOME_COL,
+    PRIMARY_OUTCOME,
+    STATION_WEIGHTED,
     DecompositionResult,
-    feature_block,
     build_country_design,
+    feature_block,
     group_lmg_shares,
 )
 from src.explain import morans_i
@@ -333,6 +341,45 @@ def _residual_spatial(
 
 
 # ---------------------------------------------------------------------
+# Design assembly shared with the bundle builder
+# ---------------------------------------------------------------------
+
+
+def outcome_designs(
+    inequality: pd.DataFrame,
+    city_features: pd.DataFrame,
+    income: pd.DataFrame,
+    schema: FeatureSchema = SCHEMA_V1,
+) -> dict[str, pd.DataFrame]:
+    """The primary design and the station-weighted design on the same countries.
+
+    Mirrors :func:`src.decomposition.decompose_country_warming`: the
+    station-weighted design is restricted to the rows that have a primary
+    (area-weighted) outcome, so the two stability runs perturb the same sample
+    and differ only in the outcome column.
+    """
+    primary = build_country_design(
+        inequality, city_features, income, schema, outcome_definition=PRIMARY_OUTCOME
+    )
+    station = build_country_design(
+        inequality, city_features, income, schema, outcome_definition=STATION_WEIGHTED
+    )
+    in_primary = primary[OUTCOME_COL].notna().to_numpy()
+    return {
+        PRIMARY_OUTCOME: primary,
+        STATION_WEIGHTED: station.loc[in_primary].reset_index(drop=True),
+    }
+
+
+def country_centroids(city_features: pd.DataFrame) -> pd.DataFrame:
+    """Mean station coordinates per country, the Moran's I weight locations."""
+    return (
+        city_features.groupby(COUNTRY_COL, as_index=False)[["Longitude", "Latitude"]]
+        .mean()
+    )
+
+
+# ---------------------------------------------------------------------
 # Result container + public entry points
 # ---------------------------------------------------------------------
 
@@ -348,6 +395,9 @@ class StabilityResult:
     share_stability: dict = field(default_factory=dict)
     influence: dict = field(default_factory=dict)
     residual_spatial: dict = field(default_factory=dict)
+    # How the outcome was constructed (see ``src.decomposition``); ``None`` for
+    # a design that did not come from ``build_country_design``.
+    outcome_definition: str | None = None
 
     def check(self, atol: float = 1e-6) -> None:
         """Assert the bootstrap-mean shares + residual sum to 1 and CIs order."""
@@ -374,6 +424,8 @@ def build_stability_summary(
     k: int = DEFAULT_K_NEIGHBORS,
     n_permutations: int = DEFAULT_N_PERMUTATIONS,
     status: str = fs.STATUS_AVAILABLE,
+    outcome_definition: str | None = None,
+    include_influence: bool = True,
 ) -> StabilityResult:
     """Perturbation stability of the decomposition's group shares.
 
@@ -391,12 +443,19 @@ def build_stability_summary(
         k: nearest neighbors for the residual spatial weight.
         n_permutations: label permutations for the Moran's I p-value.
         status: feature status admitted into the design (``"available"``).
+        outcome_definition: label recorded on the result saying how the
+            outcome column was constructed.
+        include_influence: run the leave-one-country-out block (the slowest
+            part); ``False`` leaves ``influence`` empty, as for the
+            sensitivity outcome.
 
     Returns:
         A :class:`StabilityResult` whose ``share_stability`` / ``influence`` /
         ``residual_spatial`` blocks the sensitivity page renders.
     """
-    point = group_lmg_shares(design, schema, status=status)
+    point = group_lmg_shares(
+        design, schema, status=status, outcome_definition=outcome_definition
+    )
 
     boot = _bootstrap_shares(
         design, schema, status,
@@ -413,11 +472,16 @@ def build_stability_summary(
         n_boot=n_boot,
         seed=seed,
         share_stability=_share_stability(point, boot, block, n_boot=n_boot),
-        influence=_leave_one_out_influence(design, schema, status, point),
+        influence=(
+            _leave_one_out_influence(design, schema, status, point)
+            if include_influence
+            else {}
+        ),
         residual_spatial=_residual_spatial(
             design, centroids, schema, status,
             k=k, n_permutations=n_permutations, seed=seed,
         ),
+        outcome_definition=outcome_definition,
     )
     result.check()
     return result
@@ -428,15 +492,33 @@ def result_to_dict(result: StabilityResult) -> dict:
     return asdict(result)
 
 
-def summary_payload(result: StabilityResult) -> dict:
+def summary_payload(
+    result: StabilityResult,
+    sensitivity: dict[str, StabilityResult] | None = None,
+) -> dict:
     """Serialized result with the scope disclaimer attached.
 
     The ``interpretation`` key carries
     :data:`src.feature_schema.INTERPRETATION_NOTE` so the stability numbers cannot
     be lifted without the variance-attribution-only boundary; floats are rounded
     (:func:`src.data_io.round_floats`) for a byte-stable committed summary.
+
+    Args:
+        result: the primary outcome's stability.
+        sensitivity: optional alternative-outcome runs, written under a
+            ``sensitivity`` key; a run whose ``influence`` block is empty is
+            written without it.
     """
-    return round_floats({"interpretation": INTERPRETATION_NOTE, **result_to_dict(result)})
+    payload = {"interpretation": INTERPRETATION_NOTE, **result_to_dict(result)}
+    if sensitivity:
+        blocks = {}
+        for key, alt in sensitivity.items():
+            block = {"interpretation": INTERPRETATION_NOTE, **result_to_dict(alt)}
+            if not block.get("influence"):
+                block.pop("influence", None)
+            blocks[key] = block
+        payload["sensitivity"] = blocks
+    return round_floats(payload)
 
 
 def main() -> None:
@@ -449,31 +531,39 @@ def main() -> None:
     city_features = pd.read_parquet(DEFAULT_FEATURES_PATH)
     income = load_income_groups(INCOME_PATH)
 
-    design = build_country_design(inequality, city_features, income)
-    centroids = (
-        city_features.groupby(COUNTRY_COL, as_index=False)[["Longitude", "Latitude"]]
-        .mean()
-    )
+    designs = outcome_designs(inequality, city_features, income)
+    centroids = country_centroids(city_features)
 
-    result = build_stability_summary(design, centroids)
-
-    share = result.share_stability
-    print(
-        f"Share stability (country bootstrap B={result.n_boot}, n={result.n_countries}, "
-        "descriptive/non-causal)"
+    result = build_stability_summary(
+        designs[PRIMARY_OUTCOME], centroids, outcome_definition=PRIMARY_OUTCOME
     )
-    print(f"  {'group':<14s} {'point':>7s} {'2.5%':>7s} {'97.5%':>7s}")
-    for key, g in share["groups"].items():
-        print(f"  {key:<14s} {g['point']:7.3f} {g['ci_low']:7.3f} {g['ci_high']:7.3f}")
-    print(f"  P(geography largest axis): {share['p_geography_largest']}")
-    print(f"  P(emissions share > 0):    {share['p_emissions_positive']}")
-    rs = result.residual_spatial
-    print(f"  residual Moran's I: {rs['morans_i']} (p={rs['p_value']}, n={rs['n']})")
+    sensitivity = {
+        STATION_WEIGHTED: build_stability_summary(
+            designs[STATION_WEIGHTED], centroids,
+            outcome_definition=STATION_WEIGHTED, include_influence=False,
+        )
+    }
+
+    for label, res in [("primary", result), (f"sensitivity [{STATION_WEIGHTED}]", sensitivity[STATION_WEIGHTED])]:
+        share = res.share_stability
+        print(
+            f"{label}: share stability, outcome {res.outcome_definition} "
+            f"(country bootstrap B={res.n_boot}, n={res.n_countries}, "
+            "descriptive/non-causal)"
+        )
+        print(f"  {'group':<14s} {'point':>7s} {'2.5%':>7s} {'97.5%':>7s}")
+        for key, g in share["groups"].items():
+            print(f"  {key:<14s} {g['point']:7.3f} {g['ci_low']:7.3f} {g['ci_high']:7.3f}")
+        print(f"  P(geography largest axis): {share['p_geography_largest']}")
+        print(f"  P(emissions share > 0):    {share['p_emissions_positive']}")
+        rs = res.residual_spatial
+        print(f"  residual Moran's I: {rs['morans_i']} (p={rs['p_value']}, n={rs['n']})")
     print(f"  note: {INTERPRETATION_NOTE}")
 
     DEFAULT_SUMMARY_PATH.parent.mkdir(parents=True, exist_ok=True)
     DEFAULT_SUMMARY_PATH.write_text(
-        json.dumps(summary_payload(result), indent=2) + "\n", encoding="utf-8"
+        json.dumps(summary_payload(result, sensitivity=sensitivity), indent=2) + "\n",
+        encoding="utf-8",
     )
     print(f"wrote {DEFAULT_SUMMARY_PATH}")
 

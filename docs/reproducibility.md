@@ -94,8 +94,8 @@ YAML mirrors of the feature contract and projection registry in `docs/`.
 | Features | `explain` | `city_features.parquet`, `explain_*` | ETOPO elevation, coast distance, Köppen class, station density (k = 50 within 100 km); preflight gate | latitude baseline R² ≈ 0.32 |
 | Validation | `validation` | `validation_*` | forecast from 2013-10; agreement gate r ≥ 0.80; El Niño sensitivity from 2023 | positive residuals (acceleration) |
 | Inequality | `inequality` | `inequality_summary.json` | Gini, Theil-T with continent split, CV, variance; unweighted | Gini ≈ 0.175 |
-| Decomposition | `decomposition` | `decomposition_summary.json` | group LMG/Shapley over `SCHEMA_V1`; log₁₀ for CO₂ and population; complete cases | n = 154; R² ≈ 0.63 |
-| Stability | `stability` | `stability_summary.json` | B = 2000 country and block bootstraps (seeds 0, 1); leave-one-out; Moran's I k = 8, 199 permutations | geography largest in 100% |
+| Decomposition | `decomposition` | `decomposition_summary.json` | group LMG/Shapley over `SCHEMA_V1`; area-weighted outcome, with the station-weighted outcome under `sensitivity` (same countries, and all countries); log₁₀ for CO₂ and population; complete cases | n = 151; R² ≈ 0.64 (station-weighted: n = 154, R² ≈ 0.63) |
+| Stability | `stability` | `stability_summary.json` | B = 2000 country and block bootstraps (seeds 0, 1); leave-one-out; Moran's I k = 8, 199 permutations; the station-weighted outcome repeated under `sensitivity` without leave-one-out | geography largest in 100% under both outcomes |
 | Projections and coupling | `pcs`, `projections`, `coupling` | `projections_*.parquet`, `coupling_*` | ranks (min), z (ddof 0), Lorenz coefficient, Spearman; three lenses | station ρ ≈ +0.36 → area +0.01 |
 | ERA5 cross-check | `era5_weighting`, `era5_validation` | `era5_*` | same operator on ERA5 `t2m` | world land mean ≈ 0.22 |
 | Strata | `vulnerability` | `vulnerability_*` | income rank and ND-GAIN score; permutation p with 999 draws (seed 0) | triple inequality holds |
@@ -129,7 +129,12 @@ YAML mirrors of the feature contract and projection registry in `docs/`.
 - **Geography features** aggregate city → country as means (absolute latitude,
   elevation, coast distance, station density) and modal class (Köppen,
   hemisphere). 157 countries match the OWID join; 154 have complete cases over
-  the decomposition features.
+  the decomposition features, of which 151 also have an area-weighted trend.
+- **Decomposition outcome.** The primary outcome is the area-weighted country
+  trend; the station-weighted trend is decomposed on the same 151 countries
+  (and on all 154) and shipped under the summary's `sensitivity` key. The
+  inequality metrics (Gini, Theil) and the coupling comparator's station lens
+  keep the station-weighted country mean.
 - **Decomposition transforms.** Cumulative CO₂ per capita, cumulative CO₂ total
   and population enter as log₁₀; categoricals (income group, Köppen class,
   hemisphere, continent) are dummy-coded with the first sorted level dropped
@@ -161,9 +166,11 @@ YAML mirrors of the feature contract and projection registry in `docs/`.
   fail loudly on schema drift at build and at load.
 - `tests/test_artifacts.py` validates the committed bundle on disk: coupling
   summaries recompute from their tables, projections equal their source
-  columns, decomposition shares partition to one, stability point shares match
-  the decomposition, the physical trajectory is contiguous and its band brackets
-  the mean.
+  columns, decomposition shares partition to one (primary and sensitivity),
+  the decomposition names the area-weighted outcome and its source column
+  exists in the country table, stability point shares match the decomposition
+  for both outcomes, the physical trajectory is contiguous and its band
+  brackets the mean.
 
 ## 6. Interpretation limits
 
@@ -193,9 +200,10 @@ the numbers. The full threats-to-validity list is in
   - the inequality, decomposition, coupling, ERA5 and vulnerability summaries
     reproduce byte for byte (their arithmetic differs at ~1e-16, absorbed by
     the rounding);
-  - the residual Moran's I in `stability_summary.json` moves by about 1e-4,
-    because nearest-neighbour ties in the KD-tree break differently; the
-    bootstrap intervals in the same file reproduce;
+  - the residual Moran's I values in `stability_summary.json` (primary and
+    sensitivity) move by about 1e-4, because nearest-neighbour ties in the
+    KD-tree break differently; the bootstrap intervals in the same file
+    reproduce;
   - `physical_summary.json` reproduces to about 1e-8 relative in the ridge
     precision λ and to 1e-9 to 1e-7 relative in the sensitivities (largest
     for the poorly identified N₂O interval). The marginal likelihood is

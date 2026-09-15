@@ -20,7 +20,12 @@ import pytest
 from shapely.geometry import box
 
 from src.app_assets import build_app_assets
-from src.decomposition import group_lmg_shares
+from src.decomposition import (
+    AREA_WEIGHTED,
+    STATION_WEIGHTED,
+    STATION_WEIGHTED_ALL,
+    group_lmg_shares,
+)
 from src.decomposition import summary_payload as decomp_payload
 from src.explain import (
     compare_city_specs,
@@ -177,9 +182,24 @@ def _make_synthetic_decomposition_artifacts(bundle_dir: Path) -> None:
     (bundle_dir / "inequality_summary.json").write_text(
         json.dumps(ineq_payload(ineq), indent=2) + "\n", encoding="utf-8"
     )
-    decomp = group_lmg_shares(make_country_design(n=120))
+    # Primary (area-weighted) plus the station-weighted sensitivity on the same
+    # synthetic countries, mirroring the shape of the committed summary.
+    design = make_country_design(n=120)
+    decomp = group_lmg_shares(design, outcome_definition=AREA_WEIGHTED)
+    station_design = design.assign(
+        warming_trend=make_country_design(n=120, seed=1)["warming_trend"]
+    )
+    sensitivity = {
+        STATION_WEIGHTED: group_lmg_shares(
+            station_design, outcome_definition=STATION_WEIGHTED
+        ),
+        STATION_WEIGHTED_ALL: group_lmg_shares(
+            station_design, outcome_definition=STATION_WEIGHTED
+        ),
+    }
     (bundle_dir / "decomposition_summary.json").write_text(
-        json.dumps(decomp_payload(decomp), indent=2) + "\n", encoding="utf-8"
+        json.dumps(decomp_payload(decomp, sensitivity=sensitivity), indent=2) + "\n",
+        encoding="utf-8",
     )
 
 
