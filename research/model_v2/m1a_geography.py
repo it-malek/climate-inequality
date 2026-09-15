@@ -60,7 +60,11 @@ COAST_K = 16
 FULL_TOL = 1e-9               # relative area tolerance for a fully covered box
 CLASSES = ('A', 'B', 'C', 'D', 'E')
 FEATURES = ('abs_latitude', 'elevation', 'continentality', 'climate_zone', 'hemisphere', 'spatial_block')
-GATES = {'numeric_min_coverage': 0.98, 'climate_min_classified': 0.95, 'geometry_min_coverage': 1.0}
+GATES = {'numeric_min_coverage': 0.98, 'geometry_min_coverage': 1.0,
+         'climate_identifiability': 'A1 > A2 + U (areas; Amendment 1)'}
+AMENDMENT = 'M1A_MEASUREMENT_SPEC.md Amendment 1 (2026-09-15, pre-result)'
+COMPLETION_RING = 1            # Amendment 1: queen-adjacent centre-resolved pixels of the same unit
+SENSITIVITY_RING = 2
 DISTANCE_TOL = {'absolute_km': 0.1, 'relative': 0.001}
 DISTANCE_BLOCKS = (3, 5)       # pixels per side: 3′ primary quadrature, 5′ convergence check
 DISTANCE_60S_CHECK = ('BHS', 'JAM', 'NOR', 'CHL', 'GRC', 'PHL', 'IDN', 'MNG', 'KAZ', 'CAN')
@@ -325,6 +329,11 @@ class Sums:
         self.koppen = np.zeros((self.n, len(CLASSES) + 1))
         self.pixels = np.zeros(self.n, dtype=np.int64)
         self.cell_land_area = np.zeros((180 * 4, 360 * 4))
+        # Amendment 1 coastal completion: country index + 1 of centre-resolved pixels (lazy zero pages),
+        # and the coastline-straddling pixels whose centres are water.
+        self.resolved = np.zeros((N_ROWS, N_COLS), dtype=np.int16)
+        self.pending = {'r': [], 'c': [], 'area': [], 'idx': []}
+        self.completion = None
 
 
 def koppen_group_index(codes):
@@ -366,6 +375,9 @@ def accumulate(records, sums, country_of_cell, elevation, koppen_group, coast, a
     sums.elev_sum += add(np.where(valid, area * z, 0))
     sums.neg_land_area += add(area * (valid & (z < 0)))
     sums.water_centred_area += add(area * ~centre)
+    sums.resolved[r[valid], c[valid]] = idx[valid] + 1
+    for key, values in (('r', r), ('c', c), ('area', area), ('idx', idx)):
+        sums.pending[key].append(values[~centre])
     group = koppen_group[r // KOPPEN_PIX, c // KOPPEN_PIX]
     width = len(CLASSES) + 1
     sums.koppen += np.bincount(idx * width + group, weights=area, minlength=n * width).reshape(n, width)
@@ -433,21 +445,64 @@ def walk(levels, country_of_cell, emit, r0=0, r1=720, c0=0, c1=1440, stats=None)
 # Feature rules and gates
 # ---------------------------------------------------------------------------
 
-def dominant_climate(areas, min_classified=GATES['climate_min_classified']):
-    """Area-dominant A–E with coverage and robust-winner gates (areas: A..E, unclassified)."""
-    classified = areas[:len(CLASSES)]
-    total = areas.sum()
-    if total <= 0:
+def dominant_climate(areas):
+    """Area-dominant A–E, identified only if A1 > A2 + U (Amendment 1; areas: A..E, unclassified)."""
+    classified, unclassified = areas[:len(CLASSES)], areas[len(CLASSES)]
+    if areas.sum() <= 0:
         return None, 'no terrestrial area'
-    coverage = classified.sum() / total
-    if coverage < min_classified:
-        return None, f'classified coverage {coverage:.4f} < {min_classified}'
-    order = sorted(range(len(CLASSES)), key=lambda i: (-classified[i], i))  # ties: alphabetical
+    order = np.argsort(-classified, kind='stable')
     a1, a2 = classified[order[0]], classified[order[1]]
-    unclassified = areas[len(CLASSES)]
-    if unclassified > 0 and not a1 - a2 > unclassified:
-        return None, 'winner margin does not exceed unclassified area'
+    if not a1 > a2 + unclassified:
+        return None, f'not identifiable: A1 {a1:.1f} <= A2 {a2:.1f} + U {unclassified:.1f} km2'
     return CLASSES[order[0]], ''
+
+
+def neighbour_mean(r, c, idx, resolved, elevation, ring):
+    """Unweighted mean ETOPO z of same-unit centre-resolved pixels within a Chebyshev ring (centre excluded)."""
+    total, count = np.zeros(len(r)), np.zeros(len(r))
+    for dr in range(-ring, ring + 1):
+        for dc in range(-ring, ring + 1):
+            if dr == dc == 0:
+                continue
+            nr, nc = r + dr, (c + dc) % N_COLS
+            inside = (nr >= 0) & (nr < N_ROWS)
+            nr = np.clip(nr, 0, N_ROWS - 1)
+            ok = inside & (resolved[nr, nc] == idx + 1)
+            if ok.any():
+                z = elevation(nr[ok], nc[ok])
+                good = np.isfinite(z)
+                sel = np.flatnonzero(ok)[good]
+                total[sel] += z[good]
+                count[sel] += 1
+    with np.errstate(invalid='ignore', divide='ignore'):
+        return np.where(count > 0, total / count, np.nan)
+
+
+def finalize_elevation(sums, elevation):
+    """Amendment 1 coastal support completion and its sensitivities, after every pixel is known."""
+    n = sums.n
+    r, c, area, idx = (np.concatenate(sums.pending[k]) if sums.pending[k] else np.empty(0, int)
+                       for k in ('r', 'c', 'area', 'idx'))
+    area = area.astype(float)
+    fill = neighbour_mean(r, c, idx, sums.resolved, elevation, COMPLETION_RING)
+    done = np.isfinite(fill)
+    wide = np.full(len(r), np.nan)
+    if (~done).any():
+        wide[~done] = neighbour_mean(r[~done], c[~done], idx[~done], sums.resolved, elevation, SENSITIVITY_RING)
+
+    def add(values):
+        return np.bincount(idx, weights=values, minlength=n)
+    out = {'completed_area': add(np.where(done, area, 0)), 'completed_sum': add(np.where(done, area * fill, 0)),
+           'unresolved_area': add(np.where(done, 0, area)),
+           'ring2_area': add(np.where(~done & np.isfinite(wide), area, 0)),
+           'ring2_sum': add(np.where(~done & np.isfinite(wide), area * wide, 0)),
+           'completed_min': np.full(n, np.nan), 'completed_max': np.full(n, np.nan)}
+    if done.any():
+        frame = pd.DataFrame({'idx': idx[done], 'z': fill[done]}).groupby('idx').z
+        out['completed_min'][frame.min().index] = frame.min().to_numpy()
+        out['completed_max'][frame.max().index] = frame.max().to_numpy()
+    sums.completion = out
+    return out
 
 
 def features_from_sums(sums, codes):
@@ -467,12 +522,32 @@ def features_from_sums(sums, codes):
         row['abs_latitude'] = sums.abs_lat[i] / area
         row['hemisphere'] = 'N' if sums.north_area[i] >= area - sums.north_area[i] else 'S'
         row['north_area_fraction'] = sums.north_area[i] / area
-        cov_e = sums.elev_area[i] / area
+        if sums.completion is None:
+            raise RuntimeError('finalize_elevation must run before features_from_sums')
+        done = sums.completion
+        centre_area, centre_sum = sums.elev_area[i], sums.elev_sum[i]
+        comp_area, comp_sum, unres = done['completed_area'][i], done['completed_sum'][i], done['unresolved_area'][i]
+        resolved_area = centre_area + comp_area
+        row['elevation_original_coverage'] = centre_area / area
+        row['elevation_original_centre_only'] = centre_sum / centre_area if centre_area > 0 else np.nan
+        row['elevation_completed_area_km2'] = comp_area
+        row['elevation_unresolved_area_km2'] = unres
+        cov_e = resolved_area / area
         row['elevation_coverage'] = cov_e
-        row['elevation_if_computed'] = sums.elev_sum[i] / sums.elev_area[i] if sums.elev_area[i] > 0 else np.nan
+        row['elevation_if_computed'] = (centre_sum + comp_sum) / resolved_area if resolved_area > 0 else np.nan
+        row['elevation_change_vs_original'] = row['elevation_if_computed'] - row['elevation_original_centre_only']
+        row['elevation_s1_completed_at_0m'] = centre_sum / resolved_area if resolved_area > 0 else np.nan
+        row['elevation_s2_unresolved_at_0m'] = (centre_sum + comp_sum) / area
+        ring2_area = resolved_area + done['ring2_area'][i]
+        row['elevation_s3_ring2_completion'] = (centre_sum + comp_sum + done['ring2_sum'][i]) / ring2_area
+        row['elevation_s3_coverage'] = ring2_area / area
+        for bound in ('min', 'max'):
+            fill = done[f'completed_{bound}'][i]
+            row[f'elevation_s4_unresolved_at_completed_{bound}'] = (
+                (centre_sum + comp_sum + unres * fill) / area if np.isfinite(fill) else np.nan)
         row['elevation'] = row['elevation_if_computed'] if cov_e >= GATES['numeric_min_coverage'] else np.nan
         if cov_e < GATES['numeric_min_coverage']:
-            reasons['elevation'] = f'coverage {cov_e:.4f} < {GATES["numeric_min_coverage"]}'
+            reasons['elevation'] = f'resolved coverage {cov_e:.4f} < {GATES["numeric_min_coverage"]}'
         primary, coarse = sums.dist[DISTANCE_BLOCKS[0]], sums.dist[DISTANCE_BLOCKS[1]]
         cov_d = primary[0][i] / area
         row['continentality_coverage'] = cov_d
@@ -491,6 +566,8 @@ def features_from_sums(sums, codes):
         for j, letter in enumerate(CLASSES):
             row[f'koppen_area_share_{letter}'] = k[j] / area
         row['koppen_unclassified_share'] = k[len(CLASSES)] / area
+        row['koppen_classified_coverage'] = 1 - k[len(CLASSES)] / area
+        row['koppen_identified'] = climate is not None
         ordered = np.sort(k[:len(CLASSES)])[::-1]
         row['koppen_winner_margin_km2'] = ordered[0] - ordered[1]
         row['koppen_unclassified_km2'] = k[len(CLASSES)]
@@ -600,6 +677,7 @@ def build(out=OUT, batch_pixels=6_000_000):
 
     stats = walk_globe(levels, country_of_cell, emit, coast)
     flush()
+    finalize_elevation(sums, elevation)
     qa = features_from_sums(sums, codes)
     # Deterministic refinement: any country whose 3′ and 5′ distance quadratures disagree
     # beyond tolerance, and has no 60″ value yet, gets an exact 60″ pixel pass.
@@ -704,15 +782,18 @@ def manifest_payload(stats, repaired, coast, etopo_attrs, all_pass, qa, code_has
         'features': {
             'abs_latitude': 'sum(area * |lat of representative point|) / area',
             'hemisphere': 'N if pixel-centre-north area >= south area (pixel edges lie on the equator)',
-            'elevation': 'ETOPO surface z weighted by pixel land area; valid only if the pixel centre is on terrestrial support; negatives retained',
+            'elevation': ('ETOPO surface z weighted by pixel land area over centre-resolved pixels (own z, negatives retained) '
+                          'and coastline-straddling water-centred pixels completed by the unweighted mean z of queen-adjacent '
+                          'centre-resolved pixels of the same unit (Amendment 1); unresolved area never valued; gate on resolved coverage'),
             'continentality': 'area mean of min great-circle distance to Natural Earth 110m land boundary; seam edges removed; densified great-circle arcs',
-            'climate_zone': 'area-dominant Koppen major group over land area per 0.5 deg pixel; alphabetical tie order',
+            'climate_zone': 'area-dominant Koppen major group over land area per 0.5 deg pixel; identified only if A1 > A2 + U (Amendment 1)',
             'spatial_block': 'OWID continent copied unchanged',
         },
         'coast': {'n_segments': coast.n_segments, 'seam_segments_removed': coast.n_seam_removed,
                   'candidate_vertex_spacing_km': coast.spacing_km, 'n_candidate_vertices': coast.n_vertices,
                   'distance': 'exact minimum angular distance to minor great-circle arcs, certified candidate set',
                   'query_stats': coast.stats},
+        'amendment': AMENDMENT, 'completion_ring': COMPLETION_RING, 'sensitivity_ring': SENSITIVITY_RING,
         'gates': GATES, 'distance_quadrature_tolerance': DISTANCE_TOL,
         'walk_stats': stats,
         'all_features_pass_gates': all_pass,

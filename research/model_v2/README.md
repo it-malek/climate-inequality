@@ -138,6 +138,8 @@ Current primary CV: `uv run python -m research.model_v2.run_territory_correction
 - `OPEN_DECISIONS.md`: both M0.5 decisions approved on 2026-09-15.
 - `M1A_EVALUATION_CONTRACT.md`: M1a comparison and interpretation rules, frozen
   before M1a measurement or scoring.
+- `M1A_FEASIBILITY_AUDIT.md`: original-gate measurement build (147/151 pass), kept as
+  the evidence for the pre-result `M1A_MEASUREMENT_SPEC.md` Amendment 1.
 
 All public V1 values and artifacts are unchanged. The two-product comparison
 does not tune or select predictors and must be repeated after V2 is frozen.

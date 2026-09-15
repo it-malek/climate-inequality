@@ -1,6 +1,12 @@
 # M1a — area-consistent geography measurement specification
 
 **Status: specification only; no predictor construction, download or model fit.**
+
+**Amended 2026-09-15 before any M1a score existed. Amendment 1 (end of this file)
+supersedes the original §3.3 climate gate, the §4 elevation validity rule and the
+§6.4 distance-quadrature check.** The original text is kept below for the audit trail;
+the evidence for the amendment is in `M1A_FEASIBILITY_AUDIT.md`.
+
 This specifies a measurement-only contrast against an M0-equivalent comparator
 using the same owner-approved full-rank V2 feature contract on both sides. It
 replaces where existing geography is measured, retaining its concepts, groups
@@ -155,6 +161,8 @@ handle pole closures and preserve holes and every multipart component.
 No mainland-only simplification; validate area conservation after seam splitting.
 
 ### 3.3 Coverage defaults fixed on methodological grounds
+
+*(Climate gate and elevation validity superseded by Amendment 1.)*
 
 For feature `j`, store `coverage_cj = valid terrestrial area / area(D_c)`.
 Use finite values and metadata nodata codes, not numeric sign. Coverage is
@@ -404,3 +412,142 @@ cross-country variance, not causal attribution. The measurement correction
 cannot by itself distinguish regional physics, product error or internal
 variability, or turn a national regression into an explanation of within-country
 inequality.
+
+## Amendment 1 — measurement identifiability and coastal elevation support
+
+**Adopted 2026-09-15, before any M1a model was fitted or scored.**
+
+Order of events:
+
+1. The evaluation contract was frozen (`e3e5901`).
+2. The first implementation's feasibility audit was committed (`ff67545`, see
+   `M1A_FEASIBILITY_AUDIT.md`).
+3. The project owner approved this amendment in principle.
+4. The amendment text and its single parameter were written and committed before
+   the amended rules were computed for any country.
+
+**Constraints.**
+
+* Nothing here is chosen from model scores, gate outcomes under the new rules, or
+  country identities. The rules apply identically to all 151 countries.
+* Unchanged: the thresholds (elevation and continentality ≥ 98%, geometry 100%),
+  sources, land mask, outcome, predictor groups, sample, CV folds and success
+  criteria.
+
+**Why it was needed.** Under the original rules 147/151 countries passed, and five
+gates failed in four countries. None of the failures was an implementation defect:
+
+* **Elevation (Philippines, Denmark, Norway, Bahamas).** GSHHG terrestrial area
+  inside coastline-straddling 60″ ETOPO pixels whose centres are water had no valid
+  elevation.
+* **Climate (Bahamas).** Coarse ocean-coded Köppen 0.5° cells covered Bahamian land,
+  although the winning class could not change.
+
+Both failures show gate heuristics that do not track whether the intended quantity
+is measurable.
+
+### A1.1 Köppen: identifiability replaces the coverage percentage
+
+**Rule.**
+
+1. For each country, sum terrestrial area by major group over `D_c`.
+2. Let `A1` and `A2` be the largest and second-largest classified group areas, and
+   `U` the unclassified terrestrial area (Köppen code 0 or unmapped). Areas are
+   spherical km², never raster-cell counts.
+3. The area-dominant class is **identified** only if `A1 > A2 + U`.
+4. If identified, `climate_zone` is the `A1` group; otherwise it is missing with the
+   reason "not identifiable".
+
+**Consequences.**
+
+* The winner is invariant under the worst case, where every unclassified km² belongs
+  to the strongest competitor.
+* The inequality is strict. With `U = 0` an exact tie is not identified. The original
+  alphabetical tie-break is withdrawn, since a tie is not a measurement.
+* Classified-coverage fraction stays a QA statistic, with no 95% rejection gate.
+* A country with nominally high coverage still fails if `U` could change the winner.
+* This is a global identifiability rule, not a country exception.
+
+### A1.2 Elevation: coastal support completion from adjacent resolved land
+
+The original rule is kept for pixels whose centre is on land. It retains every ETOPO
+value, including genuine below-sea-level land, and the original estimate is still
+reported. The amendment only changes how terrestrial area in **coastline-straddling
+pixels whose centre is water** is represented.
+
+**Definitions.**
+
+* A 60″ ETOPO pixel `P` is **centre-resolved** if its centre is on the GSHHG
+  terrestrial mask. Its terrestrial area uses its own ETOPO value, as before.
+* `P` is **coastline-straddling unresolved** if it contains terrestrial area of `D_c`
+  but its centre is water. Its own ETOPO value is a water/bathymetry sample and is
+  **never** used as terrestrial elevation.
+
+**Completion rule.** For a coastline-straddling unresolved pixel `P`:
+
+1. Let `N(P)` be its 8 queen-adjacent 60″ pixels that are centre-resolved **and**
+   belong to the same analytical unit's support. Longitude wraps; rows do not cross
+   the poles.
+2. If `N(P)` is non-empty, `P`'s terrestrial area is **completed** with the unweighted
+   mean ETOPO value of `N(P)`.
+3. Otherwise `P`'s terrestrial area stays **unresolved**.
+
+**Estimate and gate.**
+
+* The primary elevation is the area-weighted mean over centre-resolved and completed
+  terrestrial area.
+* **Resolved coverage** = (centre-resolved area + completed area) / terrestrial area.
+* The unchanged ≥ 98% gate applies to resolved coverage. Unresolved area never
+  receives a value in the primary estimate.
+
+**Why these choices (fixed a priori):**
+
+* **Adjacency radius (one pixel).** The terrestrial part of a coastline-straddling
+  pixel touches the coastline. At the source's native resolution, the nearest
+  resolved terrestrial samples are its immediate neighbours. A larger radius would
+  borrow heights from other landforms; a smaller one does not exist on this lattice.
+* **Unweighted mean.** It needs no tie-breaking and no further parameter.
+* **Same analytical unit.** This keeps the measurement inside `D_c`.
+* **Bathymetry exclusion.** Only centre-resolved land values ever enter, so a
+  bathymetric sample can never be treated as land.
+
+**Reported for every country, not used for any decision:**
+
+* original centre-only estimate and coverage, and the change primary − original;
+* completed and unresolved areas;
+* **S1:** completed area set to 0 m instead of its neighbour mean;
+* **S2:** unresolved area included at 0 m;
+* **S3:** unresolved pixels completed from the 24-pixel ring-2 neighbourhood, as a
+  radius sensitivity;
+* **S4:** unresolved area included at the minimum and maximum completed value in the
+  country (bounds).
+
+If a country still fails a gate after this rule, it is reported as genuinely
+unresolved for owner review. No further rule is added to force a pass.
+
+### A1.3 Distance quadrature check (clarifies §6.4)
+
+The implemented distance quadrature evaluates the exact minimum great-circle
+distance at land-area centroids of 3′ blocks of the 60″ support lattice. It checks
+that against 5′ blocks for every country and against exact 60″ pixel quadrature for
+10 representative coastline types:
+
+* Bahamas, Jamaica, Norway, Chile, Greece, Philippines, Indonesia, Mongolia,
+  Kazakhstan, Canada.
+
+Any country whose 3′ and 5′ values differ by more than max(0.1 km, 0.1%) also gets
+a 60″ pass. The 60″ value is used if the 3′ value fails against it. Natural Earth
+boundary edges on the ±180° meridian and at the south-pole cap are cut lines, not
+shoreline, and are excluded. The owner accepted this resolution-proportionate check
+on 2026-09-15, before any score.
+
+**Result under the original build:** max |3′−5′| = 0.095 km and max |3′−60″| = 0.034 km.
+The refinement pass was not triggered.
+
+Source roles are as frozen:
+
+* Natural Earth 110m boundary for distance;
+* GSHHG 2.3.7 as the independent land mask.
+
+A mid-session reference to GSHHG as the coastline source was resolved by this
+specification and is not an open decision.
