@@ -81,7 +81,11 @@ from src.coupling import (
 )
 from src.coupling import summary_payload as coupling_payload
 from src.data_io import DEFAULT_DB_PATH, OUTPUTS_DIR, PROCESSED_DIR, write_typed_parquet
-from src.decomposition import COUNTRY_COL, build_country_design, group_lmg_shares
+from src.decomposition import (
+    PRIMARY_OUTCOME,
+    STATION_WEIGHTED,
+    decompose_country_warming,
+)
 from src.decomposition import summary_payload as decomp_payload
 from src.emissions import (
     CONSUMPTION_COLUMNS,
@@ -122,7 +126,12 @@ from src.projections import (
     resolve_exposure_projections,
     resolve_projections,
 )
-from src.stability import DEFAULT_N_BOOT, build_stability_summary
+from src.stability import (
+    DEFAULT_N_BOOT,
+    build_stability_summary,
+    country_centroids,
+    outcome_designs,
+)
 from src.stability import summary_payload as stability_payload
 from src.trends import (
     CITY_KEYS,
@@ -570,8 +579,11 @@ def build_decomposition_summaries(
     ``inequality_summary.json`` needs only the country table, so it is always
     written. ``decomposition_summary.json`` additionally needs the city features
     and income groups; when either input is absent it is skipped with a warning
-    and the dashboard renders its "not built yet" state. Both summaries are
-    float-rounded at serialization (:func:`src.data_io.round_floats`).
+    and the dashboard renders its "not built yet" state. The decomposition is
+    the primary (area-weighted) outcome with the station-weighted outcome under
+    its ``sensitivity`` key (:func:`src.decomposition.decompose_country_warming`).
+    Both summaries are float-rounded at serialization
+    (:func:`src.data_io.round_floats`).
 
     Args:
         inequality_path: ``country_inequality.parquet``.
@@ -611,16 +623,17 @@ def build_decomposition_summaries(
 
     city_features = pd.read_parquet(city_features_path)
     income = load_income_groups(income_path)
-    design = build_country_design(inequality, city_features, income)
-    result = group_lmg_shares(design)
+    result, sensitivity = decompose_country_warming(inequality, city_features, income)
     decomp_dest = out_dir / DECOMPOSITION_SUMMARY_ASSET
     decomp_dest.write_text(
-        json.dumps(decomp_payload(result), indent=2) + "\n", encoding="utf-8"
+        json.dumps(decomp_payload(result, sensitivity=sensitivity), indent=2) + "\n",
+        encoding="utf-8",
     )
     written[DECOMPOSITION_SUMMARY_ASSET] = decomp_dest
     logger.info(
-        "wrote %s (n=%d, R^2=%.3f, residual=%.3f)",
-        decomp_dest, result.n, result.total_r2, result.residual_share,
+        "wrote %s (outcome %s, n=%d, R^2=%.3f, residual=%.3f; sensitivity %s)",
+        decomp_dest, result.outcome_definition, result.n, result.total_r2,
+        result.residual_share, sorted(sensitivity),
     )
     return written
 
@@ -639,7 +652,10 @@ def build_stability_summary_asset(
     Needs the city features (for the design and for the country centroids the
     residual Moran's I uses) and the income groups; when either is absent it is
     skipped with a warning and the page keeps its pending state. The bootstraps
-    run here, offline; only the small JSON ships.
+    run here, offline; only the small JSON ships. The primary (area-weighted)
+    outcome gets all three diagnostic blocks; the station-weighted outcome on
+    the same countries gets the bootstrap and Moran's I blocks under
+    ``sensitivity`` (:func:`src.stability.outcome_designs`).
 
     Args:
         inequality_path: ``country_inequality.parquet``.
@@ -671,24 +687,30 @@ def build_stability_summary_asset(
     inequality = pd.read_parquet(inequality_path)
     city_features = pd.read_parquet(city_features_path)
     income = load_income_groups(income_path)
-    design = build_country_design(inequality, city_features, income)
-    centroids = (
-        city_features.groupby(COUNTRY_COL, as_index=False)[["Longitude", "Latitude"]]
-        .mean()
-    )
+    designs = outcome_designs(inequality, city_features, income)
+    centroids = country_centroids(city_features)
+    n_boot = n_boot or DEFAULT_N_BOOT
 
     result = build_stability_summary(
-        design, centroids, n_boot=n_boot or DEFAULT_N_BOOT, seed=seed
+        designs[PRIMARY_OUTCOME], centroids, n_boot=n_boot, seed=seed,
+        outcome_definition=PRIMARY_OUTCOME,
     )
+    sensitivity = {
+        STATION_WEIGHTED: build_stability_summary(
+            designs[STATION_WEIGHTED], centroids, n_boot=n_boot, seed=seed,
+            outcome_definition=STATION_WEIGHTED, include_influence=False,
+        )
+    }
     dest = out_dir / STABILITY_SUMMARY_ASSET
     dest.write_text(
-        json.dumps(stability_payload(result), indent=2) + "\n", encoding="utf-8"
+        json.dumps(stability_payload(result, sensitivity=sensitivity), indent=2) + "\n",
+        encoding="utf-8",
     )
     written[STABILITY_SUMMARY_ASSET] = dest
     logger.info(
-        "wrote %s (n=%d, B=%d, P(geo largest)=%s)",
-        dest, result.n_countries, result.n_boot,
-        result.share_stability.get("p_geography_largest"),
+        "wrote %s (outcome %s, n=%d, B=%d, P(geo largest)=%s; sensitivity %s)",
+        dest, result.outcome_definition, result.n_countries, result.n_boot,
+        result.share_stability.get("p_geography_largest"), sorted(sensitivity),
     )
     return written
 
@@ -1142,10 +1164,19 @@ def main() -> None:
         shares = decomp["shares"]
         top = max(shares, key=shares.get)
         print(
-            f"decomposition: total R^2 {decomp['total_r2']:.3f}, residual "
+            f"decomposition ({decomp['outcome_definition']}, n={decomp['n']}): "
+            f"total R^2 {decomp['total_r2']:.3f}, residual "
             f"{decomp['residual_share']:.3f}; largest axis {top} "
             f"{shares[top]:.3f} (descriptive, non-causal)"
         )
+        station = decomp.get("sensitivity", {}).get(STATION_WEIGHTED)
+        if station:
+            print(
+                f"  sensitivity ({station['outcome_definition']}, n={station['n']}): "
+                f"total R^2 {station['total_r2']:.3f}; geography "
+                f"{station['shares'].get('geography', float('nan')):.3f}, emissions "
+                f"{station['shares'].get('emissions', float('nan')):.3f}"
+            )
     else:
         print("decomposition: skipped (city features / income not built)")
 
@@ -1156,7 +1187,8 @@ def main() -> None:
         ss = stab["share_stability"]
         rs = stab["residual_spatial"]
         print(
-            f"stability: P(geography largest) {ss['p_geography_largest']}, "
+            f"stability ({stab['outcome_definition']}): "
+            f"P(geography largest) {ss['p_geography_largest']}, "
             f"P(emissions>0) {ss['p_emissions_positive']}, "
             f"residual Moran's I {rs['morans_i']} (p={rs['p_value']}) "
             "(descriptive, non-causal)"

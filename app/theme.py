@@ -44,6 +44,19 @@ GROUP_GLOSS: dict[str, str] = {
     "residual": "Variance no named axis explains (1 − R²)",
 }
 
+# How "a country's warming" was constructed for the decomposition (the
+# ``outcome_definition`` field of the decomposition and stability summaries).
+OUTCOME_LABELS: dict[str, str] = {
+    "area_weighted": "area-weighted",
+    "station_weighted": "station-weighted",
+}
+
+
+def outcome_label(key: object) -> str:
+    """Human label for an outcome definition key; the key itself if unknown."""
+    return OUTCOME_LABELS.get(str(key), str(key))
+
+
 # Warming trend is a strictly positive magnitude across countries, so it is
 # encoded on a sequential scale (not the diverging RdBu_r used for the
 # anomaly *surface*, which straddles zero). One constant => one mapping.

@@ -10,9 +10,10 @@ those trends to countries, and then asks three questions of the result:
 
 1. **How is warming distributed across countries, and what structures it?**
    A group-level Shapley (LMG) decomposition of the cross-country variance in
-   warming rate over four fixed axes: emissions responsibility, physical
-   geography, socioeconomic development, and population. With bootstrap and
-   leave-one-out stability checks.
+   area-weighted land-warming rate over four fixed axes: historical emissions
+   responsibility, physical geography, socioeconomic development, and
+   population. With bootstrap and leave-one-out stability checks, and the
+   station-weighted construction of country warming kept as a sensitivity.
 2. **Does warming track historical responsibility?** Rank correlation and a
    Lorenz-style inequality coefficient between cumulative per-capita CO₂ and
    warming rate, under station-, population- and area-weighted definitions of a
@@ -38,20 +39,28 @@ Numbers are from the committed `app/data/` bundle; see
   1950–2013 (land mean 0.146 °C/decade; 5th–95th percentile 0.06–0.25). Above
   60°N the mean is 0.23 °C/decade; the fastest cluster is the Iranian plateau
   and Central Asia, not the Arctic.
-- **Cross-country inequality is mostly geography.** Across 154 countries the
-  four axes explain 63% of the variance in country-mean warming; geography
-  takes 46 points of that, emissions 8, socioeconomic 6, population 4, and 37%
-  is unexplained. The residual is regionally clustered (Moran's I 0.33,
-  p = 0.005). Geography is the largest share in every one of 2,000 bootstrap
-  resamples.
-- **The station-based emissions–warming link is a sampling artefact.** With
-  each country's warming defined as the mean over its stations, warming rate
-  and cumulative per-capita CO₂ correlate at Spearman ρ = +0.36. Weighting
-  every square kilometre equally (a per-cell trend on the Berkeley Earth 1°
-  grid, cos-latitude weighted) collapses this to ρ = +0.01; the same
-  computation on ERA5 gives ρ = +0.12, also not significant. Stations sit
-  where people and infrastructure are, which happens to be where high emitters
-  warm fastest.
+- **Cross-country differences in warming rate are associated primarily with
+  geography.** With each country's warming taken as the area-weighted rate
+  over its land (a per-cell trend on the Berkeley Earth 1° grid), the four
+  axes account for 64% of the variance across 151 countries. Geography
+  contributes 0.51 of total variance, about 81% of what the model explains;
+  socioeconomic development 0.07, population 0.03, and historical emissions
+  responsibility 0.02, and 36% is unexplained and regionally clustered
+  (Moran's I 0.27, p = 0.005). Geography is the largest share in every one of
+  2,000 bootstrap resamples.
+- **How national warming is constructed changes the emissions share, not the
+  picture.** Re-running the decomposition on the same countries with the
+  station-weighted mean (the unweighted average of each country's station
+  trends) leaves geography dominant (0.46) and the explained variance at 63%,
+  but raises the historical-emissions share from 0.02 to 0.085. The
+  responsibility–warming rank correlation moves the same way: Spearman
+  ρ = +0.36 station-weighted, +0.01 area-weighted, and +0.12 (not significant)
+  when the area-weighted computation is repeated on ERA5. This is consistent
+  with station-network geography, since stations sit where people and
+  infrastructure are, but the area-weighted outcome is also a different
+  observational product, so the comparison does not isolate siting as the only
+  cause. Geographic exposure and historical responsibility come out as
+  substantially different dimensions of climate inequality.
 - **Vulnerability runs the other way.** Responsibility rises steeply with
   income (ρ = +0.89) and falls with ND-GAIN vulnerability (ρ = −0.88), while
   area-weighted warming is flat across both (ρ = −0.15 and +0.02, neither
@@ -130,7 +139,14 @@ computation; the step-by-step sequence is in
 - **Station sampling.** Trends exist only where Berkeley Earth has city
   records: dense in the populated mid-latitudes, sparse over the Arctic,
   Sahara, Amazon and Siberia. This is the single largest caveat on the
-  station-based results and the reason the area-weighted lens exists.
+  station-based results and the reason the area-weighted outcome is primary.
+  The area-weighted outcome is not independent of the station record either:
+  Berkeley Earth's gridded field is interpolated from the same stations, and
+  station density sits in the decomposition's population group although it
+  partly encodes sampling structure.
+- **About a third of cross-country variance is unexplained**, and the residual
+  is spatially clustered. The decomposition is descriptive; it does not
+  identify mechanisms.
 - **Land only, monthly means, ending September 2013.** Ocean warming, heat
   extremes and the post-2013 acceleration are outside the trend fits (the
   validation stage measures the last of these).
@@ -145,7 +161,10 @@ computation; the step-by-step sequence is in
 - **Measurement uncertainty is not propagated** into the trend fits.
 - **Correlation, not attribution.** The physical model explains the global
   mean; the decomposition and coupling describe cross-country alignment. Neither
-  identifies a causal effect of a country's emissions on its own warming.
+  identifies a causal effect of a country's emissions on its own warming, and a
+  small emissions share does not mean emissions do not explain warming:
+  greenhouse gases drive the global trend, while the decomposition asks why
+  warming rates differ among countries.
 
 ## Data
 

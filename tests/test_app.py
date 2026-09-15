@@ -176,6 +176,15 @@ class TestDecompositionPage:
         assert not at.exception
         assert "Variance explained" in [m.label for m in at.metric]
 
+    def test_names_the_outcome_and_shows_station_sensitivity(self, bundle_dir):
+        # The synthetic summary is area-weighted with a station-weighted
+        # sensitivity block, like the committed one; the page must say which
+        # outcome the shares describe and render the comparison.
+        at = run_page("app.views.decomposition")
+        assert any("area-weighted" in (m.value or "") for m in at.markdown)
+        assert "Outcome sensitivity: station-weighted" in [s.value for s in at.subheader]
+        assert len(at.dataframe) >= 1
+
     def test_pending_state_without_summaries(self, tmp_path, monkeypatch):
         # Point loaders at an empty dir: the page must degrade, not crash.
         monkeypatch.setattr(loaders, "APP_DATA_DIR", tmp_path)
@@ -363,6 +372,58 @@ class TestSensitivityPage:
             "Most influential countries",
             "Spatial structure of the residual",
         ]
+        st.cache_data.clear()
+
+    def test_renders_station_weighted_comparison(self, bundle_dir, tmp_path, monkeypatch):
+        # A stability summary carrying the station-weighted sensitivity gets a
+        # fourth section comparing the two outcomes' intervals.
+        import json
+
+        populated = tmp_path / "sens_bundle"
+        shutil.copytree(bundle_dir, populated)
+        groups = {
+            "emissions": {"point": 0.02, "mean": 0.03, "std": 0.01, "ci_low": 0.01, "ci_high": 0.05},
+            "geography": {"point": 0.51, "mean": 0.53, "std": 0.04, "ci_low": 0.45, "ci_high": 0.62, "p_largest": 1.0},
+            "residual": {"point": 0.47, "mean": 0.44, "std": 0.03, "ci_low": 0.35, "ci_high": 0.50},
+        }
+        station_groups = {
+            "emissions": {"point": 0.08, "mean": 0.09, "std": 0.02, "ci_low": 0.05, "ci_high": 0.13},
+            "geography": {"point": 0.46, "mean": 0.48, "std": 0.04, "ci_low": 0.40, "ci_high": 0.57, "p_largest": 1.0},
+            "residual": {"point": 0.46, "mean": 0.43, "std": 0.03, "ci_low": 0.33, "ci_high": 0.49},
+        }
+        spatial = {"n_permutations": 199, "k_neighbors": 8, "method": "centroid kNN", "n": 151}
+        summary = {
+            "interpretation": "descriptive only",
+            "outcome_definition": "area_weighted",
+            "n_countries": 151,
+            "share_stability": {
+                "method": "country_bootstrap", "n_boot": 100, "n_failed": 0,
+                "groups": groups, "p_geography_largest": 1.0, "p_emissions_positive": 1.0,
+                "block_bootstrap": {"by": "spatial_block", "n_boot": 100, "n_failed": 0, "groups": {}},
+            },
+            "influence": {"method": "leave_one_country_out", "by_group": {"emissions": [["Syria", -0.01]]}},
+            "residual_spatial": {"morans_i": 0.27, "p_value": 0.005, **spatial},
+            "sensitivity": {
+                "station_weighted": {
+                    "outcome_definition": "station_weighted",
+                    "n_countries": 151,
+                    "share_stability": {
+                        "method": "country_bootstrap", "n_boot": 100, "n_failed": 0,
+                        "groups": station_groups, "p_geography_largest": 1.0,
+                        "p_emissions_positive": 1.0,
+                        "block_bootstrap": {"by": "spatial_block", "n_boot": 100, "n_failed": 0, "groups": {}},
+                    },
+                    "residual_spatial": {"morans_i": 0.31, "p_value": 0.005, **spatial},
+                }
+            },
+        }
+        (populated / "stability_summary.json").write_text(json.dumps(summary))
+        monkeypatch.setattr(loaders, "APP_DATA_DIR", populated)
+        st.cache_data.clear()
+        at = run_page("app.views.sensitivity")
+        assert not at.exception
+        assert "Outcome sensitivity: station-weighted" in [s.value for s in at.subheader]
+        assert len(at.dataframe) >= 1
         st.cache_data.clear()
 
 

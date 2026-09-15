@@ -36,6 +36,12 @@ from src.coupling import compute_coupling
 from src.coupling import summary_payload as coupling_summary_payload
 from src.physical_model import DRIVERS, TRAJECTORY_SCHEMA
 from src.projections import ID_COL, PCS_V1_BINDING
+from src.decomposition import (
+    AREA_WEIGHTED,
+    OUTCOME_SOURCE_COLUMNS,
+    STATION_WEIGHTED,
+    STATION_WEIGHTED_ALL,
+)
 from src.stability import RESIDUAL_KEY
 
 ABS = 1e-9
@@ -130,6 +136,30 @@ class TestDecomposition:
         d = _json(bundle, app_assets.DECOMPOSITION_SUMMARY_ASSET)
         assert d["interpretation"].strip()
 
+    def test_primary_outcome_is_area_weighted(self, bundle):
+        """The published decomposition is on the area-weighted outcome, and the
+        source column it names exists in the shipped country table."""
+        d = _json(bundle, app_assets.DECOMPOSITION_SUMMARY_ASSET)
+        assert d["outcome_definition"] == AREA_WEIGHTED
+        assert d["outcome_source_column"] == OUTCOME_SOURCE_COLUMNS[AREA_WEIGHTED]
+        inequality = _parquet(bundle, app_assets.INEQUALITY_ASSET)
+        assert d["outcome_source_column"] in inequality.columns
+
+    def test_station_sensitivity_is_controlled_comparison(self, bundle):
+        """The station-weighted sensitivity uses the primary's countries (same n)
+        and partitions to one; the all-countries run is at least as large."""
+        d = _json(bundle, app_assets.DECOMPOSITION_SUMMARY_ASSET)
+        station = d["sensitivity"][STATION_WEIGHTED]
+        assert station["outcome_definition"] == STATION_WEIGHTED
+        assert station["n"] == d["n"]
+        assert set(station["shares"]) == set(d["shares"])
+        for block in d["sensitivity"].values():
+            assert sum(block["shares"].values()) + block["residual_share"] == (
+                pytest.approx(1.0, abs=ABS)
+            )
+            assert block["interpretation"].strip()
+        assert d["sensitivity"][STATION_WEIGHTED_ALL]["n"] >= d["n"]
+
 
 # --------------------------------------------------------------------------- #
 # Stability summary
@@ -171,6 +201,22 @@ class TestStability:
         assert groups[RESIDUAL_KEY]["point"] == pytest.approx(
             decomp["residual_share"], abs=ABS
         )
+
+    def test_outcome_and_sensitivity_match_decomposition(self, bundle):
+        """Both layers describe the same outcome, and the station-weighted
+        sensitivity's point shares equal the decomposition's sensitivity run."""
+        summary = _json(bundle, app_assets.STABILITY_SUMMARY_ASSET)
+        decomp = _json(bundle, app_assets.DECOMPOSITION_SUMMARY_ASSET)
+        assert summary["outcome_definition"] == decomp["outcome_definition"]
+        station = summary["sensitivity"][STATION_WEIGHTED]
+        station_decomp = decomp["sensitivity"][STATION_WEIGHTED]
+        assert station["outcome_definition"] == STATION_WEIGHTED
+        assert station["n_countries"] == station_decomp["n"]
+        groups = station["share_stability"]["groups"]
+        for group, share in station_decomp["shares"].items():
+            assert groups[group]["point"] == pytest.approx(share, abs=ABS), group
+        for key, g in groups.items():
+            assert g["ci_low"] <= g["ci_high"], key
 
 
 # --------------------------------------------------------------------------- #

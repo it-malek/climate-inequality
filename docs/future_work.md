@@ -22,11 +22,21 @@ pipeline; each extends it.
 
 ## Method
 
+- **The unexplained third.** About 36% of the cross-country variance in
+  area-weighted warming lies outside the decomposition and its residual is
+  spatially clustered (Moran's I 0.27). Whether that is recoverable physical
+  structure (aridity, precipitation regime, snow cover, albedo, land cover),
+  model form (nonlinearity, interactions), spatial dependence to be modelled
+  rather than absorbed, or irreducible at country resolution is the next
+  research phase, to be judged by spatially held-out validation rather than
+  in-sample R².
+- **Feature taxonomy.** Station density sits in the population group but
+  partly encodes observational sampling structure; a schema revision that
+  treats it as a nuisance term would be defensible under either outcome.
 - **Construction sensitivity for the decomposition.** Median instead of mean
   aggregation of city slopes, alternative cutoff years, total instead of
-  per-capita emissions, and area-weighted country warming as the outcome
-  (the area-weighted column exists; the decomposition has only been run on the
-  station mean).
+  per-capita emissions, and a second gridded temperature product as the
+  outcome (the ERA5 cross-check exists only for the coupling comparator).
 - **Spatially honest inference for the legacy coefficient.** Conley standard
   errors and a spline latitude control were prototyped on an abandoned branch
   but never shipped; the decomposition sidestepped the need, but a reader
