@@ -128,6 +128,50 @@
           "reason": "Incidental assistant scratch-directory identity is not needed to reproduce the recorded script, input hashes, parameters or numerical outputs. Retain the run-relative suffix and explicit placeholder; do not claim this portable public derivative was the original execution location."
         }
       ]
+    },
+    "research/model_v2/outputs/m1b_primary/m1b_run_metadata.json": {
+      "original_sha256": "a2a00ec5c09f0de44479b57bab4e3acbfcd0b4b57f92df8e12ff570251fdbff4",
+      "public_sha256": "693ba9fd7a118f342cc4e7db437b08f2625847b344bb309f208efc0e54343bd7",
+      "protected_sha256": "46dedbd7150c784e4a4be2f365483dc288b8f222abbc8542a88c2f51f1b4e38f",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "50809ebb44c60dfc31eda57fb9576377c69040ec838783bf68911148436a4266",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python",
+          "original_value_sha256": "8597f8ddbdbcb372362edef976a22d593cd6d7d7f4743837249096ffb2516755",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m1b_evaluate.py",
+          "original_value_sha256": "34d53a226863e82323211f9394c3019256bdd87e9e3d2797fb1eab0f4b308289",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/output_root",
+          "public_value": "research/model_v2/outputs/m1b_primary",
+          "original_value_sha256": "7ba4827fd7ede9a4cfcc779c1b022a10f33517bf4950071dc7a7312ca53dbeaf",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m1b_primary_verification/m1b_reproducibility.json": {
+      "original_sha256": "04cbf9603ace4e8aed8bed5535ff68eaf653ace79edb9699284c615aa9bbe8ba",
+      "public_sha256": "ffb0f6a648eb451c6261ecf4fbb464f3dd8da0cd5d606e8548ab3568b6a0d839",
+      "protected_sha256": "95c0eb5e2fe36a6f5a5f2fc3fc1602fac9f7c2c165586f4bcb3d8c54d38c8c9d",
+      "edits": [
+        {
+          "pointer": "/run_b",
+          "public_value": "${RUN_ROOT}/m1b_repro",
+          "original_value_sha256": "da03eb6ee5296acb6affa28fc02be5c919da80bb094ef762541ab538b237ba21",
+          "reason": "Incidental assistant scratch-directory identity is not needed to reproduce the recorded script, input hashes, parameters or numerical outputs. Retain the run-relative suffix and explicit placeholder; do not claim this portable public derivative was the original execution location."
+        }
+      ]
     }
   }
 }

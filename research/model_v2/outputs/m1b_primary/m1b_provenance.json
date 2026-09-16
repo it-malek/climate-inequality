@@ -1,0 +1,142 @@
+{
+  "contract_sha256": "721b87d456bb6ed1575762ec725cf91ec43e048c23804e68e8980ad0cad33f7d",
+  "specification_sha256": "3b0af0b26938abeb77a16e57705b737bed2214504970433029d90a082188dcc0",
+  "code": {
+    "commit": "618c8b83b3630e06c9d33a295825389ed79f1cc4",
+    "upstream": "origin/research/model-v2-residual-structure",
+    "code_path_clean_and_pushed": true,
+    "code_path_sha256": {
+      "research/model_v2/m1b_evaluate.py": "233a1a896a7d6e880e33bff9a433b4eac3e20489a786accec0810dd9ff43b027",
+      "research/model_v2/m1b_sensitivity.py": "879066cd719e95cd88c916944a3a58fa18b9ec493e19ad6c2ff856c0e434b6ec",
+      "research/model_v2/M1B_EVALUATOR_SPEC.md": "3b0af0b26938abeb77a16e57705b737bed2214504970433029d90a082188dcc0",
+      "research/model_v2/M1B_EVALUATION_CONTRACT.md": "721b87d456bb6ed1575762ec725cf91ec43e048c23804e68e8980ad0cad33f7d",
+      "research/model_v2/m1b_hydroclimate.py": "e874a68088893027d2839b5b2add9449abbe559dc001fbc505ee121bf801e71c",
+      "research/model_v2/m1b_redundancy.py": "a7155ec5004f934be06db3d61614d8bc6c2e7601afff5f5ae112a72832d9fec4",
+      "research/model_v2/cv.py": "836b367d66f1b564504f54eca4bc210af7f73eb12ae662db96224784ccb7914c",
+      "research/model_v2/m0.py": "f3f758ee90e45d457c43ed3d0187446d353a5cdc8a9801c9707334486c23b8e4",
+      "research/model_v2/territory.py": "1703a2afd231a028172c690c51d3c90a02686e49819547b379f5a76bbcf0ebf1",
+      "research/model_v2/spatial.py": "c4cbd21fc0f3513d1c7bf5a7cc666e22c1b743e5fac75042b57842f097b353cf",
+      "research/model_v2/regions.py": "c81150ab482d4d1bce3b48187c87b124222c2bdcf82ee2619c357ef27d6db411",
+      "research/model_v2/run_m0_scorecard.py": "8755de8e7bce2eb3c8c4e06b45ab26589cff2667a40592bd792da8667bd06aa0",
+      "research/model_v2/run_territory_correction.py": "63b6daaaa4f1005596ced823e2ed4353e41a48063c82d3c6646eb203ada8b35a",
+      "src/decomposition.py": "e6bb67560a37a51f91fb5de8ebed7119f6bb3eae615250f6365b32fe96f5ec06",
+      "src/feature_schema.py": "78d0c302ea9ba911947b62739f14702cf2ca0d5fd608b18d0c6d78ba9ecfe3ec",
+      "src/stability.py": "ee3a6fa5d0b4850a537eace41832c36e7252452c51a8f751abb67fdf58a9696c",
+      "src/explain.py": "0d0f67b030e912e0d997a7fe3d6c6eec439aae832812e93af473ac647524e8b5",
+      "src/emissions.py": "169a692a5860284399304d46d73c27b809a194c57032d14638d645741b9bff19"
+    }
+  },
+  "inputs": {
+    "measurement_package": {
+      "m1b_hydroclimate_features.csv": "cf33ba7cfb87c2184a94df5e5686f0951adf692819af8de27329ea698d72e1f4",
+      "m1b_measurement_manifest.json": "1974686199b9c7960ead2b105e6225f34b9b6fb33627858d2bc15239d7de4c9c",
+      "m1b_redundancy_diagnostic.json": "9acb680c09b1577592ca9c4d62f992f6dab9628d581bb58b4448ad36b80f7585"
+    },
+    "c2_construction_inputs": {
+      "research/model_v2/outputs/m1a_cell_land_area_km2.npz": "642cbe5abe48457682f312884c03510c13b133a74bc083039b537f0b738466cf",
+      "research/model_v2/outputs/m1a_geography_qa.csv": "bdc4f1caff740fea7949b636c367afb6c68b423eccebb07c9391b357358425c8",
+      "data/raw/gpw-v4-population-count-adjusted-to-2015-unwpp-country-totals-rev11_totpop_15_min_nc/gpw_v4_population_count_adjusted_rev11_15_min.nc": "e15f622851c04d0d3842e9966c30695d3b5d31050608e491d44abc5e48dab85d",
+      "data/raw/gpw-v4-population-count-adjusted-to-2015-unwpp-country-totals-rev11_totpop_15_min_nc/gpw_v4_national_identifier_grid_rev11_lookup.txt": "bbe7b1359b48d801a5a602bb63e6315fc8b532ccd00373b1131123785762e089"
+    },
+    "predictor_inputs": {
+      "data/processed/country_inequality.parquet": "74bbad767106b589b486995b2373e49ba17ae32897e5e0b0cc678205460567f4",
+      "data/processed/city_features.parquet": "7d4a95fa624d2c1811073a157f9ffd145b97bbb5d69fa2f4bd97c1d666289d64",
+      "data/raw/worldbank/world-bank-income-groups.csv": "79569499049031746c4c56019e430d02c3c182ad7e9011247fb82183227d41a5",
+      "research/model_v2/outputs/m1a_geography_qa.csv": "bdc4f1caff740fea7949b636c367afb6c68b423eccebb07c9391b357358425c8"
+    },
+    "frozen_scoring_inputs": {
+      "research/model_v2/outputs/m0_countries.csv": {
+        "sha256": "9e99b3798e91f2b7e40250921edd5e5a788e4191df3e9027dceb98fe76b43536",
+        "frozen_at": "af97bd2"
+      },
+      "research/model_v2/outputs/country_geometry.csv": {
+        "sha256": "c8d72866d97d13288b3024781cd262f378ce08749d5166e0d4805bea01903e3a",
+        "frozen_at": "af97bd2"
+      },
+      "research/model_v2/outputs/cv_fold_membership.csv": {
+        "sha256": "0100c5c7677ed0b4d3073b12b35300a3a973b3f126dff4cdcfacde4a86ac56f2",
+        "frozen_at": "af97bd2"
+      },
+      "research/model_v2/outputs/territory_distance_lower_km.csv": {
+        "sha256": "79a20f007ebe08044833753956cdf859c27d505a2c10747b5e4df3469ee2c6e4",
+        "frozen_at": "4263429"
+      },
+      "research/model_v2/outputs/territory_cv_membership_comparison.csv": {
+        "sha256": "946be248edd0b7c3f49bd2bb34c94d3c921fd8cbf1b13e6be95e5ebf8b4706ef",
+        "frozen_at": "4263429"
+      },
+      "research/model_v2/outputs/m0_cv_errors_territory_corrected.csv": {
+        "sha256": "d9d800e322e27a7532d673a7613be5cccf4d694fc5914eb2b37f678ee3062d65",
+        "frozen_at": "4263429"
+      },
+      "research/model_v2/outputs/m0_scorecard_territory_corrected.json": {
+        "sha256": "396a6a6099db789c99a2e415c5bf5cae46d93e67b2f5a63d57c8f5efc89c7311",
+        "frozen_at": "4263429"
+      },
+      "research/model_v2/outputs/rank_audit.json": {
+        "sha256": "bb1a5ccd711a71969432ea6ce2e2a9c3b90ee0c45e3dc845bef25e5895bf362a",
+        "frozen_at": "9fb56e1"
+      },
+      "research/model_v2/outputs/rank_audit_country_predictions.csv": {
+        "sha256": "77ae9c6a40205354be7e98d9b41012f84e52df4c6e3f7b0e65518a42ff45217c",
+        "frozen_at": "9fb56e1"
+      },
+      "research/model_v2/outputs/product_stability_aligned_era5_trends.csv": {
+        "sha256": "23c96aeaf400433fea773903ede12fa593f549acf16a7286362b1f6078294922",
+        "frozen_at": "9fb56e1"
+      },
+      "research/model_v2/outputs/product_stability_aligned_summary.json": {
+        "sha256": "aaac5683728b22f23fb5e2392dd0f3a3f67d081db397b4a972051d75183f40f0",
+        "frozen_at": "9fb56e1"
+      },
+      "research/model_v2/outputs/m1a_geography_features.csv": {
+        "sha256": "a62d04d478b4500656c83e28d4fb4fb2d5307388b8ea5142a0f8de8dc059c4b3",
+        "frozen_at": "a7dea34"
+      },
+      "research/model_v2/outputs/m1a_measurement_manifest.json": {
+        "sha256": "c9d9645203bb32a0698e07cc4cff4824bb5231194bdcc40ae2d91daf3d8b6947",
+        "frozen_at": "a7dea34"
+      },
+      "research/model_v2/outputs/m1a_scorecard.json": {
+        "sha256": "9b6b0a778fd636a5373b33a611895c9310fbfd0c55088e3604e9712cbdd9ab24",
+        "frozen_at": "7003ff4"
+      }
+    }
+  },
+  "measurement_manifest_sha256": "1974686199b9c7960ead2b105e6225f34b9b6fb33627858d2bc15239d7de4c9c",
+  "measurement_build_commit": "58e64bfbe6a6b12503a8b08cea51fecd5415e1a5",
+  "redundancy_record_sha256": "9acb680c09b1577592ca9c4d62f992f6dab9628d581bb58b4448ad36b80f7585",
+  "reference_cards": {
+    "primary_total_co2": "drop_per_capita",
+    "per_capita": "drop_total"
+  },
+  "protocols": {
+    "primary": "corrected 500 km footprint-certified LOCO (4263429 bounds)",
+    "secondary": "leave one M49 subregion out",
+    "reference_only": "random 10-fold, seed 0"
+  },
+  "software": {
+    "python": "3.11.12",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "scipy": "1.17.1",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "machine": "arm64"
+  },
+  "identity": {
+    "n": 151,
+    "country_list_sha256": "8b68ce740bf1c20e639a2f8641a7e884b058244affaac92ccc89f4bb2f27f63a",
+    "outcome_source_column": "trend_c_per_decade_area_weighted",
+    "outcome_vector_sha256": "3a07ac6f40cc1397c895a9acdf60868fcf89d444d139565e80b713231a6db6a2",
+    "c2_vector_sha256": "dd95152122c87f544cb64c016e7aa9bf6968bce3628eedf7436c6129e44e2d47",
+    "predictor_frame_sha256": "b741f2a0eef664fffa9cbbcf58389df829d2ebd25ec43d041f0f6fe113fca738",
+    "design_matrix_sha256": "5d3703e780c701ed358e1bf6651c15a7c9c0a2d7ca045d469358b696b84324c4",
+    "representation_identity_max_abs_error": 1.7763568394002505e-15,
+    "primary_membership_sha256": "bfcedfb463a758f37fdade39314213888581efac29fbc0e54318052e5490b8b5",
+    "m49_fold_sha256": "f4b8e6e685abbd079f0dda8d17aa38c17247418ba719a3d8c4e42949cc148a04",
+    "random10_fold_sha256": "ba62284d30de7c874b56d775d57e154080ba7715fe80d295c5043dcbaeeb1ac9",
+    "station_weights_sha256": "2667b370ccbfbce1ad0123030a79e01abe387dc79e0576d4903fb690ef727a57",
+    "area_weights_sha256": "8fabb6c8e7bfed889000ae37754a767579d2e52895c135a3f120df3368a14b1b",
+    "frozen_outcome_record": "research/model_v2/outputs/rank_audit_country_predictions.csv"
+  }
+}
