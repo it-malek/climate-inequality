@@ -234,8 +234,8 @@ not qualify (§2.10). Its accounting (§2.11) is still reported if and only if i
    more than 1e-10, or S's committed card metrics are not reproduced to 1e-10;
 4. weight-matrix digests or fold identities differ from the frozen records;
 5. a family is non-computable in one representation but not the other, or the representation identity
-   fails: predictions > 1e-9, θ̂ (full and every primary training fit) > 1e-8, non-allocation scores and
-   accounting parts > 1e-9;
+   fails: θ̂ (full and every primary training fit) differs by more than **1e-5**, or predictions,
+   non-allocation scores or accounting parts by more than **1e-6** (Amendment A1 below);
 6. the accounting identity (§2.11) fails by more than 1e-9;
 7. any gate input is non-finite.
 
@@ -526,6 +526,25 @@ M4 is complete when, and only when:
   byte and listing permitted metadata differences. Scores are platform-scoped in their last bits.
 * **After a result exists** no method in this file changes. A reproducible post-result defect with possible
   numerical consequences stops the line.
+
+## Amendment A1 (2026-09-16, before any M2 fit and before any M3 fit): representation-identity tolerances
+
+**Original text (§2.8 item 5, as committed at `4dc2fad`):** "predictions > 1e-9, θ̂ (full and every primary
+training fit) > 1e-8, non-allocation scores and accounting parts > 1e-9".
+
+**Why it changed.** Those values were carried over from the OLS stages, where both representations solve the
+same projection and agree to rounding. An ML estimate is the argmax of a smooth concentrated likelihood; a
+perturbation ε in ℓc from rounding (the two representations parameterize the same column space differently)
+moves the argmax by about √(2ε / c), with c = −ℓc″(θ̂). With |ℓc| of order 10², ε ≈ 1e-13 and c ≈ 25
+(se ≈ 0.2), the attainable agreement is about 1e-7 in θ̂ and about 1e-8 in predictions. On synthetic
+identity data (n = 60, the M2 evaluator's synthetic frame), before any real fit, the per-capita representation
+reproduced θ̂ to 1.35e-7 (SEM) and 7.4e-8 (SAR) and out-of-fold predictions to 3.3e-9. So 1e-8 cannot be met
+even by a correct implementation.
+
+**Replacement.** θ̂ 1e-5 and predictions, non-allocation scores and accounting parts 1e-6: about 50 times the
+derived resolution, and far below any difference a representation-specific defect (a wrong column, group or
+graph) would produce. The OLS tolerances of the static stages are unchanged. This is an operational tolerance
+set from synthetic evidence before any M2 or M3 number existed; no gate, estimand or rule changes.
 
 ## 5. Not pursued (not experimentally rejected)
 
