@@ -1,0 +1,2169 @@
+{
+  "what_this_is": "independent reconstruction of an M3 package from its saved evidence (M3_EVALUATOR_SPEC.md \u00a74)",
+  "implementation": "research/model_v2/m3_independent_check.py with research/model_v2/m3_independent_math.py",
+  "scope": {
+    "independent": [
+      "the calculation path: haversine distances, kNN8 and sink attachments, design rebuild with natural cubic columns, eigenvalue log-determinant likelihood, QR coefficients, loop-based predictions and in-sample quantities, metrics, worst regions, Moran statistics, paired intervals, Q1-Q5, final naming, accounting parts, permutation-averaged filtered shares and the representation identity",
+      "imports only numpy, pandas, the standard library and research.model_v2.m3_independent_math"
+    ],
+    "same_inputs": [
+      "the saved M3 artifacts, the committed M2 primary predictions, scorecard and manifest, and the pinned country, design, geometry and rank-audit tables; fold ids and training memberships are taken as given"
+    ],
+    "not_recomputed": [
+      "the 500 km territorial exclusions, nearest-training distances, permutation p-values, expected-information standard errors, overfitting diagnostics, the static model predictions and LMG shares (M2 result), and the failure reason of a non-computable family"
+    ],
+    "timing": "written before any M3 result existed, after reading the evaluator artifact formats; run after"
+  },
+  "tolerances": {
+    "loglik_absolute": 1e-08,
+    "beta": "abs(QR - saved) <= 1e-8 * max(1, abs(saved))",
+    "sigma2_relative": 1e-08,
+    "predictions_adjustments_trends": 1e-09,
+    "innovation_expressions_and_sigma2_gap": 1e-10,
+    "knots_degrees": 1e-10,
+    "metrics_paired_qualification_inputs": 1e-12,
+    "calibration": "abs diff <= 1e-9 * max(1, abs(saved))",
+    "moran_statistics": 1e-10,
+    "graph_distances_km": 1e-06,
+    "grid_theta_values": 1e-15,
+    "accounting_and_filtered_shares": 1e-09,
+    "identity_amendment_a1": {
+      "theta": 1e-05,
+      "predictions_scores_accounting": 1e-06
+    },
+    "identity_report_values": 1e-09,
+    "local_optimality": {
+      "half_width": 0.001,
+      "points": 41,
+      "atol": 1e-08,
+      "domain_bound": "grid clipped to [-0.99, 0.99], so the check is one-sided at a bound"
+    },
+    "global_basin": {
+      "scan_points": 397,
+      "rule": "saved theta between the scan points either side of the scan argmax (earliest maximum) and l_c(theta) >= scan maximum - 1e-8"
+    },
+    "exact": "labels, counts, identifiers, neighbour lists, layouts, levels, Booleans, names, digests"
+  },
+  "expected_structure": {
+    "n": 151,
+    "folds": {
+      "primary_loco": 151,
+      "m49_subregion_lo": 20,
+      "random10": 10
+    }
+  },
+  "package": "research/model_v2/outputs/m3_station",
+  "arm": "station",
+  "retained_static_specification": "M0*",
+  "inputs": {
+    "package_artifact_sha256": {
+      "m3_scorecard.json": "6b1655882d4a9595b0d28a6bad6b20f1075e5ea5479d2a7190a133c37f277da1",
+      "m3_country_predictions.csv": "ae9375503cbbeb520fda43765260c62bba65f6fffdd4791a62034a666380594f",
+      "m3_fits.csv": "4d7478b1eff97442ad37d1944789e50f9db29fe14ca784ee241cd85af7d67b8a",
+      "m3_graphs.csv": "e9dfc40f8098b729c74712b2b64905c1d108399bc611f7bcb1901136e3ee98f3",
+      "m3_full_sample_grid.csv": "c91ab5064729833f258e658c1681435bd839ec35c5509bed64be4456669b0c95",
+      "m3_provenance.json": "c5a172f6db75227e814c94ac40cc2545d89f22d8f30c42fa974e8e2a1c1d30ea"
+    },
+    "m2_artifact_sha256": {
+      "m2_scorecard.json": "6208f339bd64af797d357870539f04be1de9898139bd1587b6663bda5795a715",
+      "m2_country_predictions.csv": "8b90ea00dad5f9280724e9cf5b447b7558e82f0f521fcdd8bb10ff8cc573cdbf",
+      "m2_primary_country_comparison.csv": "647977b3199eb4c55f1abe1017f39d2644de910045a4c05284a9304bd8fe0cb3",
+      "m2_cv_folds.csv": "6a9e3976f51e60a66c6b70fd65cc56626df1eec28a41e774c39260d1a2a459f1",
+      "m2_fit_states.csv": "b9074099fde72fcee5b182bc1c4d5297b49f98b45df401094147b760d14f76b5",
+      "m2_coefficients.csv": "43d05261fb3c795a6268708dbe3bae51a1900d8cf4ae456d0f2e4b35bb9d14b1",
+      "m2_coefficient_summary.json": "062aa51d229a187bc30e0c12fef5315adebeb4279ff2db4f470af31a382ae18c",
+      "m2_shapley_coalitions.csv": "39a21abf9e3cd213af0abccf33e21d672f85242abb74b237fa979e430e19d3fa",
+      "m2_design_matrices.csv": "9a59e45573ae2f810f9ce24472a4a090fb4cc83a70c0af4e6d8e3c0a835dd0ac",
+      "m2_provenance.json": "c4818272ad15232d5716a12580459a2b6f73ba0ae55278dedd623103a707ba4e"
+    },
+    "m2_manifest_sha256": "98e8d0af758f4c33a478af3dda190deed90f8f0b8cebf74a2009c6b123bb0626",
+    "pinned_inputs": {
+      "countries": {
+        "path": "/Users/malek/projects/climate-inequality/research/model_v2/outputs/m0_countries.csv",
+        "sha256": "9e99b3798e91f2b7e40250921edd5e5a788e4191df3e9027dceb98fe76b43536"
+      },
+      "design": {
+        "path": "/Users/malek/projects/climate-inequality/research/model_v2/outputs/m1b_primary/m1b_design_matrices.csv",
+        "sha256": "bbdc8b1df1314b55c409f6ff59db03d39a9109d0a6827bef9ec58ce8a4caa982"
+      },
+      "geometry": {
+        "path": "/Users/malek/projects/climate-inequality/research/model_v2/outputs/country_geometry.csv",
+        "sha256": "c8d72866d97d13288b3024781cd262f378ce08749d5166e0d4805bea01903e3a"
+      },
+      "rank_audit": {
+        "path": "/Users/malek/projects/climate-inequality/research/model_v2/outputs/rank_audit_country_predictions.csv",
+        "sha256": "77ae9c6a40205354be7e98d9b41012f84e52df4c6e3f7b0e65518a42ff45217c"
+      }
+    },
+    "reference_math_version": "m3-independent-math-v1"
+  },
+  "fits_checked": 728,
+  "section_summary": {
+    "1_manifest_and_inputs": {
+      "passes": true,
+      "n_checks": 17,
+      "n_comparisons": 46,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": null
+    },
+    "2_fit_structure_designs_states": {
+      "passes": true,
+      "n_checks": 10,
+      "n_comparisons": 6552,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": null
+    },
+    "3_graphs": {
+      "passes": true,
+      "n_checks": 7,
+      "n_comparisons": 4364,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": null
+    },
+    "4_likelihood": {
+      "passes": true,
+      "n_checks": 10,
+      "n_comparisons": 4384,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 3.410605131648481e-13
+    },
+    "5_optimality": {
+      "passes": true,
+      "n_checks": 2,
+      "n_comparisons": 1456,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": null
+    },
+    "6_coefficients": {
+      "passes": true,
+      "n_checks": 2,
+      "n_comparisons": 1456,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 1.1934897514720433e-14
+    },
+    "7_predictions": {
+      "passes": true,
+      "n_checks": 8,
+      "n_comparisons": 2192,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 4.440892098500626e-16
+    },
+    "8_coverage_and_computability": {
+      "passes": true,
+      "n_checks": 3,
+      "n_comparisons": 6,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": null
+    },
+    "9_metrics_and_paired": {
+      "passes": true,
+      "n_checks": 44,
+      "n_comparisons": 1108,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 5.440092820663267e-15
+    },
+    "10_qualification_and_naming": {
+      "passes": true,
+      "n_checks": 28,
+      "n_comparisons": 53,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 6.938893903907228e-18
+    },
+    "11_accounting_and_filtered_shares": {
+      "passes": true,
+      "n_checks": 25,
+      "n_comparisons": 148,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 1.741315425185519e-14
+    },
+    "12_representation_identity": {
+      "passes": true,
+      "n_checks": 7,
+      "n_comparisons": 46,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 2.7755575615628914e-16
+    },
+    "13_dependence_and_graph_descriptors": {
+      "passes": true,
+      "n_checks": 17,
+      "n_comparisons": 148,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 9.094947017729282e-13
+    },
+    "14_package_consistency": {
+      "passes": true,
+      "n_checks": 10,
+      "n_comparisons": 13,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": null
+    }
+  },
+  "all_checks_pass": true,
+  "failed_checks": [],
+  "negative_controls": {
+    "a_perturbed_theta": {
+      "description": "saved theta moved by -0.001 toward the interior in an in-memory copy of the fit row",
+      "target": "primary_total_co2/sem/primary_loco/DZA",
+      "baseline_failed_checks": [],
+      "failed_checks": [
+        "beta_qr_at_saved_theta",
+        "held_out_prediction",
+        "local_maximum_on_fine_grid",
+        "loglik",
+        "sigma2_relative"
+      ],
+      "detected": true
+    },
+    "b_swapped_neighbour": {
+      "description": "the eighth neighbour of the first training node replaced by a non-neighbouring training node",
+      "target": "primary_total_co2/sem/primary_loco/DZA/AGO",
+      "removed": "CAF",
+      "inserted": "BEN",
+      "baseline_failed_checks": [],
+      "failed_checks": [
+        "beta_qr_at_saved_theta",
+        "in_global_grid_basin",
+        "local_maximum_on_fine_grid",
+        "loglik",
+        "sigma2_relative",
+        "training_neighbour_lists_equal_knn8_recomputation"
+      ],
+      "detected": true
+    },
+    "c_perturbed_prediction": {
+      "description": "one saved held-out prediction increased by 1e-6 in an in-memory copy",
+      "target": "primary_total_co2/sem/primary_loco/DZA/DZA",
+      "baseline_failed_checks": [],
+      "failed_checks": [
+        "held_out_prediction"
+      ],
+      "also_failed_metric_checks": [
+        "card.calibration_intercept",
+        "card.calibration_slope",
+        "card.cv_mae",
+        "card.cv_r2",
+        "card.cv_rmse",
+        "card.recorded_land_centroid_moran_cv",
+        "card.region_bias",
+        "card.region_mae",
+        "card.region_rmse",
+        "card.residual_morans_i_cv",
+        "paired.vs_static.delta_rmse",
+        "paired.vs_static.interval_high",
+        "paired.vs_static.interval_low",
+        "saved_error_equals_observed_minus_prediction"
+      ],
+      "detected": true
+    },
+    "d_shifted_veto_threshold": {
+      "description": "the 0.001 veto replaced by the nearest threshold that flips Q3 (then Q4) at the recomputed input; the saved Boolean must then disagree",
+      "target": "primary_total_co2/sem",
+      "baseline_failed_checks": [],
+      "variants": {
+        "Q3_m49_veto_passed": {
+          "input": -0.0019236971249868284,
+          "shifted_threshold": -0.0019236971249868286,
+          "failed_checks": [
+            "arm_conditions.Q3_m49_veto_passed",
+            "arm_conditions.qualifies",
+            "qualification.Q3_m49_veto_passed",
+            "qualification.qualifies"
+          ],
+          "flip_flagged": true
+        },
+        "Q4_worst_region_veto_passed": {
+          "input": -0.007954514477169994,
+          "shifted_threshold": -0.007954514477169996,
+          "failed_checks": [
+            "arm_conditions.Q3_m49_veto_passed",
+            "arm_conditions.Q4_worst_region_veto_passed",
+            "arm_conditions.qualifies",
+            "qualification.Q3_m49_veto_passed",
+            "qualification.Q4_worst_region_veto_passed",
+            "qualification.qualifies"
+          ],
+          "flip_flagged": true
+        }
+      },
+      "detected": true
+    },
+    "e_perturbed_beta": {
+      "description": "the smallest-magnitude beta element increased by 1e-6 in an in-memory copy",
+      "target": "primary_total_co2/sem/primary_loco/DZA/elevation",
+      "baseline_failed_checks": [],
+      "failed_checks": [
+        "beta_qr_at_saved_theta",
+        "held_out_prediction"
+      ],
+      "detected": true
+    }
+  },
+  "negative_controls_not_applicable": [],
+  "negative_controls_all_detected": true,
+  "sections": {
+    "1_manifest_and_inputs": {
+      "n_checks": 17,
+      "n_comparisons": 46,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": null,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "artifact_listed",
+          "n": 8,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "artifact_sha256",
+          "n": 16,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "country_iso3_unique_and_expected_count",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "arm_is_station_or_land",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "retained_static_specification_is_M0*_or_M2",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "design_numeric_columns",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "design_covers_every_country",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "design_numerics_finite",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "outcome_equals_rank_audit_drop_per_capita_bit_for_bit",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "every_package_observed_value_equals_the_outcome",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "one_m49_label_per_country",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "geometry_covers_every_country",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "full_sample_station_knn8_sha256",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "full_sample_land_knn8_sha256",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "static_predictions_cover_every_country",
+          "n": 3,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "fold_count",
+          "n": 3,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "primary_fold_id_is_canonical_index",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        }
+      ]
+    },
+    "2_fit_structure_designs_states": {
+      "n_checks": 10,
+      "n_comparisons": 6552,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": null,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "weights_column_is_the_arm",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "training_iso3_strictly_canonical",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "n_and_p",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "full_sample_uses_every_country",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "column_layout",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "static_added_block",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "no_latitude_state_for_M0star",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "design_rank_equals_p",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "training_nodes_at_least_9",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "levels_are_the_sorted_training_labels",
+          "n": 724,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        }
+      ]
+    },
+    "3_graphs": {
+      "n_checks": 7,
+      "n_comparisons": 4364,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": null,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "graph_rows_are_the_arm",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "graph_training_nodes_equal_the_fit_training_set",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "saved_training_lists_are_eight_distinct_training_nodes",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "training_neighbour_lists_equal_knn8_recomputation",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "full_sample_has_no_held_out_nodes",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "held_out_nodes_equal_the_fold_members",
+          "n": 724,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "held_out_attachments_equal_sink_rule_recomputation",
+          "n": 724,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        }
+      ]
+    },
+    "4_likelihood": {
+      "n_checks": 10,
+      "n_comparisons": 4384,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 3.410605131648481e-13,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "evaluation_valid_at_saved_theta",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "loglik",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 2.2737367544323206e-13,
+          "tolerance": 1e-08,
+          "failed_examples": []
+        },
+        {
+          "check": "sigma2_relative",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 4.779080777521207e-16,
+          "tolerance": 1e-08,
+          "failed_examples": []
+        },
+        {
+          "check": "at_domain_bound",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "theta_in_domain",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "evaluations",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "grid_theta_values",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-15,
+          "failed_examples": []
+        },
+        {
+          "check": "grid_loglik",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 3.410605131648481e-13,
+          "tolerance": 1e-08,
+          "failed_examples": []
+        },
+        {
+          "check": "grid_local_maxima",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "estimate_at_least_grid_maximum",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-08,
+          "failed_examples": []
+        }
+      ]
+    },
+    "5_optimality": {
+      "n_checks": 2,
+      "n_comparisons": 1456,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": null,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "local_maximum_on_fine_grid",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "in_global_grid_basin",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        }
+      ]
+    },
+    "6_coefficients": {
+      "n_checks": 2,
+      "n_comparisons": 1456,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 1.1934897514720433e-14,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "beta_length",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "beta_qr_at_saved_theta",
+          "n": 728,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.1934897514720433e-14,
+          "tolerance": 1e-08,
+          "failed_examples": []
+        }
+      ]
+    },
+    "7_predictions": {
+      "n_checks": 8,
+      "n_comparisons": 2192,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 4.440892098500626e-16,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "in_sample_one_step",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 8.326672684688674e-17,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "in_sample_trend",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 8.326672684688674e-17,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "innovation_expressions_agree",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-17,
+          "tolerance": 1e-10,
+          "failed_examples": []
+        },
+        {
+          "check": "mean_squared_innovation_equals_sigma2",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 2.300666128521394e-16,
+          "tolerance": 1e-10,
+          "failed_examples": []
+        },
+        {
+          "check": "in_sample_row_fields",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "held_out_prediction",
+          "n": 724,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 4.440892098500626e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "held_out_adjustment",
+          "n": 724,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.3877787807814457e-17,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "held_out_row_fields",
+          "n": 724,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        }
+      ]
+    },
+    "8_coverage_and_computability": {
+      "n_checks": 3,
+      "n_comparisons": 6,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": null,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "fit_rows_unique",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "fit_rows_are_required_fits",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "full_sample_grid_present_for_every_full_sample_fit",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        }
+      ]
+    },
+    "9_metrics_and_paired": {
+      "n_checks": 44,
+      "n_comparisons": 1108,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 5.440092820663267e-15,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "status_equals_recomputed_computability",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "prediction_rows_cover_the_order_once",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "prediction_fold_ids_equal_static_folds",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "saved_error_equals_observed_minus_prediction",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.n",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "card.n_folds",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "card.worst_fold",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "card.rows_with_unseen_level",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "card.cv_r2",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 2.220446049250313e-16,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.cv_rmse",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.cv_mae",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.in_sample_one_step_r2",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.in_sample_one_step_rmse",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.fold_rmse_median",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.fold_rmse_min",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 3.469446951953614e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.fold_rmse_max",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.fold_error_iqr",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.mean_n_train",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.calibration_slope",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 5.440092820663267e-15,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "card.calibration_intercept",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.3565537582138631e-15,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "card.residual_morans_i_in_sample",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 4.163336342344337e-17,
+          "tolerance": 1e-10,
+          "failed_examples": []
+        },
+        {
+          "check": "card.residual_morans_i_cv",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 2.220446049250313e-16,
+          "tolerance": 1e-10,
+          "failed_examples": []
+        },
+        {
+          "check": "card.recorded_land_centroid_moran_cv",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.6653345369377348e-16,
+          "tolerance": 1e-10,
+          "failed_examples": []
+        },
+        {
+          "check": "card.worst_region.region",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "card.worst_region.n",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "card.worst_region.rmse",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.region_rmse.regions",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "card.region_rmse",
+          "n": 240,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.region_mae.regions",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "card.region_mae",
+          "n": 240,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.3877787807814457e-17,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.region_bias.regions",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "card.region_bias",
+          "n": 240,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.trend_r2",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.1102230246251565e-16,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "card.structural_residual_moran_in_sample",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 2.7755575615628914e-16,
+          "tolerance": 1e-10,
+          "failed_examples": []
+        },
+        {
+          "check": "card.effective_degrees_of_freedom",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "card.sigma2",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "static_observed_equals_the_outcome",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "paired.vs_static.delta_rmse",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "paired.vs_static.interval_low",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "paired.vs_static.interval_high",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "paired.vs_static.resamples_and_seed",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "paired.countries",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "paired.m49_subregion_lo_rmse_change_vs_static",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "paired.random10_rmse_change_vs_static",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        }
+      ]
+    },
+    "10_qualification_and_naming": {
+      "n_checks": 28,
+      "n_comparisons": 53,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 6.938893903907228e-18,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "qualification.Q1_delta_below_zero",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "qualification.Q2_interval_upper_below_zero",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "qualification.Q3_m49_veto_passed",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "qualification.Q4_worst_region_veto_passed",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "qualification.Q5_computable",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "qualification.qualifies",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "qualification.worsened_generalization",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "qualification.delta_rmse",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "qualification.interval",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "qualification.m49_rmse_change",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "qualification.worst_region_rmse_change",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "qualification.veto_threshold",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.Q1_delta_below_zero",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.Q2_interval_upper_below_zero",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.Q3_m49_veto_passed",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.Q4_worst_region_veto_passed",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.Q5_computable",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.qualifies",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.worsened_generalization",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.descriptive_only",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.delta_rmse",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.interval",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.m49_rmse_change",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.worst_region_rmse_change",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "arm_conditions.veto_threshold",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "final_naming.retained_static_specification",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "final_naming.qualifying_spatial_extensions",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "final_naming.final_primary_predictive_model",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        }
+      ]
+    },
+    "11_accounting_and_filtered_shares": {
+      "n_checks": 25,
+      "n_comparisons": 148,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 1.741315425185519e-14,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "accounting_reported_iff_valid_full_sample_fit",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.static_lmg_shares_equal_committed_m2_shares",
+          "n": 16,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.estimands.a_static",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.estimands.a_dependence",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 8.326672684688674e-17,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.estimands.a_innovation",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 2.7755575615628914e-17,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.estimands.absorbed_fraction_of_static_residual",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.6653345369377348e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.estimands.identity_sum",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.1102230246251565e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.estimands.tss",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.estimands.rss_static",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.3877787807814457e-17,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.estimands.rss_innovation",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.3877787807814457e-17,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.estimands.one_step_r2",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.1102230246251565e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.estimands.trend_r2",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.1102230246251565e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.identity_sum_minus_one",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.1102230246251565e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.static_share_sum_minus_a_static",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 3.3306690738754696e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.static_lmg_share_sum_equals_a_static",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.composition.static",
+          "n": 16,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.1102230246251565e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.filtered_trend_shares.shares",
+          "n": 16,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.4224732503009818e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.composition.filtered",
+          "n": 16,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 8.881784197001252e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.filtered_trend_shares.groups",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.filtered_trend_shares.r2_full",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.filtered_trend_shares.residual_share",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.filtered_trend_shares.n_coalitions",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.filtered_shares_sum_to_r2_full",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.full_coalition_reproduces_the_ml_transformed_fit",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 1.741315425185519e-14,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "accounting.material_change_of_non_spatial_part",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        }
+      ]
+    },
+    "12_representation_identity": {
+      "n_checks": 7,
+      "n_comparisons": 46,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 2.7755575615628914e-16,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "identity.predictions",
+          "n": 8,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "identity.theta_max",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "identity.scores",
+          "n": 24,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 2.220446049250313e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "identity.accounting_parts",
+          "n": 8,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 2.7755575615628914e-16,
+          "tolerance": 1e-09,
+          "failed_examples": []
+        },
+        {
+          "check": "identity.family_passes",
+          "n": 2,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "identity.passes",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "identity.tolerances",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        }
+      ]
+    },
+    "13_dependence_and_graph_descriptors": {
+      "n_checks": 17,
+      "n_comparisons": 148,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": 9.094947017729282e-13,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "dependence_parameter_full_sample.theta_and_bound",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "dependence_parameter.full_sample",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "dependence_parameter.counts",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "dependence_parameter.median",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "dependence_parameter.min",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "dependence_parameter.max",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "dependence_parameter.same_sign_as_full_fraction_primary",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-12,
+          "failed_examples": []
+        },
+        {
+          "check": "graph_descriptors.full_sample.first_neighbour_km_median",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-06,
+          "failed_examples": []
+        },
+        {
+          "check": "graph_descriptors.full_sample.first_neighbour_km_max",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-06,
+          "failed_examples": []
+        },
+        {
+          "check": "graph_descriptors.full_sample.eighth_neighbour_km_median",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-06,
+          "failed_examples": []
+        },
+        {
+          "check": "graph_descriptors.full_sample.eighth_neighbour_km_max",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-06,
+          "failed_examples": []
+        },
+        {
+          "check": "graph_descriptors.attachment_first_km_min",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-06,
+          "failed_examples": []
+        },
+        {
+          "check": "graph_descriptors.attachment_first_km_median",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-06,
+          "failed_examples": []
+        },
+        {
+          "check": "graph_descriptors.attachment_first_km_max",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 9.094947017729282e-13,
+          "tolerance": 1e-06,
+          "failed_examples": []
+        },
+        {
+          "check": "graph_descriptors.attachment_eighth_km_min",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-06,
+          "failed_examples": []
+        },
+        {
+          "check": "graph_descriptors.attachment_eighth_km_median",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-06,
+          "failed_examples": []
+        },
+        {
+          "check": "graph_descriptors.attachment_eighth_km_max",
+          "n": 12,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": 0.0,
+          "tolerance": 1e-06,
+          "failed_examples": []
+        }
+      ]
+    },
+    "14_package_consistency": {
+      "n_checks": 10,
+      "n_comparisons": 13,
+      "n_failed_comparisons": 0,
+      "max_abs_diff": null,
+      "passes": true,
+      "empty": false,
+      "failed_checks": [],
+      "checks": [
+        {
+          "check": "weights_agree",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "retained_static_specification_agrees",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "branch",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "manifest_family_status",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "manifest_final_naming",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "manifest_integrity_passed",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "provenance_binds_the_m2_manifest",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "provenance_pins_the_input_read_here",
+          "n": 4,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "integrity_passed_equals_recomputed_integrity",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        },
+        {
+          "check": "integrity_failures_empty_iff_passed",
+          "n": 1,
+          "n_failed": 0,
+          "passes": true,
+          "max_abs_diff": null,
+          "tolerance": "exact",
+          "failed_examples": []
+        }
+      ]
+    }
+  }
+}

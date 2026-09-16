@@ -1,0 +1,92 @@
+{
+  "comparison": "unchanged-code rerun in a separate process and output root",
+  "run_a": "research/model_v2/outputs/m3_station",
+  "run_b": "research/model_v2/outputs/m3_station_verification/reproducibility_run_b",
+  "artifacts": {
+    "m3_scorecard.json": {
+      "run_a_sha256": "6b1655882d4a9595b0d28a6bad6b20f1075e5ea5479d2a7190a133c37f277da1",
+      "run_b_sha256": "6b1655882d4a9595b0d28a6bad6b20f1075e5ea5479d2a7190a133c37f277da1",
+      "identical": true
+    },
+    "m3_country_predictions.csv": {
+      "run_a_sha256": "ae9375503cbbeb520fda43765260c62bba65f6fffdd4791a62034a666380594f",
+      "run_b_sha256": "ae9375503cbbeb520fda43765260c62bba65f6fffdd4791a62034a666380594f",
+      "identical": true
+    },
+    "m3_fits.csv": {
+      "run_a_sha256": "4d7478b1eff97442ad37d1944789e50f9db29fe14ca784ee241cd85af7d67b8a",
+      "run_b_sha256": "4d7478b1eff97442ad37d1944789e50f9db29fe14ca784ee241cd85af7d67b8a",
+      "identical": true
+    },
+    "m3_graphs.csv": {
+      "run_a_sha256": "e9dfc40f8098b729c74712b2b64905c1d108399bc611f7bcb1901136e3ee98f3",
+      "run_b_sha256": "e9dfc40f8098b729c74712b2b64905c1d108399bc611f7bcb1901136e3ee98f3",
+      "identical": true
+    },
+    "m3_full_sample_grid.csv": {
+      "run_a_sha256": "c91ab5064729833f258e658c1681435bd839ec35c5509bed64be4456669b0c95",
+      "run_b_sha256": "c91ab5064729833f258e658c1681435bd839ec35c5509bed64be4456669b0c95",
+      "identical": true
+    },
+    "m3_provenance.json": {
+      "run_a_sha256": "c5a172f6db75227e814c94ac40cc2545d89f22d8f30c42fa974e8e2a1c1d30ea",
+      "run_b_sha256": "c5a172f6db75227e814c94ac40cc2545d89f22d8f30c42fa974e8e2a1c1d30ea",
+      "identical": true
+    },
+    "m3_result_manifest.json": {
+      "run_a_sha256": "446eba37970997a6ad99abbbf669947bcfadffe660bb848a98eb95e2a4a75878",
+      "run_b_sha256": "446eba37970997a6ad99abbbf669947bcfadffe660bb848a98eb95e2a4a75878",
+      "identical": true
+    }
+  },
+  "excluded_as_run_metadata": [
+    "m3_run_metadata.json"
+  ],
+  "byte_identical": true,
+  "code": {
+    "commit": "a6df380445d93f42a1d9b1dac55e284a5ee660ab",
+    "upstream": "origin/research/model-v2-residual-structure",
+    "live_remote_commit": "a6df380445d93f42a1d9b1dac55e284a5ee660ab",
+    "code_closure_clean_and_pushed": true,
+    "code_closure_sha256": {
+      "pyproject.toml": "b32ba3b840bde445ff5c0f9ed20da0ac57eb7e25d8b7666ef1fac72e8d29dd45",
+      "research/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "research/model_v2/DOWNSTREAM_COMPLETION_SPEC.md": "1395d9a3a866c6a9f824ba820564b77cda16f5863fa9d3564d79c7feab83d03e",
+      "research/model_v2/M3_EVALUATOR_SPEC.md": "3d43eefbbd2598adf1cc9b4222341e2462a08aa868f6dc147bfb294afb23a626",
+      "research/model_v2/M3_FEASIBILITY_AUDIT.md": "f386017a0255fa545963e27a66df733e9ca712bf4acaba4903f7fb8806ca7846",
+      "research/model_v2/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "research/model_v2/borders.py": "daf50c12b472b45144bac1bc4359f23921de88e7fe53520f1a554fce4c5d4f81",
+      "research/model_v2/cells.py": "3d02f25b02da954ae3e8c040b905a621b9d522d23d43a1064951b2a17439602c",
+      "research/model_v2/cv.py": "836b367d66f1b564504f54eca4bc210af7f73eb12ae662db96224784ccb7914c",
+      "research/model_v2/diagnostics.py": "176df71f4ea78ed0bba3ab8c0d2a308c72d799f8e6c0f29e71e6af530a91c44f",
+      "research/model_v2/geometry.py": "5ab4f44b97c04652f08d66d8841b3d57e8fd2acbf05ac55583cb86a3d887d3ef",
+      "research/model_v2/m0.py": "f3f758ee90e45d457c43ed3d0187446d353a5cdc8a9801c9707334486c23b8e4",
+      "research/model_v2/m2_evaluate.py": "6c78f13047eb4c762bf621d7845274103a5c54558ee218f9dd59838ed3fbc421",
+      "research/model_v2/m2_feasibility.py": "8bcbf364e0f8cc2424acfe839f9f7cc798578e88b5ceb8471bb0608e77fa61dc",
+      "research/model_v2/m2_latitude_basis.py": "86024958de49f6c83825e063c05b6e4f114f576efbe93477d3892299de5bb304",
+      "research/model_v2/m3_evaluate.py": "7cb20ce04dba72c0c5f126aa671a8999bbd2fa09fa470a6d5f0a4d3a86744dc4",
+      "research/model_v2/m3_spatial.py": "252bdd31587a0c2c3b897616bd80e767075878d2b3d1f9bdeb20ae984cc3d536",
+      "research/model_v2/regions.py": "c81150ab482d4d1bce3b48187c87b124222c2bdcf82ee2619c357ef27d6db411",
+      "research/model_v2/run_m0_scorecard.py": "8755de8e7bce2eb3c8c4e06b45ab26589cff2667a40592bd792da8667bd06aa0",
+      "research/model_v2/run_territory_correction.py": "63b6daaaa4f1005596ced823e2ed4353e41a48063c82d3c6646eb203ada8b35a",
+      "research/model_v2/spatial.py": "c4cbd21fc0f3513d1c7bf5a7cc666e22c1b743e5fac75042b57842f097b353cf",
+      "research/model_v2/territory.py": "1703a2afd231a028172c690c51d3c90a02686e49819547b379f5a76bbcf0ebf1",
+      "research/model_v2/v2_provenance.py": "a8b729adb7d3a9d5769d0331fcdcc1c10cc4df8bd887996021fd0797016c5220",
+      "src/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/area_weighting.py": "9c3564a109b75958a05fa0571c019e0122f75efbf737751a728f222b138fd510",
+      "src/cleaning.py": "8b0eea05c4c1e82f220bc734cf95a7305a249c0d90779ddd41a382b3380255a7",
+      "src/data_io.py": "547cefff2c7c1de7b8f18a0db3482c0473c6068289d77531035813a4e547db2e",
+      "src/decomposition.py": "e6bb67560a37a51f91fb5de8ebed7119f6bb3eae615250f6365b32fe96f5ec06",
+      "src/emissions.py": "169a692a5860284399304d46d73c27b809a194c57032d14638d645741b9bff19",
+      "src/explain.py": "0d0f67b030e912e0d997a7fe3d6c6eec439aae832812e93af473ac647524e8b5",
+      "src/feature_schema.py": "78d0c302ea9ba911947b62739f14702cf2ca0d5fd608b18d0c6d78ba9ecfe3ec",
+      "src/figures.py": "8d160a6fef0b58d7dd84f3406f7e49206d711bde686327f789484437d7ad0c24",
+      "src/grids.py": "89f419be8a19e4fab91c00001192c8c027bfbbe4769cec5d055d089a93a83eed",
+      "src/interpolate.py": "c89b62cfd6182fe05eb171347220bcf7a1a06d1b3a4bc01967a17c29fb52abed",
+      "src/population.py": "10872eab45b9e73c17cf1f5a6debb895669dda784d8617c1ad2c3cdd34a6c652",
+      "src/stability.py": "ee3a6fa5d0b4850a537eace41832c36e7252452c51a8f751abb67fdf58a9696c",
+      "src/trends.py": "56b0abc1243e7b10cbc49fccf63c6fc819ef0decd1a63997aaa115bb439639ae",
+      "uv.lock": "2ce75d74bb683bcf2000c12fb565b8d6fcac003a35a4ddef5f8936253aece0d5"
+    }
+  }
+}

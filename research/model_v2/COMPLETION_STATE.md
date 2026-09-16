@@ -13,7 +13,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 | 3 | Primary M2 result, report, verification | committed with `M2_REPORT.md` and `outputs/m2_primary/` | evaluator `b13bb04`; label `not supported`; retained static M0\*; stopping indicator does not fire |
 | 4 | M2 conditional robustness or non-execution | committed with `outputs/m2_conditional/m2_conditional_not_run.json` | refusal returned before any arm frame was constructed; no arm fitted |
 | 5 | M3 evaluator freeze | committed with `M3_EVALUATOR_SPEC.md`, `m3_evaluate.py`, `m3_independent_check.py` | method frozen at `4dc2fad` + `ef04958`; full suite 1200 passed, 6 skipped before this freeze |
-| 6 | Primary M3 result and verification | not started | — |
+| 6 | Primary M3 result and verification | committed with `M3_REPORT.md` and `outputs/m3_station/` | evaluator `a6df380`; SEM and SAR both qualify; final primary predictive model null (non-unique) |
 | 7 | M3 land-centroid weight sensitivity | not started | — |
 | 8 | M4 final evidence | not started | — |
 | 9 | Scientific closure | not started | — |
@@ -24,7 +24,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 | Stage | First outcome-facing fit has occurred? |
 |---|---|
 | M2 candidate | **yes**: once, from `b13bb04` (2026-09-16), plus one unchanged-code rerun |
-| M3 spatial families | **no** |
+| M3 spatial families | **yes**: station arm once from `a6df380`, plus one unchanged-code rerun |
 | M4 new computations | **no** |
 
 Disclosed baseline-only calculations: the committed M1b test and the (uncommitted at this checkpoint) M2
@@ -35,7 +35,7 @@ in either (M2 fits raise in the anchor test).
 
 * Branch: **A** (retained static specification M0\*), mechanically from the M2 label `not supported`.
 * M2 conditional arms: **not executed** (no predictive support); verified non-execution record committed.
-* M3 qualifying set / final naming: **not yet determined**.
+* M3 (station arm): qualifying set **[M3-SEM(M0\*), M3-SAR(M0\*)]**; `final_primary_predictive_model` **null**.
 
 ## Evidence paths (this checkpoint)
 
@@ -51,10 +51,9 @@ in either (M2 fits raise in the anchor test).
 
 ## Next executable action
 
-Score the M3 station arm once from the pushed freeze commit:
-`PYTHONHASHSEED=0 uv run python -m research.model_v2.m3_evaluate --weights station` (output `outputs/m3_station`),
-then `m3_independent_check --package research/model_v2/outputs/m3_station` and one unchanged-code rerun
-(checkpoint 6). M4 evaluator and spec are drafted but not frozen.
+Run the land-centroid kNN8 sensitivity once from the committed station package:
+`PYTHONHASHSEED=0 uv run python -m research.model_v2.m3_evaluate --weights land` (output `outputs/m3_land_centroid`),
+its independent check and rerun (checkpoint 7). Then freeze `m4_evaluate.py` (checkpoint 8 prerequisites).
 
 ## Blockers
 
