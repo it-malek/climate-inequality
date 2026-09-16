@@ -138,3 +138,29 @@ named filtered share, and emissions stays ≤ 0.10.
 * Held-out predictions borrow observed outcomes of training countries at least 500 km away. The gain is
   therefore conditional on neighbouring observations being available, and this is not a better static model.
 * **Next:** the land-centroid kNN8 sensitivity (checkpoint 7), then M4.
+
+## 8. Addition (2026-09-16, after §1–§7 were committed at `e049eba`): land-centroid kNN8 weight sensitivity
+
+Run once from the unchanged frozen code (closure identical to `a6df380`) into `outputs/m3_land_centroid/`,
+after the station package was committed and pushed. Graphs and held-out attachments use land-area centroids;
+folds, buffers, S, optimizer and rules are unchanged. **Descriptive only: it cannot change the qualifying set or
+the final naming, and no geometry is selected.**
+
+| Primary representation | SEM (land) | SAR (land) |
+|---|---:|---:|
+| ΔRMSE vs M0\* [interval] | −0.0048265 [−0.0080948, −0.0010164] | −0.0050508 [−0.0075912, −0.0020762] |
+| M49 ΔRMSE | **+0.0079440** | −0.0037507 |
+| worst(f) − worst(M0\*) | −0.0085039 | −0.0087754 |
+| Q1–Q5 (descriptive `arm_conditions`) | Q3 fails → would not qualify | all hold |
+| θ̂ full sample (se); primary fits median (range) | 0.971 (0.010); 0.969 (0.865–0.989) | 0.808 (0.047); 0.792 (0.729–0.839) |
+| OOF Moran's I (station weights) | 0.2727 | 0.2616 |
+| A_dependence / A_innovation | 0.1922 / 0.1713 | 0.1740 / 0.1896 |
+| Material change of the non-spatial part | no | no |
+
+**Reading.** SAR's qualification conditions hold under both weight geometries. SEM's primary-protocol gain
+reproduces under land-centroid weights, but its M49 holdout error rises above the veto and its dependence
+estimate approaches the domain bound. The SEM qualification is therefore weight-sensitive on the secondary
+protocol. This is reported as found; the station arm remains the deciding arm. Verification: independent
+reconstruction passes with all five negative controls detected
+(`outputs/m3_land_centroid_verification/m3_independent_check.json`), and an unchanged-code rerun is
+byte-identical (`m3_reproducibility.json`).

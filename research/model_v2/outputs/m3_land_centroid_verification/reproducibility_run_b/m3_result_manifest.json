@@ -1,0 +1,26 @@
+{
+  "result": "M3 spatial families, land-centroid kNN8",
+  "specification": "research/model_v2/DOWNSTREAM_COMPLETION_SPEC.md",
+  "evaluator_commit": "e049ebad5e075a6bef8606261245f7a8ec0726d0",
+  "weights": "land",
+  "retained_static_specification": "M0*",
+  "family_status": {
+    "primary_total_co2/sem": "computable",
+    "primary_total_co2/sar": "computable",
+    "per_capita/sem": "computable",
+    "per_capita/sar": "computable"
+  },
+  "final_naming": null,
+  "integrity_passed": true,
+  "artifact_sha256": {
+    "m3_scorecard.json": "512addc73508e8f9c7fb2de3d61e93707ff665dbd7a1ca087cabef437bba3125",
+    "m3_country_predictions.csv": "cd8655911de2c0bd919ef0ebff0aac79ae68d2d1479af25871baa265ac2184f8",
+    "m3_fits.csv": "797ce6048a01233ca7963f64fb1286beeb404d3cbedf496d18e1d892bb714231",
+    "m3_graphs.csv": "4320eff716f1196b8e5bc5c334ff7bf63179fe4d3c3ea32cb30cb7dae4c107c5",
+    "m3_full_sample_grid.csv": "28a02d1dd1aa33a70549272851fa01a380cd55909379c93b4b3ccb03b8d58daf",
+    "m3_provenance.json": "154eba593749753bb2307319ec67812fdcb6154f58b8362140278d0eca813de9"
+  },
+  "non_deterministic_artifacts": [
+    "m3_run_metadata.json"
+  ]
+}
