@@ -6,9 +6,9 @@
     "research/model_v2/COMPLETION_STATE.md": {
       "format": "utf8-markdown",
       "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
-      "original_sha256": "e593419c736bd74d08de11e079d956b5df61da51759e47145819a0fb3e839b1b",
-      "public_sha256": "aa1796f47bec2fd3199782c2a20f1613e5f1e23eb67394e7a98dd8efeb338ec6",
-      "protected_sha256": "3aaa35b8a4277fe307f51a343f2079e921c47b96893cfff2fc451045b9c2dde0",
+      "original_sha256": "c98e0a6eeb9a14c37fa01e0d10dba0b797c065baad7350cddd060bc40f528043",
+      "public_sha256": "308204513b822abc73d741430dde5d0be14fb7f7a5d2010a2c283be1b41ff182",
+      "protected_sha256": "357b039c461853f4079e8b1c3ef383e32786724c86d3a3a7ab84e8bb8eb0d994",
       "edits": [
         {
           "original_start": 0,
@@ -5416,6 +5416,51 @@
           "original_value_sha256": "e5be1239e72cd9699f97639a7362ed14d1d26a9c8fb7e130f901f9bc48088529",
           "public_start": 1774,
           "public_end": 1774,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        }
+      ]
+    },
+    "research/model_v2/m4_evaluate.py": {
+      "format": "utf8-python",
+      "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
+      "original_sha256": "b3d229411e9d5fa138ee8fad0273bce8099d72a46ec319d9aa073f01e9135ff2",
+      "public_sha256": "2aab5682eb8919beceb05051ecf73eec938665cf0649145c61d9abbd3cf83800",
+      "protected_sha256": "d5a31a3d25dceb0ef3770750698eaf3b070de993783a375c11da6f6ada59a559",
+      "edits": [
+        {
+          "original_start": 0,
+          "original_end": 0,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 0,
+          "public_end": 297,
+          "public_value": "# Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.\n\n",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 38424,
+          "original_end": 38424,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 38721,
+          "public_end": 38724,
+          "public_value": "rec",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 38425,
+          "original_end": 38426,
+          "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
+          "public_start": 38725,
+          "public_end": 38737,
+          "public_value": "rded decisio",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 38427,
+          "original_end": 38429,
+          "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
+          "public_start": 38738,
+          "public_end": 38738,
           "public_value": "",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         }
