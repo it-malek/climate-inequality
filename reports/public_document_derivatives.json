@@ -6,9 +6,9 @@
     "research/model_v2/COMPLETION_STATE.md": {
       "format": "utf8-markdown",
       "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
-      "original_sha256": "7da88ea72a7a0df00485b4832af5efa6056e36019866e680f48bfac971b75093",
-      "public_sha256": "f84fb3289ff9e4affe0429a824708393393d4eb7aad578b5fe77d4213929b067",
-      "protected_sha256": "3dfa16c1c5d3b0da6b6e8215a77b3ea512177db4951f4c989524fe01d6b51b30",
+      "original_sha256": "265696c52a797fc3059f404351e161f0af9fdb94ab32c6e9eaeed49a9319b3fc",
+      "public_sha256": "9d551b334a3e9ffa65b8b661daf521c92ee785b0d29064f7c4580546afedf3fd",
+      "protected_sha256": "03d81de628e5e1125e0ef9fe0159a3a9dcc9c2cf9e2d6c680c5c1e33ad4ed7ac",
       "edits": [
         {
           "original_start": 0,
