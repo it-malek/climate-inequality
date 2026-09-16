@@ -17,7 +17,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 | 7 | M3 land-centroid weight sensitivity | committed with `outputs/m3_land_centroid/` and the dated §8 addition to `M3_REPORT.md` | same frozen code `a6df380`; descriptive: SAR conditions hold, SEM fails the M49 veto |
 | 8 | M4 final evidence | committed with `M4_REPORT.md` and `outputs/m4_final/` | evaluator `0366281`; inventory complete; no material change to the V1 conclusion; both spatial extensions product-sensitive |
 | 9 | Scientific closure | committed with `V2_FINAL_REPORT.md` and `outputs/v2_final/v2_final_record.json` | dated status updates to plan, decisions, README, register, scorecard |
-| 10 | Verified integration into `main` | not started | — |
+| 10 | Verified integration into `main` | fast-forward of `main` to the commit adding this line; integrated tree re-verified before push | resolve through `git log origin/main` |
 
 ## First real scores
 
@@ -49,11 +49,18 @@ in either (M2 fits raise in the anchor test).
 * `uv run ruff check research/model_v2`
 * Full suite and isolation checks run at the M2 evaluator freeze (checkpoint 2).
 
+## Branch verification before integration (at `8802a4b`)
+
+* `uv run python -m pytest -q tests research/model_v2/tests`: 1258 passed, 6 skipped.
+* `uv run ruff check src tests app scripts research/model_v2`: clean. `uv run python -m unittest discover -s app/tests`: OK.
+* `git diff --check a6733cb HEAD`: clean. `git diff v1.3.0 HEAD -- . ':!research'`: empty (production, bundle and app unchanged).
+* No historical output modified or deleted since `23d31f4`; historical documents received dated additions only.
+* GitHub CI on `8802a4b`: success. `main` is unprotected and `origin/main` (`a6733cb`) is an ancestor.
+
 ## Next executable action
 
-Integration (checkpoint 10): fetch, verify the branch (full suite, lint, app unittest, isolation, bundle
-integrity, clean tree), fast-forward `main` if it is still an ancestor, re-verify the integrated tree, push
-`main`, and confirm the live remote head.
+None within this research line after integration. `main` is fast-forwarded to the commit that adds this
+section, re-verified on the integrated tree, and pushed; confirm with `git ls-remote origin refs/heads/main`.
 
 ## Blockers
 
