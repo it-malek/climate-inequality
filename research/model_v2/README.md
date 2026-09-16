@@ -12,7 +12,7 @@ public model, the dashboard bundle or the tagged results.
 | Branch | `research/model-v2-residual-structure` |
 | Base | `v1.3.0` = commit `a6733cb78292b9b27466e7ebfe7c4fdc6b59592f` (annotated tag `16b94d3`), verified as the branch's merge base; `main` was at the same commit when the branch was cut |
 | Companion spec | `climate-inequality-instructions@v1.3.0-aligned` (design context only; this repository and its `docs/` are authoritative) |
-| Status | 2026-09-16: M1a not promoted (registered measurement sensitivity); **M1b closed as a completed negative experiment, not promoted** (`M1B_CLOSURE.md`); M0\* remains the development baseline; no automatic follow-up |
+| Status | 2026-09-16: M1a not promoted (registered measurement sensitivity); **M1b closed as a completed negative experiment, not promoted** (`M1B_CLOSURE.md`); M0\* remains the development baseline. **M2 design and evaluation contract frozen; no M2 fit or score** (`M2_EVALUATION_CONTRACT.md`) |
 
 ## Question
 
@@ -163,6 +163,18 @@ Current primary CV: `uv run python -m research.model_v2.run_territory_correction
 - `M1B_CLOSURE.md`: closure of M1b from saved evidence only (2026-09-16): verification record, evidence
   limits, and the dated post-result corrections to `M1B_REPORT.md`. M1b is a completed negative
   experiment and is not promoted.
+- `M2_PROVENANCE_AUDIT.md`: what `af97bd2` actually proposed for M2, classified A/B/C from Git. It
+  records the disclosures: H1/H5 are residual-derived, not outcome-naive; the retained-covariate slot is
+  void; nonlinear dryness is barred.
+- `M2_DESIGN.md`: the single joint candidate, M0\* + two natural cubic `abs_latitude` columns +
+  `I(SH)·abs_latitude` (+3 coefficients, all geography). It specifies the train-only knots and the exact
+  basis (`m2_latitude_basis.py`), and γ as the only shape diagnostic.
+- `M2_FEASIBILITY_AUDIT.md`: predictor-only structural feasibility (`m2_feasibility.py`,
+  `outputs/m2_feasibility/`, run from pushed `fbaa3ff`). It passes in every required fit and in the
+  conditional M1a arm. No outcome was read and nothing was estimated.
+- `M2_EVALUATION_CONTRACT.md`: frozen M2 rules. Predictive support is ΔRMSE < 0 with the interval
+  below 0. Promotion adds ≤ −0.002, the M49 and worst-region vetoes, and structural integrity. There is
+  no sign criterion, no penalty and no rescue. It **authorizes no execution**.
 - `M1B_CLI_MAINTENANCE.md`: post-M1b auxiliary maintenance (2026-09-16). It fixes the `--compare`
   exit status and changes no scoring definition, constant, pin or artifact. The M1b result stays
   pinned to `618c8b8`.

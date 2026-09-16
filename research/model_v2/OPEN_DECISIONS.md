@@ -98,6 +98,30 @@ The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`.
     the primary score.
   * The `067bc98` commit message is inaccurate about the scoring-input gate.
 
+## M2: design and evaluation contract frozen (2026-09-16); no M2 fit or score
+
+* **Owner-directed, before any M2 fit** (`M2_EVALUATION_CONTRACT.md`):
+  * one joint candidate: M0\* + two natural cubic `abs_latitude` columns + `I(SH)·abs_latitude`
+    with centre 0° (+3, all geography);
+  * knots from training predictors only, via `numpy.quantile(method="linear")`, with boundaries at the
+    training extrema;
+  * the predictive-support and promotion rules, with no sign criterion and no numerical penalty;
+  * geography-group semantics and the hard structural-feasibility requirement;
+  * the entry gate, met by the frozen M0\* OOF Moran's I 0.3216.
+* **Removing every coefficient-sign criterion is a disclosed loosening** relative to the `af97bd2`
+  "retention as in M1" rule and to M1b.
+* **Structural feasibility passed** in every required fit, predictor-only, from pushed `fbaa3ff`
+  (`M2_FEASIBILITY_AUDIT.md`).
+* **Open for the owner, not blocking** (contract §12):
+  * confirm or overrule the recorded interpretations: the M1b shortlist-entry rule and
+    `PRODUCT_STABILITY_AUDIT.md` §7.2 read as governing new physical covariates, not pre-registered
+    functional forms;
+  * confirm or overrule the listed design choices, including the operational M4 stopping-rule
+    definition, γ as the only shape diagnostic, and the conditional aligned-ERA5 and M1a replications.
+* **Execution needs a separate authorization** and an evaluator freeze (contract §9). Nothing here
+  authorizes an M2 score.
+* **`OPEN_DECISIONS` item 10** (group shares for non-OLS stages) stays open for M3; M2 is OLS.
+
 No territorial-unit, 500 km threshold, M49, random-reference, unseen-level or
 scorecard decision is reopened. No new physical covariate is authorized. Items in
 the historical register below are not current authorizations.

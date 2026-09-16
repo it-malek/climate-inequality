@@ -1,0 +1,1168 @@
+{
+  "audit": "M2 predictor-only structural feasibility (no outcome read, no estimation)",
+  "design": "research/model_v2/M2_DESIGN.md",
+  "basis_version": "m2-latitude-basis-v1",
+  "candidate": "M0* + abs_latitude_ns1 + abs_latitude_ns2 + I(SH)*abs_latitude (all geography)",
+  "canonical": true,
+  "inputs": {
+    "research/model_v2/outputs/m0_countries.csv": {
+      "sha256": "9e99b3798e91f2b7e40250921edd5e5a788e4191df3e9027dceb98fe76b43536",
+      "pinned": "9e99b3798e91f2b7e40250921edd5e5a788e4191df3e9027dceb98fe76b43536"
+    },
+    "research/model_v2/outputs/m1b_primary/m1b_cv_folds.csv": {
+      "sha256": "6a9e3976f51e60a66c6b70fd65cc56626df1eec28a41e774c39260d1a2a459f1",
+      "pinned": "6a9e3976f51e60a66c6b70fd65cc56626df1eec28a41e774c39260d1a2a459f1"
+    },
+    "research/model_v2/outputs/m1b_primary/m1b_design_matrices.csv": {
+      "sha256": "bbdc8b1df1314b55c409f6ff59db03d39a9109d0a6827bef9ec58ce8a4caa982",
+      "pinned": "bbdc8b1df1314b55c409f6ff59db03d39a9109d0a6827bef9ec58ce8a4caa982"
+    },
+    "research/model_v2/outputs/m1a_geography_features.csv": {
+      "sha256": "a62d04d478b4500656c83e28d4fb4fb2d5307388b8ea5142a0f8de8dc059c4b3",
+      "pinned": "a62d04d478b4500656c83e28d4fb4fb2d5307388b8ea5142a0f8de8dc059c4b3"
+    }
+  },
+  "columns_read": {
+    "research/model_v2/outputs/m0_countries.csv": {
+      "labels": [
+        "Country",
+        "iso3",
+        "m49_subregion",
+        "climate_zone",
+        "hemisphere",
+        "spatial_block",
+        "income_group"
+      ],
+      "rounded_numeric_comparison_only": [
+        "cum_co2_per_capita",
+        "cum_co2_total",
+        "abs_latitude",
+        "elevation",
+        "continentality",
+        "population",
+        "station_density"
+      ]
+    },
+    "research/model_v2/outputs/m1b_primary/m1b_cv_folds.csv": [
+      "iso3",
+      "primary_n_train",
+      "primary_training_iso3",
+      "m49_fold",
+      "random10_fold"
+    ],
+    "research/model_v2/outputs/m1b_primary/m1b_design_matrices.csv": [
+      "representation",
+      "model",
+      "iso3",
+      "column",
+      "group",
+      "value"
+    ],
+    "research/model_v2/outputs/m1a_geography_features.csv": [
+      "iso3",
+      "abs_latitude",
+      "elevation",
+      "continentality",
+      "climate_zone",
+      "hemisphere",
+      "spatial_block"
+    ]
+  },
+  "numeric_source": "M0* rows of the frozen encoded design (exact scoring values, log10 applied); all encoded-design rows are loaded and M0* rows selected in memory",
+  "code": {
+    "commit": "fbaa3fff392e3b6d6d8cb703f61da6147929f0bd",
+    "upstream": "origin/research/model-v2-residual-structure",
+    "upstream_commit": "fbaa3fff392e3b6d6d8cb703f61da6147929f0bd",
+    "tracked": true,
+    "clean": true,
+    "pushed": true,
+    "sha256": {
+      "research/model_v2/m2_feasibility.py": "8bcbf364e0f8cc2424acfe839f9f7cc798578e88b5ceb8471bb0608e77fa61dc",
+      "research/model_v2/m2_latitude_basis.py": "86024958de49f6c83825e063c05b6e4f114f576efbe93477d3892299de5bb304",
+      "research/model_v2/cv.py": "836b367d66f1b564504f54eca4bc210af7f73eb12ae662db96224784ccb7914c",
+      "src/feature_schema.py": "78d0c302ea9ba911947b62739f14702cf2ca0d5fd608b18d0c6d78ba9ecfe3ec",
+      "src/decomposition.py": "e6bb67560a37a51f91fb5de8ebed7119f6bb3eae615250f6365b32fe96f5ec06",
+      "src/stability.py": "ee3a6fa5d0b4850a537eace41832c36e7252452c51a8f751abb67fdf58a9696c"
+    }
+  },
+  "expected": {
+    "full_sample_baseline_rank": 20,
+    "full_sample_candidate_rank": 23,
+    "added_dimensions": 3,
+    "primary_fits": 151,
+    "m49_fits": 20,
+    "random10_fits": 10,
+    "min_primary_n_train": 124,
+    "min_m49_n_train": 136
+  },
+  "encoded_identity": {
+    "primary_total_co2": {
+      "comparison": "value for value after aligning columns by name (the frozen artifact is in schema order)",
+      "same_column_set": true,
+      "same_groups": true,
+      "dummy_columns_bit_identical_from_labels": true,
+      "bit_identical": true,
+      "country_table_numeric_max_relative_difference": {
+        "cum_co2_total": 3.3177567222023897e-09,
+        "abs_latitude": 4.3209609738831846e-08,
+        "elevation": 4.1451519957850845e-08,
+        "continentality": 4.584902778530618e-08,
+        "population": 0.0,
+        "station_density": 4.000000012697551e-08
+      }
+    },
+    "per_capita": {
+      "comparison": "value for value after aligning columns by name (the frozen artifact is in schema order)",
+      "same_column_set": true,
+      "same_groups": true,
+      "dummy_columns_bit_identical_from_labels": true,
+      "bit_identical": true,
+      "country_table_numeric_max_relative_difference": {
+        "cum_co2_per_capita": 3.1418469921844874e-08,
+        "abs_latitude": 4.3209609738831846e-08,
+        "elevation": 4.1451519957850845e-08,
+        "continentality": 4.584902778530618e-08,
+        "population": 0.0,
+        "station_density": 4.000000012697551e-08
+      }
+    }
+  },
+  "full_sample": {
+    "station/primary_total_co2": {
+      "baseline_columns": 20,
+      "baseline_rank": 20,
+      "candidate_columns": 23,
+      "candidate_rank": 23,
+      "latitude_state": "{\"boundary_knots\": \"training minimum and maximum\", \"knots\": [0.8, 14.947999999999999, 35.745828571428575, 65.09], \"knots_hex\": [\"0x1.999999999999ap-1\", \"0x1.de5604189374bp+3\", \"0x1.1df774f855aa4p+5\", \"0x1.045c28f5c28f6p+6\"], \"n_train\": 151, \"probabilities\": [\"1/3\", \"2/3\"], \"quantile_method\": \"linear\", \"tails\": \"linear beyond the boundary knots\", \"version\": \"m2-latitude-basis-v1\"}"
+    },
+    "station/per_capita": {
+      "baseline_columns": 20,
+      "baseline_rank": 20,
+      "candidate_columns": 23,
+      "candidate_rank": 23,
+      "latitude_state": "{\"boundary_knots\": \"training minimum and maximum\", \"knots\": [0.8, 14.947999999999999, 35.745828571428575, 65.09], \"knots_hex\": [\"0x1.999999999999ap-1\", \"0x1.de5604189374bp+3\", \"0x1.1df774f855aa4p+5\", \"0x1.045c28f5c28f6p+6\"], \"n_train\": 151, \"probabilities\": [\"1/3\", \"2/3\"], \"quantile_method\": \"linear\", \"tails\": \"linear beyond the boundary knots\", \"version\": \"m2-latitude-basis-v1\"}"
+    },
+    "m1a_area/primary_total_co2": {
+      "baseline_columns": 20,
+      "baseline_rank": 20,
+      "candidate_columns": 23,
+      "candidate_rank": 23,
+      "latitude_state": "{\"boundary_knots\": \"training minimum and maximum\", \"knots\": [1.2510814268321522, 15.92972322132045, 36.31544183047719, 64.97231406272311], \"knots_hex\": [\"0x1.4046df54e08a5p+0\", \"0x1.fdc04ae9bce63p+3\", \"0x1.2286065dcd84fp+5\", \"0x1.03e3a64c3358cp+6\"], \"n_train\": 151, \"probabilities\": [\"1/3\", \"2/3\"], \"quantile_method\": \"linear\", \"tails\": \"linear beyond the boundary knots\", \"version\": \"m2-latitude-basis-v1\"}"
+    },
+    "m1a_area/per_capita": {
+      "baseline_columns": 20,
+      "baseline_rank": 20,
+      "candidate_columns": 23,
+      "candidate_rank": 23,
+      "latitude_state": "{\"boundary_knots\": \"training minimum and maximum\", \"knots\": [1.2510814268321522, 15.92972322132045, 36.31544183047719, 64.97231406272311], \"knots_hex\": [\"0x1.4046df54e08a5p+0\", \"0x1.fdc04ae9bce63p+3\", \"0x1.2286065dcd84fp+5\", \"0x1.03e3a64c3358cp+6\"], \"n_train\": 151, \"probabilities\": [\"1/3\", \"2/3\"], \"quantile_method\": \"linear\", \"tails\": \"linear beyond the boundary knots\", \"version\": \"m2-latitude-basis-v1\"}"
+    }
+  },
+  "by_measurement_representation_protocol": {
+    "m1a_area/per_capita/full_sample": {
+      "fits": 1,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 151,
+      "n_train_max": 151,
+      "baseline_columns": [
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 29,
+      "n_train_sh_max": 29,
+      "train_sh_lat_min_max": [
+        1.2510814268321522,
+        41.65473108578579
+      ],
+      "train_sh_lat_range_min_width": 40.40364965895364,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          1.2510814268321522,
+          1.2510814268321522
+        ],
+        "knot_interior_1": [
+          15.92972322132045,
+          15.92972322132045
+        ],
+        "knot_interior_2": [
+          36.31544183047719,
+          36.31544183047719
+        ],
+        "knot_upper_boundary": [
+          64.97231406272311,
+          64.97231406272311
+        ]
+      },
+      "min_knot_gap": 14.678641794488296,
+      "fits_with_held_out_extrapolation": {},
+      "test_rows_with_unseen_level": 0,
+      "added_min_singular_value_unit_columns_min": 0.02476500204778458,
+      "baseline_condition_unit_columns_max": 55.59910940096362,
+      "candidate_condition_unit_columns_max": 125.1843636495572,
+      "baseline_condition_raw_max": 14317.707454591158,
+      "candidate_condition_raw_max": 20701.688142100385
+    },
+    "m1a_area/per_capita/m49_subregion_lo": {
+      "fits": 20,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 136,
+      "n_train_max": 150,
+      "baseline_columns": [
+        19,
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 21,
+      "n_train_sh_max": 29,
+      "train_sh_lat_min_max": [
+        1.2510814268321522,
+        41.65473108578579
+      ],
+      "train_sh_lat_range_min_width": 35.00253534102791,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          1.2510814268321522,
+          1.574626991669516
+        ],
+        "knot_interior_1": [
+          15.024109470996702,
+          18.909430733831357
+        ],
+        "knot_interior_2": [
+          33.866730797332565,
+          39.064581708327125
+        ],
+        "knot_upper_boundary": [
+          60.32552966533366,
+          64.97231406272311
+        ]
+      },
+      "min_knot_gap": 13.77302804416455,
+      "fits_with_held_out_extrapolation": {
+        "8": {
+          "below": 1,
+          "above": 0,
+          "train_lat_min": 1.574626991669516,
+          "train_lat_max": 64.97231406272311,
+          "test_lat_min": 1.2510814268321522,
+          "test_lat_max": 15.29009350032433
+        },
+        "11": {
+          "below": 0,
+          "above": 4,
+          "train_lat_min": 1.2510814268321522,
+          "train_lat_max": 60.32552966533366,
+          "test_lat_min": 53.15822363454746,
+          "test_lat_max": 64.97231406272311
+        }
+      },
+      "test_rows_with_unseen_level": 11,
+      "added_min_singular_value_unit_columns_min": 0.021643876046630598,
+      "baseline_condition_unit_columns_max": 59.4608786541387,
+      "candidate_condition_unit_columns_max": 140.56561888234882,
+      "baseline_condition_raw_max": 15021.5719310071,
+      "candidate_condition_raw_max": 22490.84436641661
+    },
+    "m1a_area/per_capita/primary_loco": {
+      "fits": 151,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 124,
+      "n_train_max": 150,
+      "baseline_columns": [
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 18,
+      "n_train_sh_max": 29,
+      "train_sh_lat_min_max": [
+        1.2510814268321522,
+        41.65473108578579
+      ],
+      "train_sh_lat_range_min_width": 35.00253534102791,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          1.2510814268321522,
+          1.574626991669516
+        ],
+        "knot_interior_1": [
+          13.468932390446058,
+          20.204378553203522
+        ],
+        "knot_interior_2": [
+          28.263426520718873,
+          39.76139016410412
+        ],
+        "knot_upper_boundary": [
+          64.31820301292775,
+          64.97231406272311
+        ]
+      },
+      "min_knot_gap": 12.217850963613905,
+      "fits_with_held_out_extrapolation": {
+        "GAB": {
+          "below": 1,
+          "above": 0,
+          "train_lat_min": 1.574626991669516,
+          "train_lat_max": 64.97231406272311,
+          "test_lat_min": 1.2510814268321522,
+          "test_lat_max": 1.2510814268321522
+        },
+        "ISL": {
+          "below": 0,
+          "above": 1,
+          "train_lat_min": 1.2510814268321522,
+          "train_lat_max": 64.31820301292775,
+          "test_lat_min": 64.97231406272311,
+          "test_lat_max": 64.97231406272311
+        }
+      },
+      "test_rows_with_unseen_level": 0,
+      "added_min_singular_value_unit_columns_min": 0.020189850245319923,
+      "baseline_condition_unit_columns_max": 61.89655606655912,
+      "candidate_condition_unit_columns_max": 149.16094862003882,
+      "baseline_condition_raw_max": 15603.613356658405,
+      "candidate_condition_raw_max": 23538.589387065884
+    },
+    "m1a_area/per_capita/random10": {
+      "fits": 10,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 135,
+      "n_train_max": 136,
+      "baseline_columns": [
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 24,
+      "n_train_sh_max": 28,
+      "train_sh_lat_min_max": [
+        1.2510814268321522,
+        41.65473108578579
+      ],
+      "train_sh_lat_range_min_width": 35.00253534102791,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          1.2510814268321522,
+          1.574626991669516
+        ],
+        "knot_interior_1": [
+          15.3389331354052,
+          17.20135241247984
+        ],
+        "knot_interior_2": [
+          34.60305430630786,
+          39.03787712616993
+        ],
+        "knot_upper_boundary": [
+          60.32552966533366,
+          64.97231406272311
+        ]
+      },
+      "min_knot_gap": 14.087851708573048,
+      "fits_with_held_out_extrapolation": {
+        "5": {
+          "below": 1,
+          "above": 0,
+          "train_lat_min": 1.574626991669516,
+          "train_lat_max": 64.97231406272311,
+          "test_lat_min": 1.2510814268321522,
+          "test_lat_max": 49.725623554790076
+        },
+        "6": {
+          "below": 0,
+          "above": 4,
+          "train_lat_min": 1.2510814268321522,
+          "train_lat_max": 60.32552966533366,
+          "test_lat_min": 7.979498116212061,
+          "test_lat_max": 64.97231406272311
+        }
+      },
+      "test_rows_with_unseen_level": 0,
+      "added_min_singular_value_unit_columns_min": 0.023609302739302444,
+      "baseline_condition_unit_columns_max": 58.75971249635804,
+      "candidate_condition_unit_columns_max": 130.15103202559646,
+      "baseline_condition_raw_max": 15102.1073346453,
+      "candidate_condition_raw_max": 23535.34099778071
+    },
+    "m1a_area/primary_total_co2/full_sample": {
+      "fits": 1,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 151,
+      "n_train_max": 151,
+      "baseline_columns": [
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 29,
+      "n_train_sh_max": 29,
+      "train_sh_lat_min_max": [
+        1.2510814268321522,
+        41.65473108578579
+      ],
+      "train_sh_lat_range_min_width": 40.40364965895364,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          1.2510814268321522,
+          1.2510814268321522
+        ],
+        "knot_interior_1": [
+          15.92972322132045,
+          15.92972322132045
+        ],
+        "knot_interior_2": [
+          36.31544183047719,
+          36.31544183047719
+        ],
+        "knot_upper_boundary": [
+          64.97231406272311,
+          64.97231406272311
+        ]
+      },
+      "min_knot_gap": 14.678641794488296,
+      "fits_with_held_out_extrapolation": {},
+      "test_rows_with_unseen_level": 0,
+      "added_min_singular_value_unit_columns_min": 0.024765002047784635,
+      "baseline_condition_unit_columns_max": 102.33032713747605,
+      "candidate_condition_unit_columns_max": 129.65474073054517,
+      "baseline_condition_raw_max": 18581.55654989709,
+      "candidate_condition_raw_max": 26588.224488911324
+    },
+    "m1a_area/primary_total_co2/m49_subregion_lo": {
+      "fits": 20,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 136,
+      "n_train_max": 150,
+      "baseline_columns": [
+        19,
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 21,
+      "n_train_sh_max": 29,
+      "train_sh_lat_min_max": [
+        1.2510814268321522,
+        41.65473108578579
+      ],
+      "train_sh_lat_range_min_width": 35.00253534102791,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          1.2510814268321522,
+          1.574626991669516
+        ],
+        "knot_interior_1": [
+          15.024109470996702,
+          18.909430733831357
+        ],
+        "knot_interior_2": [
+          33.866730797332565,
+          39.064581708327125
+        ],
+        "knot_upper_boundary": [
+          60.32552966533366,
+          64.97231406272311
+        ]
+      },
+      "min_knot_gap": 13.77302804416455,
+      "fits_with_held_out_extrapolation": {
+        "8": {
+          "below": 1,
+          "above": 0,
+          "train_lat_min": 1.574626991669516,
+          "train_lat_max": 64.97231406272311,
+          "test_lat_min": 1.2510814268321522,
+          "test_lat_max": 15.29009350032433
+        },
+        "11": {
+          "below": 0,
+          "above": 4,
+          "train_lat_min": 1.2510814268321522,
+          "train_lat_max": 60.32552966533366,
+          "test_lat_min": 53.15822363454746,
+          "test_lat_max": 64.97231406272311
+        }
+      },
+      "test_rows_with_unseen_level": 11,
+      "added_min_singular_value_unit_columns_min": 0.021643876046630574,
+      "baseline_condition_unit_columns_max": 108.96512145799424,
+      "candidate_condition_unit_columns_max": 147.0828992538764,
+      "baseline_condition_raw_max": 19835.227129627252,
+      "candidate_condition_raw_max": 29541.027670265754
+    },
+    "m1a_area/primary_total_co2/primary_loco": {
+      "fits": 151,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 124,
+      "n_train_max": 150,
+      "baseline_columns": [
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 18,
+      "n_train_sh_max": 29,
+      "train_sh_lat_min_max": [
+        1.2510814268321522,
+        41.65473108578579
+      ],
+      "train_sh_lat_range_min_width": 35.00253534102791,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          1.2510814268321522,
+          1.574626991669516
+        ],
+        "knot_interior_1": [
+          13.468932390446058,
+          20.204378553203522
+        ],
+        "knot_interior_2": [
+          28.263426520718873,
+          39.76139016410412
+        ],
+        "knot_upper_boundary": [
+          64.31820301292775,
+          64.97231406272311
+        ]
+      },
+      "min_knot_gap": 12.217850963613905,
+      "fits_with_held_out_extrapolation": {
+        "GAB": {
+          "below": 1,
+          "above": 0,
+          "train_lat_min": 1.574626991669516,
+          "train_lat_max": 64.97231406272311,
+          "test_lat_min": 1.2510814268321522,
+          "test_lat_max": 1.2510814268321522
+        },
+        "ISL": {
+          "below": 0,
+          "above": 1,
+          "train_lat_min": 1.2510814268321522,
+          "train_lat_max": 64.31820301292775,
+          "test_lat_min": 64.97231406272311,
+          "test_lat_max": 64.97231406272311
+        }
+      },
+      "test_rows_with_unseen_level": 0,
+      "added_min_singular_value_unit_columns_min": 0.02018985024531993,
+      "baseline_condition_unit_columns_max": 109.98514996224239,
+      "candidate_condition_unit_columns_max": 150.73392294298233,
+      "baseline_condition_raw_max": 20186.819182901294,
+      "candidate_condition_raw_max": 31117.920663753837
+    },
+    "m1a_area/primary_total_co2/random10": {
+      "fits": 10,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 135,
+      "n_train_max": 136,
+      "baseline_columns": [
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 24,
+      "n_train_sh_max": 28,
+      "train_sh_lat_min_max": [
+        1.2510814268321522,
+        41.65473108578579
+      ],
+      "train_sh_lat_range_min_width": 35.00253534102791,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          1.2510814268321522,
+          1.574626991669516
+        ],
+        "knot_interior_1": [
+          15.3389331354052,
+          17.20135241247984
+        ],
+        "knot_interior_2": [
+          34.60305430630786,
+          39.03787712616993
+        ],
+        "knot_upper_boundary": [
+          60.32552966533366,
+          64.97231406272311
+        ]
+      },
+      "min_knot_gap": 14.087851708573048,
+      "fits_with_held_out_extrapolation": {
+        "5": {
+          "below": 1,
+          "above": 0,
+          "train_lat_min": 1.574626991669516,
+          "train_lat_max": 64.97231406272311,
+          "test_lat_min": 1.2510814268321522,
+          "test_lat_max": 49.725623554790076
+        },
+        "6": {
+          "below": 0,
+          "above": 4,
+          "train_lat_min": 1.2510814268321522,
+          "train_lat_max": 60.32552966533366,
+          "test_lat_min": 7.979498116212061,
+          "test_lat_max": 64.97231406272311
+        }
+      },
+      "test_rows_with_unseen_level": 0,
+      "added_min_singular_value_unit_columns_min": 0.023609302739302427,
+      "baseline_condition_unit_columns_max": 109.88485293102644,
+      "candidate_condition_unit_columns_max": 134.57158608751809,
+      "baseline_condition_raw_max": 19540.672079554668,
+      "candidate_condition_raw_max": 29637.378045072765
+    },
+    "station/per_capita/full_sample": {
+      "fits": 1,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 151,
+      "n_train_max": 151,
+      "baseline_columns": [
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 29,
+      "n_train_sh_max": 29,
+      "train_sh_lat_min_max": [
+        1.3366666666666667,
+        39.562222222222225
+      ],
+      "train_sh_lat_range_min_width": 38.22555555555556,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          0.8,
+          0.8
+        ],
+        "knot_interior_1": [
+          14.947999999999999,
+          14.947999999999999
+        ],
+        "knot_interior_2": [
+          35.745828571428575,
+          35.745828571428575
+        ],
+        "knot_upper_boundary": [
+          65.09,
+          65.09
+        ]
+      },
+      "min_knot_gap": 14.147999999999998,
+      "fits_with_held_out_extrapolation": {},
+      "test_rows_with_unseen_level": 0,
+      "added_min_singular_value_unit_columns_min": 0.022365829102741916,
+      "baseline_condition_unit_columns_max": 53.53438385743845,
+      "candidate_condition_unit_columns_max": 137.81353917283303,
+      "baseline_condition_raw_max": 13726.634027917813,
+      "candidate_condition_raw_max": 19640.940611391077
+    },
+    "station/per_capita/m49_subregion_lo": {
+      "fits": 20,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 136,
+      "n_train_max": 150,
+      "baseline_columns": [
+        19,
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 20,
+      "n_train_sh_max": 29,
+      "train_sh_lat_min_max": [
+        1.3366666666666667,
+        39.562222222222225
+      ],
+      "train_sh_lat_range_min_width": 32.084583333333335,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          0.8,
+          1.3366666666666667
+        ],
+        "knot_interior_1": [
+          13.88904761904762,
+          18.848666666666666
+        ],
+        "knot_interior_2": [
+          34.11361111111111,
+          39.2259477124183
+        ],
+        "knot_upper_boundary": [
+          53.74948717948718,
+          65.09
+        ]
+      },
+      "min_knot_gap": 13.08904761904762,
+      "fits_with_held_out_extrapolation": {
+        "8": {
+          "below": 1,
+          "above": 0,
+          "train_lat_min": 1.3366666666666667,
+          "train_lat_max": 65.09,
+          "test_lat_min": 0.8,
+          "test_lat_max": 12.32
+        },
+        "11": {
+          "below": 0,
+          "above": 8,
+          "train_lat_min": 0.8,
+          "train_lat_max": 53.74948717948718,
+          "test_lat_min": 52.80411764705883,
+          "test_lat_max": 65.09
+        }
+      },
+      "test_rows_with_unseen_level": 12,
+      "added_min_singular_value_unit_columns_min": 0.01882531013688651,
+      "baseline_condition_unit_columns_max": 57.0062425063494,
+      "candidate_condition_unit_columns_max": 160.56459099344076,
+      "baseline_condition_raw_max": 14288.517962041205,
+      "candidate_condition_raw_max": 21106.09731909869
+    },
+    "station/per_capita/primary_loco": {
+      "fits": 151,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 124,
+      "n_train_max": 150,
+      "baseline_columns": [
+        19,
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 18,
+      "n_train_sh_max": 29,
+      "train_sh_lat_min_max": [
+        1.3366666666666667,
+        39.562222222222225
+      ],
+      "train_sh_lat_range_min_width": 32.084583333333335,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          0.8,
+          1.790769230769231
+        ],
+        "knot_interior_1": [
+          12.598307692307692,
+          19.016666666666666
+        ],
+        "knot_interior_2": [
+          30.52915254237288,
+          39.598548148148154
+        ],
+        "knot_upper_boundary": [
+          61.556000000000004,
+          65.09
+        ]
+      },
+      "min_knot_gap": 11.798307692307691,
+      "fits_with_held_out_extrapolation": {
+        "GAB": {
+          "below": 1,
+          "above": 0,
+          "train_lat_min": 1.3366666666666667,
+          "train_lat_max": 65.09,
+          "test_lat_min": 0.8,
+          "test_lat_max": 0.8
+        },
+        "ISL": {
+          "below": 0,
+          "above": 1,
+          "train_lat_min": 0.8,
+          "train_lat_max": 61.556000000000004,
+          "test_lat_min": 65.09,
+          "test_lat_max": 65.09
+        }
+      },
+      "test_rows_with_unseen_level": 1,
+      "added_min_singular_value_unit_columns_min": 0.01858930618648627,
+      "baseline_condition_unit_columns_max": 58.30049071699362,
+      "candidate_condition_unit_columns_max": 161.3599253460454,
+      "baseline_condition_raw_max": 14776.024350812677,
+      "candidate_condition_raw_max": 22096.082958492872
+    },
+    "station/per_capita/random10": {
+      "fits": 10,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 135,
+      "n_train_max": 136,
+      "baseline_columns": [
+        19,
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 24,
+      "n_train_sh_max": 28,
+      "train_sh_lat_min_max": [
+        1.3366666666666667,
+        39.562222222222225
+      ],
+      "train_sh_lat_range_min_width": 32.084583333333335,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          0.8,
+          1.3366666666666667
+        ],
+        "knot_interior_1": [
+          14.465,
+          16.87
+        ],
+        "knot_interior_2": [
+          34.56,
+          38.00714285714286
+        ],
+        "knot_upper_boundary": [
+          58.66,
+          65.09
+        ]
+      },
+      "min_knot_gap": 13.665,
+      "fits_with_held_out_extrapolation": {
+        "5": {
+          "below": 1,
+          "above": 0,
+          "train_lat_min": 1.3366666666666667,
+          "train_lat_max": 65.09,
+          "test_lat_min": 0.8,
+          "test_lat_max": 49.99
+        },
+        "6": {
+          "below": 0,
+          "above": 4,
+          "train_lat_min": 0.8,
+          "train_lat_max": 58.66,
+          "test_lat_min": 6.164444444444444,
+          "test_lat_max": 65.09
+        }
+      },
+      "test_rows_with_unseen_level": 1,
+      "added_min_singular_value_unit_columns_min": 0.021699736956254247,
+      "baseline_condition_unit_columns_max": 56.39737635867614,
+      "candidate_condition_unit_columns_max": 141.47050955900596,
+      "baseline_condition_raw_max": 14579.62140752909,
+      "candidate_condition_raw_max": 20725.672245061305
+    },
+    "station/primary_total_co2/full_sample": {
+      "fits": 1,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 151,
+      "n_train_max": 151,
+      "baseline_columns": [
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 29,
+      "n_train_sh_max": 29,
+      "train_sh_lat_min_max": [
+        1.3366666666666667,
+        39.562222222222225
+      ],
+      "train_sh_lat_range_min_width": 38.22555555555556,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          0.8,
+          0.8
+        ],
+        "knot_interior_1": [
+          14.947999999999999,
+          14.947999999999999
+        ],
+        "knot_interior_2": [
+          35.745828571428575,
+          35.745828571428575
+        ],
+        "knot_upper_boundary": [
+          65.09,
+          65.09
+        ]
+      },
+      "min_knot_gap": 14.147999999999998,
+      "fits_with_held_out_extrapolation": {},
+      "test_rows_with_unseen_level": 0,
+      "added_min_singular_value_unit_columns_min": 0.02236582910274192,
+      "baseline_condition_unit_columns_max": 100.8341349960254,
+      "candidate_condition_unit_columns_max": 140.46599126509196,
+      "baseline_condition_raw_max": 17827.48695441476,
+      "candidate_condition_raw_max": 24954.92025698878
+    },
+    "station/primary_total_co2/m49_subregion_lo": {
+      "fits": 20,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 136,
+      "n_train_max": 150,
+      "baseline_columns": [
+        19,
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 20,
+      "n_train_sh_max": 29,
+      "train_sh_lat_min_max": [
+        1.3366666666666667,
+        39.562222222222225
+      ],
+      "train_sh_lat_range_min_width": 32.084583333333335,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          0.8,
+          1.3366666666666667
+        ],
+        "knot_interior_1": [
+          13.88904761904762,
+          18.848666666666666
+        ],
+        "knot_interior_2": [
+          34.11361111111111,
+          39.2259477124183
+        ],
+        "knot_upper_boundary": [
+          53.74948717948718,
+          65.09
+        ]
+      },
+      "min_knot_gap": 13.08904761904762,
+      "fits_with_held_out_extrapolation": {
+        "8": {
+          "below": 1,
+          "above": 0,
+          "train_lat_min": 1.3366666666666667,
+          "train_lat_max": 65.09,
+          "test_lat_min": 0.8,
+          "test_lat_max": 12.32
+        },
+        "11": {
+          "below": 0,
+          "above": 8,
+          "train_lat_min": 0.8,
+          "train_lat_max": 53.74948717948718,
+          "test_lat_min": 52.80411764705883,
+          "test_lat_max": 65.09
+        }
+      },
+      "test_rows_with_unseen_level": 12,
+      "added_min_singular_value_unit_columns_min": 0.018825310136886507,
+      "baseline_condition_unit_columns_max": 106.04209463638905,
+      "candidate_condition_unit_columns_max": 162.95399106021912,
+      "baseline_condition_raw_max": 18750.475630684454,
+      "candidate_condition_raw_max": 27744.95909241063
+    },
+    "station/primary_total_co2/primary_loco": {
+      "fits": 151,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 124,
+      "n_train_max": 150,
+      "baseline_columns": [
+        19,
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 18,
+      "n_train_sh_max": 29,
+      "train_sh_lat_min_max": [
+        1.3366666666666667,
+        39.562222222222225
+      ],
+      "train_sh_lat_range_min_width": 32.084583333333335,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          0.8,
+          1.790769230769231
+        ],
+        "knot_interior_1": [
+          12.598307692307692,
+          19.016666666666666
+        ],
+        "knot_interior_2": [
+          30.52915254237288,
+          39.598548148148154
+        ],
+        "knot_upper_boundary": [
+          61.556000000000004,
+          65.09
+        ]
+      },
+      "min_knot_gap": 11.798307692307691,
+      "fits_with_held_out_extrapolation": {
+        "GAB": {
+          "below": 1,
+          "above": 0,
+          "train_lat_min": 1.3366666666666667,
+          "train_lat_max": 65.09,
+          "test_lat_min": 0.8,
+          "test_lat_max": 0.8
+        },
+        "ISL": {
+          "below": 0,
+          "above": 1,
+          "train_lat_min": 0.8,
+          "train_lat_max": 61.556000000000004,
+          "test_lat_min": 65.09,
+          "test_lat_max": 65.09
+        }
+      },
+      "test_rows_with_unseen_level": 1,
+      "added_min_singular_value_unit_columns_min": 0.018589306186486264,
+      "baseline_condition_unit_columns_max": 109.66330045563876,
+      "candidate_condition_unit_columns_max": 164.15478260880215,
+      "baseline_condition_raw_max": 19125.49806543332,
+      "candidate_condition_raw_max": 29108.666168369822
+    },
+    "station/primary_total_co2/random10": {
+      "fits": 10,
+      "all_structural_pass": true,
+      "failing_fits": {},
+      "n_train_min": 135,
+      "n_train_max": 136,
+      "baseline_columns": [
+        19,
+        20
+      ],
+      "baseline_rank_equals_columns_in_all": true,
+      "candidate_rank_equals_columns_in_all": true,
+      "added_identifiable_dimensions": [
+        3
+      ],
+      "n_train_sh_min": 24,
+      "n_train_sh_max": 28,
+      "train_sh_lat_min_max": [
+        1.3366666666666667,
+        39.562222222222225
+      ],
+      "train_sh_lat_range_min_width": 32.084583333333335,
+      "knot_ranges": {
+        "knot_lower_boundary": [
+          0.8,
+          1.3366666666666667
+        ],
+        "knot_interior_1": [
+          14.465,
+          16.87
+        ],
+        "knot_interior_2": [
+          34.56,
+          38.00714285714286
+        ],
+        "knot_upper_boundary": [
+          58.66,
+          65.09
+        ]
+      },
+      "min_knot_gap": 13.665,
+      "fits_with_held_out_extrapolation": {
+        "5": {
+          "below": 1,
+          "above": 0,
+          "train_lat_min": 1.3366666666666667,
+          "train_lat_max": 65.09,
+          "test_lat_min": 0.8,
+          "test_lat_max": 49.99
+        },
+        "6": {
+          "below": 0,
+          "above": 4,
+          "train_lat_min": 0.8,
+          "train_lat_max": 58.66,
+          "test_lat_min": 6.164444444444444,
+          "test_lat_max": 65.09
+        }
+      },
+      "test_rows_with_unseen_level": 1,
+      "added_min_singular_value_unit_columns_min": 0.02169973695625426,
+      "baseline_condition_unit_columns_max": 106.67702141143639,
+      "candidate_condition_unit_columns_max": 145.8760580330468,
+      "baseline_condition_raw_max": 18983.676834406993,
+      "candidate_condition_raw_max": 27508.496621741753
+    }
+  },
+  "checks": {
+    "full_sample_ranks_20_to_23": true,
+    "fit_counts": true,
+    "every_fit_structural_pass": true,
+    "coalition_gain_three_exactly_with_geography": true,
+    "representations_structurally_identical": true,
+    "encoded_m0star_identity": true,
+    "min_training_sizes": true
+  },
+  "structural_feasibility": "pass",
+  "conditional_m1a_arm_checks": {
+    "full_sample_ranks_20_to_23": true,
+    "fit_counts": true,
+    "every_fit_structural_pass": true,
+    "coalition_gain_three_exactly_with_geography": true,
+    "representations_structurally_identical": true
+  },
+  "conditional_m1a_arm_feasibility": "pass",
+  "software": {
+    "python": "3.11.12",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "machine": "arm64"
+  },
+  "numerical_note": "singular values and condition numbers are platform-scoped in their last bits; ranks, knots and counts are the structural evidence"
+}

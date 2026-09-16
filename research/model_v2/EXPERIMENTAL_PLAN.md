@@ -122,6 +122,18 @@ automated term selection.
 (effective degrees of freedom is recorded). **M2 → M3** always proceeds,
 because M3 is an accounting step, not a model-selection step.
 
+**Design frozen (2026-09-16; the historical text above is unchanged).**
+* **Candidate.** One joint candidate, M0\* + (a) `I(SH)·abs_latitude` + (b) two natural cubic
+  `abs_latitude` columns. Knots are the training tertiles, and M0\*'s linear term is kept. Item (c) is
+  void: no M1 covariate was retained.
+* **Gate.** Admitted on the frozen M0\* OOF Moran's I (0.3216 > 0.2).
+* **Documents.** `M2_PROVENANCE_AUDIT.md`, `M2_DESIGN.md`, `M2_FEASIBILITY_AUDIT.md` and
+  `M2_EVALUATION_CONTRACT.md`.
+* **Rules.** Retention is replaced by the contract's predictive-support and promotion rules, with no
+  sign criterion (a disclosed owner loosening). The overfitting signal is reported in full as a
+  diagnostic.
+* **Status.** No M2 fit or score exists, and execution needs separate authorization.
+
 ## M3 — explicit spatial structure
 
 **Change.** Fit a spatial error model and a spatial lag model on the retained
