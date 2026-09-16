@@ -1,10 +1,17 @@
 # M1b result — baseline hydroclimatic dryness is not supported
 
+> **Post-result documentation corrections, 2026-09-16.** Three passages below (the opening chronology,
+> the §3 allocation sentence and one §6 sentence) were corrected after the result. They are marked
+> *[corrected 2026-09-16]* and quoted in their original form in [`M1B_CLOSURE.md`](M1B_CLOSURE.md) §4.
+> The original report is preserved at `1680d85`. No number, verdict or artifact changed.
+
 **Scored 2026-09-15 from the frozen evaluator commit `618c8b8`, pushed before the run, with a clean
-working tree and `PYTHONHASHSEED=0`.** The rules were frozen in
-[`M1B_EVALUATION_CONTRACT.md`](M1B_EVALUATION_CONTRACT.md) (Amendments 1–3) before any CRU data were
-acquired, and the operational detail in [`M1B_EVALUATOR_SPEC.md`](M1B_EVALUATOR_SPEC.md) before this
-run. Nothing was changed between the freeze and the score.
+working tree and `PYTHONHASHSEED=0`.** *[corrected 2026-09-16]* The original measurement and
+evaluation contract, [`M1B_EVALUATION_CONTRACT.md`](M1B_EVALUATION_CONTRACT.md), was frozen and pushed
+before any CRU data were acquired (`60111ae`). Amendments 1–3 were adopted after acquisition and after
+C2 values existed under the original coverage rule, but before the redundancy diagnostic and before any
+outcome-facing fit involving C2. The operational detail in [`M1B_EVALUATOR_SPEC.md`](M1B_EVALUATOR_SPEC.md) was
+frozen before this run. Nothing was changed between the freeze and the score.
 
 **Verdict (contract §4.4, applied mechanically): `not supported`.**
 Adding C2 made out-of-fold error **worse**, and the coefficient carries the **opposite** of the
@@ -83,8 +90,12 @@ searched for. The runner records the non-execution rather than being skipped sil
 * **Group shares (in-sample LMG/Shapley, primary representation).** M0\*: geography 0.5188,
   socioeconomic 0.0628, population 0.0417, responsibility 0.0131, residual 0.3636. M1b: geography
   0.4840, socioeconomic 0.0593, population 0.0362, responsibility 0.0111, **hydroclimate 0.0458**,
-  residual 0.3635. The hydroclimate share is drawn almost entirely from geography (−0.0348), which is
-  what the pre-outcome redundancy diagnostic predicted: about 65% of C2's cross-country variance
+  residual 0.3635. *[corrected 2026-09-16]* Relative to M0\*, the named-group allocations shift by:
+  geography −0.03484, population −0.00543, socioeconomic −0.00348, responsibility −0.00206 and
+  hydroclimate +0.04583. The net change equals the in-sample R² gain (+0.0000106) by construction,
+  because LMG shares sum to R². Geography accounts for about 76% of the displaced allocation. That
+  split reflects C2's correlation with each group under LMG's averaging over coalitions, and it does
+  not identify a physical source. It is consistent with the pre-outcome redundancy diagnostic: about 65% of C2's cross-country variance
   already lies in the span of the M0\* design, and geography alone reaches R² 0.62. **A nonzero
   hydroclimate share allocates shared explanatory variance in sample; it is not a fraction of warming
   physically caused by hydroclimate, and here it coexists with worse out-of-fold error.**
@@ -159,8 +170,10 @@ S2 both fail.
   the training fits are negative. Under the contract, improvement without the pre-stated sign would
   not be support either — and here there is no improvement to begin with.
 * **Non-linear dryness terms, interactions and alternative C2 definitions are not introduced in
-  response to this result.** No alternative window, transform, dataset, threshold, aggregation order
-  or coverage rule was tried, before or after.
+  response to this result.** *[corrected 2026-09-16]* No alternative window, transform, dataset,
+  threshold or aggregation order was tried, before or after. The coverage rule changed only through
+  the recorded pre-outcome contract Amendments 1 and 3, and no coverage rule was tried in response to
+  this result.
 * The responsibility statement is unchanged: these shares are explained variance in cross-country
   differences in area-weighted warming, not greenhouse gases' physical role.
 
