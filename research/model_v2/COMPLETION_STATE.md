@@ -11,7 +11,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 | 1 | Downstream M3/M4 specification and pre-score resolutions | committed with this file's first version | spec `DOWNSTREAM_COMPLETION_SPEC.md`; M3 tooling `c27c7fd`, boundary disposition `99f2c3d`; feasibility record from `99f2c3d` |
 | 2 | M2 evaluator freeze | committed with `M2_EVALUATOR_SPEC.md`, `m2_evaluate.py`, `m2_conditional.py`, `m2_independent_check.py` | downstream Amendment A1 `ef04958` precedes it |
 | 3 | Primary M2 result, report, verification | committed with `M2_REPORT.md` and `outputs/m2_primary/` | evaluator `b13bb04`; label `not supported`; retained static M0\*; stopping indicator does not fire |
-| 4 | M2 conditional robustness or non-execution | not started | — |
+| 4 | M2 conditional robustness or non-execution | committed with `outputs/m2_conditional/m2_conditional_not_run.json` | refusal returned before any arm frame was constructed; no arm fitted |
 | 5 | M3 evaluator freeze | not started | — |
 | 6 | Primary M3 result and verification | not started | — |
 | 7 | M3 land-centroid weight sensitivity | not started | — |
@@ -34,7 +34,7 @@ in either (M2 fits raise in the anchor test).
 ## Outcome-activated branches
 
 * Branch: **A** (retained static specification M0\*), mechanically from the M2 label `not supported`.
-* M2 conditional arms: **not authorized** (no predictive support); non-execution record due at checkpoint 4.
+* M2 conditional arms: **not executed** (no predictive support); verified non-execution record committed.
 * M3 qualifying set / final naming: **not yet determined**.
 
 ## Evidence paths (this checkpoint)
@@ -51,13 +51,9 @@ in either (M2 fits raise in the anchor test).
 
 ## Next executable action
 
-Write the M2 conditional non-execution record from the committed, pushed primary result:
-`PYTHONHASHSEED=0 uv run python -m research.model_v2.m2_conditional` (checkpoint 4). Then freeze the M3 evaluator
-(`m3_evaluate.py`, `M3_EVALUATOR_SPEC.md`, tests, `m3_independent_check.py`) after a full suite run
-(checkpoint 5) and score the station arm.
-
-Verification evidence for checkpoint 3: `outputs/m2_primary_verification/m2_independent_check.json` (all checks
-pass; five negative controls detected) and `m2_reproducibility.json` (byte-identical rerun).
+Freeze the M3 evaluator (`m3_evaluate.py`, `M3_EVALUATOR_SPEC.md`, `tests/test_m3_evaluator.py`,
+`m3_independent_check.py` and its tests) after a full suite run (checkpoint 5); then
+`PYTHONHASHSEED=0 uv run python -m research.model_v2.m3_evaluate --weights station`.
 
 ## Blockers
 
