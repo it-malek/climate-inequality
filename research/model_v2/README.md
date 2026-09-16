@@ -12,7 +12,7 @@ public model, the dashboard bundle or the tagged results.
 | Branch | `research/model-v2-residual-structure` |
 | Base | `v1.3.0` = commit `a6733cb78292b9b27466e7ebfe7c4fdc6b59592f` (annotated tag `16b94d3`), verified as the branch's merge base; `main` was at the same commit when the branch was cut |
 | Companion spec | `climate-inequality-instructions@v1.3.0-aligned` (design context only; this repository and its `docs/` are authoritative) |
-| Status | 2026-09-16: M1a not promoted (registered measurement sensitivity); **M1b closed as a completed negative experiment, not promoted** (`M1B_CLOSURE.md`); M0\* remains the development baseline. **M2 design and evaluation contract frozen; no M2 fit or score** (`M2_EVALUATION_CONTRACT.md`) |
+| Status | 2026-09-16: M1a not promoted (registered measurement sensitivity); **M1b closed as a completed negative experiment, not promoted** (`M1B_CLOSURE.md`); M0\* remains the development baseline. **M2 design and evaluation contract frozen; no M2 fit or score** (`M2_EVALUATION_CONTRACT.md`). **Completion authorized; M3/M4 operationalization frozen before any M2 fit** (`DOWNSTREAM_COMPLETION_SPEC.md`, `COMPLETION_STATE.md`) |
 
 ## Question
 

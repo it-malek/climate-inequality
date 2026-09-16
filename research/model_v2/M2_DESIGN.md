@@ -224,6 +224,12 @@ zero at the training maximum. So this pooled, tertile-knot spline **cannot repre
 hypothesis. Any NH-specific or 50°N-knot form would be a new, residual-shaped design and is not
 introduced.
 
+> **Dated correction (owner, 2026-09-16, before any M2 fit; `M2_PRE_SCORE_RESOLUTIONS.md` §4).** The
+> sentence "cannot represent or test H5's "steepening above ~50°N"" above is too strong and is kept only as
+> the original record. Corrected: the spline can exhibit positive curvature and increasing slope above 50°.
+> It cannot identify a distinct NH-specific onset near 50°: curvature is common across hemispheres,
+> boundary behaviour is constrained, and γ supplies only a hemisphere-specific linear slope difference.
+
 **M2 is therefore reported primarily as a predictive functional-form test.** Curvature enters only
 through the predictive comparison. H5 remains the historical motivation for including curvature, not a
 separately tested shape. Its residual evidence was measured on land-area-centroid |latitude|, while M2

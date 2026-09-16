@@ -122,6 +122,18 @@ The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`.
   authorizes an M2 score.
 * **`OPEN_DECISIONS` item 10** (group shares for non-OLS stages) stays open for M3; M2 is OLS.
 
+## Completion authorized; downstream stages frozen (owner, 2026-09-16); no M2 fit or score
+
+* **Authorization.** The owner authorized M2 execution with its contract-authorized conditional robustness,
+  the required M3 accounting, the M4 final assessment, and integration into `main` after scientific
+  completion (`M2_PRE_SCORE_RESOLUTIONS.md`, recorded as M2 contract Amendment 1).
+* **Resolved §12 items.** The shortlist and product-rule interpretations are confirmed; the H5 wording is
+  corrected; γ carries no sign-stability cutoff.
+* **Item 10 (non-OLS group shares) is resolved prospectively** by transparent multi-part accounting, with no
+  forced "spatial share" (`DOWNSTREAM_COMPLETION_SPEC.md` §2.11). This was frozen before any M2 or M3 fit.
+* **Item 17 ("never merge to `main` in this line") is superseded** for this completion; `v1.3.0` and the V1
+  bundle are preserved.
+
 No territorial-unit, 500 km threshold, M49, random-reference, unseen-level or
 scorecard decision is reopened. No new physical covariate is authorized. Items in
 the historical register below are not current authorizations.

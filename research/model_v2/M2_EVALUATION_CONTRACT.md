@@ -7,6 +7,12 @@ This contract does not authorize execution (§9).**
 * Structural feasibility is in [`M2_FEASIBILITY_AUDIT.md`](M2_FEASIBILITY_AUDIT.md). The canonical
   record `outputs/m2_feasibility/` was written from pushed commit `fbaa3ff`.
 
+> **Amendment 1 (owner, 2026-09-16, before any M2 fit):** [`M2_PRE_SCORE_RESOLUTIONS.md`](M2_PRE_SCORE_RESOLUTIONS.md)
+> authorizes execution and the downstream stages, confirms the §12 interpretations, corrects the H5 wording
+> (its §4), and removes the sign-stability cutoff from the γ diagnostic, so §6.2 clause (iii) is reported as a
+> fraction without a thresholded Boolean (its §5). The rest of this contract is unchanged. The downstream M3
+> and M4 rules are frozen in [`DOWNSTREAM_COMPLETION_SPEC.md`](DOWNSTREAM_COMPLETION_SPEC.md).
+
 **Where each rule comes from.**
 * **Inherited:** unchanged from the `af97bd2` plan, the corrected protocol (`4263429`), the M1a
   contract (`e3e5901`) or the M1b contract and specification (`60111ae`…`618c8b8`).
