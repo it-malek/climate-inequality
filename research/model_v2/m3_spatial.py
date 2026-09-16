@@ -24,8 +24,10 @@ An evaluation fails when the slogdet sign is not +1, logdet is non-finite, the l
 sigma2 is not finite and positive, or lc is non-finite. Maximization: lc on
 ``linspace(-0.99, 0.99, 199)`` in order; bracket [G[k*-1], G[k*+1]] (clipped) around the first argmax
 k*; golden section with phi = (sqrt 5 - 1)/2 evaluating c then d, then exactly 60 one-point iterations;
-theta-hat is the best evaluated point with ties to the earliest evaluation; |theta-hat| <= 0.99 - 1e-6
-or the fit fails. Any failure raises :class:`SpatialFitFailure`; there is no fallback.
+theta-hat is the best evaluated point with ties to the earliest evaluation. This is the constrained ML
+estimate over the conventional domain (as PySAL ``spreg`` bounds ML_Lag and ML_Error to (-1, 1)): an
+estimate with |theta-hat| > 0.99 - 1e-6 is valid, flagged ``at_domain_bound`` and counted, and its Wald
+interval is not applicable. Any evaluation failure raises :class:`SpatialFitFailure`; there is no fallback.
 
 Fitted quantities and prediction (§2.6-§2.7). SEM: trend X beta, one-step X beta + lambda W u with
 u = y - X beta, held-out x_o'beta + lambda sum_j w_oj u_j. SAR: trend M^-1 X beta, one-step
@@ -195,6 +197,7 @@ class Maximum(NamedTuple):
     value: float
     grid_values: np.ndarray
     n_evaluations: int
+    at_domain_bound: bool
 
 
 def _family(family: str) -> None:
@@ -260,7 +263,7 @@ def grid_local_maxima(values) -> int:
 
 
 def maximize(objective: Callable[[float], float]) -> Maximum:
-    """The frozen grid + golden-section maximizer over [-0.99, 0.99], with the interior rule."""
+    """The frozen grid + golden-section maximizer over [-0.99, 0.99]; flags a constrained boundary estimate."""
     points, values = [], []
 
     def evaluate(theta: float) -> float:
@@ -292,10 +295,8 @@ def maximize(objective: Callable[[float], float]) -> Maximum:
         if value > values[best]:
             best = i
     theta = points[best]
-    if not abs(theta) <= DOMAIN_BOUND - INTERIOR_MARGIN:
-        raise SpatialFitFailure('non-interior', f'theta-hat {theta!r}')
     grid_values.setflags(write=False)
-    return Maximum(theta, values[best], grid_values, len(values))
+    return Maximum(theta, values[best], grid_values, len(values), bool(abs(theta) > DOMAIN_BOUND - INTERIOR_MARGIN))
 
 
 @dataclass(frozen=True, eq=False)
@@ -313,6 +314,7 @@ class SpatialFit:
     n_grid_local_maxima: int
     grid_loglik: np.ndarray
     n_evaluations: int
+    at_domain_bound: bool = False
     version: str = ESTIMATOR_VERSION
 
     def __post_init__(self):
@@ -341,7 +343,7 @@ def fit_spatial(family: str, y, x, w, columns: Sequence[str] | None = None) -> S
     return SpatialFit(family=family, theta=trace.theta, loglik=final.loglik, beta=final.beta,
                       sigma2=final.sigma2, n=len(y), p=x.shape[1], columns=columns,
                       n_grid_local_maxima=grid_local_maxima(trace.grid_values), grid_loglik=trace.grid_values,
-                      n_evaluations=trace.n_evaluations)
+                      n_evaluations=trace.n_evaluations, at_domain_bound=trace.at_domain_bound)
 
 
 def _match(fit: SpatialFit, y: np.ndarray, x: np.ndarray) -> None:
@@ -488,6 +490,8 @@ def expected_information(fit: SpatialFit, x, w) -> np.ndarray:
 
 def dependence_interval(fit: SpatialFit, x, w) -> DependenceInterval:
     """se(theta-hat) and the Wald interval theta-hat +- 1.959963984540054 se, or not computable."""
+    if fit.at_domain_bound:
+        return DependenceInterval(None, None, None, f'{NOT_COMPUTABLE}: boundary estimate, asymptotic interval not applicable')
     info = expected_information(fit, x, w)
     try:
         variance = float(np.linalg.inv(info)[-1, -1])

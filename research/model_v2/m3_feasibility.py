@@ -202,7 +202,8 @@ def synthetic_fits(frame, dist, protocol_plans):
                                                         ms.local_positions(train, neighbours), weights)
                             record['held_out_invariance'] = bool(np.array_equal(prediction, again))
                         record.update({'status': 'computable', 'theta': fit.theta, 'true_theta': SYNTHETIC_THETA[family],
-                                       'interior': True, 'n_grid_local_maxima': fit.n_grid_local_maxima,
+                                       'at_domain_bound': fit.at_domain_bound,
+                                       'n_grid_local_maxima': fit.n_grid_local_maxima,
                                        'n_evaluations': fit.n_evaluations, 'rank': int(np.linalg.matrix_rank(x_train)),
                                        'columns': x_train.shape[1], 'failure': ''})
                         if protocol == 'full_sample':
@@ -215,9 +216,10 @@ def synthetic_fits(frame, dist, protocol_plans):
     return rows
 
 
-def synthetic_shrinkage(frame, dist, draws=40, theta=0.4):
-    """Monte Carlo of the full-sample estimator on synthetic outcomes (intercept-only mean, true theta 0.4)
-    for three designs, to document before any result how far the frozen designs pull theta-hat toward zero."""
+def synthetic_shrinkage(frame, dist, draws=100, thetas=(0.0, 0.4)):
+    """Monte Carlo of the full-sample estimator on synthetic outcomes with an intercept-only mean, for three
+    designs and two true dependence values, recording before any result how far the frozen static designs pull
+    theta-hat toward zero and how often the constrained estimate sits on the domain bound."""
     rng = np.random.default_rng(SYNTHETIC_SEED + 1)
     w = ms.training_graph(dist, np.arange(len(frame)))
     state = lb.fit_state(frame.abs_latitude.to_numpy(float))
@@ -227,15 +229,19 @@ def synthetic_shrinkage(frame, dist, draws=40, theta=0.4):
     rows = []
     for name, x in designs.items():
         for family in ms.FAMILIES:
-            estimates = []
-            for _ in range(draws):
-                eps = rng.normal(0.0, SYNTHETIC_SIGMA, len(frame))
-                mean = np.full(len(frame), 0.18)
+            for theta in thetas:
                 m = ms.spatial_filter(theta, w)
-                y = mean + np.linalg.solve(m, eps) if family == 'sem' else np.linalg.solve(m, mean + eps)
-                estimates.append(ms.fit_spatial(family, y, x, w).theta)
-            rows.append({'design': name, 'family': family, 'true_theta': theta, 'draws': draws,
-                         'mean_theta_hat': float(np.mean(estimates)), 'sd_theta_hat': float(np.std(estimates, ddof=1))})
+                estimates, at_bound = [], 0
+                for _ in range(draws):
+                    eps = rng.normal(0.0, SYNTHETIC_SIGMA, len(frame))
+                    mean = np.full(len(frame), 0.18)
+                    y = mean + np.linalg.solve(m, eps) if family == 'sem' else np.linalg.solve(m, mean + eps)
+                    fit = ms.fit_spatial(family, y, x, w)
+                    estimates.append(fit.theta)
+                    at_bound += int(fit.at_domain_bound)
+                rows.append({'design': name, 'family': family, 'true_theta': theta, 'draws': draws,
+                             'mean_theta_hat': float(np.mean(estimates)),
+                             'sd_theta_hat': float(np.std(estimates, ddof=1)), 'at_domain_bound': at_bound})
     return rows
 
 
@@ -302,6 +308,7 @@ def run(out_dir=OUT):
             'outcome': f'synthetic draws from each family with theta={SYNTHETIC_THETA}, sigma={SYNTHETIC_SIGMA}, '
                        f'seed {SYNTHETIC_SEED}; real encoded designs and station graphs; no warming outcome',
             'fits': len(fit_frame), 'non_computable': int((fit_frame.status != 'computable').sum()),
+            'at_domain_bound': int(fit_frame.at_domain_bound.fillna(False).astype(bool).sum()),
             'failures': fit_frame.loc[fit_frame.status != 'computable', ['model', 'family', 'protocol', 'fit', 'failure']]
             .to_dict('records'),
             'held_out_invariance_all': bool(fit_frame.held_out_invariance.dropna().astype(bool).all()),
@@ -313,7 +320,7 @@ def run(out_dir=OUT):
         },
         'synthetic_shrinkage_monte_carlo': {
             'rows': shrinkage,
-            'reading': 'synthetic draws with an intercept-only mean and true theta 0.4 on the full-sample station graph; '
+            'reading': 'synthetic draws with an intercept-only mean and true theta 0 or 0.4 on the full-sample station graph; '
                        'the regional and climate dummies of the frozen static designs absorb spatially smooth error, '
                        'so ML theta-hat is pulled toward zero. This is recorded before any M3 result to inform how '
                        'dependence parameters are read; it changes no rule.'},

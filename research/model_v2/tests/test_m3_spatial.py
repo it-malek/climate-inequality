@@ -289,8 +289,8 @@ def test_a_golden_tie_between_c_and_d_keeps_the_left_subinterval():
     def left_shelf(t):
         return 0.0 if t <= -0.5 else -(t + 0.5)
     calls = []
-    with pytest.raises(m3.SpatialFitFailure, match='non-interior'):
-        m3.maximize(lambda t: calls.append(t) or left_shelf(t))
+    result = m3.maximize(lambda t: calls.append(t) or left_shelf(t))
+    assert result.at_domain_bound and result.theta == -0.99
     golden = calls[199:]
     assert golden == _replay_golden(left_shelf, 0)
     # every tie takes (b, d) <- (d, c): the search walks monotonically towards the left end
@@ -316,20 +316,25 @@ def test_strict_local_maxima_compare_endpoints_one_sided(values, count):
 
 
 @pytest.mark.parametrize('peak', [0.995, 1.3, -0.9999, -2.0, 0.9899995])
-def test_a_maximum_outside_the_interior_margin_fails(peak):
-    assert _reason(lambda: m3.maximize(lambda t: -(t - peak) ** 2)) == 'non-interior'
+def test_a_maximum_outside_the_interior_margin_is_a_flagged_constrained_estimate(peak):
+    result = m3.maximize(lambda t: -(t - peak) ** 2)
+    assert result.at_domain_bound and abs(result.theta) <= 0.99
 
 
 @pytest.mark.parametrize('peak', [0.989998, -0.989998])
-def test_a_maximum_just_inside_the_interior_margin_is_accepted(peak):
-    assert abs(m3.maximize(lambda t: -(t - peak) ** 2).theta - peak) < 1e-7
+def test_a_maximum_just_inside_the_interior_margin_is_not_flagged(peak):
+    result = m3.maximize(lambda t: -(t - peak) ** 2)
+    assert abs(result.theta - peak) < 1e-7 and not result.at_domain_bound
 
 
 @pytest.mark.parametrize('family', ['sem', 'sar'])
-def test_a_smooth_field_drives_the_estimate_to_the_boundary_and_the_fit_fails_without_fallback(family):
+def test_a_smooth_field_gives_a_flagged_boundary_estimate_without_an_asymptotic_interval(family):
     dist, _, lat = _cloud(150, 0)
     w = m3.training_graph(dist, np.arange(150))
-    assert _reason(lambda: m3.fit_spatial(family, lat, np.ones((150, 1)), w)) == 'non-interior'
+    fit = m3.fit_spatial(family, lat, np.ones((150, 1)), w)
+    assert fit.at_domain_bound and abs(fit.theta) <= 0.99
+    interval = m3.dependence_interval(fit, np.ones((150, 1)), w)
+    assert interval.se is None and 'boundary estimate' in interval.reason
 
 
 def test_any_failed_or_non_finite_evaluation_fails_the_maximization():

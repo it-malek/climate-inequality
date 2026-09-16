@@ -284,6 +284,7 @@ class Maximization:
     strict_local_maxima: int | None
     evaluations: tuple[tuple[float, float], ...]
     failure: str | None
+    at_domain_bound: bool = False
 
 
 def maximize(objective: Callable[[float], float]) -> Maximization:
@@ -321,9 +322,10 @@ def maximize(objective: Callable[[float], float]) -> Maximization:
         done = tuple(v for _, v in evaluations[:GRID_POINTS])
         return Maximization(math.nan, math.nan, done, None, tuple(evaluations), f'evaluation failed: {exc}')
     theta, loglik = _earliest_max(evaluations)
-    failure = None if abs(theta) <= DOMAIN[1] - INTERIOR_MARGIN else 'non-interior estimate'
+    failure = None
+    at_bound = not abs(theta) <= DOMAIN[1] - INTERIOR_MARGIN
     return Maximization(theta, loglik, tuple(values), strict_local_maxima(values), tuple(evaluations),
-                        failure)
+                        failure, at_bound)
 
 
 @dataclass(frozen=True, eq=False)
@@ -338,6 +340,7 @@ class ReferenceFit:
     strict_local_maxima: int | None
     grid: tuple[float, ...]
     failure: str | None
+    at_domain_bound: bool = False
 
 
 def reference_fit(family: str, y, x, w) -> ReferenceFit:
@@ -359,7 +362,7 @@ def reference_fit(family: str, y, x, w) -> ReferenceFit:
                             search.strict_local_maxima, search.grid, search.failure)
     best = profile(family, y, x, w, search.theta, eigenvalues)
     return ReferenceFit(family, search.theta, best.loglik, best.beta, best.sigma2, n, p,
-                        search.strict_local_maxima, search.grid, None)
+                        search.strict_local_maxima, search.grid, None, search.at_domain_bound)
 
 
 def local_optimality_check(family: str, y, x, w, theta_hat: float, half_width: float = LOCAL_HALF_WIDTH,
