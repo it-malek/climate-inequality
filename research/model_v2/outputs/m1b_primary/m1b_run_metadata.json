@@ -1,0 +1,15 @@
+{
+  "started_utc": "2026-09-16T00:54:12+00:00",
+  "finished_utc": "2026-09-16T00:54:16+00:00",
+  "wall_seconds": 3.6272595420014113,
+  "host": "Mac.ht.home",
+  "executable": "/Users/malek/projects/climate-inequality/.venv/bin/python",
+  "argv": [
+    "/Users/malek/projects/climate-inequality/research/model_v2/m1b_evaluate.py"
+  ],
+  "output_root": "/Users/malek/projects/climate-inequality/research/model_v2/outputs/m1b_primary",
+  "pythonhashseed": "0",
+  "upstream": "origin/research/model-v2-residual-structure",
+  "upstream_commit": "618c8b83b3630e06c9d33a295825389ed79f1cc4",
+  "note": "run metadata is deliberately outside the byte-compared deterministic artifacts"
+}

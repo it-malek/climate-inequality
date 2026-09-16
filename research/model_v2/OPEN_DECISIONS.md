@@ -64,6 +64,15 @@ The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`.
     support.
   * `SCORING_ENABLED` is replaced by a provenance guard: scoring runs only from a committed,
     unmodified, pushed code path, with `PYTHONHASHSEED=0` and a fresh output root.
+* **M1b scored 2026-09-15 from evaluator commit `618c8b8`: `not supported`** (`M1B_REPORT.md`).
+  * Delta RMSE +0.00172 degC/decade with the paired interval [+0.00089, +0.00285] entirely above
+    zero, so generalization worsened; the `baseline_dryness` coefficient is positive (+0.000474) and
+    negative in only 68 of 151 training fits.
+  * The per-capita representation agrees to 4.4e-14 and decides nothing (A3.6).
+  * **Conditional analyses are not run**, exactly as contract §5 and A2.1 require when the linear
+    association is not supported. No favourable sensitivity was searched for.
+  * No nonlinear term, alternative C2 definition, window, transform, dataset or threshold follows
+    from this result.
 * Contract Amendment 2 also pre-registers one station-support sensitivity. If and only if the
   linear association is supported, the frozen comparison is repeated excluding Saudi Arabia,
   Yemen, Haiti, Oman and Chad. It cannot change either verdict level.

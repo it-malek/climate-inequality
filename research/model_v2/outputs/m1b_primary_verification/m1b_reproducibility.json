@@ -1,0 +1,99 @@
+{
+  "comparison": "unchanged-code rerun in a separate process and output root",
+  "run_a": "research/model_v2/outputs/m1b_primary",
+  "run_b": "/private/tmp/claude-501/-Users-malek-projects-climate-inequality/b3a569ee-734a-407c-be7f-350d61c23b6b/scratchpad/m1b_repro",
+  "compared": [
+    "m1b_scorecard.json",
+    "m1b_country_predictions.csv",
+    "m1b_primary_country_comparison.csv",
+    "m1b_cv_folds.csv",
+    "m1b_coefficients.csv",
+    "m1b_coefficient_summary.json",
+    "m1b_shapley_coalitions.csv",
+    "m1b_design_matrices.csv",
+    "m1b_provenance.json",
+    "m1b_result_manifest.json"
+  ],
+  "excluded_as_run_metadata": [
+    "m1b_run_metadata.json"
+  ],
+  "artifacts": {
+    "m1b_scorecard.json": {
+      "run_a_sha256": "c2a353fe37364711a905cb75380950ff7025d8dd3997276f994b2fd041c1f196",
+      "run_b_sha256": "c2a353fe37364711a905cb75380950ff7025d8dd3997276f994b2fd041c1f196",
+      "identical": true
+    },
+    "m1b_country_predictions.csv": {
+      "run_a_sha256": "43f3f6fb61a067bcc1bca9017fcb60a08abfb8f437d6112ae769bd6a8faf2d56",
+      "run_b_sha256": "43f3f6fb61a067bcc1bca9017fcb60a08abfb8f437d6112ae769bd6a8faf2d56",
+      "identical": true
+    },
+    "m1b_primary_country_comparison.csv": {
+      "run_a_sha256": "850468478445878deb3f28e44e1657c32187e1c32c5da908e57138021e23312a",
+      "run_b_sha256": "850468478445878deb3f28e44e1657c32187e1c32c5da908e57138021e23312a",
+      "identical": true
+    },
+    "m1b_cv_folds.csv": {
+      "run_a_sha256": "6a9e3976f51e60a66c6b70fd65cc56626df1eec28a41e774c39260d1a2a459f1",
+      "run_b_sha256": "6a9e3976f51e60a66c6b70fd65cc56626df1eec28a41e774c39260d1a2a459f1",
+      "identical": true
+    },
+    "m1b_coefficients.csv": {
+      "run_a_sha256": "660b2e8dfb7a89ec0c4640f4957528defc4d033fbfd3e9d83d7cb3a98817d16a",
+      "run_b_sha256": "660b2e8dfb7a89ec0c4640f4957528defc4d033fbfd3e9d83d7cb3a98817d16a",
+      "identical": true
+    },
+    "m1b_coefficient_summary.json": {
+      "run_a_sha256": "746469e6900d859f1ad88f3f89d8587f5eeb36e8eb69ef48d41553765ee714ea",
+      "run_b_sha256": "746469e6900d859f1ad88f3f89d8587f5eeb36e8eb69ef48d41553765ee714ea",
+      "identical": true
+    },
+    "m1b_shapley_coalitions.csv": {
+      "run_a_sha256": "fabe54805763361e2de12d6f74cfd0bfd9536ef19e861971348be73d8bc4fe25",
+      "run_b_sha256": "fabe54805763361e2de12d6f74cfd0bfd9536ef19e861971348be73d8bc4fe25",
+      "identical": true
+    },
+    "m1b_design_matrices.csv": {
+      "run_a_sha256": "bbdc8b1df1314b55c409f6ff59db03d39a9109d0a6827bef9ec58ce8a4caa982",
+      "run_b_sha256": "bbdc8b1df1314b55c409f6ff59db03d39a9109d0a6827bef9ec58ce8a4caa982",
+      "identical": true
+    },
+    "m1b_provenance.json": {
+      "run_a_sha256": "415a7c6437fa54f2013f894721c6c9dce4e255e173a67b4b3cd85e2650ea1b19",
+      "run_b_sha256": "415a7c6437fa54f2013f894721c6c9dce4e255e173a67b4b3cd85e2650ea1b19",
+      "identical": true
+    },
+    "m1b_result_manifest.json": {
+      "run_a_sha256": "5998dd5cb7c675951c6275127338240e40e5755823312930db17fd67a2c4666a",
+      "run_b_sha256": "5998dd5cb7c675951c6275127338240e40e5755823312930db17fd67a2c4666a",
+      "identical": true
+    }
+  },
+  "byte_identical": true,
+  "code": {
+    "commit": "618c8b83b3630e06c9d33a295825389ed79f1cc4",
+    "upstream": "origin/research/model-v2-residual-structure",
+    "upstream_commit": "618c8b83b3630e06c9d33a295825389ed79f1cc4",
+    "code_path_clean_and_pushed": true,
+    "code_path_sha256": {
+      "research/model_v2/m1b_evaluate.py": "233a1a896a7d6e880e33bff9a433b4eac3e20489a786accec0810dd9ff43b027",
+      "research/model_v2/m1b_sensitivity.py": "879066cd719e95cd88c916944a3a58fa18b9ec493e19ad6c2ff856c0e434b6ec",
+      "research/model_v2/M1B_EVALUATOR_SPEC.md": "3b0af0b26938abeb77a16e57705b737bed2214504970433029d90a082188dcc0",
+      "research/model_v2/M1B_EVALUATION_CONTRACT.md": "721b87d456bb6ed1575762ec725cf91ec43e048c23804e68e8980ad0cad33f7d",
+      "research/model_v2/m1b_hydroclimate.py": "e874a68088893027d2839b5b2add9449abbe559dc001fbc505ee121bf801e71c",
+      "research/model_v2/m1b_redundancy.py": "a7155ec5004f934be06db3d61614d8bc6c2e7601afff5f5ae112a72832d9fec4",
+      "research/model_v2/cv.py": "836b367d66f1b564504f54eca4bc210af7f73eb12ae662db96224784ccb7914c",
+      "research/model_v2/m0.py": "f3f758ee90e45d457c43ed3d0187446d353a5cdc8a9801c9707334486c23b8e4",
+      "research/model_v2/territory.py": "1703a2afd231a028172c690c51d3c90a02686e49819547b379f5a76bbcf0ebf1",
+      "research/model_v2/spatial.py": "c4cbd21fc0f3513d1c7bf5a7cc666e22c1b743e5fac75042b57842f097b353cf",
+      "research/model_v2/regions.py": "c81150ab482d4d1bce3b48187c87b124222c2bdcf82ee2619c357ef27d6db411",
+      "research/model_v2/run_m0_scorecard.py": "8755de8e7bce2eb3c8c4e06b45ab26589cff2667a40592bd792da8667bd06aa0",
+      "research/model_v2/run_territory_correction.py": "63b6daaaa4f1005596ced823e2ed4353e41a48063c82d3c6646eb203ada8b35a",
+      "src/decomposition.py": "e6bb67560a37a51f91fb5de8ebed7119f6bb3eae615250f6365b32fe96f5ec06",
+      "src/feature_schema.py": "78d0c302ea9ba911947b62739f14702cf2ca0d5fd608b18d0c6d78ba9ecfe3ec",
+      "src/stability.py": "ee3a6fa5d0b4850a537eace41832c36e7252452c51a8f751abb67fdf58a9696c",
+      "src/explain.py": "0d0f67b030e912e0d997a7fe3d6c6eec439aae832812e93af473ac647524e8b5",
+      "src/emissions.py": "169a692a5860284399304d46d73c27b809a194c57032d14638d645741b9bff19"
+    }
+  }
+}

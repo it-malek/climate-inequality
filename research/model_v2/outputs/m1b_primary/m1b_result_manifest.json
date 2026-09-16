@@ -1,0 +1,23 @@
+{
+  "result": "M1b primary and unconditional per-capita evaluation",
+  "contract": "research/model_v2/M1B_EVALUATION_CONTRACT.md",
+  "specification": "research/model_v2/M1B_EVALUATOR_SPEC.md",
+  "evaluator_commit": "618c8b83b3630e06c9d33a295825389ed79f1cc4",
+  "verdict": "not supported",
+  "association_supported": false,
+  "integrity_passed": true,
+  "artifact_sha256": {
+    "m1b_scorecard.json": "c2a353fe37364711a905cb75380950ff7025d8dd3997276f994b2fd041c1f196",
+    "m1b_country_predictions.csv": "43f3f6fb61a067bcc1bca9017fcb60a08abfb8f437d6112ae769bd6a8faf2d56",
+    "m1b_primary_country_comparison.csv": "850468478445878deb3f28e44e1657c32187e1c32c5da908e57138021e23312a",
+    "m1b_cv_folds.csv": "6a9e3976f51e60a66c6b70fd65cc56626df1eec28a41e774c39260d1a2a459f1",
+    "m1b_coefficients.csv": "660b2e8dfb7a89ec0c4640f4957528defc4d033fbfd3e9d83d7cb3a98817d16a",
+    "m1b_coefficient_summary.json": "746469e6900d859f1ad88f3f89d8587f5eeb36e8eb69ef48d41553765ee714ea",
+    "m1b_shapley_coalitions.csv": "fabe54805763361e2de12d6f74cfd0bfd9536ef19e861971348be73d8bc4fe25",
+    "m1b_design_matrices.csv": "bbdc8b1df1314b55c409f6ff59db03d39a9109d0a6827bef9ec58ce8a4caa982",
+    "m1b_provenance.json": "415a7c6437fa54f2013f894721c6c9dce4e255e173a67b4b3cd85e2650ea1b19"
+  },
+  "non_deterministic_artifacts": [
+    "m1b_run_metadata.json"
+  ]
+}

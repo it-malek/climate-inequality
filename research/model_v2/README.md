@@ -157,6 +157,9 @@ Current primary CV: `uv run python -m research.model_v2.run_territory_correction
   computed from verified package bytes and outcome-free predictor inputs; M1b not scored.
 - `M1B_FEASIBILITY_AUDIT.md`: original-rule C2 build (148/151 pass the coverage gate),
   kept as the evidence for Amendment 1.
+- `M1B_REPORT.md`: the M1b result (`not supported`): C2 worsens out-of-fold error and carries the
+  opposite of the pre-stated sign, with the unconditional per-capita arm, the reproducibility and
+  independent-verification evidence, and the contract-based non-execution of the conditional arms.
 - `M1B_EVALUATOR_SPEC.md`: the operational evaluator specification, frozen and pushed before the
   first outcome-facing M1b run. It fixes the execution boundary, the strict scoring-input gate, the
   two reported representations, the saved evidence, the prespecified equivalence tolerances and the
