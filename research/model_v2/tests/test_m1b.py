@@ -92,27 +92,8 @@ def test_redundancy_diagnostic_refuses_outcome_and_stops_on_exact_redundancy():
     assert 'zero-variance C2' in diagnose(frame, np.ones(n))['hard_stops']
 
 
-def card(delta, lo, hi, coef, frac, sec=0.0389, region=0.0694):
-    return {'paired_delta_vs_m0': {'delta_rmse': delta, 'country_bootstrap_95_interval': [lo, hi]},
-            'coefficients': {'baseline_dryness': {'full': coef, 'same_sign_fraction': frac}},
-            'secondary': {'cv_rmse': sec}, 'worst_region': {'rmse': region}}
-
-
-def test_two_level_verdict():
-    from research.model_v2.m1b_evaluate import verdict
-    base = card(0, 0, 0, 0, 1)
-    assert verdict(base, card(-0.003, -0.005, -0.001, -0.02, 0.9))['verdict'] == 'supported and promoted'
-    sub = verdict(base, card(-0.001, -0.002, -0.0002, -0.02, 0.9))
-    assert sub['verdict'] == 'supported but sub-material / not promoted' and not sub['A2_practical_le_minus_0.002']
-    vetoed = verdict(base, card(-0.003, -0.005, -0.001, -0.02, 0.9, sec=0.0405))
-    assert vetoed['verdict'] == 'supported but sub-material / not promoted' and not vetoed['A3_m49_veto_passed']
-    wrong_sign = verdict(base, card(-0.003, -0.005, -0.001, 0.02, 0.9))
-    assert wrong_sign['verdict'] == 'not supported' and wrong_sign['improvement_without_prestated_sign']
-    unstable = verdict(base, card(-0.003, -0.005, -0.001, -0.02, 0.79))
-    assert unstable['verdict'] == 'not supported'
-    covers = verdict(base, card(-0.003, -0.006, 0.0001, -0.02, 0.9))
-    assert covers['verdict'] == 'not supported'
-    assert verdict(base, card(0.003, 0.001, 0.005, -0.02, 0.9))['worsened_generalization']
+# The two-level verdict, its exact boundaries and the evaluator gates are tested in
+# test_m1b_evaluator.py and test_m1b_scoring_gate.py against the finalized evaluator.
 
 
 def test_extended_schema_reproduces_m0star_design_when_c2_absent():
