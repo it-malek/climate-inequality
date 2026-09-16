@@ -5,6 +5,7 @@ scored. Scored fixtures are synthetic except where a test explicitly uses a comm
 """
 import dataclasses
 import json
+import subprocess
 
 import numpy as np
 import pandas as pd
@@ -276,3 +277,77 @@ def test_product_sensitivity_survives_a_refused_arm_verdict():
     flag = sens.product_sensitivity({'association_supported': True}, results)
     assert flag['product_sensitive'] is None and flag['aligned_era5_S1_replicated'] is None
     assert 'did not produce evaluable conditions' in flag['reason']
+
+
+# --- every authorization refusal, exercised ------------------------------------------------------
+
+def git_stub(**failing):
+    """A git whose calls all succeed except the named ones (see verified_primary's order)."""
+    def call(*args, check=True):
+        name = args[0]
+        if name == 'diff':
+            name = 'diff_worktree' if args[2] == 'HEAD' else 'diff_code_path'
+        code = 1 if failing.get(name) else 0
+        out = {'rev-parse': 'b' * 40 if args[1:2] != ('--abbrev-ref',) else 'origin/branch'}.get(name, '')
+        return subprocess.CompletedProcess(args, code, out + '\n', '')
+    return call
+
+
+def committed_primary(tmp_path, monkeypatch, *, association=True, **overrides):
+    """A primary result inside a stand-in repository root, with git behaviour under test control."""
+    primary, manifest = fake_primary(tmp_path, association=association)
+    if overrides:
+        manifest.update(overrides)
+        (primary / ev.RESULT_MANIFEST).write_text(json.dumps(manifest) + '\n')
+    monkeypatch.setattr(sens, 'ROOT', tmp_path)
+    return primary, manifest
+
+
+def test_authorization_accepts_a_committed_pushed_unchanged_primary_result(tmp_path, monkeypatch):
+    primary, _ = committed_primary(tmp_path, monkeypatch)
+    monkeypatch.setattr(ev, '_git', git_stub())
+    authorization = sens.verified_primary(primary)
+    assert authorization['evaluator_commit'] == 'a' * 40
+    assert authorization['verdict']['association_supported'] is True
+    assert authorization['primary_scorecard_sha256'] == hydro.sha256(primary / 'm1b_scorecard.json')
+
+
+@pytest.mark.parametrize('failing, message', [
+    ({'ls-files': True}, 'not committed'),
+    ({'diff_worktree': True}, 'differs from the files on disk'),
+    ({'merge-base': True}, 'not contained in'),
+    ({'diff_code_path': True}, 'code path changed after the primary result'),
+])
+def test_authorization_refuses_every_git_state_that_breaks_the_sequence(tmp_path, monkeypatch,
+                                                                       failing, message):
+    primary, _ = committed_primary(tmp_path, monkeypatch)
+    monkeypatch.setattr(ev, '_git', git_stub(**failing))
+    with pytest.raises(RuntimeError, match=message):
+        sens.verified_primary(primary)
+
+
+@pytest.mark.parametrize('overrides, message', [
+    ({'evaluator_commit': 'short'}, 'does not record its evaluator commit'),
+    ({'evaluator_commit': 'c' * 40}, 'provenance commit differs'),
+    ({'verdict': 'supported and promoted'}, 'manifest verdict differs'),
+])
+def test_authorization_refuses_a_manifest_that_disagrees_with_the_result(tmp_path, monkeypatch,
+                                                                        overrides, message):
+    primary, _ = committed_primary(tmp_path, monkeypatch, **overrides)
+    monkeypatch.setattr(ev, '_git', git_stub())
+    with pytest.raises(RuntimeError, match=message):
+        sens.verified_primary(primary)
+
+
+def test_authorization_refuses_a_verdict_without_a_recorded_association_boolean(tmp_path, monkeypatch):
+    primary, _ = committed_primary(tmp_path, monkeypatch)
+    scorecard = json.loads((primary / 'm1b_scorecard.json').read_text())
+    verdict = scorecard['representations']['primary_total_co2']['verdict']
+    verdict['association_supported'] = 'yes'
+    (primary / 'm1b_scorecard.json').write_text(json.dumps(scorecard) + '\n')
+    manifest = json.loads((primary / ev.RESULT_MANIFEST).read_text())
+    manifest['artifact_sha256']['m1b_scorecard.json'] = hydro.sha256(primary / 'm1b_scorecard.json')
+    (primary / ev.RESULT_MANIFEST).write_text(json.dumps(manifest) + '\n')
+    monkeypatch.setattr(ev, '_git', git_stub())
+    with pytest.raises(RuntimeError, match='does not record association support'):
+        sens.verified_primary(primary)

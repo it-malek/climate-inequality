@@ -114,8 +114,19 @@ def test_a_consistent_accepted_package_passes_the_gate(tmp_path, monkeypatch):
 
 
 @needs_inputs
-@pytest.mark.parametrize('tamper', ['c2', 'manifest', 'redundancy'])
+@pytest.mark.parametrize('tamper', ['c2', 'manifest', 'redundancy', 'missing_gate_version',
+                                    'wrong_window', 'wrong_build_commit'])
 def test_altered_c2_stale_manifest_or_stale_redundancy_are_rejected(tmp_path, monkeypatch, tamper):
+    # The field/type gate is exercised through the whole scoring gate, not only by direct call.
+    overrides = {'missing_gate_version': {'gate_version': None},
+                 'wrong_window': {'window': ['1920-01', '1950-12']},
+                 'wrong_build_commit': {'git': {'commit': '0' * 40, 'code_path_matches_commit': True}}}
+    if tamper in overrides:
+        write_package(tmp_path, manifest_overrides=overrides[tamper])
+        accept(monkeypatch, tmp_path)
+        with pytest.raises(ValueError):
+            ev.verify_scoring_inputs(tmp_path)
+        return
     write_package(tmp_path)
     accept(monkeypatch, tmp_path)
     if tamper == 'c2':
