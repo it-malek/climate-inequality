@@ -98,6 +98,31 @@
         }
       ]
     },
+    "research/model_v2/outputs/m1b_conditional/m1b_conditional_run_metadata.json": {
+      "original_sha256": "11464dbeed59aa04821f45253776d5aafa51f2c030f9f89dc80727324a29fa19",
+      "public_sha256": "cbe9dc4b3be60a0bd2ff672c4059c692f9659dc5deaeb7abc61eeb982c420341",
+      "protected_sha256": "93e146e425c4888d66fa26622d7f99768dba37e42f3590f04ade2020c765bfb7",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "50809ebb44c60dfc31eda57fb9576377c69040ec838783bf68911148436a4266",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python",
+          "original_value_sha256": "8597f8ddbdbcb372362edef976a22d593cd6d7d7f4743837249096ffb2516755",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m1b_sensitivity.py",
+          "original_value_sha256": "f6d5f8683160e4e717d1cd7d3301ac73ab229e5846be8cc14c39753e35be5e6d",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
     "research/model_v2/outputs/m1b_package_record.json": {
       "original_sha256": "1126de9c0e7b818de6a3e20f3d5a2a655dd3de061342f733629d23d634946c06",
       "public_sha256": "06b04fb9c2d4c7e945345a16c8e2f4614f96aeb816a2c2718a6cc8371c6d9795",
