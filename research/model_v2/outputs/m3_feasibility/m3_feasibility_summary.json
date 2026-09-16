@@ -1,0 +1,383 @@
+{
+  "audit": "M3 structural feasibility: graphs and the frozen estimator on synthetic outcomes; no warming outcome read",
+  "specification": "research/model_v2/DOWNSTREAM_COMPLETION_SPEC.md",
+  "estimator_version": "m3-spatial-v1",
+  "canonical": true,
+  "code": {
+    "commit": "99f2c3d7a20c0f43e74082c827877d6c876e9a7a",
+    "upstream": "origin/research/model-v2-residual-structure",
+    "live_remote_commit": "99f2c3d7a20c0f43e74082c827877d6c876e9a7a",
+    "code_closure_clean_and_pushed": true,
+    "code_closure_sha256": {
+      "pyproject.toml": "b32ba3b840bde445ff5c0f9ed20da0ac57eb7e25d8b7666ef1fac72e8d29dd45",
+      "research/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "research/model_v2/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "research/model_v2/borders.py": "daf50c12b472b45144bac1bc4359f23921de88e7fe53520f1a554fce4c5d4f81",
+      "research/model_v2/cells.py": "3d02f25b02da954ae3e8c040b905a621b9d522d23d43a1064951b2a17439602c",
+      "research/model_v2/cv.py": "836b367d66f1b564504f54eca4bc210af7f73eb12ae662db96224784ccb7914c",
+      "research/model_v2/diagnostics.py": "176df71f4ea78ed0bba3ab8c0d2a308c72d799f8e6c0f29e71e6af530a91c44f",
+      "research/model_v2/geometry.py": "5ab4f44b97c04652f08d66d8841b3d57e8fd2acbf05ac55583cb86a3d887d3ef",
+      "research/model_v2/m0.py": "f3f758ee90e45d457c43ed3d0187446d353a5cdc8a9801c9707334486c23b8e4",
+      "research/model_v2/m2_feasibility.py": "8bcbf364e0f8cc2424acfe839f9f7cc798578e88b5ceb8471bb0608e77fa61dc",
+      "research/model_v2/m2_latitude_basis.py": "86024958de49f6c83825e063c05b6e4f114f576efbe93477d3892299de5bb304",
+      "research/model_v2/m3_feasibility.py": "6e0781fa332b8f7518ca8ba211f42413f0e484cabf351573422aea0648c6351b",
+      "research/model_v2/m3_spatial.py": "252bdd31587a0c2c3b897616bd80e767075878d2b3d1f9bdeb20ae984cc3d536",
+      "research/model_v2/regions.py": "c81150ab482d4d1bce3b48187c87b124222c2bdcf82ee2619c357ef27d6db411",
+      "research/model_v2/run_m0_scorecard.py": "8755de8e7bce2eb3c8c4e06b45ab26589cff2667a40592bd792da8667bd06aa0",
+      "research/model_v2/run_territory_correction.py": "63b6daaaa4f1005596ced823e2ed4353e41a48063c82d3c6646eb203ada8b35a",
+      "research/model_v2/spatial.py": "c4cbd21fc0f3513d1c7bf5a7cc666e22c1b743e5fac75042b57842f097b353cf",
+      "research/model_v2/territory.py": "1703a2afd231a028172c690c51d3c90a02686e49819547b379f5a76bbcf0ebf1",
+      "research/model_v2/v2_provenance.py": "a8b729adb7d3a9d5769d0331fcdcc1c10cc4df8bd887996021fd0797016c5220",
+      "src/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/area_weighting.py": "9c3564a109b75958a05fa0571c019e0122f75efbf737751a728f222b138fd510",
+      "src/cleaning.py": "8b0eea05c4c1e82f220bc734cf95a7305a249c0d90779ddd41a382b3380255a7",
+      "src/data_io.py": "547cefff2c7c1de7b8f18a0db3482c0473c6068289d77531035813a4e547db2e",
+      "src/decomposition.py": "e6bb67560a37a51f91fb5de8ebed7119f6bb3eae615250f6365b32fe96f5ec06",
+      "src/emissions.py": "169a692a5860284399304d46d73c27b809a194c57032d14638d645741b9bff19",
+      "src/explain.py": "0d0f67b030e912e0d997a7fe3d6c6eec439aae832812e93af473ac647524e8b5",
+      "src/feature_schema.py": "78d0c302ea9ba911947b62739f14702cf2ca0d5fd608b18d0c6d78ba9ecfe3ec",
+      "src/figures.py": "8d160a6fef0b58d7dd84f3406f7e49206d711bde686327f789484437d7ad0c24",
+      "src/grids.py": "89f419be8a19e4fab91c00001192c8c027bfbbe4769cec5d055d089a93a83eed",
+      "src/interpolate.py": "c89b62cfd6182fe05eb171347220bcf7a1a06d1b3a4bc01967a17c29fb52abed",
+      "src/population.py": "10872eab45b9e73c17cf1f5a6debb895669dda784d8617c1ad2c3cdd34a6c652",
+      "src/stability.py": "ee3a6fa5d0b4850a537eace41832c36e7252452c51a8f751abb67fdf58a9696c",
+      "src/trends.py": "56b0abc1243e7b10cbc49fccf63c6fc819ef0decd1a63997aaa115bb439639ae",
+      "uv.lock": "2ce75d74bb683bcf2000c12fb565b8d6fcac003a35a4ddef5f8936253aece0d5"
+    },
+    "canonical_eligible": true
+  },
+  "inputs": {
+    "research/model_v2/outputs/m0_countries.csv": "9e99b3798e91f2b7e40250921edd5e5a788e4191df3e9027dceb98fe76b43536",
+    "research/model_v2/outputs/country_geometry.csv": "c8d72866d97d13288b3024781cd262f378ce08749d5166e0d4805bea01903e3a",
+    "research/model_v2/outputs/m1b_primary/m1b_cv_folds.csv": "6a9e3976f51e60a66c6b70fd65cc56626df1eec28a41e774c39260d1a2a459f1",
+    "research/model_v2/outputs/m1b_primary/m1b_design_matrices.csv": "bbdc8b1df1314b55c409f6ff59db03d39a9109d0a6827bef9ec58ce8a4caa982",
+    "research/model_v2/outputs/m1b_primary/m1b_provenance.json": "415a7c6437fa54f2013f894721c6c9dce4e255e173a67b4b3cd85e2650ea1b19",
+    "research/model_v2/outputs/territory_distance_lower_km.csv": "79a20f007ebe08044833753956cdf859c27d505a2c10747b5e4df3469ee2c6e4"
+  },
+  "full_sample_weight_digests_match_m1b_identity": true,
+  "graphs": {
+    "fits": 968,
+    "all_structural_pass": true,
+    "min_n_train": 107,
+    "by_weights_protocol": {
+      "station/full_sample": {
+        "fits": 1,
+        "n_train_min": 151,
+        "n_train_max": 151,
+        "training_boundary_ties_total": 4,
+        "attachment_boundary_ties_total": 0,
+        "attachment_first_km_min": null,
+        "attachment_eighth_km_max": null,
+        "spectral_radius_max": 1.0000000000000038,
+        "min_real_eigenvalue_min": -0.297788142288598,
+        "logdet_sign_positive_all": true
+      },
+      "station/primary_loco": {
+        "fits": 151,
+        "n_train_min": 124,
+        "n_train_max": 150,
+        "training_boundary_ties_total": 544,
+        "attachment_boundary_ties_total": 0,
+        "attachment_first_km_min": 644.2038031593597,
+        "attachment_eighth_km_max": 9182.273627364239,
+        "spectral_radius_max": 1.0000000000000098,
+        "min_real_eigenvalue_min": -0.3573429651740909,
+        "logdet_sign_positive_all": true
+      },
+      "station/m49_subregion_lo": {
+        "fits": 20,
+        "n_train_min": 136,
+        "n_train_max": 150,
+        "training_boundary_ties_total": 74,
+        "attachment_boundary_ties_total": 1,
+        "attachment_first_km_min": 258.20955457253524,
+        "attachment_eighth_km_max": 9201.290397887928,
+        "spectral_radius_max": 1.0000000000000053,
+        "min_real_eigenvalue_min": -0.3277308776666228,
+        "logdet_sign_positive_all": true
+      },
+      "station/random10": {
+        "fits": 10,
+        "n_train_min": 135,
+        "n_train_max": 136,
+        "training_boundary_ties_total": 24,
+        "attachment_boundary_ties_total": 2,
+        "attachment_first_km_min": 0.0,
+        "attachment_eighth_km_max": 9182.273627364239,
+        "spectral_radius_max": 1.0000000000000062,
+        "min_real_eigenvalue_min": -0.3608534358624141,
+        "logdet_sign_positive_all": true
+      },
+      "station/buffer_territory_1000km": {
+        "fits": 151,
+        "n_train_min": 107,
+        "n_train_max": 149,
+        "training_boundary_ties_total": 514,
+        "attachment_boundary_ties_total": 3,
+        "attachment_first_km_min": 1214.8917886539873,
+        "attachment_eighth_km_max": 9201.290397887928,
+        "spectral_radius_max": 1.0000000000000144,
+        "min_real_eigenvalue_min": -0.3548803259967702,
+        "logdet_sign_positive_all": true
+      },
+      "station/buffer_centroid_1500km": {
+        "fits": 151,
+        "n_train_min": 121,
+        "n_train_max": 150,
+        "training_boundary_ties_total": 544,
+        "attachment_boundary_ties_total": 2,
+        "attachment_first_km_min": 1015.7617107783623,
+        "attachment_eighth_km_max": 9182.273627364239,
+        "spectral_radius_max": 1.0000000000000053,
+        "min_real_eigenvalue_min": -0.3467075854435424,
+        "logdet_sign_positive_all": true
+      },
+      "land/full_sample": {
+        "fits": 1,
+        "n_train_min": 151,
+        "n_train_max": 151,
+        "training_boundary_ties_total": 0,
+        "attachment_boundary_ties_total": 0,
+        "attachment_first_km_min": null,
+        "attachment_eighth_km_max": null,
+        "spectral_radius_max": 0.9999999999999988,
+        "min_real_eigenvalue_min": -0.3202699578252153,
+        "logdet_sign_positive_all": true
+      },
+      "land/primary_loco": {
+        "fits": 151,
+        "n_train_min": 124,
+        "n_train_max": 150,
+        "training_boundary_ties_total": 0,
+        "attachment_boundary_ties_total": 0,
+        "attachment_first_km_min": 746.2377722462636,
+        "attachment_eighth_km_max": 9213.028207715477,
+        "spectral_radius_max": 1.0000000000000075,
+        "min_real_eigenvalue_min": -0.3499006105913598,
+        "logdet_sign_positive_all": true
+      },
+      "land/m49_subregion_lo": {
+        "fits": 20,
+        "n_train_min": 136,
+        "n_train_max": 150,
+        "training_boundary_ties_total": 0,
+        "attachment_boundary_ties_total": 0,
+        "attachment_first_km_min": 172.30572647040742,
+        "attachment_eighth_km_max": 9362.03692412302,
+        "spectral_radius_max": 1.0000000000000073,
+        "min_real_eigenvalue_min": -0.3401567443033636,
+        "logdet_sign_positive_all": true
+      },
+      "land/random10": {
+        "fits": 10,
+        "n_train_min": 135,
+        "n_train_max": 136,
+        "training_boundary_ties_total": 0,
+        "attachment_boundary_ties_total": 0,
+        "attachment_first_km_min": 136.3897925594138,
+        "attachment_eighth_km_max": 9213.028207715477,
+        "spectral_radius_max": 1.0000000000000029,
+        "min_real_eigenvalue_min": -0.37742126005528137,
+        "logdet_sign_positive_all": true
+      },
+      "land/buffer_territory_1000km": {
+        "fits": 151,
+        "n_train_min": 107,
+        "n_train_max": 149,
+        "training_boundary_ties_total": 0,
+        "attachment_boundary_ties_total": 0,
+        "attachment_first_km_min": 1248.9973129731588,
+        "attachment_eighth_km_max": 9362.03692412302,
+        "spectral_radius_max": 1.000000000000009,
+        "min_real_eigenvalue_min": -0.3945114996206793,
+        "logdet_sign_positive_all": true
+      },
+      "land/buffer_centroid_1500km": {
+        "fits": 151,
+        "n_train_min": 121,
+        "n_train_max": 150,
+        "training_boundary_ties_total": 0,
+        "attachment_boundary_ties_total": 0,
+        "attachment_first_km_min": 1501.6293817646874,
+        "attachment_eighth_km_max": 9213.028207715477,
+        "spectral_radius_max": 1.0000000000000084,
+        "min_real_eigenvalue_min": -0.3690412954634259,
+        "logdet_sign_positive_all": true
+      }
+    }
+  },
+  "synthetic_estimator": {
+    "outcome": "synthetic draws from each family with theta={'sem': 0.4, 'sar': 0.4}, sigma=0.03, seed 20260916; real encoded designs and station graphs; no warming outcome",
+    "fits": 728,
+    "non_computable": 0,
+    "at_domain_bound": 0,
+    "failures": [],
+    "held_out_invariance_all": true,
+    "max_grid_local_maxima": 1,
+    "full_sample": [
+      {
+        "model": "M0star",
+        "family": "sem",
+        "theta": -0.21275979696135564,
+        "true_theta": 0.4,
+        "se": 0.194083197759777,
+        "wald_lower": -0.5931558745748835,
+        "wald_upper": 0.1676362806521722,
+        "n_grid_local_maxima": 1
+      },
+      {
+        "model": "M0star",
+        "family": "sar",
+        "theta": 0.3993548659321204,
+        "true_theta": 0.4,
+        "se": 0.0023410425498543515,
+        "wald_lower": 0.39476650684813,
+        "wald_upper": 0.40394322501611074,
+        "n_grid_local_maxima": 1
+      },
+      {
+        "model": "M2",
+        "family": "sem",
+        "theta": -0.18507641384066256,
+        "true_theta": 0.4,
+        "se": 0.19176204446296913,
+        "wald_lower": -0.5609231145898506,
+        "wald_upper": 0.1907702869085254,
+        "n_grid_local_maxima": 1
+      },
+      {
+        "model": "M2",
+        "family": "sar",
+        "theta": 0.39854015291909856,
+        "true_theta": 0.4,
+        "se": 0.0011643150719378695,
+        "wald_lower": 0.39625813731144316,
+        "wald_upper": 0.40082216852675395,
+        "n_grid_local_maxima": 1
+      }
+    ],
+    "seconds_total": 33.81981137499679,
+    "seconds_per_fit_median": 0.04496116699920094
+  },
+  "synthetic_shrinkage_monte_carlo": {
+    "rows": [
+      {
+        "design": "intercept_only",
+        "family": "sem",
+        "true_theta": 0.0,
+        "draws": 100,
+        "mean_theta_hat": -0.06449790843180482,
+        "sd_theta_hat": 0.18160676270859738,
+        "at_domain_bound": 0
+      },
+      {
+        "design": "intercept_only",
+        "family": "sem",
+        "true_theta": 0.4,
+        "draws": 100,
+        "mean_theta_hat": 0.3543407614402929,
+        "sd_theta_hat": 0.16061680803960268,
+        "at_domain_bound": 0
+      },
+      {
+        "design": "intercept_only",
+        "family": "sar",
+        "true_theta": 0.0,
+        "draws": 100,
+        "mean_theta_hat": -0.02325886711809344,
+        "sd_theta_hat": 0.17892866518075282,
+        "at_domain_bound": 0
+      },
+      {
+        "design": "intercept_only",
+        "family": "sar",
+        "true_theta": 0.4,
+        "draws": 100,
+        "mean_theta_hat": 0.3567427220124955,
+        "sd_theta_hat": 0.16125387029002786,
+        "at_domain_bound": 0
+      },
+      {
+        "design": "M0star",
+        "family": "sem",
+        "true_theta": 0.0,
+        "draws": 100,
+        "mean_theta_hat": -0.5321662737688533,
+        "sd_theta_hat": 0.33422471683697974,
+        "at_domain_bound": 14
+      },
+      {
+        "design": "M0star",
+        "family": "sem",
+        "true_theta": 0.4,
+        "draws": 100,
+        "mean_theta_hat": 0.019408514029477235,
+        "sd_theta_hat": 0.34618503401534156,
+        "at_domain_bound": 1
+      },
+      {
+        "design": "M0star",
+        "family": "sar",
+        "true_theta": 0.0,
+        "draws": 100,
+        "mean_theta_hat": -0.3458937351963354,
+        "sd_theta_hat": 0.22634401814423272,
+        "at_domain_bound": 0
+      },
+      {
+        "design": "M0star",
+        "family": "sar",
+        "true_theta": 0.4,
+        "draws": 100,
+        "mean_theta_hat": 0.07464270713873894,
+        "sd_theta_hat": 0.2365137716491672,
+        "at_domain_bound": 0
+      },
+      {
+        "design": "M2",
+        "family": "sem",
+        "true_theta": 0.0,
+        "draws": 100,
+        "mean_theta_hat": -0.6005676864105073,
+        "sd_theta_hat": 0.3169745071692067,
+        "at_domain_bound": 13
+      },
+      {
+        "design": "M2",
+        "family": "sem",
+        "true_theta": 0.4,
+        "draws": 100,
+        "mean_theta_hat": -0.20006287924908175,
+        "sd_theta_hat": 0.37827857542499693,
+        "at_domain_bound": 3
+      },
+      {
+        "design": "M2",
+        "family": "sar",
+        "true_theta": 0.0,
+        "draws": 100,
+        "mean_theta_hat": -0.42542786329417304,
+        "sd_theta_hat": 0.2373752810349194,
+        "at_domain_bound": 3
+      },
+      {
+        "design": "M2",
+        "family": "sar",
+        "true_theta": 0.4,
+        "draws": 100,
+        "mean_theta_hat": -0.018591399591580616,
+        "sd_theta_hat": 0.2476901189761396,
+        "at_domain_bound": 0
+      }
+    ],
+    "reading": "synthetic draws with an intercept-only mean and true theta 0 or 0.4 on the full-sample station graph; the regional and climate dummies of the frozen static designs absorb spatially smooth error, so ML theta-hat is pulled toward zero. This is recorded before any M3 result to inform how dependence parameters are read; it changes no rule."
+  },
+  "software": {
+    "python": "3.11.12",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "machine": "arm64"
+  },
+  "numerical_note": "eigenvalues, log-determinants, timings and synthetic estimates are platform-scoped in their last bits; the structural evidence is sizes, ties, signs and failure counts"
+}

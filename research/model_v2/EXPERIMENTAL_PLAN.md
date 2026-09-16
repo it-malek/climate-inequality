@@ -135,6 +135,8 @@ because M3 is an accounting step, not a model-selection step.
   sign criterion (a disclosed pre-score relaxation of the criterion). The overfitting signal is reported in full as a
   diagnostic.
 * **Status.** No M2 fit or score exists, and execution needs separate authorization.
+* **Authorized 2026-09-16** (recorded completion decision; `M2_PRE_SCORE_RESOLUTIONS.md`, contract
+  Amendment 1). Execution still requires the evaluator freeze of contract §9.
 
 ## M3 — explicit spatial structure
 
@@ -156,6 +158,12 @@ change materially when the spatial term is present; and whether the spatial
 term generalises under the primary protocol at all. A spatial term is retained
 for prediction only under the improvement rule; its accounting value is
 reported regardless.
+
+**Executable operationalization frozen later (2026-09-16, before any M2 fit; the historical text above is
+unchanged and was not executable as written).** The recorded completion decision authorized M2 execution,
+M3 and M4. Equations, estimator, graphs, held-out prediction, failure rules, accounting estimands, retention
+gates and final naming are frozen in `DOWNSTREAM_COMPLETION_SPEC.md` §2, with feasibility evidence in
+`M3_FEASIBILITY_AUDIT.md`. The optional geostatistical form is not pursued.
 
 ## M4 — final spatial out-of-sample assessment
 
@@ -180,6 +188,11 @@ product-robustness arm, if run, bounding how much of it is observational.
 country-level static covariates; M3 then quantifies its spatial covariance and
 M4 reports that result as the finding. A defensible "substantial variance
 remains" is preferred to a fragile high-fitting model.
+
+**Executable scope frozen later (2026-09-16, before any M2 fit).** The M4 evidence scope, uncertainty
+applicability, sensitivities, product check (both ERA5 constructions of the eventual model, no two-product
+mean) and completion criteria are frozen in `DOWNSTREAM_COMPLETION_SPEC.md` §3 and
+`M4_EVIDENCE_INVENTORY.md`.
 
 ## What every stage must not do
 
