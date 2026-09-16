@@ -10,7 +10,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 |---|---|---|---|
 | 1 | Downstream M3/M4 specification and pre-score resolutions | committed with this file's first version | spec `DOWNSTREAM_COMPLETION_SPEC.md`; M3 tooling `c27c7fd`, boundary disposition `99f2c3d`; feasibility record from `99f2c3d` |
 | 2 | M2 evaluator freeze | committed with `M2_EVALUATOR_SPEC.md`, `m2_evaluate.py`, `m2_conditional.py`, `m2_independent_check.py` | downstream Amendment A1 `ef04958` precedes it |
-| 3 | Primary M2 result, report, verification | not started | — |
+| 3 | Primary M2 result, report, verification | committed with `M2_REPORT.md` and `outputs/m2_primary/` | evaluator `b13bb04`; label `not supported`; retained static M0\*; stopping indicator does not fire |
 | 4 | M2 conditional robustness or non-execution | not started | — |
 | 5 | M3 evaluator freeze | not started | — |
 | 6 | Primary M3 result and verification | not started | — |
@@ -23,7 +23,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 
 | Stage | First outcome-facing fit has occurred? |
 |---|---|
-| M2 candidate | **no** |
+| M2 candidate | **yes**: once, from `b13bb04` (2026-09-16), plus one unchanged-code rerun |
 | M3 spatial families | **no** |
 | M4 new computations | **no** |
 
@@ -33,8 +33,8 @@ in either (M2 fits raise in the anchor test).
 
 ## Outcome-activated branches
 
-* Branch (A: retained static M0\*; B: retained static M2): **not yet selected**.
-* M2 conditional arms: **not yet authorized or refused**.
+* Branch: **A** (retained static specification M0\*), mechanically from the M2 label `not supported`.
+* M2 conditional arms: **not authorized** (no predictive support); non-execution record due at checkpoint 4.
 * M3 qualifying set / final naming: **not yet determined**.
 
 ## Evidence paths (this checkpoint)
@@ -51,13 +51,13 @@ in either (M2 fits raise in the anchor test).
 
 ## Next executable action
 
-Score M2 once from the exact pushed evaluator-freeze commit:
-`PYTHONHASHSEED=0 uv run python -m research.model_v2.m2_evaluate` (output `research/model_v2/outputs/m2_primary`),
-then the independent check and one unchanged-code rerun into a fresh root.
+Write the M2 conditional non-execution record from the committed, pushed primary result:
+`PYTHONHASHSEED=0 uv run python -m research.model_v2.m2_conditional` (checkpoint 4). Then freeze the M3 evaluator
+(`m3_evaluate.py`, `M3_EVALUATOR_SPEC.md`, tests, `m3_independent_check.py`) after a full suite run
+(checkpoint 5) and score the station arm.
 
-Full suite before this freeze: 1137 passed, 6 skipped (`uv run python -m pytest -q tests research/model_v2/tests`);
-`ruff check src tests app scripts research/model_v2` clean; app unittest OK; production outside `research/`
-identical to `v1.3.0`.
+Verification evidence for checkpoint 3: `outputs/m2_primary_verification/m2_independent_check.json` (all checks
+pass; five negative controls detected) and `m2_reproducibility.json` (byte-identical rerun).
 
 ## Blockers
 
