@@ -9,7 +9,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 | # | Checkpoint | State | Identity (resolve through Git) |
 |---|---|---|---|
 | 1 | Downstream M3/M4 specification and pre-score resolutions | committed with this file's first version | spec `DOWNSTREAM_COMPLETION_SPEC.md`; M3 tooling `c27c7fd`, boundary disposition `99f2c3d`; feasibility record from `99f2c3d` |
-| 2 | M2 evaluator freeze | not started | — |
+| 2 | M2 evaluator freeze | committed with `M2_EVALUATOR_SPEC.md`, `m2_evaluate.py`, `m2_conditional.py`, `m2_independent_check.py` | downstream Amendment A1 `ef04958` precedes it |
 | 3 | Primary M2 result, report, verification | not started | — |
 | 4 | M2 conditional robustness or non-execution | not started | — |
 | 5 | M3 evaluator freeze | not started | — |
@@ -51,10 +51,13 @@ in either (M2 fits raise in the anchor test).
 
 ## Next executable action
 
-Commit and push the M2 evaluator specification, `m2_evaluate.py`, `m2_conditional.py`, `v2_provenance.py`
-(already committed at `c27c7fd`), `m2_independent_check.py` and their tests after the full suite passes
-(checkpoint 2); then score M2 from that exact pushed commit with `PYTHONHASHSEED=0` into
-`research/model_v2/outputs/m2_primary`.
+Score M2 once from the exact pushed evaluator-freeze commit:
+`PYTHONHASHSEED=0 uv run python -m research.model_v2.m2_evaluate` (output `research/model_v2/outputs/m2_primary`),
+then the independent check and one unchanged-code rerun into a fresh root.
+
+Full suite before this freeze: 1137 passed, 6 skipped (`uv run python -m pytest -q tests research/model_v2/tests`);
+`ruff check src tests app scripts research/model_v2` clean; app unittest OK; production outside `research/`
+identical to `v1.3.0`.
 
 ## Blockers
 
