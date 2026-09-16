@@ -1,0 +1,208 @@
+{
+  "primary_total_co2": {
+    "country": {
+      "n_draws": 2000,
+      "usable": 2000,
+      "degenerate": 0,
+      "rank_deficient_usable": 0,
+      "groups": {
+        "emissions": {
+          "point": 0.013133720535194857,
+          "mean": 0.017060449949682387,
+          "sd": 0.007613843961094594,
+          "ci_low": 0.005856827388177317,
+          "ci_high": 0.035027664317152735
+        },
+        "geography": {
+          "point": 0.5188374533606563,
+          "mean": 0.54234468215762,
+          "sd": 0.04620703263716416,
+          "ci_low": 0.4522525803194503,
+          "ci_high": 0.6297692084995653
+        },
+        "socioeconomic": {
+          "point": 0.06282146968655955,
+          "mean": 0.07338462716523093,
+          "sd": 0.023568904630865858,
+          "ci_low": 0.035574931205837275,
+          "ci_high": 0.12581266182287426
+        },
+        "population": {
+          "point": 0.041653359172317,
+          "mean": 0.04984200140510565,
+          "sd": 0.017271972621301146,
+          "ci_low": 0.020960177590552177,
+          "ci_high": 0.08975466579679788
+        },
+        "residual": {
+          "point": 0.36355399724527193,
+          "mean": 0.317368239322361,
+          "sd": 0.04445326942498272,
+          "ci_low": 0.23302457204987992,
+          "ci_high": 0.40728484150483274
+        }
+      },
+      "p_geography_largest": 1.0,
+      "geography_margin_percentile_2_5": 0.3475700890180431,
+      "seed": 0
+    },
+    "block": {
+      "n_draws": 2000,
+      "usable": 2000,
+      "degenerate": 0,
+      "rank_deficient_usable": 25,
+      "groups": {
+        "emissions": {
+          "point": 0.013133720535194857,
+          "mean": 0.03560365181298912,
+          "sd": 0.030765248023678388,
+          "ci_low": 0.007864528304451529,
+          "ci_high": 0.11561693713799917
+        },
+        "geography": {
+          "point": 0.5188374533606563,
+          "mean": 0.5088245742153469,
+          "sd": 0.05207514150587955,
+          "ci_low": 0.38526546830609976,
+          "ci_high": 0.593513058874134
+        },
+        "socioeconomic": {
+          "point": 0.06282146968655955,
+          "mean": 0.07726370464959047,
+          "sd": 0.03362997510121643,
+          "ci_low": 0.03842230075752649,
+          "ci_high": 0.15305642336466715
+        },
+        "population": {
+          "point": 0.041653359172317,
+          "mean": 0.05380429218808594,
+          "sd": 0.025078763638585393,
+          "ci_low": 0.015308960302013674,
+          "ci_high": 0.1172641269170049
+        },
+        "residual": {
+          "point": 0.36355399724527193,
+          "mean": 0.3245037771339876,
+          "sd": 0.0805821450389225,
+          "ci_low": 0.188532267499132,
+          "ci_high": 0.5039496382636656
+        }
+      },
+      "p_geography_largest": 1.0,
+      "geography_margin_percentile_2_5": 0.2771581174166682,
+      "seed": 1
+    },
+    "material_change": {
+      "point_geography_not_largest": false,
+      "interval_geography_not_established_country": false,
+      "interval_geography_not_established_block": false,
+      "responsibility_exceeds_0_10": false,
+      "responsibility_upper_country_ci_exceeds_0_10": false,
+      "material_change_to_v1_conclusion": false
+    },
+    "rule": "plan \"Material change\" with the country bootstrap as the headline interval; the block bootstrap version is reported alongside; descriptive allocation, never causal"
+  },
+  "per_capita": {
+    "country": {
+      "n_draws": 2000,
+      "usable": 2000,
+      "degenerate": 0,
+      "rank_deficient_usable": 0,
+      "groups": {
+        "emissions": {
+          "point": 0.020435358891495437,
+          "mean": 0.024339011707881525,
+          "sd": 0.011652177908478067,
+          "ci_low": 0.006365879233986054,
+          "ci_high": 0.050930015183791005
+        },
+        "geography": {
+          "point": 0.513519756654464,
+          "mean": 0.5367256893271322,
+          "sd": 0.04634984237194469,
+          "ci_low": 0.446151612833403,
+          "ci_high": 0.6248584318530619
+        },
+        "socioeconomic": {
+          "point": 0.06928246597399389,
+          "mean": 0.07985818555548549,
+          "sd": 0.02429094427545267,
+          "ci_low": 0.03960176150673736,
+          "ci_high": 0.13364057185875705
+        },
+        "population": {
+          "point": 0.03320842123477459,
+          "mean": 0.04170887408713972,
+          "sd": 0.016612309166735992,
+          "ci_low": 0.014754759157315897,
+          "ci_high": 0.08032941550421187
+        },
+        "residual": {
+          "point": 0.3635539972452718,
+          "mean": 0.317368239322361,
+          "sd": 0.04445326942498272,
+          "ci_low": 0.23302457204987992,
+          "ci_high": 0.40728484150483285
+        }
+      },
+      "p_geography_largest": 1.0,
+      "geography_margin_percentile_2_5": 0.3354598571189776,
+      "seed": 0
+    },
+    "block": {
+      "n_draws": 2000,
+      "usable": 2000,
+      "degenerate": 0,
+      "rank_deficient_usable": 25,
+      "groups": {
+        "emissions": {
+          "point": 0.020435358891495437,
+          "mean": 0.059814558880900696,
+          "sd": 0.05423024389097045,
+          "ci_low": 0.010129883798881734,
+          "ci_high": 0.19470042537080787
+        },
+        "geography": {
+          "point": 0.513519756654464,
+          "mean": 0.4986956260719887,
+          "sd": 0.050361296530143,
+          "ci_low": 0.38442684046457987,
+          "ci_high": 0.5777057930573435
+        },
+        "socioeconomic": {
+          "point": 0.06928246597399389,
+          "mean": 0.07844723820015671,
+          "sd": 0.030614071758941045,
+          "ci_low": 0.04035812931260704,
+          "ci_high": 0.14517960819389816
+        },
+        "population": {
+          "point": 0.03320842123477459,
+          "mean": 0.03853879971296634,
+          "sd": 0.02705469276390672,
+          "ci_low": 0.0067252997525315905,
+          "ci_high": 0.1113481178326196
+        },
+        "residual": {
+          "point": 0.3635539972452718,
+          "mean": 0.3245037771339876,
+          "sd": 0.0805821450389225,
+          "ci_low": 0.1885322674991321,
+          "ci_high": 0.5039496382636656
+        }
+      },
+      "p_geography_largest": 1.0,
+      "geography_margin_percentile_2_5": 0.2521649105535654,
+      "seed": 1
+    },
+    "material_change": {
+      "point_geography_not_largest": false,
+      "interval_geography_not_established_country": false,
+      "interval_geography_not_established_block": false,
+      "responsibility_exceeds_0_10": false,
+      "responsibility_upper_country_ci_exceeds_0_10": false,
+      "material_change_to_v1_conclusion": false
+    },
+    "rule": "plan \"Material change\" with the country bootstrap as the headline interval; the block bootstrap version is reported alongside; descriptive allocation, never causal"
+  }
+}

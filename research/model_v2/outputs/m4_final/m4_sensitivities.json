@@ -1,0 +1,167 @@
+{
+  "buffer_territory_1000km/primary_total_co2": {
+    "M0star": {
+      "status": "computed",
+      "cv_r2": 0.06903273217218031,
+      "cv_rmse": 0.044949577651196504,
+      "cv_mae": 0.03674833885391387,
+      "anchor_m0_committed_card": "reproduced to 1e-9"
+    },
+    "M3-SEM(M0*)": {
+      "status": "computed",
+      "cv_r2": 0.1263378945724114,
+      "cv_rmse": 0.04354418425263439,
+      "cv_mae": 0.03465355778796694,
+      "at_domain_bound_fits": 0
+    },
+    "M3-SAR(M0*)": {
+      "status": "computed",
+      "cv_r2": 0.19131177751927086,
+      "cv_rmse": 0.04189372414017848,
+      "cv_mae": 0.03411096057268077,
+      "at_domain_bound_fits": 0
+    },
+    "paired_M3-SEM(M0*)_minus_S": {
+      "delta_rmse": -0.0014053933985621117,
+      "country_bootstrap_95_interval": [
+        -0.004265811409394522,
+        0.0014988433014002935
+      ],
+      "resamples": 2000,
+      "seed": 0
+    },
+    "paired_M3-SAR(M0*)_minus_S": {
+      "delta_rmse": -0.0030558535110180238,
+      "country_bootstrap_95_interval": [
+        -0.00579892127638341,
+        -0.0002282214294798256
+      ],
+      "resamples": 2000,
+      "seed": 0
+    }
+  },
+  "buffer_territory_1000km/per_capita": {
+    "M0star": {
+      "status": "computed",
+      "cv_r2": 0.06903273217219241,
+      "cv_rmse": 0.04494957765119621,
+      "cv_mae": 0.036748338853913674,
+      "anchor_m0_committed_card": "reproduced to 1e-9"
+    },
+    "M3-SEM(M0*)": {
+      "status": "computed",
+      "cv_r2": 0.12633789343305335,
+      "cv_rmse": 0.043544184281027756,
+      "cv_mae": 0.034653557792579275,
+      "at_domain_bound_fits": 0
+    },
+    "M3-SAR(M0*)": {
+      "status": "computed",
+      "cv_r2": 0.191311777889151,
+      "cv_rmse": 0.04189372413059775,
+      "cv_mae": 0.0341109605738637,
+      "at_domain_bound_fits": 0
+    },
+    "paired_M3-SEM(M0*)_minus_S": {
+      "delta_rmse": -0.0014053933701684562,
+      "country_bootstrap_95_interval": [
+        -0.004265811314230689,
+        0.0014988433535612277
+      ],
+      "resamples": 2000,
+      "seed": 0
+    },
+    "paired_M3-SAR(M0*)_minus_S": {
+      "delta_rmse": -0.0030558535205984644,
+      "country_bootstrap_95_interval": [
+        -0.005798921317779886,
+        -0.00022822142435611302
+      ],
+      "resamples": 2000,
+      "seed": 0
+    }
+  },
+  "buffer_centroid_1500km/primary_total_co2": {
+    "M0star": {
+      "status": "computed",
+      "cv_r2": 0.2252464959296503,
+      "cv_rmse": 0.04100531798989749,
+      "cv_mae": 0.03339648552232094,
+      "anchor_m0_committed_card": "reproduced to 1e-9"
+    },
+    "M3-SEM(M0*)": {
+      "status": "computed",
+      "cv_r2": 0.33048961484620765,
+      "cv_rmse": 0.03811861113214019,
+      "cv_mae": 0.03114446594165849,
+      "at_domain_bound_fits": 1
+    },
+    "M3-SAR(M0*)": {
+      "status": "computed",
+      "cv_r2": 0.3816693781770979,
+      "cv_rmse": 0.03663268798640986,
+      "cv_mae": 0.029456276056675043,
+      "at_domain_bound_fits": 0
+    },
+    "paired_M3-SEM(M0*)_minus_S": {
+      "delta_rmse": -0.0028867068577572985,
+      "country_bootstrap_95_interval": [
+        -0.005234790733985651,
+        -0.0001513341912270062
+      ],
+      "resamples": 2000,
+      "seed": 0
+    },
+    "paired_M3-SAR(M0*)_minus_S": {
+      "delta_rmse": -0.004372630003487629,
+      "country_bootstrap_95_interval": [
+        -0.00694802521104579,
+        -0.0016284887022371356
+      ],
+      "resamples": 2000,
+      "seed": 0
+    }
+  },
+  "buffer_centroid_1500km/per_capita": {
+    "M0star": {
+      "status": "computed",
+      "cv_r2": 0.22524649592967183,
+      "cv_rmse": 0.04100531798989692,
+      "cv_mae": 0.033396485522321245,
+      "anchor_m0_committed_card": "reproduced to 1e-9"
+    },
+    "M3-SEM(M0*)": {
+      "status": "computed",
+      "cv_r2": 0.3304896147759435,
+      "cv_rmse": 0.03811861113414044,
+      "cv_mae": 0.03114446593803161,
+      "at_domain_bound_fits": 1
+    },
+    "M3-SAR(M0*)": {
+      "status": "computed",
+      "cv_r2": 0.3816693789501132,
+      "cv_rmse": 0.036632687963511414,
+      "cv_mae": 0.029456276033731778,
+      "at_domain_bound_fits": 0
+    },
+    "paired_M3-SEM(M0*)_minus_S": {
+      "delta_rmse": -0.0028867068557564823,
+      "country_bootstrap_95_interval": [
+        -0.005234790726944724,
+        -0.0001513341831666309
+      ],
+      "resamples": 2000,
+      "seed": 0
+    },
+    "paired_M3-SAR(M0*)_minus_S": {
+      "delta_rmse": -0.004372630026385507,
+      "country_bootstrap_95_interval": [
+        -0.00694802525009077,
+        -0.0016284887167995218
+      ],
+      "resamples": 2000,
+      "seed": 0
+    }
+  },
+  "scope": "retained specifications only: S, each qualifying spatial extension and, in branch B, M0* as S's comparator; rejected candidates and non-qualifying families are not executed"
+}

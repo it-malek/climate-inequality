@@ -1,0 +1,360 @@
+{
+  "rows": [
+    {
+      "stage": "M0 (V1 frozen, corrected 500 km primary)",
+      "status": "frozen baseline",
+      "comparator": null,
+      "primary_cv_r2": 0.15307991296259282,
+      "primary_cv_rmse": 0.04287258067948678,
+      "primary_cv_mae": 0.03446458749763149,
+      "m49_cv_rmse": 0.038894136909324785,
+      "random_cv_rmse": 0.03522267820528325,
+      "worst_region": {
+        "region": "Central Asia",
+        "rmse": 0.06936437825894035,
+        "n": 4,
+        "min_region_n": 3
+      },
+      "oof_morans_i": 0.32154716769274994,
+      "paired_delta_rmse": null,
+      "paired_interval": null,
+      "allocation": {
+        "V1_rank_deficient_shares": {
+          "emissions": 0.021392838794997156,
+          "geography": 0.5130328657008392,
+          "socioeconomic": 0.06932302425611886,
+          "population": 0.032697274002773044,
+          "residual": 0.36355399724527193
+        },
+        "note": "V1 allocation; not restated under V2"
+      },
+      "source": "research/model_v2/outputs/m0_scorecard_territory_corrected.json"
+    },
+    {
+      "stage": "M0* primary total CO2",
+      "status": "approved full-rank development baseline",
+      "comparator": null,
+      "primary_cv_r2": 0.15307991296259638,
+      "primary_cv_rmse": 0.04287258067948669,
+      "primary_cv_mae": 0.0344645874976315,
+      "m49_cv_rmse": 0.03889413690932386,
+      "random_cv_rmse": 0.035222678205283596,
+      "worst_region": {
+        "region": "Central Asia",
+        "rmse": 0.06936437825894065,
+        "n": 4,
+        "min_region_n": 3
+      },
+      "oof_morans_i": 0.3215471676927579,
+      "paired_delta_rmse": null,
+      "paired_interval": null,
+      "allocation": {
+        "emissions": 0.013133720535194949,
+        "geography": 0.5188374533606565,
+        "socioeconomic": 0.06282146968655963,
+        "population": 0.0416533591723172,
+        "residual": 0.36355399724527193
+      },
+      "source": "research/model_v2/outputs/rank_audit.json"
+    },
+    {
+      "stage": "M0* per-capita",
+      "status": "registered representation sensitivity",
+      "comparator": null,
+      "primary_cv_r2": 0.15307991296261803,
+      "primary_cv_rmse": 0.04287258067948614,
+      "primary_cv_mae": 0.03446458749763083,
+      "m49_cv_rmse": 0.03889413690932395,
+      "random_cv_rmse": 0.03522267820528358,
+      "worst_region": {
+        "region": "Central Asia",
+        "rmse": 0.06936437825893833,
+        "n": 4,
+        "min_region_n": 3
+      },
+      "oof_morans_i": 0.32154716769274727,
+      "paired_delta_rmse": null,
+      "paired_interval": null,
+      "allocation": {
+        "emissions": 0.02043535889149556,
+        "geography": 0.513519756654464,
+        "socioeconomic": 0.06928246597399391,
+        "population": 0.03320842123477474,
+        "residual": 0.36355399724527193
+      },
+      "source": "research/model_v2/outputs/rank_audit.json"
+    },
+    {
+      "stage": "M1a (area geography)",
+      "status": "not promoted; measurement sensitivity",
+      "comparator": "M0* (C0)",
+      "primary_cv_r2": 0.057988282529487734,
+      "primary_cv_rmse": 0.045215419241578535,
+      "primary_cv_mae": 0.03592921366239346,
+      "m49_cv_rmse": 0.04058265245449717,
+      "random_cv_rmse": 0.037089602551800605,
+      "worst_region": {
+        "region": "Central Asia",
+        "rmse": 0.09800941418340528,
+        "n": 4,
+        "min_region_n": 3
+      },
+      "oof_morans_i": 0.3408043791612641,
+      "paired_delta_rmse": 0.002342838562091845,
+      "paired_interval": [
+        -0.0003498522577407903,
+        0.005264254669835553
+      ],
+      "allocation": {
+        "emissions": 0.013850889827095165,
+        "geography": 0.4876673892471702,
+        "socioeconomic": 0.0626478905665906,
+        "population": 0.04800484773937671,
+        "residual": 0.3878289826197675
+      },
+      "source": "research/model_v2/outputs/m1a_scorecard.json"
+    },
+    {
+      "stage": "M1b (M0* + C2 dryness)",
+      "status": "not supported",
+      "comparator": "M0*",
+      "primary_cv_r2": 0.08363912905523074,
+      "primary_cv_rmse": 0.044595565735706416,
+      "primary_cv_mae": 0.035611633669855994,
+      "m49_cv_rmse": 0.03969289536306859,
+      "random_cv_rmse": 0.035607986607940685,
+      "worst_region": {
+        "region": "Central Asia",
+        "rmse": 0.07349481277418388,
+        "n": 4,
+        "min_region_n": 3
+      },
+      "oof_morans_i": 0.32691436476555663,
+      "paired_delta_rmse": 0.0017229850562197266,
+      "paired_interval": [
+        0.0008914057822278219,
+        0.0028494442025791093
+      ],
+      "allocation": {
+        "emissions": 0.01106872184540802,
+        "geography": 0.4839997395042257,
+        "socioeconomic": 0.05933837620969215,
+        "population": 0.03622325530829013,
+        "residual": 0.3635434331046714
+      },
+      "source": "research/model_v2/outputs/m1b_primary/m1b_scorecard.json"
+    },
+    {
+      "stage": "M2 (M0* + latitude functional form)",
+      "status": "not supported",
+      "comparator": "M0*",
+      "primary_cv_r2": 0.26569748778675684,
+      "primary_cv_rmse": 0.03992049489191612,
+      "primary_cv_mae": 0.03169159030546062,
+      "m49_cv_rmse": 0.03969434958423099,
+      "random_cv_rmse": 0.03283657845902574,
+      "worst_region": {
+        "region": "Central Asia",
+        "rmse": 0.06497530447277391,
+        "n": 4,
+        "min_region_n": 3
+      },
+      "oof_morans_i": 0.3445958086960499,
+      "paired_delta_rmse": -0.002952085787570634,
+      "paired_interval": [
+        -0.005920975094086702,
+        7.786832329886491e-05
+      ],
+      "allocation": {
+        "emissions": 0.011027340225550944,
+        "geography": 0.5820866218767559,
+        "socioeconomic": 0.062064861622479116,
+        "population": 0.04226008994087778,
+        "residual": 0.302561086334336
+      },
+      "source": "research/model_v2/outputs/m2_primary/m2_scorecard.json"
+    },
+    {
+      "stage": "M3-SEM(M0*)",
+      "status": "qualifying",
+      "comparator": "M0*",
+      "primary_cv_r2": 0.2713088154606703,
+      "primary_cv_rmse": 0.03976767192988951,
+      "primary_cv_mae": 0.03192215904042875,
+      "m49_cv_rmse": 0.036970439784337034,
+      "random_cv_rmse": 0.02922649137634987,
+      "worst_region": {
+        "region": "Central America",
+        "rmse": 0.061409863781770074,
+        "n": 7,
+        "min_region_n": 3
+      },
+      "oof_morans_i": 0.259069296279818,
+      "paired_delta_rmse": -0.003104908749597242,
+      "paired_interval": [
+        -0.005917629985104372,
+        -0.00022404795910143603
+      ],
+      "allocation": {
+        "accounting": {
+          "a_static": 0.6364460027547281,
+          "a_dependence": 0.14306051467296438,
+          "a_innovation": 0.22049348257230755,
+          "absorbed_fraction_of_static_residual": 0.39350554733812626,
+          "identity_sum": 1.0,
+          "tss": 0.32771307298055113,
+          "rss_static": 0.11914139763161088,
+          "rss_innovation": 0.0722585967459545,
+          "one_step_r2": 0.7795065174276925,
+          "trend_r2": 0.5066382634132339
+        },
+        "filtered_trend_shares": {
+          "emissions": 0.011920809371955433,
+          "geography": 0.27950067307890636,
+          "socioeconomic": 0.01103093222929018,
+          "population": 0.031603720441833745
+        }
+      },
+      "source": "research/model_v2/outputs/m3_station/m3_scorecard.json"
+    },
+    {
+      "stage": "M3-SAR(M0*)",
+      "status": "qualifying",
+      "comparator": "M0*",
+      "primary_cv_r2": 0.3308508887512802,
+      "primary_cv_rmse": 0.03810832516938237,
+      "primary_cv_mae": 0.030326086330187938,
+      "m49_cv_rmse": 0.035891946603468804,
+      "random_cv_rmse": 0.02846574557749518,
+      "worst_region": {
+        "region": "Central America",
+        "rmse": 0.06463909783833217,
+        "n": 7,
+        "min_region_n": 3
+      },
+      "oof_morans_i": 0.25620504860333415,
+      "paired_delta_rmse": -0.004764255510104384,
+      "paired_interval": [
+        -0.007901326899661672,
+        -0.0015370715227798295
+      ],
+      "allocation": {
+        "accounting": {
+          "a_static": 0.6364460027547281,
+          "a_dependence": 0.1464139883158884,
+          "a_innovation": 0.21714000892938354,
+          "absorbed_fraction_of_static_residual": 0.40272968919417523,
+          "identity_sum": 1.0,
+          "tss": 0.32771307298055113,
+          "rss_static": 0.11914139763161088,
+          "rss_innovation": 0.07115961959327259,
+          "one_step_r2": 0.7828599910706164,
+          "trend_r2": 0.6752653394523398
+        },
+        "filtered_trend_shares": {
+          "emissions": 0.015238011486041748,
+          "geography": 0.31313643903511446,
+          "socioeconomic": 0.02913460606182567,
+          "population": 0.04416565714589483
+        }
+      },
+      "source": "research/model_v2/outputs/m3_station/m3_scorecard.json"
+    },
+    {
+      "stage": "M3-SEM(M0*) [land-centroid kNN8 sensitivity]",
+      "status": "weight sensitivity (descriptive)",
+      "comparator": "M0*",
+      "primary_cv_r2": 0.3330338702230363,
+      "primary_cv_rmse": 0.03804611352980582,
+      "primary_cv_mae": 0.03013557639576421,
+      "m49_cv_rmse": 0.04683813676051257,
+      "random_cv_rmse": 0.02694491348169417,
+      "worst_region": {
+        "region": "Central America",
+        "rmse": 0.060860459914991644,
+        "n": 7,
+        "min_region_n": 3
+      },
+      "oof_morans_i": 0.27267329035841453,
+      "paired_delta_rmse": -0.004826467149680935,
+      "paired_interval": [
+        -0.008094813925985316,
+        -0.0010163539919200424
+      ],
+      "allocation": {
+        "accounting": {
+          "a_static": 0.6364460027547281,
+          "a_dependence": 0.19222926537507923,
+          "a_innovation": 0.1713247318701927,
+          "absorbed_fraction_of_static_residual": 0.5287502457176716,
+          "identity_sum": 1.0,
+          "tss": 0.32771307298055113,
+          "rss_static": 0.11914139763161088,
+          "rss_innovation": 0.056145354358749816,
+          "one_step_r2": 0.8286752681298073,
+          "trend_r2": -4.590808726686876
+        },
+        "filtered_trend_shares": {
+          "emissions": 0.01652431722878875,
+          "geography": 0.3112613919454645,
+          "socioeconomic": 0.008015956478697914,
+          "population": 0.029539446128159386
+        }
+      },
+      "source": "research/model_v2/outputs/m3_land_centroid/m3_scorecard.json"
+    },
+    {
+      "stage": "M3-SAR(M0*) [land-centroid kNN8 sensitivity]",
+      "status": "weight sensitivity (descriptive)",
+      "comparator": "M0*",
+      "primary_cv_r2": 0.3408765490627035,
+      "primary_cv_rmse": 0.03782176495755694,
+      "primary_cv_mae": 0.030248116164639183,
+      "m49_cv_rmse": 0.03514345275639136,
+      "random_cv_rmse": 0.026988326886232126,
+      "worst_region": {
+        "region": "Central America",
+        "rmse": 0.060588995598616,
+        "n": 7,
+        "min_region_n": 3
+      },
+      "oof_morans_i": 0.26156836419988555,
+      "paired_delta_rmse": -0.005050815721929815,
+      "paired_interval": [
+        -0.007591243703245273,
+        -0.002076197169077716
+      ],
+      "allocation": {
+        "accounting": {
+          "a_static": 0.6364460027547281,
+          "a_dependence": 0.17399300408570645,
+          "a_innovation": 0.18956099315956548,
+          "absorbed_fraction_of_static_residual": 0.4785891653071881,
+          "identity_sum": 1.0,
+          "tss": 0.32771307298055113,
+          "rss_static": 0.11914139763161088,
+          "rss_innovation": 0.062121615585566434,
+          "one_step_r2": 0.8104390068404346,
+          "trend_r2": 0.6783387451648061
+        },
+        "filtered_trend_shares": {
+          "emissions": 0.018543090421954005,
+          "geography": 0.29483701493659026,
+          "socioeconomic": 0.023664942294494607,
+          "population": 0.04717454065403608
+        }
+      },
+      "source": "research/model_v2/outputs/m3_land_centroid/m3_scorecard.json"
+    }
+  ],
+  "legacy_block": {
+    "M0 legacy 1\u00b0 primary (defective approximation; superseded)": {
+      "primary_cv_rmse": 0.0413548917822715,
+      "primary_cv_r2": 0.2119805112621871
+    }
+  },
+  "separations": [
+    "legacy 1\u00b0 CV rows are kept outside the corrected table",
+    "V1 allocations (rank-deficient M0) are kept separate from V2 full-rank allocations"
+  ]
+}

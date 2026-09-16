@@ -15,7 +15,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 | 5 | M3 evaluator freeze | committed with `M3_EVALUATOR_SPEC.md`, `m3_evaluate.py`, `m3_independent_check.py` | method frozen at `4dc2fad` + `ef04958`; full suite 1200 passed, 6 skipped before this freeze |
 | 6 | Primary M3 result and verification | committed with `M3_REPORT.md` and `outputs/m3_station/` | evaluator `a6df380`; SEM and SAR both qualify; final primary predictive model null (non-unique) |
 | 7 | M3 land-centroid weight sensitivity | committed with `outputs/m3_land_centroid/` and the dated §8 addition to `M3_REPORT.md` | same frozen code `a6df380`; descriptive: SAR conditions hold, SEM fails the M49 veto |
-| 8 | M4 final evidence | evaluator freeze committed with `M4_EVALUATOR_SPEC.md`, `m4_evaluate.py`, `m4_independent_check.py` (full suite 1256 passed, 6 skipped); result pending | — |
+| 8 | M4 final evidence | committed with `M4_REPORT.md` and `outputs/m4_final/` | evaluator `0366281`; inventory complete; no material change to the V1 conclusion; both spatial extensions product-sensitive |
 | 9 | Scientific closure | not started | — |
 | 10 | Verified integration into `main` | not started | — |
 
@@ -25,7 +25,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 |---|---|
 | M2 candidate | **yes**: once, from `b13bb04` (2026-09-16), plus one unchanged-code rerun |
 | M3 spatial families | **yes**: station arm once from `a6df380`, plus one unchanged-code rerun |
-| M4 new computations | **no** |
+| M4 new computations | **yes**: once from `0366281`, plus one unchanged-code rerun |
 
 Disclosed baseline-only calculations: the committed M1b test and the (uncommitted at this checkpoint) M2
 evaluator anchor test score M0\* on real inputs against its frozen rank-audit cards; no M2 candidate is fitted
@@ -51,9 +51,9 @@ in either (M2 fits raise in the anchor test).
 
 ## Next executable action
 
-Freeze `m4_evaluate.py`, `M4_EVALUATOR_SPEC.md`, `m4_independent_check.py` and tests (after the full suite), then
-`PYTHONHASHSEED=0 uv run python -m research.model_v2.m4_evaluate` (output `outputs/m4_final`), its independent
-check and rerun (checkpoint 8).
+Scientific closure (checkpoint 9): `V2_FINAL_REPORT.md`, a machine-readable final record, dated status updates
+to the roadmap, README, decisions register, hypothesis register and scorecard pointers. Then branch
+verification and integration into `main` (checkpoint 10).
 
 ## Blockers
 

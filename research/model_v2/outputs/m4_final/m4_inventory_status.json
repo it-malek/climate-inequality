@@ -1,0 +1,144 @@
+{
+  "items": [
+    {
+      "id": "I1",
+      "status": "verified evidence",
+      "evidence": "m4_consolidated_table.json (committed stage scorecards)"
+    },
+    {
+      "id": "I2",
+      "status": "verified evidence",
+      "evidence": "research/model_v2/outputs/m0_scorecard.json kept in the legacy block"
+    },
+    {
+      "id": "I3",
+      "status": "verified evidence",
+      "evidence": "V1 allocations labelled separately in m4_consolidated_table.json"
+    },
+    {
+      "id": "I4",
+      "status": "verified evidence",
+      "evidence": "paired intervals in the consolidated rows (M1a, M1b, M2, M3)"
+    },
+    {
+      "id": "I5",
+      "status": "verified evidence",
+      "evidence": "region tables in the committed stage cards and the M3 scorecards"
+    },
+    {
+      "id": "I6",
+      "status": "verified evidence",
+      "evidence": "OOF Moran in the consolidated rows"
+    },
+    {
+      "id": "I7",
+      "status": "verified evidence",
+      "evidence": "effective degrees of freedom in the stage cards"
+    },
+    {
+      "id": "I8",
+      "status": "verified evidence",
+      "evidence": "random-reference rows in the stage cards"
+    },
+    {
+      "id": "I9",
+      "status": "verified evidence",
+      "evidence": "both representations in every new computation"
+    },
+    {
+      "id": "I10",
+      "status": "verified evidence",
+      "evidence": "m4_bootstrap_summary.json (S only; others not applicable)"
+    },
+    {
+      "id": "I11",
+      "status": "verified evidence",
+      "evidence": "m4_bootstrap_summary.json material_change"
+    },
+    {
+      "id": "I12",
+      "status": "verified evidence",
+      "evidence": "m2_scorecard.json static_stopping_indicator"
+    },
+    {
+      "id": "I13",
+      "status": "verified evidence",
+      "evidence": "research/model_v2/outputs/m3_station/"
+    },
+    {
+      "id": "I14",
+      "status": "permitted disposition",
+      "evidence": "spatial range not applicable; graph descriptors in m3_scorecard.json"
+    },
+    {
+      "id": "I15",
+      "status": "verified evidence",
+      "evidence": "dependence-parameter se/Wald or not-applicable reason in m3_scorecard.json; bootstrap of accounting parts not applicable"
+    },
+    {
+      "id": "I16",
+      "status": "verified evidence",
+      "evidence": "research/model_v2/outputs/m3_land_centroid/"
+    },
+    {
+      "id": "I17",
+      "status": "verified evidence",
+      "evidence": "m4_sensitivities.json buffer_territory_1000km"
+    },
+    {
+      "id": "I18",
+      "status": "verified evidence",
+      "evidence": "m4_sensitivities.json buffer_centroid_1500km"
+    },
+    {
+      "id": "I19",
+      "status": "verified evidence",
+      "evidence": "m4_products.json aligned_era5"
+    },
+    {
+      "id": "I20",
+      "status": "verified evidence",
+      "evidence": "m4_products.json legacy_era5; legacy M2-vs-M0* replication not executed (contract \u00a710)"
+    },
+    {
+      "id": "I21",
+      "status": "permitted disposition",
+      "evidence": "two-product mean not executed: never authorized (owner 2026-09-16)"
+    },
+    {
+      "id": "I22",
+      "status": "verified evidence",
+      "evidence": "research/model_v2/outputs/m1a_scorecard.json"
+    },
+    {
+      "id": "I23",
+      "status": "verified evidence",
+      "evidence": "M1b C2 and M2 gamma summaries; M3 theta same-sign fraction"
+    },
+    {
+      "id": "I24",
+      "status": "permitted disposition",
+      "evidence": "written in the closure report"
+    },
+    {
+      "id": "I25",
+      "status": "verified evidence",
+      "evidence": "m4_final_specification.json"
+    },
+    {
+      "id": "I26",
+      "status": "permitted disposition",
+      "evidence": "not pursued (register)"
+    },
+    {
+      "id": "I27",
+      "status": "permitted disposition",
+      "evidence": "not pursued, not experimentally rejected"
+    }
+  ],
+  "retained_static_specification": "M0*",
+  "qualifying_spatial_extensions": [
+    "M3-SEM(M0*)",
+    "M3-SAR(M0*)"
+  ]
+}
