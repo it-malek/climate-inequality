@@ -3,6 +3,9 @@
 > Current primary M0: `outputs/m0_scorecard_territory_corrected.json`.
 > Session 1 CV numbers below are legacy 1° centre-approximation results.
 > See `TERRITORIAL_CV_CORRECTION.md`; intended protocol and score definitions unchanged.
+> Final V2 table (2026-09-16): `outputs/m4_final/m4_consolidated_table.json` and `M4_REPORT.md` §2. Spatial
+> stages report their frozen accounting parts in place of metric 10's LMG shares (`DOWNSTREAM_COMPLETION_SPEC.md`
+> §2.11).
 
 Every model stage (M0, M1a, M1, M2, M3, and the M4 table) reports the same
 metrics, computed by `research/model_v2/cv.py::scorecard` and

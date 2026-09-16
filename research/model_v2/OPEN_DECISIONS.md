@@ -134,6 +134,17 @@ The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`.
 * **Item 17 ("never merge to `main` in this line") is superseded** for this completion; `v1.3.0` and the V1
   bundle are preserved.
 
+## Model V2 closed (2026-09-16, `V2_FINAL_REPORT.md`)
+
+* **Retained static specification: M0\*.** M2 is `not supported` (`M2_REPORT.md`).
+* **Qualifying spatial extensions:** M3-SEM(M0\*) and M3-SAR(M0\*). **No unique final primary predictive
+  model** is designated (`M3_REPORT.md`).
+* **M4 complete** (`M4_REPORT.md`): no material change to the V1 conclusion; the spatial gains are
+  product-sensitive.
+* **Not pursued, not rejected:** C1, C3, alternative latitude forms, the geostatistical family, the
+  two-product mean, H8–H10.
+* **Chronology and identities:** `COMPLETION_STATE.md` and `outputs/v2_final/v2_final_record.json`.
+
 No territorial-unit, 500 km threshold, M49, random-reference, unseen-level or
 scorecard decision is reopened. No new physical covariate is authorized. Items in
 the historical register below are not current authorizations.

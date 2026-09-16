@@ -16,7 +16,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 | 6 | Primary M3 result and verification | committed with `M3_REPORT.md` and `outputs/m3_station/` | evaluator `a6df380`; SEM and SAR both qualify; final primary predictive model null (non-unique) |
 | 7 | M3 land-centroid weight sensitivity | committed with `outputs/m3_land_centroid/` and the dated §8 addition to `M3_REPORT.md` | same frozen code `a6df380`; descriptive: SAR conditions hold, SEM fails the M49 veto |
 | 8 | M4 final evidence | committed with `M4_REPORT.md` and `outputs/m4_final/` | evaluator `0366281`; inventory complete; no material change to the V1 conclusion; both spatial extensions product-sensitive |
-| 9 | Scientific closure | not started | — |
+| 9 | Scientific closure | committed with `V2_FINAL_REPORT.md` and `outputs/v2_final/v2_final_record.json` | dated status updates to plan, decisions, README, register, scorecard |
 | 10 | Verified integration into `main` | not started | — |
 
 ## First real scores
@@ -51,9 +51,9 @@ in either (M2 fits raise in the anchor test).
 
 ## Next executable action
 
-Scientific closure (checkpoint 9): `V2_FINAL_REPORT.md`, a machine-readable final record, dated status updates
-to the roadmap, README, decisions register, hypothesis register and scorecard pointers. Then branch
-verification and integration into `main` (checkpoint 10).
+Integration (checkpoint 10): fetch, verify the branch (full suite, lint, app unittest, isolation, bundle
+integrity, clean tree), fast-forward `main` if it is still an ancestor, re-verify the integrated tree, push
+`main`, and confirm the live remote head.
 
 ## Blockers
 

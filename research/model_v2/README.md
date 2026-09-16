@@ -12,7 +12,7 @@ public model, the dashboard bundle or the tagged results.
 | Branch | `research/model-v2-residual-structure` |
 | Base | `v1.3.0` = commit `a6733cb78292b9b27466e7ebfe7c4fdc6b59592f` (annotated tag `16b94d3`), verified as the branch's merge base; `main` was at the same commit when the branch was cut |
 | Companion spec | `climate-inequality-instructions@v1.3.0-aligned` (design context only; this repository and its `docs/` are authoritative) |
-| Status | 2026-09-16: M1a not promoted (registered measurement sensitivity); **M1b closed as a completed negative experiment, not promoted** (`M1B_CLOSURE.md`); M0\* remains the development baseline. **M2 design and evaluation contract frozen; no M2 fit or score** (`M2_EVALUATION_CONTRACT.md`). **Completion authorized; M3/M4 operationalization frozen before any M2 fit** (`DOWNSTREAM_COMPLETION_SPEC.md`, `COMPLETION_STATE.md`) |
+| Status | 2026-09-16: M1a not promoted (registered measurement sensitivity); **M1b closed as a completed negative experiment, not promoted** (`M1B_CLOSURE.md`); M0\* remains the development baseline. **M2 design and evaluation contract frozen; no M2 fit or score** (`M2_EVALUATION_CONTRACT.md`). **Completion authorized; M3/M4 operationalization frozen before any M2 fit** (`DOWNSTREAM_COMPLETION_SPEC.md`, `COMPLETION_STATE.md`). **Closed 2026-09-16** (`V2_FINAL_REPORT.md`): M2 not supported; retained static M0\*; qualifying spatial extensions M3-SEM(M0\*) and M3-SAR(M0\*), no unique final primary predictive model; no material change to the V1 conclusion; spatial gains product-sensitive |
 
 ## Question
 
@@ -185,3 +185,18 @@ Current primary CV: `uv run python -m research.model_v2.run_territory_correction
 
 All public V1 values and artifacts are unchanged. The two-product comparison
 does not tune or select predictors and must be repeated after V2 is frozen.
+
+## Completion and closure (2026-09-16)
+
+- `M2_PRE_SCORE_RESOLUTIONS.md`: the owner's completion authorization and pre-score M2 resolutions (M2 contract
+  Amendment 1).
+- `DOWNSTREAM_COMPLETION_SPEC.md`, `M4_EVIDENCE_INVENTORY.md`, `M3_FEASIBILITY_AUDIT.md`: the M3/M4 method, scope
+  and feasibility, frozen before any M2 fit (Amendment A1 adjusts spatial identity tolerances, also pre-fit).
+- `M2_EVALUATOR_SPEC.md`, `M3_EVALUATOR_SPEC.md`, `M4_EVALUATOR_SPEC.md`: operational evaluator freezes.
+- `M2_REPORT.md`, `M3_REPORT.md`, `M4_REPORT.md`: stage results with independent reconstructions and
+  byte-identical reruns (`outputs/*_verification/`).
+- `V2_FINAL_REPORT.md` and `outputs/v2_final/v2_final_record.json`: the final identities and why the line ends.
+- `COMPLETION_STATE.md`: checkpoint chronology.
+- Code: `m2_evaluate.py`, `m2_conditional.py`, `m2_independent_check.py`, `m3_spatial.py`,
+  `m3_independent_math.py`, `m3_feasibility.py`, `m3_evaluate.py`, `m3_independent_check.py`, `m4_evaluate.py`,
+  `m4_independent_check.py`, `v2_provenance.py`, `v2_final_record.py`.

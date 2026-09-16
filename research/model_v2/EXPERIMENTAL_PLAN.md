@@ -135,6 +135,9 @@ because M3 is an accounting step, not a model-selection step.
 * **Status.** No M2 fit or score exists, and execution needs separate authorization.
 * **Authorized 2026-09-16** (owner completion instruction; `M2_PRE_SCORE_RESOLUTIONS.md`, contract
   Amendment 1). Execution still requires the evaluator freeze of contract §9.
+* **Result (2026-09-16, `M2_REPORT.md`; evaluator `b13bb04`, result `99f600b`): `not supported`.** ΔRMSE −0.00295
+  with the paired interval [−0.00592, +0.00008] reaching above zero. M0\* is retained. The conditional arms were
+  not executed. The static stopping indicator does not fire.
 
 ## M3 — explicit spatial structure
 
@@ -162,6 +165,12 @@ unchanged and was not executable as written).** The owner's completion instructi
 M3 and M4. Equations, estimator, graphs, held-out prediction, failure rules, accounting estimands, retention
 gates and final naming are frozen in `DOWNSTREAM_COMPLETION_SPEC.md` §2, with feasibility evidence in
 `M3_FEASIBILITY_AUDIT.md`. The optional geostatistical form is not pursued.
+
+**Result (2026-09-16, `M3_REPORT.md`; evaluator `a6df380`, results `e049eba` and `805b794`).** On M0\*, both the
+spatial error and the spatial lag model qualify for prediction under station-centroid kNN8, so no unique final
+primary predictive model is designated. Under land-centroid kNN8 (descriptive), SAR's conditions hold and SEM
+fails the M49 veto. Accounting: A_dependence 0.143 (SEM) and 0.146 (SAR); the non-spatial part still ranks
+geography first.
 
 ## M4 — final spatial out-of-sample assessment
 
@@ -191,6 +200,14 @@ remains" is preferred to a fragile high-fitting model.
 applicability, sensitivities, product check (both ERA5 constructions of the eventual model, no two-product
 mean) and completion criteria are frozen in `DOWNSTREAM_COMPLETION_SPEC.md` §3 and
 `M4_EVIDENCE_INVENTORY.md`.
+
+**Result and closure (2026-09-16, `M4_REPORT.md`, `V2_FINAL_REPORT.md`; evaluator `0366281`, result `4166e1c`).**
+* Inventory complete.
+* No material change to the V1 conclusion: geography is largest in every bootstrap draw, and responsibility is
+  small.
+* Both spatial extensions' transfer gains are product-sensitive: they are not reproduced under either ERA5
+  construction.
+* The research line ends: every branch of the frozen state machine is terminal.
 
 ## What every stage must not do
 

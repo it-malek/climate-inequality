@@ -4,7 +4,7 @@
 commit `a6df380` with `PYTHONHASHSEED=0` into `outputs/m3_station/`. The method was frozen before any M2 fit
 (`DOWNSTREAM_COMPLETION_SPEC.md`, `4dc2fad`; Amendment A1 `ef04958`); the operational detail is in
 `M3_EVALUATOR_SPEC.md`. **Branch A:** the retained static specification is M0\* (M2 `not supported`).
-The land-centroid kNN8 weight sensitivity is a separate package (§7).
+The land-centroid kNN8 weight sensitivity is a separate package (§8).
 
 ## 1. Qualification (retention for prediction) and final naming
 
