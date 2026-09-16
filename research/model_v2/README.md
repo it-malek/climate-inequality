@@ -163,6 +163,9 @@ Current primary CV: `uv run python -m research.model_v2.run_territory_correction
 - `M1B_CLOSURE.md`: closure of M1b from saved evidence only (2026-09-16): verification record, evidence
   limits, and the dated post-result corrections to `M1B_REPORT.md`. M1b is a completed negative
   experiment and is not promoted.
+- `M1B_CLI_MAINTENANCE.md`: post-M1b auxiliary maintenance (2026-09-16). It fixes the `--compare`
+  exit status and changes no scoring definition, constant, pin or artifact. The M1b result stays
+  pinned to `618c8b8`.
 - `M1B_EVALUATOR_SPEC.md`: the operational evaluator specification, frozen and pushed before the
   first outcome-facing M1b run. It fixes the execution boundary, the strict scoring-input gate, the
   two reported representations, the saved evidence, the prespecified equivalence tolerances and the

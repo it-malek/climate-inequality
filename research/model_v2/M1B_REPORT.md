@@ -222,5 +222,9 @@ that carries `integrity_passed` and exited 0. It is recorded here rather than pa
 changing the evaluator now would break the code-path identity between this result and the commit it
 records. Any fix belongs to a separate, dated change after this milestone.
 
+*[2026-09-16] Fixed by a separate post-M1b maintenance commit that changes only the CLI exit mapping
+([`M1B_CLI_MAINTENANCE.md`](M1B_CLI_MAINTENANCE.md)). This result remains the product of `618c8b8`, and
+historical reproduction remains pinned there.*
+
 **STOPPED AFTER M1b.** No conditional analysis was run, and no C1, C3, other M1 predictor, M2 or M3
 work follows from this result.
