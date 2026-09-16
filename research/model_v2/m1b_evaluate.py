@@ -1185,6 +1185,23 @@ def main(argv=None):
     return result
 
 
+def cli_exit_code(outcome):
+    """Process exit status for a :func:`main` outcome (post-M1b auxiliary CLI maintenance).
+
+    Scoring returns a result carrying ``integrity_passed`` (0 when it holds, else 3, as frozen at
+    ``618c8b8``); ``--compare`` returns a reproducibility record carrying ``byte_identical`` (0 when
+    the runs are byte-identical, else 4). The shapes are disjoint, so an outcome with neither key,
+    both keys, or a non-boolean flag is malformed and raises instead of exiting 0.
+    """
+    if not isinstance(outcome, dict) or ('integrity_passed' in outcome) == ('byte_identical' in outcome):
+        keys = sorted(outcome) if isinstance(outcome, dict) else type(outcome).__name__
+        raise RuntimeError(f'unrecognised CLI outcome: expected exactly one of integrity_passed '
+                           f'(scoring) or byte_identical (--compare), found {keys}')
+    key, failure = ('integrity_passed', 3) if 'integrity_passed' in outcome else ('byte_identical', 4)
+    if not isinstance(outcome[key], bool):
+        raise RuntimeError(f'{key} must be a bool, found {type(outcome[key]).__name__}')
+    return 0 if outcome[key] else failure
+
+
 if __name__ == '__main__':
-    outcome = main()
-    sys.exit(0 if outcome['integrity_passed'] else 3)
+    sys.exit(cli_exit_code(main()))
