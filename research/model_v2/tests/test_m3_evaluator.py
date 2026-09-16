@@ -222,7 +222,18 @@ def test_evaluate_end_to_end_on_synthetic_data(synthetic, monkeypatch, tmp_path,
     assert set(graphs.role) == {'training', 'held_out'}
 
 
-def test_the_committed_m2_result_satisfies_the_m3_prerequisites():
+def test_the_committed_m2_result_satisfies_the_m3_prerequisites(monkeypatch):
+    """Manifests, label and branch of the committed M2 result. Push state is a run-time guard (recorded in each
+    result's provenance), so here only tracking is checked: the test must not depend on whether the checked-out
+    branch has been pushed."""
+    import subprocess
+
+    def tracked_only(paths):
+        done = subprocess.run(['git', 'ls-files', '--error-unmatch', *paths], cwd=prov.ROOT, capture_output=True)
+        assert done.returncode == 0, done.stderr
+        return {'commit': 'not checked here'}
+
+    monkeypatch.setattr(prov, 'tracked_and_pushed', tracked_only)
     m2 = m3.verified_m2()
     assert m2['retained_static_specification'] == 'M0*'
     assert m2['conditional_disposition'] == 'not executed'
