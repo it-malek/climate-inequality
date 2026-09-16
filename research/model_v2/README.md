@@ -12,7 +12,7 @@ public model, the dashboard bundle or the tagged results.
 | Branch | `research/model-v2-residual-structure` |
 | Base | `v1.3.0` = commit `a6733cb78292b9b27466e7ebfe7c4fdc6b59592f` (annotated tag `16b94d3`), verified as the branch's merge base; `main` was at the same commit when the branch was cut |
 | Companion spec | `climate-inequality-instructions@v1.3.0-aligned` (design context only; this repository and its `docs/` are authoritative) |
-| Status | session 1 (2026-09-14): diagnostics and experimental design only; **no predictor has been added, removed, transformed or tested** |
+| Status | 2026-09-16: M1a not promoted (registered measurement sensitivity); **M1b closed as a completed negative experiment, not promoted** (`M1B_CLOSURE.md`); M0\* remains the development baseline; no automatic follow-up |
 
 ## Question
 
@@ -160,6 +160,9 @@ Current primary CV: `uv run python -m research.model_v2.run_territory_correction
 - `M1B_REPORT.md`: the M1b result (`not supported`): C2 worsens out-of-fold error and carries the
   opposite of the pre-stated sign, with the unconditional per-capita arm, the reproducibility and
   independent-verification evidence, and the contract-based non-execution of the conditional arms.
+- `M1B_CLOSURE.md`: closure of M1b from saved evidence only (2026-09-16): verification record, evidence
+  limits, and the dated post-result corrections to `M1B_REPORT.md`. M1b is a completed negative
+  experiment and is not promoted.
 - `M1B_EVALUATOR_SPEC.md`: the operational evaluator specification, frozen and pushed before the
   first outcome-facing M1b run. It fixes the execution boundary, the strict scoring-input gate, the
   two reported representations, the saved evidence, the prespecified equivalence tolerances and the

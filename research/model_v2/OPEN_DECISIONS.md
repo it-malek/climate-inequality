@@ -79,6 +79,25 @@ The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`.
 * The pre-outcome package is reviewed by the owner before the warming outcome is loaded
   for M1b scoring.
 
+## M1b closed (2026-09-16, `M1B_CLOSURE.md`)
+
+* **M1b is a completed negative experiment and is not promoted.** It was verified from saved evidence
+  only: no rerun, no regenerated artifact.
+* **M1a** remains not promoted and is the registered area-consistent geography measurement sensitivity.
+* **M0\*** remains the station-geography development baseline.
+* **No automatic follow-up:** no nonlinear or alternative C2, no other M1 predictor, no C1 or C3
+  acquisition, no conditional replication, no M3. Any M2 work rests on the `af97bd2` roadmap and a
+  separate owner authorization, not on this result.
+* `M1B_REPORT.md` carries three dated post-result documentation corrections (chronology of the
+  amendments against CRU acquisition, the allocation sentence, and one coverage-rule sentence). No
+  number, verdict or artifact changed.
+* Twelve evidence limits are recorded in the closure. Two of them:
+  * Before the freeze, the M0\* comparators were scored on real inputs, from uncommitted evaluator
+    code outside the provenance guard. This happened in ad hoc runs in the main session, in runs by
+    review subagents, and in a committed test. No model containing C2 was fitted to any outcome before
+    the primary score.
+  * The `067bc98` commit message is inaccurate about the scoring-input gate.
+
 No territorial-unit, 500 km threshold, M49, random-reference, unseen-level or
 scorecard decision is reopened. No new physical covariate is authorized. Items in
 the historical register below are not current authorizations.

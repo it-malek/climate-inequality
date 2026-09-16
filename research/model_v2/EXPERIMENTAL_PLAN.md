@@ -83,6 +83,12 @@ M1b supersedes the candidate list of the original M1 section below.
 * **Before any computation.** No predictor data are downloaded or computed until the owner approves the shortlist and a frozen M1b evaluation contract.
 * **Frozen elsewhere.** The improvement, rejection and overfitting definitions above, and the M4 stopping rule, still apply.
 
+**Result (2026-09-15, `M1B_REPORT.md`) and closure (2026-09-16, `M1B_CLOSURE.md`):** `not supported`.
+ΔRMSE +0.00172 °C/decade, with the paired interval [+0.00089, +0.00285] above zero, so generalization
+worsened. The C2 coefficient is wrong-signed. The conditional replications were not run, by contract.
+M1b is a completed negative experiment and is not promoted. No M1 covariate is retained, and M0\*
+remains the development baseline.
+
 ## M1 — pre-registered physical covariates (H3, H6; H4 only with approval) — original Session 1 text, superseded by M1b
 
 **Change.** Add, one at a time and then jointly, the registered baseline
