@@ -198,6 +198,25 @@
         }
       ]
     },
+    "research/model_v2/outputs/m2_conditional/m2_conditional_run_metadata.json": {
+      "original_sha256": "533330f7b9db50cf5f705b097bdd86177bfca4da250ce75c03cb2eb111ebc5e8",
+      "public_sha256": "014e89821a15fa617898e2cbe538918626aa96c6e33f7000ffe7c73cd7435573",
+      "protected_sha256": "060ae77f84037fd8563d5137264560faadd442b2e7a9290db5be6407abbefe6c",
+      "edits": [
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python3",
+          "original_value_sha256": "e01d2f659a2214210f286f826ca54d21d8cf9b3bccfbdf0374701ef66bdf377f",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m2_conditional.py",
+          "original_value_sha256": "72ef45e1cf860a2475342414ef42f081628525f9cd95a1e9bedd4fd3fc018d49",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
     "research/model_v2/outputs/m2_primary/m2_run_metadata.json": {
       "original_sha256": "3f6938ada0907625e24e8cb6baf3a8895c01a804d156d6d355a7be856bd226d1",
       "public_sha256": "fe44b5a7caf3f3db883b30d075c76b3d6ce228a9b603420a592d8cfcd0d4c600",
