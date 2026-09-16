@@ -15,7 +15,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 | 5 | M3 evaluator freeze | committed with `M3_EVALUATOR_SPEC.md`, `m3_evaluate.py`, `m3_independent_check.py` | method frozen at `4dc2fad` + `ef04958`; full suite 1200 passed, 6 skipped before this freeze |
 | 6 | Primary M3 result and verification | committed with `M3_REPORT.md` and `outputs/m3_station/` | evaluator `a6df380`; SEM and SAR both qualify; final primary predictive model null (non-unique) |
 | 7 | M3 land-centroid weight sensitivity | committed with `outputs/m3_land_centroid/` and the dated §8 addition to `M3_REPORT.md` | same frozen code `a6df380`; descriptive: SAR conditions hold, SEM fails the M49 veto |
-| 8 | M4 final evidence | not started | — |
+| 8 | M4 final evidence | evaluator freeze committed with `M4_EVALUATOR_SPEC.md`, `m4_evaluate.py`, `m4_independent_check.py` (full suite 1256 passed, 6 skipped); result pending | — |
 | 9 | Scientific closure | not started | — |
 | 10 | Verified integration into `main` | not started | — |
 
