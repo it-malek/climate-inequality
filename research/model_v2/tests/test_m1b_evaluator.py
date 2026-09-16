@@ -518,3 +518,62 @@ def test_reproducibility_record_compares_deterministic_artifacts_only(tmp_path, 
     differing = ev.reproducibility_record(tmp_path / 'a', tmp_path / 'b')
     assert not differing['byte_identical']
     assert not differing['artifacts']['m1b_cv_folds.csv']['identical']
+
+
+# --- the frozen constants and the integrity path ------------------------------------------------
+
+def test_the_spec_frozen_thresholds_and_tolerances_are_the_literal_values():
+    """Pinned against the specification's literals, not against the constants themselves."""
+    from fractions import Fraction
+    assert ev.PRACTICAL == -0.002 and ev.VETO == 0.001
+    assert ev.SIGN_STABILITY == Fraction(4, 5) == Fraction(80, 100)
+    assert (ev.REFERENCE_ATOL, ev.PREDICTION_ATOL, ev.COEF_ATOL) == (1e-10, 1e-9, 1e-8)
+    assert (ev.SHARE_ATOL, ev.IDENTITY_ATOL) == (1e-9, 1e-12)
+    assert ev.EXPECTED_COLUMNS == {'comparator': 20, 'candidate': 21}
+    assert ev.MORAN_CHANGE == 0.05 and ev.OVERFIT_GAP == 0.05
+    assert ev.MATERIAL_RESPONSIBILITY == 0.10
+    assert ev.NAMED_GROUPS == ('geography', 'emissions', 'socioeconomic', 'population', 'hydroclimate')
+    assert ev.PROTOCOLS == ('primary_loco', 'm49_subregion_lo', 'random10')
+    assert ev.MEASUREMENT_BUILD_COMMIT == '58e64bfbe6a6b12503a8b08cea51fecd5415e1a5'
+
+
+def test_the_full_sample_column_and_rank_expectation_actually_fires(frozen):
+    comparator = ev.build_arms(frozen)['primary_total_co2']['frames'][ev.COMPARATOR]
+    with pytest.raises(ValueError, match='expected 21 / 21'):
+        ev.score_model(comparator, frozen, expected_columns=ev.EXPECTED_COLUMNS['candidate'])
+    candidate = ev.build_arms(frozen)['primary_total_co2']['frames'][ev.CANDIDATE]
+    with pytest.raises(ValueError, match='expected 20 / 20'):
+        ev.score_model(candidate, frozen, expected_columns=ev.EXPECTED_COLUMNS['comparator'])
+
+
+def test_a_refused_verdict_is_recorded_as_an_integrity_failure_with_the_evidence_kept(
+        tmp_path, frozen, reference, monkeypatch):
+    """The run completes and writes everything; the verdict is refused, not fabricated."""
+    def refuse(summary, n_expected):
+        raise ValueError('a baseline_dryness training-fit coefficient is not finite')
+    monkeypatch.setattr(ev, 'sign_condition', refuse)
+    out = tmp_path / 'refused_verdict'
+    result = ev.evaluate(frozen, out, provenance={'code': {'commit': 'a' * 40}},
+                         reference_cards=reference)
+    assert result['integrity_passed'] is False and len(result['integrity_failures']) == 2
+    assert result['verdict']['verdict'] is None and 'not finite' in result['verdict']['refused']
+    manifest = json.loads((out / ev.RESULT_MANIFEST).read_text())
+    assert manifest['integrity_passed'] is False and manifest['verdict'] is None
+    assert manifest['association_supported'] is None
+    for name in ev.DETERMINISTIC_ARTIFACTS:          # the evidence is written, not withheld
+        assert (out / name).exists() and hydro.sha256(out / name) == manifest['artifact_sha256'][name]
+
+
+def test_share_accounting_failure_is_reported_as_an_integrity_failure(tmp_path, frozen, reference,
+                                                                     monkeypatch):
+    real = ev.score_model
+
+    def skewed(frame, *args, **kwargs):
+        scored = real(frame, *args, **kwargs)
+        scored.card['share_accounting']['passes'] = False
+        return scored
+    monkeypatch.setattr(ev, 'score_model', skewed)
+    result = ev.evaluate(frozen, tmp_path / 'skewed', provenance={'code': {'commit': 'a' * 40}},
+                         reference_cards=reference)
+    assert not result['integrity_passed']
+    assert any('share accounting' in failure for failure in result['integrity_failures'])
