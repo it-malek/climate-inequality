@@ -471,6 +471,56 @@
           "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
         }
       ]
+    },
+    "research/model_v2/outputs/m4_final/m4_run_metadata.json": {
+      "original_sha256": "6474c667a83c3526c20f18a823dae45fbd9c9267c0507950a30d15cc41fb2095",
+      "public_sha256": "5e1717534fd1009d2a3120979986a8119d491cfda817a3e73ee867b0f1253046",
+      "protected_sha256": "d35a15f028124914ff40e9434334f05cfa559969c96f922c5664e3af5f831a72",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "59d6096c214ba48887c4b409a3a9c0f351417dff668bd8d6ebbf7c57f2eda322",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python3",
+          "original_value_sha256": "e01d2f659a2214210f286f826ca54d21d8cf9b3bccfbdf0374701ef66bdf377f",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m4_evaluate.py",
+          "original_value_sha256": "b34a366393de5d84261988a19700df69ca6102d7cc08c6be19219c51f1369dc6",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m4_final_verification/reproducibility_run_b/m4_run_metadata.json": {
+      "original_sha256": "c579142466a11e4f9a39497b226451c74196d6f69a2397cfc47c8a71d6b0d0fd",
+      "public_sha256": "f1b566d7eeb3a3a2bbcc31ca9e31f519a8bdb45f875d945f3408078d4b6a2eb6",
+      "protected_sha256": "305a23f90e17384d8383e1a9477297c555eb2323ba69b7562349c253ce90fe57",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "59d6096c214ba48887c4b409a3a9c0f351417dff668bd8d6ebbf7c57f2eda322",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python3",
+          "original_value_sha256": "e01d2f659a2214210f286f826ca54d21d8cf9b3bccfbdf0374701ef66bdf377f",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m4_evaluate.py",
+          "original_value_sha256": "b34a366393de5d84261988a19700df69ca6102d7cc08c6be19219c51f1369dc6",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
     }
   }
 }
