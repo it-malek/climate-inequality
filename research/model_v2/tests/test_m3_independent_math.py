@@ -192,17 +192,17 @@ def test_the_search_is_the_frozen_grid_then_sixty_golden_iterations():
     assert result.strict_local_maxima == 1 and im.PHI == (math.sqrt(5.0) - 1.0) / 2.0
 
 
-def test_ties_go_to_the_earliest_evaluation_and_boundary_estimates_are_non_interior():
+def test_ties_go_to_the_earliest_evaluation_and_boundary_estimates_are_flagged_not_failed():
     flat = im.maximize(lambda t: 1.0)
-    assert flat.theta == -0.99 and flat.failure == 'non-interior estimate'
+    assert flat.theta == -0.99 and flat.failure is None and flat.at_domain_bound
     # l(c) >= l(d) on equality keeps [a, d]: the bracket collapses onto the lower grid point.
     assert flat.evaluations[-1][0] < -0.9899 and flat.strict_local_maxima == 0
     rising = im.maximize(lambda t: t)
-    assert rising.theta == pytest.approx(0.99, abs=1e-12) and rising.failure == 'non-interior estimate'
+    assert rising.theta == pytest.approx(0.99, abs=1e-12) and rising.failure is None and rising.at_domain_bound
     near_edge = im.maximize(lambda t: -(t - (0.99 - 5e-7)) ** 2)
-    assert near_edge.failure == 'non-interior estimate'
+    assert near_edge.at_domain_bound
     inside = im.maximize(lambda t: -(t - (0.99 - 5e-6)) ** 2)
-    assert inside.failure is None
+    assert inside.failure is None and not inside.at_domain_bound
 
 
 def test_strict_local_maxima_compare_endpoints_one_sided():
