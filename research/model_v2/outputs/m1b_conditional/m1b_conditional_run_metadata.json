@@ -1,0 +1,16 @@
+{
+  "started_utc": "2026-09-16T01:09:29+00:00",
+  "finished_utc": "2026-09-16T01:09:29+00:00",
+  "wall_seconds": 0.1500154169916641,
+  "host": "Mac.ht.home",
+  "executable": "/Users/malek/projects/climate-inequality/.venv/bin/python",
+  "argv": [
+    "/Users/malek/projects/climate-inequality/research/model_v2/m1b_sensitivity.py",
+    "--primary",
+    "research/model_v2/outputs/m1b_primary",
+    "--out",
+    "research/model_v2/outputs/m1b_conditional"
+  ],
+  "output_root": "research/model_v2/outputs/m1b_conditional",
+  "pythonhashseed": "0"
+}
