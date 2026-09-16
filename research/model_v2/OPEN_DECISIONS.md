@@ -54,9 +54,16 @@ The measurement and evaluation rules are frozen in `M1B_EVALUATION_CONTRACT.md`.
   * The redundancy diagnostic passed (`M1B_REDUNDANCY_DIAGNOSTIC.md`: R² 0.650, VIF 2.86, no hard
     stop, no near-redundancy flag).
   * Passing coverage and redundancy establish neither predictive value nor mechanism.
-  * No score has been computed; `m1b_evaluate.main()` refuses to run (`SCORING_ENABLED = False`).
-* **Open, for the owner, before any M1b scoring:** implement and review the per-capita
-  representation that A3.6 requires with any M1b score.
+* **Evaluator frozen before scoring (owner-authorized, 2026-09-15).**
+  * `M1B_EVALUATOR_SPEC.md` freezes the operational detail the contract leaves open. It changes no
+    rule, threshold, protocol or verdict.
+  * The A3.6 per-capita representation is implemented and reported unconditionally; only the primary
+    total-CO₂ pair determines acceptance.
+  * The conditional M1a, aligned-ERA5 and five-country runners are implemented and tested, and
+    refuse to execute without a committed, digest-verified primary result recording association
+    support.
+  * `SCORING_ENABLED` is replaced by a provenance guard: scoring runs only from a committed,
+    unmodified, pushed code path, with `PYTHONHASHSEED=0` and a fresh output root.
 * Contract Amendment 2 also pre-registers one station-support sensitivity. If and only if the
   linear association is supported, the frozen comparison is repeated excluding Saudi Arabia,
   Yemen, Haiti, Oman and Chad. It cannot change either verdict level.

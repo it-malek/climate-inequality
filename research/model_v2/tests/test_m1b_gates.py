@@ -113,31 +113,37 @@ def passing_record(out, manifest_sha, features_sha, **overrides):
     (out / r.RECORD).write_text(json.dumps(record), encoding='utf-8')
 
 
-def test_scoring_gate_accepts_only_a_redundancy_record_from_the_current_package(tmp_path):
-    from research.model_v2.m1b_evaluate import scoring_gate
+def package_gate(out_dir):
+    """The package half of the evaluator's scoring gate: verified bytes plus a matching record."""
+    manifest, manifest_sha256 = h.verify_package(out_dir)
+    features = h.read_verified(out_dir, h.FEATURES, manifest)
+    r.verify_record(out_dir, manifest_sha256, manifest['artifact_sha256'][h.FEATURES])
+    return features
+
+
+def test_package_gate_accepts_only_a_redundancy_record_from_the_current_package(tmp_path):
     manifest = write_package(tmp_path)
     manifest_sha = sha((tmp_path / h.MANIFEST).read_bytes())
     features_sha = manifest['artifact_sha256'][h.FEATURES]
     with pytest.raises(FileNotFoundError):
-        scoring_gate(tmp_path)
+        package_gate(tmp_path)
     passing_record(tmp_path, manifest_sha, features_sha)
-    assert scoring_gate(tmp_path) == (tmp_path / h.FEATURES).read_bytes()
+    assert package_gate(tmp_path) == (tmp_path / h.FEATURES).read_bytes()
     for overrides in [{'provenance': {'measurement_manifest_sha256': '0' * 64, 'c2_features_sha256': features_sha}},
                       {'provenance': {'measurement_manifest_sha256': manifest_sha, 'c2_features_sha256': '0' * 64}},
                       {'provenance': None}, {'hard_stops': None}, {'hard_stops': ['exact rank redundancy']},
                       {'status': 'hard_stop'}, {'all_hard_stops_pass': 'true'}]:
         passing_record(tmp_path, manifest_sha, features_sha, **overrides)
         with pytest.raises(ValueError):
-            scoring_gate(tmp_path)
+            package_gate(tmp_path)
     passing_record(tmp_path, manifest_sha, features_sha)
     write_package(tmp_path, c2=np.linspace(-2.0, 1.0, len(FROZEN)))   # a rebuilt package makes the record stale
     with pytest.raises(ValueError):
-        scoring_gate(tmp_path)
+        package_gate(tmp_path)
 
 
 @pytest.mark.parametrize('tamper', ['features', 'unresolved', 'failing_manifest'])
-def test_scoring_gate_verifies_the_package_itself_not_only_the_record(tmp_path, tamper):
-    from research.model_v2.m1b_evaluate import scoring_gate
+def test_package_gate_verifies_the_package_itself_not_only_the_record(tmp_path, tamper):
     manifest = write_package(tmp_path)
     if tamper == 'failing_manifest':
         manifest = write_package(tmp_path, all_hard_stops_pass=False, hard_stops=[{'iso3': 'PER', 'rule': 'x'}])
@@ -149,7 +155,7 @@ def test_scoring_gate_verifies_the_package_itself_not_only_the_record(tmp_path, 
     elif tamper == 'unresolved':
         (tmp_path / 'm1b_unresolved_support.csv').write_text('target_lat_index\n3\n', encoding='utf-8')
     with pytest.raises(ValueError):
-        scoring_gate(tmp_path)
+        package_gate(tmp_path)
 
 
 def test_json_safe_keeps_non_finite_statistics_explicit():
@@ -275,13 +281,14 @@ def test_redundancy_hard_stop_is_recorded_as_valid_json(tmp_path, instrumented):
 
 
 def test_evaluator_main_refuses_before_any_gate_or_input_read(monkeypatch):
+    """Scoring is enabled by provenance, not a flag: an unset PYTHONHASHSEED refuses first."""
     from research.model_v2 import m1b_evaluate as e
 
     def forbidden(*args, **kwargs):
-        raise AssertionError('scoring touched a gate or an input before the disabled-scoring check')
-    for name in ('scoring_gate', 'load_inputs', 'm0_complete_design'):
+        raise AssertionError('scoring touched a gate or an input before the provenance guard')
+    for name in ('verify_scoring_inputs', 'build_frozen', 'evaluate', 'frozen_code_state'):
         monkeypatch.setattr(e, name, forbidden)
     monkeypatch.setattr(pd, 'read_csv', forbidden)
-    assert e.SCORING_ENABLED is False
-    with pytest.raises(RuntimeError, match='scoring is disabled'):
-        e.main()
+    monkeypatch.setenv('PYTHONHASHSEED', '73')
+    with pytest.raises(RuntimeError, match='PYTHONHASHSEED=0'):
+        e.main([])
