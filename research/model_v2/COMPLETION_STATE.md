@@ -12,7 +12,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 | 2 | M2 evaluator freeze | committed with `M2_EVALUATOR_SPEC.md`, `m2_evaluate.py`, `m2_conditional.py`, `m2_independent_check.py` | downstream Amendment A1 `ef04958` precedes it |
 | 3 | Primary M2 result, report, verification | committed with `M2_REPORT.md` and `outputs/m2_primary/` | evaluator `b13bb04`; label `not supported`; retained static M0\*; stopping indicator does not fire |
 | 4 | M2 conditional robustness or non-execution | committed with `outputs/m2_conditional/m2_conditional_not_run.json` | refusal returned before any arm frame was constructed; no arm fitted |
-| 5 | M3 evaluator freeze | not started | — |
+| 5 | M3 evaluator freeze | committed with `M3_EVALUATOR_SPEC.md`, `m3_evaluate.py`, `m3_independent_check.py` | method frozen at `4dc2fad` + `ef04958`; full suite 1200 passed, 6 skipped before this freeze |
 | 6 | Primary M3 result and verification | not started | — |
 | 7 | M3 land-centroid weight sensitivity | not started | — |
 | 8 | M4 final evidence | not started | — |
@@ -51,9 +51,10 @@ in either (M2 fits raise in the anchor test).
 
 ## Next executable action
 
-Freeze the M3 evaluator (`m3_evaluate.py`, `M3_EVALUATOR_SPEC.md`, `tests/test_m3_evaluator.py`,
-`m3_independent_check.py` and its tests) after a full suite run (checkpoint 5); then
-`PYTHONHASHSEED=0 uv run python -m research.model_v2.m3_evaluate --weights station`.
+Score the M3 station arm once from the pushed freeze commit:
+`PYTHONHASHSEED=0 uv run python -m research.model_v2.m3_evaluate --weights station` (output `outputs/m3_station`),
+then `m3_independent_check --package research/model_v2/outputs/m3_station` and one unchanged-code rerun
+(checkpoint 6). M4 evaluator and spec are drafted but not frozen.
 
 ## Blockers
 
