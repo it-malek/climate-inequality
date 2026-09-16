@@ -14,7 +14,7 @@ artifacts are the source of truth**: a checkpoint's own commit hash is resolved 
 | 4 | M2 conditional robustness or non-execution | committed with `outputs/m2_conditional/m2_conditional_not_run.json` | refusal returned before any arm frame was constructed; no arm fitted |
 | 5 | M3 evaluator freeze | committed with `M3_EVALUATOR_SPEC.md`, `m3_evaluate.py`, `m3_independent_check.py` | method frozen at `4dc2fad` + `ef04958`; full suite 1200 passed, 6 skipped before this freeze |
 | 6 | Primary M3 result and verification | committed with `M3_REPORT.md` and `outputs/m3_station/` | evaluator `a6df380`; SEM and SAR both qualify; final primary predictive model null (non-unique) |
-| 7 | M3 land-centroid weight sensitivity | not started | — |
+| 7 | M3 land-centroid weight sensitivity | committed with `outputs/m3_land_centroid/` and the dated §8 addition to `M3_REPORT.md` | same frozen code `a6df380`; descriptive: SAR conditions hold, SEM fails the M49 veto |
 | 8 | M4 final evidence | not started | — |
 | 9 | Scientific closure | not started | — |
 | 10 | Verified integration into `main` | not started | — |
@@ -51,9 +51,9 @@ in either (M2 fits raise in the anchor test).
 
 ## Next executable action
 
-Run the land-centroid kNN8 sensitivity once from the committed station package:
-`PYTHONHASHSEED=0 uv run python -m research.model_v2.m3_evaluate --weights land` (output `outputs/m3_land_centroid`),
-its independent check and rerun (checkpoint 7). Then freeze `m4_evaluate.py` (checkpoint 8 prerequisites).
+Freeze `m4_evaluate.py`, `M4_EVALUATOR_SPEC.md`, `m4_independent_check.py` and tests (after the full suite), then
+`PYTHONHASHSEED=0 uv run python -m research.model_v2.m4_evaluate` (output `outputs/m4_final`), its independent
+check and rerun (checkpoint 8).
 
 ## Blockers
 

@@ -1,0 +1,15 @@
+{
+  "started_utc": "2026-09-16T20:15:43+00:00",
+  "finished_utc": "2026-09-16T20:16:19+00:00",
+  "wall_seconds": 35.651989000005415,
+  "host": "Maleks-MacBook-Air.local",
+  "executable": "/Users/malek/projects/climate-inequality/.venv/bin/python3",
+  "argv": [
+    "/Users/malek/projects/climate-inequality/research/model_v2/m3_evaluate.py",
+    "--weights",
+    "land"
+  ],
+  "output_root": "/Users/malek/projects/climate-inequality/research/model_v2/outputs/m3_land_centroid",
+  "pythonhashseed": "0",
+  "live_remote_commit": "e049ebad5e075a6bef8606261245f7a8ec0726d0"
+}
