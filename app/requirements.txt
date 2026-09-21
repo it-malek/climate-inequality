@@ -1,0 +1,15 @@
+# Streamlit Community Cloud environment for the dashboard only.
+#
+# Cloud picks the dependency file in the entrypoint's directory over any
+# root-level file, so this minimal pinned set wins over the repo's uv.lock
+# (which would also work, but drags in the whole pipeline stack: duckdb,
+# geopandas, pykrige, scipy, kagglehub). Local development uses uv.lock via
+# `uv sync --extra dev`; keep these pins in step with it.
+#
+# statsmodels backs the plotly-express OLS trendline on the inequality page.
+streamlit==1.58.0
+plotly==6.8.0
+pandas==3.0.3
+numpy==2.4.6
+pyarrow==24.0.0
+statsmodels==0.14.6

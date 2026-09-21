@@ -1,0 +1,13 @@
+{
+  "berkeley_climatology_long_name": "Air Surface Temperature Climatology (Jan 1951 - Dec 1980)",
+  "era5_normalization": "Subtract own 1951\u20131980 cell/calendar-month mean before shared Theil\u2013Sen.",
+  "analysis_window": [
+    "1950-01-01",
+    "2013-09-01"
+  ],
+  "mask_and_grid": "Native ERA5, unchanged GPW operator; half-degree offset persists.",
+  "selected_before_aligned_results": true,
+  "source_sha256": "a2b6330d5aa25608774d12ea58d85699d2893923827fbfbbabacaf08c8782cf0",
+  "baseline_months": 360,
+  "baseline_years_per_calendar_month": 30
+}

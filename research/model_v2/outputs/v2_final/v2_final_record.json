@@ -1,0 +1,380 @@
+{
+  "record": "Model V2 final specification record (research line; V1 v1.3.0 unchanged)",
+  "retained_static_specification": "M0*",
+  "qualifying_spatial_extensions": [
+    "M3-SEM(M0*)",
+    "M3-SAR(M0*)"
+  ],
+  "final_primary_predictive_model": null,
+  "final_naming_reason": "two qualifying spatial extensions; no historical unique-family selection rule",
+  "stages": {
+    "M0": "frozen V1 baseline; corrected 500 km primary CV row",
+    "M0*": "approved full-rank development baseline (drop per-capita); retained static specification",
+    "M1a": "not promoted; registered area-consistent geography measurement sensitivity",
+    "M1b": "not supported",
+    "M2": "not supported",
+    "M2_conditional_arms": "not executed (no predictive support)",
+    "M3_station": {
+      "SEM": {
+        "status": "computable",
+        "qualifies": true,
+        "descriptive_only": false,
+        "delta_rmse_vs_static": -0.003104908749597242,
+        "interval": [
+          -0.005917629985104372,
+          -0.00022404795910143603
+        ],
+        "m49_rmse_change": -0.0019236971249868354,
+        "worst_region_rmse_change": -0.007954514477169994,
+        "theta_full_sample": 0.8324306231870012,
+        "accounting": {
+          "a_static": 0.6364460027547281,
+          "a_dependence": 0.14306051467296438,
+          "a_innovation": 0.22049348257230755
+        }
+      },
+      "SAR": {
+        "status": "computable",
+        "qualifies": true,
+        "descriptive_only": false,
+        "delta_rmse_vs_static": -0.004764255510104384,
+        "interval": [
+          -0.007901326899661672,
+          -0.0015370715227798295
+        ],
+        "m49_rmse_change": -0.0030021903058550653,
+        "worst_region_rmse_change": -0.004725280420607894,
+        "theta_full_sample": 0.7352995508682922,
+        "accounting": {
+          "a_static": 0.6364460027547281,
+          "a_dependence": 0.1464139883158884,
+          "a_innovation": 0.21714000892938354
+        }
+      }
+    },
+    "M3_land_centroid_sensitivity": {
+      "SEM": {
+        "status": "computable",
+        "qualifies": false,
+        "descriptive_only": true,
+        "delta_rmse_vs_static": -0.004826467149680935,
+        "interval": [
+          -0.008094813925985316,
+          -0.0010163539919200424
+        ],
+        "m49_rmse_change": 0.007943999851188703,
+        "worst_region_rmse_change": -0.008503918343948424,
+        "theta_full_sample": 0.9713383274627726,
+        "accounting": {
+          "a_static": 0.6364460027547281,
+          "a_dependence": 0.19222926537507923,
+          "a_innovation": 0.1713247318701927
+        }
+      },
+      "SAR": {
+        "status": "computable",
+        "qualifies": true,
+        "descriptive_only": true,
+        "delta_rmse_vs_static": -0.005050815721929815,
+        "interval": [
+          -0.007591243703245273,
+          -0.002076197169077716
+        ],
+        "m49_rmse_change": -0.003750684152932511,
+        "worst_region_rmse_change": -0.008775382660324071,
+        "theta_full_sample": 0.8078447527113778,
+        "accounting": {
+          "a_static": 0.6364460027547281,
+          "a_dependence": 0.17399300408570645,
+          "a_innovation": 0.18956099315956548
+        }
+      }
+    }
+  },
+  "static_stopping_indicator": {
+    "point_delta_rmse_vs_m0star": {
+      "M1a": 0.002342838562091845,
+      "M1b": 0.0017229850562197266,
+      "M2": -0.002952085787570634
+    },
+    "best": -0.002952085787570634,
+    "threshold": -0.002,
+    "fires": false,
+    "m2_decides": true,
+    "rule": "fires iff the smallest primary total-CO2 Berkeley point delta over M1a, M1b and M2 is > -0.002 degC/decade; equality does not fire; independent of promotion"
+  },
+  "m2_delta_rmse_and_interval": [
+    -0.002952085787570634,
+    [
+      -0.005920975094086702,
+      7.786832329886491e-05
+    ]
+  ],
+  "m2_gamma": {
+    "full": -0.002554371515259039,
+    "n_primary_training_fits": 151,
+    "strictly_negative_n": 151,
+    "strictly_negative_fraction": 1.0,
+    "zero_n": 0,
+    "same_sign_as_full_fraction": 1.0,
+    "median": -0.00254011777643084,
+    "min": -0.003407465385812681,
+    "max": -0.0019438161001170654,
+    "cutoff": null,
+    "interpretation": "negative gamma means a lower southern latitude slope relative to the north; it does not establish positive northern or non-positive southern absolute slopes and identifies no mechanism; sign stability is descriptive and decides nothing"
+  },
+  "static_share_uncertainty_total_co2": {
+    "country": {
+      "emissions": [
+        0.013133720535194857,
+        0.005856827388177317,
+        0.035027664317152735
+      ],
+      "geography": [
+        0.5188374533606563,
+        0.4522525803194503,
+        0.6297692084995653
+      ],
+      "socioeconomic": [
+        0.06282146968655955,
+        0.035574931205837275,
+        0.12581266182287426
+      ],
+      "population": [
+        0.041653359172317,
+        0.020960177590552177,
+        0.08975466579679788
+      ],
+      "residual": [
+        0.36355399724527193,
+        0.23302457204987992,
+        0.40728484150483274
+      ]
+    },
+    "block": {
+      "emissions": [
+        0.013133720535194857,
+        0.007864528304451529,
+        0.11561693713799917
+      ],
+      "geography": [
+        0.5188374533606563,
+        0.38526546830609976,
+        0.593513058874134
+      ],
+      "socioeconomic": [
+        0.06282146968655955,
+        0.03842230075752649,
+        0.15305642336466715
+      ],
+      "population": [
+        0.041653359172317,
+        0.015308960302013674,
+        0.1172641269170049
+      ],
+      "residual": [
+        0.36355399724527193,
+        0.188532267499132,
+        0.5039496382636656
+      ]
+    }
+  },
+  "material_change_to_v1_conclusion": {
+    "primary_total_co2": {
+      "point_geography_not_largest": false,
+      "interval_geography_not_established_country": false,
+      "interval_geography_not_established_block": false,
+      "responsibility_exceeds_0_10": false,
+      "responsibility_upper_country_ci_exceeds_0_10": false,
+      "material_change_to_v1_conclusion": false
+    },
+    "per_capita": {
+      "point_geography_not_largest": false,
+      "interval_geography_not_established_country": false,
+      "interval_geography_not_established_block": false,
+      "responsibility_exceeds_0_10": false,
+      "responsibility_upper_country_ci_exceeds_0_10": false,
+      "material_change_to_v1_conclusion": false
+    }
+  },
+  "product_sensitive_spatial_extensions": {
+    "M3-SEM(M0*)": true,
+    "M3-SAR(M0*)": true
+  },
+  "not_pursued_not_rejected": [
+    "optional geostatistical residual model",
+    "C1 and C3 physical covariates",
+    "alternative latitude forms (H1-only, spline-only, NH-only, other knots/df)",
+    "two-product-mean outcome",
+    "H8 decadal-variability, H9 unit-of-analysis and H10 station-density diagnostics",
+    "spatial terms on rejected candidates"
+  ],
+  "commits": {
+    "downstream_specification": "4dc2fadc4d53ef05014c07ebba368a53cf6239ac",
+    "downstream_specification_amendment_A1": "ef04958",
+    "m2_evaluator": "b13bb04e11b831cf7f9a9f61e63899a4f0e2fe42",
+    "m2_result": "99f600bcc9af7eedaf3c3b636386d5d0eb188aa4",
+    "m2_conditional_disposition": "2c1d8f7d50fb69e89afa8ea8b26275d9fd3c2583",
+    "m3_evaluator": "a6df380445d93f42a1d9b1dac55e284a5ee660ab",
+    "m3_station_result": "e049ebad5e075a6bef8606261245f7a8ec0726d0",
+    "m3_land_result": "805b7949f730ac2f6ec21512dd690368267fcf3b",
+    "m4_evaluator": "0366281c370909fadeb02d9985ce7002cf5a0f50",
+    "m4_result": "4166e1cf54d4770816e839c2bab22e84901c6c4b"
+  },
+  "sources": {
+    "m0_corrected_scorecard": {
+      "path": "research/model_v2/outputs/m0_scorecard_territory_corrected.json",
+      "sha256": "396a6a6099db789c99a2e415c5bf5cae46d93e67b2f5a63d57c8f5efc89c7311",
+      "introduced_by": "4263429f08dccfb63f79bfb165df9d803748feef"
+    },
+    "rank_audit": {
+      "path": "research/model_v2/outputs/rank_audit.json",
+      "sha256": "bb1a5ccd711a71969432ea6ce2e2a9c3b90ee0c45e3dc845bef25e5895bf362a",
+      "introduced_by": "9fb56e14cbeadfe69a03a8a2a084bccf485fe51e"
+    },
+    "m1a_scorecard": {
+      "path": "research/model_v2/outputs/m1a_scorecard.json",
+      "sha256": "9b6b0a778fd636a5373b33a611895c9310fbfd0c55088e3604e9712cbdd9ab24",
+      "introduced_by": "7003ff42d99b973f55aae4d4dfc59c7e1410f57d"
+    },
+    "m1b_result_manifest": {
+      "path": "research/model_v2/outputs/m1b_primary/m1b_result_manifest.json",
+      "sha256": "5998dd5cb7c675951c6275127338240e40e5755823312930db17fd67a2c4666a",
+      "introduced_by": "1680d85aa9bf146a458cfb3e97adb74f4446f10d"
+    },
+    "m2_result_manifest": {
+      "path": "research/model_v2/outputs/m2_primary/m2_result_manifest.json",
+      "sha256": "98e8d0af758f4c33a478af3dda190deed90f8f0b8cebf74a2009c6b123bb0626",
+      "introduced_by": "99f600bcc9af7eedaf3c3b636386d5d0eb188aa4"
+    },
+    "m2_conditional_not_run": {
+      "path": "research/model_v2/outputs/m2_conditional/m2_conditional_not_run.json",
+      "sha256": "1c159dad642c2c1faa8d22906aa518adb799e68c19fbc2ff5a72344d182302b0",
+      "introduced_by": "2c1d8f7d50fb69e89afa8ea8b26275d9fd3c2583"
+    },
+    "m3_station_manifest": {
+      "path": "research/model_v2/outputs/m3_station/m3_result_manifest.json",
+      "sha256": "446eba37970997a6ad99abbbf669947bcfadffe660bb848a98eb95e2a4a75878",
+      "introduced_by": "e049ebad5e075a6bef8606261245f7a8ec0726d0"
+    },
+    "m3_land_centroid_manifest": {
+      "path": "research/model_v2/outputs/m3_land_centroid/m3_result_manifest.json",
+      "sha256": "2df919d717a2f6289bb4894559e05ac718fb4a9a73494387ee0f058d81e6eaf4",
+      "introduced_by": "805b7949f730ac2f6ec21512dd690368267fcf3b"
+    },
+    "m4_result_manifest": {
+      "path": "research/model_v2/outputs/m4_final/m4_result_manifest.json",
+      "sha256": "7103213bc8d6bc717266d3150034d53cde2a1eb976148db8b4f44d8143ea9fc8",
+      "introduced_by": "4166e1cf54d4770816e839c2bab22e84901c6c4b"
+    },
+    "m4_final_specification": {
+      "path": "research/model_v2/outputs/m4_final/m4_final_specification.json",
+      "sha256": "b9312767bfb9c1a4a1ddbe7e4246c3ecd77940c4cd3ede1dc5e459a77350fe3d",
+      "introduced_by": "4166e1cf54d4770816e839c2bab22e84901c6c4b"
+    },
+    "m4_bootstrap_summary": {
+      "path": "research/model_v2/outputs/m4_final/m4_bootstrap_summary.json",
+      "sha256": "c1e54795e68b95d77643f3bb57722c07f5f26137573b470188b5ccd5987bf2d7",
+      "introduced_by": "4166e1cf54d4770816e839c2bab22e84901c6c4b"
+    },
+    "m4_products": {
+      "path": "research/model_v2/outputs/m4_final/m4_products.json",
+      "sha256": "46b4e64519a5b8d58a8f39c8ab48ff7432283e35a949f1ab6a3fe4c8ad0219f7",
+      "introduced_by": "4166e1cf54d4770816e839c2bab22e84901c6c4b"
+    },
+    "m4_sensitivities": {
+      "path": "research/model_v2/outputs/m4_final/m4_sensitivities.json",
+      "sha256": "f31760210d75c0f56df19036182f14cde265d5557741ff68079ac3b2fee83358",
+      "introduced_by": "4166e1cf54d4770816e839c2bab22e84901c6c4b"
+    },
+    "m3_station_scorecard": {
+      "path": "research/model_v2/outputs/m3_station/m3_scorecard.json",
+      "sha256": "6b1655882d4a9595b0d28a6bad6b20f1075e5ea5479d2a7190a133c37f277da1",
+      "introduced_by": "e049ebad5e075a6bef8606261245f7a8ec0726d0"
+    },
+    "m3_land_centroid_scorecard": {
+      "path": "research/model_v2/outputs/m3_land_centroid/m3_scorecard.json",
+      "sha256": "512addc73508e8f9c7fb2de3d61e93707ff665dbd7a1ca087cabef437bba3125",
+      "introduced_by": "805b7949f730ac2f6ec21512dd690368267fcf3b"
+    },
+    "m2_scorecard": {
+      "path": "research/model_v2/outputs/m2_primary/m2_scorecard.json",
+      "sha256": "6208f339bd64af797d357870539f04be1de9898139bd1587b6663bda5795a715",
+      "introduced_by": "99f600bcc9af7eedaf3c3b636386d5d0eb188aa4"
+    },
+    "downstream_specification": {
+      "path": "research/model_v2/DOWNSTREAM_COMPLETION_SPEC.md",
+      "sha256": "1395d9a3a866c6a9f824ba820564b77cda16f5863fa9d3564d79c7feab83d03e",
+      "introduced_by": "4dc2fadc4d53ef05014c07ebba368a53cf6239ac"
+    },
+    "m4_evidence_inventory": {
+      "path": "research/model_v2/M4_EVIDENCE_INVENTORY.md",
+      "sha256": "d8260a86e5cecd7fe4bb50edd444b261e8c83a8e8fc6a8930b1d7eef6aea3e97",
+      "introduced_by": "4dc2fadc4d53ef05014c07ebba368a53cf6239ac"
+    },
+    "m2_pre_score_resolutions": {
+      "path": "research/model_v2/M2_PRE_SCORE_RESOLUTIONS.md",
+      "sha256": "aca17cda855f96090afdff557211173c12255444f19e97e91e2c6ce668459496",
+      "introduced_by": "4dc2fadc4d53ef05014c07ebba368a53cf6239ac"
+    }
+  },
+  "verification": {
+    "m2_independent_check": {
+      "path": "research/model_v2/outputs/m2_primary_verification/m2_independent_check.json",
+      "sha256": "f1504fe36e12f19e6e674b8f7f61c2494dc51ac00439895fafb2f8ecc8afd2b4",
+      "passes": true,
+      "negative_controls_all_detected": true
+    },
+    "m2_reproducibility": {
+      "path": "research/model_v2/outputs/m2_primary_verification/m2_reproducibility.json",
+      "sha256": "72f60fc2e4ba78110506fc8c9d2a87188a3c26b588058c9882290a52dd932913",
+      "passes": true,
+      "negative_controls_all_detected": null
+    },
+    "m3_station_independent_check": {
+      "path": "research/model_v2/outputs/m3_station_verification/m3_independent_check.json",
+      "sha256": "4b292187714a0eb275ca3320c5576455c3d153377f439d8175a9de5c5173b761",
+      "passes": true,
+      "negative_controls_all_detected": true
+    },
+    "m3_station_reproducibility": {
+      "path": "research/model_v2/outputs/m3_station_verification/m3_reproducibility.json",
+      "sha256": "c6e36c4273cc2ebadcbd138f12aa767c864ae3f3bf33f530ec9b35b54210816b",
+      "passes": true,
+      "negative_controls_all_detected": null
+    },
+    "m3_land_independent_check": {
+      "path": "research/model_v2/outputs/m3_land_centroid_verification/m3_independent_check.json",
+      "sha256": "24a24b53936422a547fa02bfd066b726d423112eb73eb9458f07c9d8378a4be0",
+      "passes": true,
+      "negative_controls_all_detected": true
+    },
+    "m3_land_reproducibility": {
+      "path": "research/model_v2/outputs/m3_land_centroid_verification/m3_reproducibility.json",
+      "sha256": "c566939d0693df7f04c2c58d9419f581d0147a400dd838694cb485f309d6173a",
+      "passes": true,
+      "negative_controls_all_detected": null
+    },
+    "m4_independent_check": {
+      "path": "research/model_v2/outputs/m4_final_verification/m4_independent_check.json",
+      "sha256": "c17ddd50dad89bc0e4ba9b4854b07e8454780c5f3d89c207413840e3ec23adce",
+      "passes": true,
+      "negative_controls_all_detected": true
+    },
+    "m4_reproducibility": {
+      "path": "research/model_v2/outputs/m4_final_verification/m4_reproducibility.json",
+      "sha256": "2d7d1f224b107988b174598170757d74bbc771237e6b60181d5bc5cb7d8da5b9",
+      "passes": true,
+      "negative_controls_all_detected": null
+    }
+  },
+  "interpretation_limits": [
+    "descriptive and associational; geography is not causal attribution",
+    "responsibility allocation is not greenhouse-gas forcing's physical contribution",
+    "residual variance is not an unknown climate cause",
+    "spatial covariance accounting is not mechanism identification",
+    "rejected operational models do not disprove their motivating mechanisms",
+    "same-dataset hypothesis generation and follow-up are not independent confirmation",
+    "product disagreement is not an identified decomposition of observational error"
+  ]
+}

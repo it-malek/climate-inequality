@@ -1,0 +1,35 @@
+{
+  "note": "Process-level evidence copied from the /usr/bin/time -l logs and shell records of the Amendment 3 runs; complements m1b_build_run*.json and m1b_package_record.json.",
+  "builds": {
+    "build_a": {
+      "command": "PYTHONHASHSEED=0 uv run python -m research.model_v2.m1b_hydroclimate <fresh root>/a",
+      "python_hash_seed": "0",
+      "exit_status": 0,
+      "tree_clean_at_58e64bf_before_run": true,
+      "usr_bin_time_real_seconds": 17.69,
+      "maximum_resident_set_size_bytes": 4907565056,
+      "builder_stdout": {
+        "all_hard_stops_pass": true,
+        "hard_stops": []
+      }
+    },
+    "build_b": {
+      "command": "PYTHONHASHSEED=73 uv run python -m research.model_v2.m1b_hydroclimate <fresh root>/b",
+      "python_hash_seed": "73",
+      "exit_status": 0,
+      "usr_bin_time_real_seconds": 17.23,
+      "maximum_resident_set_size_bytes": 5078827008,
+      "builder_stdout": {
+        "all_hard_stops_pass": true,
+        "hard_stops": []
+      }
+    }
+  },
+  "redundancy_repeat": {
+    "command": "PYTHONHASHSEED=91 uv run python -c \"m1b_redundancy.main(<scratch copy of the six package files>)\"",
+    "python_hash_seed": "91",
+    "record_sha256": "9acb680c09b1577592ca9c4d62f992f6dab9628d581bb58b4448ad36b80f7585",
+    "committed_record_sha256": "9acb680c09b1577592ca9c4d62f992f6dab9628d581bb58b4448ad36b80f7585",
+    "byte_identical": true
+  }
+}

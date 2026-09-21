@@ -1,0 +1,80 @@
+{
+  "instrumentation_script_sha256": "65c652791fe5d477035e82da4bfa741fb076c34e7f64d01d0c72bb628187019d",
+  "python_hash_seed": "0",
+  "checks": {
+    "parquet_reads_exactly_the_allow_lists": true,
+    "no_forbidden_column_requested": true,
+    "csv_reads_exactly_expected": true,
+    "no_m0_countries_dependency": true,
+    "opens_within_allow_list": true,
+    "no_outcome_bearing_loader_called": true,
+    "outcome_column_absent_from_predictors": true,
+    "predictor_columns_exact": true
+  },
+  "all_checks_pass": true,
+  "calls": {
+    "parquet": [
+      {
+        "path": "data/processed/country_inequality.parquet",
+        "columns": [
+          "Country",
+          "owid_country",
+          "continent",
+          "cumulative_co2_mt",
+          "population"
+        ]
+      },
+      {
+        "path": "data/processed/city_features.parquet",
+        "columns": [
+          "Country",
+          "abs_latitude",
+          "hemisphere",
+          "coast_km",
+          "elevation_m",
+          "koppen",
+          "station_density"
+        ]
+      }
+    ],
+    "csv": [
+      {
+        "path": "<verified C2 bytes>",
+        "usecols": null
+      },
+      {
+        "path": "research/model_v2/outputs/m1a_geography_qa.csv",
+        "usecols": [
+          "iso3",
+          "Country"
+        ]
+      },
+      {
+        "path": "data/raw/worldbank/world-bank-income-groups.csv",
+        "usecols": null
+      }
+    ],
+    "opens": [
+      "research/model_v2/outputs/m1b_measurement_manifest.json",
+      "research/model_v2/outputs/m1b_hydroclimate_features.csv",
+      "research/model_v2/outputs/m1b_hydroclimate_qa.csv",
+      "research/model_v2/outputs/m1b_harmonization_cells.csv",
+      "research/model_v2/outputs/m1b_unresolved_support.csv",
+      "research/model_v2/outputs/m1b_support_checkpoint.json",
+      "data/processed/country_inequality.parquet",
+      "data/processed/city_features.parquet",
+      "data/raw/worldbank/world-bank-income-groups.csv",
+      "research/model_v2/outputs/m1a_geography_qa.csv",
+      "research/model_v2/outputs/m1b_hydroclimate_features.csv",
+      "research/model_v2/outputs/m1a_geography_qa.csv",
+      "data/processed/country_inequality.parquet",
+      "data/processed/city_features.parquet",
+      "data/raw/worldbank/world-bank-income-groups.csv",
+      "research/model_v2/outputs/m1b_redundancy_diagnostic.json"
+    ],
+    "forbidden_loader_calls": []
+  },
+  "redundancy_record_sha256": "9acb680c09b1577592ca9c4d62f992f6dab9628d581bb58b4448ad36b80f7585",
+  "redundancy_status": "pass",
+  "hard_stops": []
+}

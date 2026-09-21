@@ -1,0 +1,7 @@
+# Dashboard configuration (used locally and by Streamlit Community Cloud).
+# No [theme] block: the app respects the system default and lets users switch
+# Light / Dark / System from the Settings menu. Charts adapt automatically via
+# st.plotly_chart's default theme="streamlit" (see app/theme.py).
+
+[browser]
+gatherUsageStats = false

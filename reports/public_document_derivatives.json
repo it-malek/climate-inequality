@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "prepared_on": "2026-10-23",
+  "status": "Labeled public derivatives of historical documents; original records remain in private recovery",
+  "files": {
+    "research/model_v2/m4_evaluate.py": {
+      "format": "utf8-python",
+      "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
+      "original_sha256": "6011acbe0bf56b4377d77d5ee23f0e475eb52ddbc83aa65b012eecd0c6e33286",
+      "public_sha256": "deb3927440a17c42cf8a5b57ef841412ec7a9d35ea9aa689429435edcbfb310e",
+      "protected_sha256": "4431a89f73465fceada86ee0217d99f6e511a96a8d1900cedf0ee2a2119d724c",
+      "edits": [
+        {
+          "original_start": 0,
+          "original_end": 0,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 0,
+          "public_end": 297,
+          "public_value": "# Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.\n\n",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 38379,
+          "original_end": 38379,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 38676,
+          "public_end": 38679,
+          "public_value": "rec",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 38380,
+          "original_end": 38381,
+          "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
+          "public_start": 38680,
+          "public_end": 38692,
+          "public_value": "rded decisio",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 38382,
+          "original_end": 38384,
+          "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
+          "public_start": 38693,
+          "public_end": 38693,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m4_final/m4_inventory_status.json": {
+      "format": "utf8-json",
+      "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
+      "original_sha256": "eb95157b6089710b3cfdf04f5db555e86b0b1e03f62f702e3f3891f5239b2fce",
+      "public_sha256": "745927a0819c0dcc566de427deb959a8073333ddf294f3f52b917b67601dc33b",
+      "protected_sha256": "c72cd799e272322c3861d202aa30625a563e768d57165ab01c3d2f9d3b7618ee",
+      "edits": [
+        {
+          "original_start": 1,
+          "original_end": 1,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 1,
+          "public_end": 326,
+          "public_value": "\n  \"public_derivative_note\": \"Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.\",",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 3039,
+          "original_end": 3039,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 3364,
+          "public_end": 3367,
+          "public_value": "rec",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 3040,
+          "original_end": 3041,
+          "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
+          "public_start": 3368,
+          "public_end": 3386,
+          "public_value": "rded scope decisio",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 3042,
+          "original_end": 3044,
+          "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
+          "public_start": 3387,
+          "public_end": 3387,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m4_final_verification/reproducibility_run_b/m4_inventory_status.json": {
+      "format": "utf8-json",
+      "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
+      "original_sha256": "eb95157b6089710b3cfdf04f5db555e86b0b1e03f62f702e3f3891f5239b2fce",
+      "public_sha256": "745927a0819c0dcc566de427deb959a8073333ddf294f3f52b917b67601dc33b",
+      "protected_sha256": "c72cd799e272322c3861d202aa30625a563e768d57165ab01c3d2f9d3b7618ee",
+      "edits": [
+        {
+          "original_start": 1,
+          "original_end": 1,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 1,
+          "public_end": 326,
+          "public_value": "\n  \"public_derivative_note\": \"Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.\",",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 3039,
+          "original_end": 3039,
+          "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "public_start": 3364,
+          "public_end": 3367,
+          "public_value": "rec",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 3040,
+          "original_end": 3041,
+          "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
+          "public_start": 3368,
+          "public_end": 3386,
+          "public_value": "rded scope decisio",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        },
+        {
+          "original_start": 3042,
+          "original_end": 3044,
+          "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
+          "public_start": 3387,
+          "public_end": 3387,
+          "public_value": "",
+          "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
+        }
+      ]
+    }
+  }
+}

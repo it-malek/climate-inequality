@@ -1,0 +1,3290 @@
+{
+  "what_this_is": "independent re-derivation of research/model_v2/outputs/m1b_primary from its saved evidence",
+  "implementation": "research/model_v2/m1b_independent_check.py; shares no code with the evaluator",
+  "default_tolerance_absolute": 1e-10,
+  "tolerance_rationale": "every quantity is recomputed from the same saved float64 values, parsed with float_precision='round_trip', so only float summation order differs; labels, counts and identifiers are compared exactly",
+  "not_verifiable_from_saved_evidence": [
+    "the regressions behind the predictions, coefficients and coalition R2 values are taken as given",
+    "the Shapley check validates the aggregation of the saved coalition R2 values, not those fits",
+    "encoders and the outcome vector are not re-derived",
+    "check 10 establishes that the saved fold evidence is mutually consistent and that the LOCO memberships obey a symmetric exclusion rule; it does not re-derive the 500 km territorial bounds, so it cannot confirm that the excluded set is the correct one",
+    "the 999-permutation Moran p-values and z-scores are not recomputed"
+  ],
+  "all_checks_pass": true,
+  "failed_checks": [],
+  "checks": {
+    "1_scores": {
+      "n_comparisons": 48,
+      "n_failed": 0,
+      "passes": true,
+      "comparisons": [
+        {
+          "check": "primary_total_co2/M0star/in_sample_r2",
+          "recomputed": 0.6364460027547281,
+          "reported": 0.6364460027547281,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/in_sample_rmse",
+          "recomputed": 0.028089426451158434,
+          "reported": 0.028089426451158434,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/n",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/cv_r2",
+          "recomputed": 0.15307991296259638,
+          "reported": 0.15307991296259638,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/cv_rmse",
+          "recomputed": 0.04287258067948669,
+          "reported": 0.04287258067948669,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/cv_mae",
+          "recomputed": 0.0344645874976315,
+          "reported": 0.0344645874976315,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/m49_subregion_lo/cv_r2",
+          "recomputed": 0.3029700197902634,
+          "reported": 0.3029700197902634,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/m49_subregion_lo/cv_rmse",
+          "recomputed": 0.03889413690932386,
+          "reported": 0.03889413690932386,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/m49_subregion_lo/cv_mae",
+          "recomputed": 0.03182205865244928,
+          "reported": 0.03182205865244928,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/random10/cv_r2",
+          "recomputed": 0.4283529968790264,
+          "reported": 0.4283529968790264,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/random10/cv_rmse",
+          "recomputed": 0.035222678205283596,
+          "reported": 0.035222678205283596,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/random10/cv_mae",
+          "recomputed": 0.027450020769845672,
+          "reported": 0.027450020769845672,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/in_sample_r2",
+          "recomputed": 0.6364565668953286,
+          "reported": 0.6364565668953286,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/in_sample_rmse",
+          "recomputed": 0.028089018337359148,
+          "reported": 0.028089018337359148,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/n",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/cv_r2",
+          "recomputed": 0.08363912905523074,
+          "reported": 0.08363912905523074,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/cv_rmse",
+          "recomputed": 0.044595565735706416,
+          "reported": 0.044595565735706416,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/cv_mae",
+          "recomputed": 0.035611633669855994,
+          "reported": 0.035611633669855994,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/m49_subregion_lo/cv_r2",
+          "recomputed": 0.27404660691717575,
+          "reported": 0.27404660691717575,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/m49_subregion_lo/cv_rmse",
+          "recomputed": 0.03969289536306859,
+          "reported": 0.03969289536306859,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/m49_subregion_lo/cv_mae",
+          "recomputed": 0.03232606260713025,
+          "reported": 0.03232606260713025,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/random10/cv_r2",
+          "recomputed": 0.4157778525291659,
+          "reported": 0.4157778525291659,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/random10/cv_rmse",
+          "recomputed": 0.035607986607940685,
+          "reported": 0.035607986607940685,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/random10/cv_mae",
+          "recomputed": 0.02771205023852191,
+          "reported": 0.02771205023852191,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/in_sample_r2",
+          "recomputed": 0.6364460027547281,
+          "reported": 0.6364460027547281,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/in_sample_rmse",
+          "recomputed": 0.02808942645115843,
+          "reported": 0.02808942645115843,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/n",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/cv_r2",
+          "recomputed": 0.15307991296261803,
+          "reported": 0.15307991296261803,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/cv_rmse",
+          "recomputed": 0.04287258067948614,
+          "reported": 0.04287258067948614,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/cv_mae",
+          "recomputed": 0.03446458749763083,
+          "reported": 0.03446458749763083,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/m49_subregion_lo/cv_r2",
+          "recomputed": 0.30297001979026006,
+          "reported": 0.30297001979026006,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/m49_subregion_lo/cv_rmse",
+          "recomputed": 0.03889413690932395,
+          "reported": 0.03889413690932395,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/m49_subregion_lo/cv_mae",
+          "recomputed": 0.03182205865244929,
+          "reported": 0.03182205865244929,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/random10/cv_r2",
+          "recomputed": 0.42835299687902684,
+          "reported": 0.42835299687902684,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/random10/cv_rmse",
+          "recomputed": 0.03522267820528358,
+          "reported": 0.03522267820528358,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/random10/cv_mae",
+          "recomputed": 0.02745002076984565,
+          "reported": 0.02745002076984565,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/in_sample_r2",
+          "recomputed": 0.6364565668953286,
+          "reported": 0.6364565668953286,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/in_sample_rmse",
+          "recomputed": 0.028089018337359148,
+          "reported": 0.028089018337359148,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/n",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/cv_r2",
+          "recomputed": 0.0836391290552484,
+          "reported": 0.0836391290552484,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/cv_rmse",
+          "recomputed": 0.04459556573570599,
+          "reported": 0.04459556573570599,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/cv_mae",
+          "recomputed": 0.035611633669855584,
+          "reported": 0.035611633669855584,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/m49_subregion_lo/cv_r2",
+          "recomputed": 0.2740466069172247,
+          "reported": 0.2740466069172247,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/m49_subregion_lo/cv_rmse",
+          "recomputed": 0.03969289536306725,
+          "reported": 0.03969289536306725,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/m49_subregion_lo/cv_mae",
+          "recomputed": 0.032326062607128885,
+          "reported": 0.032326062607128885,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/random10/cv_r2",
+          "recomputed": 0.415777852529177,
+          "reported": 0.415777852529177,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/random10/cv_rmse",
+          "recomputed": 0.03560798660794035,
+          "reported": 0.03560798660794035,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/random10/cv_mae",
+          "recomputed": 0.027712050238521614,
+          "reported": 0.027712050238521614,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        }
+      ]
+    },
+    "2_fold_and_region_summaries": {
+      "n_comparisons": 204,
+      "n_failed": 0,
+      "passes": true,
+      "comparisons": [
+        {
+          "check": "primary_total_co2/M0star/primary_loco/n_folds",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/fold_rmse_median",
+          "recomputed": 0.030212678366271478,
+          "reported": 0.030212678366271478,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/fold_rmse_min",
+          "recomputed": 5.205518452473801e-05,
+          "reported": 5.205518452473801e-05,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/fold_rmse_max",
+          "recomputed": 0.11473455103959602,
+          "reported": 0.11473455103959602,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/worst_fold",
+          "recomputed": 142,
+          "reported": 142,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/worst_fold_units",
+          "recomputed": [
+            "BRA"
+          ],
+          "reported": [
+            "BRA"
+          ],
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/fold_error_iqr",
+          "recomputed": 0.04303064328289877,
+          "reported": 0.04303064328289877,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Australia and New Zealand]",
+          "recomputed": 0.06853863230284858,
+          "reported": 0.06853863230284858,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Australia and New Zealand]",
+          "recomputed": -0.003928314400949387,
+          "reported": -0.003928314400949387,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Caribbean]",
+          "recomputed": 0.04015276640655823,
+          "reported": 0.04015276640655823,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Caribbean]",
+          "recomputed": 0.03230450250945147,
+          "reported": 0.03230450250945147,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Central America]",
+          "recomputed": 0.0572209379740803,
+          "reported": 0.0572209379740803,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Central America]",
+          "recomputed": -0.04975657921005592,
+          "reported": -0.04975657921005592,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Central Asia]",
+          "recomputed": 0.06936437825894065,
+          "reported": 0.06936437825894065,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Central Asia]",
+          "recomputed": 0.06586201981049075,
+          "reported": 0.06586201981049075,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Eastern Africa]",
+          "recomputed": 0.026612366088369192,
+          "reported": 0.026612366088369192,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Eastern Africa]",
+          "recomputed": 0.006636280243174199,
+          "reported": 0.006636280243174199,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Eastern Asia]",
+          "recomputed": 0.03079216507325142,
+          "reported": 0.03079216507325142,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Eastern Asia]",
+          "recomputed": -0.002837707410130047,
+          "reported": -0.002837707410130047,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Eastern Europe]",
+          "recomputed": 0.04317961477832486,
+          "reported": 0.04317961477832486,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Eastern Europe]",
+          "recomputed": -0.03254235375782009,
+          "reported": -0.03254235375782009,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Melanesia]",
+          "recomputed": 0.08515122825110222,
+          "reported": 0.08515122825110222,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Melanesia]",
+          "recomputed": 0.08515122825110222,
+          "reported": 0.08515122825110222,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Middle Africa]",
+          "recomputed": 0.037777209109997954,
+          "reported": 0.037777209109997954,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Middle Africa]",
+          "recomputed": -0.021635847595544575,
+          "reported": -0.021635847595544575,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Northern Africa]",
+          "recomputed": 0.057290496923058216,
+          "reported": 0.057290496923058216,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Northern Africa]",
+          "recomputed": -0.01829781348271861,
+          "reported": -0.01829781348271861,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Northern America]",
+          "recomputed": 0.06381277300877572,
+          "reported": 0.06381277300877572,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Northern America]",
+          "recomputed": 0.05629321485838294,
+          "reported": 0.05629321485838294,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Northern Europe]",
+          "recomputed": 0.04050644156002207,
+          "reported": 0.04050644156002207,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Northern Europe]",
+          "recomputed": 0.008010048251251262,
+          "reported": 0.008010048251251262,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[South America]",
+          "recomputed": 0.04847874879208317,
+          "reported": 0.04847874879208317,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[South America]",
+          "recomputed": 0.004645436965705982,
+          "reported": 0.004645436965705982,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[South-eastern Asia]",
+          "recomputed": 0.04370407549342183,
+          "reported": 0.04370407549342183,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[South-eastern Asia]",
+          "recomputed": -0.016337915172650593,
+          "reported": -0.016337915172650593,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Southern Africa]",
+          "recomputed": 0.04927248984081756,
+          "reported": 0.04927248984081756,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Southern Africa]",
+          "recomputed": -0.04463338524677874,
+          "reported": -0.04463338524677874,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Southern Asia]",
+          "recomputed": 0.052719094839544046,
+          "reported": 0.052719094839544046,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Southern Asia]",
+          "recomputed": 0.0018980034481435196,
+          "reported": 0.0018980034481435196,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Southern Europe]",
+          "recomputed": 0.019114114001651725,
+          "reported": 0.019114114001651725,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Southern Europe]",
+          "recomputed": -0.00010579330346326006,
+          "reported": -0.00010579330346326006,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Western Africa]",
+          "recomputed": 0.0342854409360044,
+          "reported": 0.0342854409360044,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Western Africa]",
+          "recomputed": 0.02598956807737756,
+          "reported": 0.02598956807737756,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Western Asia]",
+          "recomputed": 0.04153458346526808,
+          "reported": 0.04153458346526808,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Western Asia]",
+          "recomputed": 0.0034424599344626975,
+          "reported": 0.0034424599344626975,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_rmse[Western Europe]",
+          "recomputed": 0.020947467251509814,
+          "reported": 0.020947467251509814,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_bias[Western Europe]",
+          "recomputed": 0.01510462987311563,
+          "reported": 0.01510462987311563,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/region_count",
+          "recomputed": 20,
+          "reported": 20,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/worst_region.region",
+          "recomputed": "Central Asia",
+          "reported": "Central Asia",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/worst_region.rmse",
+          "recomputed": 0.06936437825894065,
+          "reported": 0.06936437825894065,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/primary_loco/worst_region.n",
+          "recomputed": 4,
+          "reported": 4,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/n_folds",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/fold_rmse_median",
+          "recomputed": 0.03134814032910563,
+          "reported": 0.03134814032910563,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/fold_rmse_min",
+          "recomputed": 1.0588808697364893e-05,
+          "reported": 1.0588808697364893e-05,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/fold_rmse_max",
+          "recomputed": 0.12033387551281777,
+          "reported": 0.12033387551281777,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/worst_fold",
+          "recomputed": 13,
+          "reported": 13,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/worst_fold_units",
+          "recomputed": [
+            "EGY"
+          ],
+          "reported": [
+            "EGY"
+          ],
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/fold_error_iqr",
+          "recomputed": 0.044822035664112136,
+          "reported": 0.044822035664112136,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Australia and New Zealand]",
+          "recomputed": 0.07109904447796167,
+          "reported": 0.07109904447796167,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Australia and New Zealand]",
+          "recomputed": -0.0033569684695745894,
+          "reported": -0.0033569684695745894,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Caribbean]",
+          "recomputed": 0.04043522520672223,
+          "reported": 0.04043522520672223,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Caribbean]",
+          "recomputed": 0.032618443216425395,
+          "reported": 0.032618443216425395,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Central America]",
+          "recomputed": 0.05720308303011216,
+          "reported": 0.05720308303011216,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Central America]",
+          "recomputed": -0.04974865382151735,
+          "reported": -0.04974865382151735,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Central Asia]",
+          "recomputed": 0.07349481277418388,
+          "reported": 0.07349481277418388,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Central Asia]",
+          "recomputed": 0.06954798861826723,
+          "reported": 0.06954798861826723,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Eastern Africa]",
+          "recomputed": 0.0272705910757206,
+          "reported": 0.0272705910757206,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Eastern Africa]",
+          "recomputed": 0.0069288116882024065,
+          "reported": 0.0069288116882024065,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Eastern Asia]",
+          "recomputed": 0.0314442955548498,
+          "reported": 0.0314442955548498,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Eastern Asia]",
+          "recomputed": -0.003269020234773307,
+          "reported": -0.003269020234773307,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Eastern Europe]",
+          "recomputed": 0.044129092388265,
+          "reported": 0.044129092388265,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Eastern Europe]",
+          "recomputed": -0.033225458546617286,
+          "reported": -0.033225458546617286,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Melanesia]",
+          "recomputed": 0.08673412042686765,
+          "reported": 0.08673412042686765,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Melanesia]",
+          "recomputed": 0.08673412042686765,
+          "reported": 0.08673412042686765,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Middle Africa]",
+          "recomputed": 0.04048489476933231,
+          "reported": 0.04048489476933231,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Middle Africa]",
+          "recomputed": -0.024394596056232985,
+          "reported": -0.024394596056232985,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Northern Africa]",
+          "recomputed": 0.06930435294304012,
+          "reported": 0.06930435294304012,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Northern Africa]",
+          "recomputed": -0.025627493871230728,
+          "reported": -0.025627493871230728,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Northern America]",
+          "recomputed": 0.06444543638547763,
+          "reported": 0.06444543638547763,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Northern America]",
+          "recomputed": 0.05702001657386749,
+          "reported": 0.05702001657386749,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Northern Europe]",
+          "recomputed": 0.040621734915552515,
+          "reported": 0.040621734915552515,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Northern Europe]",
+          "recomputed": 0.0077846335734011755,
+          "reported": 0.0077846335734011755,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[South America]",
+          "recomputed": 0.04850386090783901,
+          "reported": 0.04850386090783901,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[South America]",
+          "recomputed": 0.004566415258215563,
+          "reported": 0.004566415258215563,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[South-eastern Asia]",
+          "recomputed": 0.04394932190787901,
+          "reported": 0.04394932190787901,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[South-eastern Asia]",
+          "recomputed": -0.01651784108582621,
+          "reported": -0.01651784108582621,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Southern Africa]",
+          "recomputed": 0.0505874751649742,
+          "reported": 0.0505874751649742,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Southern Africa]",
+          "recomputed": -0.04573124216348713,
+          "reported": -0.04573124216348713,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Southern Asia]",
+          "recomputed": 0.05281624584401983,
+          "reported": 0.05281624584401983,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Southern Asia]",
+          "recomputed": 0.0020300577127275376,
+          "reported": 0.0020300577127275376,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Southern Europe]",
+          "recomputed": 0.019684525307077722,
+          "reported": 0.019684525307077722,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Southern Europe]",
+          "recomputed": -0.00035867961137329356,
+          "reported": -0.00035867961137329356,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Western Africa]",
+          "recomputed": 0.0352055554681456,
+          "reported": 0.0352055554681456,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Western Africa]",
+          "recomputed": 0.026735352026283715,
+          "reported": 0.026735352026283715,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Western Asia]",
+          "recomputed": 0.045128286869860326,
+          "reported": 0.045128286869860326,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Western Asia]",
+          "recomputed": 0.0037105090553593623,
+          "reported": 0.0037105090553593623,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_rmse[Western Europe]",
+          "recomputed": 0.020817812459418227,
+          "reported": 0.020817812459418227,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_bias[Western Europe]",
+          "recomputed": 0.014984827556774957,
+          "reported": 0.014984827556774957,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/region_count",
+          "recomputed": 20,
+          "reported": 20,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/worst_region.region",
+          "recomputed": "Central Asia",
+          "reported": "Central Asia",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/worst_region.rmse",
+          "recomputed": 0.07349481277418388,
+          "reported": 0.07349481277418388,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/primary_loco/worst_region.n",
+          "recomputed": 4,
+          "reported": 4,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/n_folds",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/fold_rmse_median",
+          "recomputed": 0.030212678366259654,
+          "reported": 0.030212678366259654,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/fold_rmse_min",
+          "recomputed": 5.2055184522989406e-05,
+          "reported": 5.2055184522989406e-05,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/fold_rmse_max",
+          "recomputed": 0.11473455103959766,
+          "reported": 0.11473455103959766,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/worst_fold",
+          "recomputed": 142,
+          "reported": 142,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/worst_fold_units",
+          "recomputed": [
+            "BRA"
+          ],
+          "reported": [
+            "BRA"
+          ],
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/fold_error_iqr",
+          "recomputed": 0.043030643282895936,
+          "reported": 0.043030643282895936,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Australia and New Zealand]",
+          "recomputed": 0.06853863230284951,
+          "reported": 0.06853863230284951,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Australia and New Zealand]",
+          "recomputed": -0.003928314400953557,
+          "reported": -0.003928314400953557,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Caribbean]",
+          "recomputed": 0.04015276640655505,
+          "reported": 0.04015276640655505,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Caribbean]",
+          "recomputed": 0.03230450250944602,
+          "reported": 0.03230450250944602,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Central America]",
+          "recomputed": 0.05722093797408006,
+          "reported": 0.05722093797408006,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Central America]",
+          "recomputed": -0.04975657921005627,
+          "reported": -0.04975657921005627,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Central Asia]",
+          "recomputed": 0.06936437825893833,
+          "reported": 0.06936437825893833,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Central Asia]",
+          "recomputed": 0.06586201981048703,
+          "reported": 0.06586201981048703,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Eastern Africa]",
+          "recomputed": 0.026612366088367357,
+          "reported": 0.026612366088367357,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Eastern Africa]",
+          "recomputed": 0.00663628024317268,
+          "reported": 0.00663628024317268,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Eastern Asia]",
+          "recomputed": 0.030792165073248296,
+          "reported": 0.030792165073248296,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Eastern Asia]",
+          "recomputed": -0.002837707410131862,
+          "reported": -0.002837707410131862,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Eastern Europe]",
+          "recomputed": 0.04317961477832449,
+          "reported": 0.04317961477832449,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Eastern Europe]",
+          "recomputed": -0.032542353757819206,
+          "reported": -0.032542353757819206,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Melanesia]",
+          "recomputed": 0.08515122825110064,
+          "reported": 0.08515122825110064,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Melanesia]",
+          "recomputed": 0.08515122825110064,
+          "reported": 0.08515122825110064,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Middle Africa]",
+          "recomputed": 0.03777720910999883,
+          "reported": 0.03777720910999883,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Middle Africa]",
+          "recomputed": -0.021635847595547576,
+          "reported": -0.021635847595547576,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Northern Africa]",
+          "recomputed": 0.05729049692305709,
+          "reported": 0.05729049692305709,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Northern Africa]",
+          "recomputed": -0.01829781348271926,
+          "reported": -0.01829781348271926,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Northern America]",
+          "recomputed": 0.06381277300877583,
+          "reported": 0.06381277300877583,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Northern America]",
+          "recomputed": 0.05629321485838408,
+          "reported": 0.05629321485838408,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Northern Europe]",
+          "recomputed": 0.04050644156002157,
+          "reported": 0.04050644156002157,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Northern Europe]",
+          "recomputed": 0.00801004825124913,
+          "reported": 0.00801004825124913,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[South America]",
+          "recomputed": 0.0484787487920841,
+          "reported": 0.0484787487920841,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[South America]",
+          "recomputed": 0.00464543696570506,
+          "reported": 0.00464543696570506,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[South-eastern Asia]",
+          "recomputed": 0.043704075493422326,
+          "reported": 0.043704075493422326,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[South-eastern Asia]",
+          "recomputed": -0.01633791517265156,
+          "reported": -0.01633791517265156,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Southern Africa]",
+          "recomputed": 0.04927248984082009,
+          "reported": 0.04927248984082009,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Southern Africa]",
+          "recomputed": -0.04463338524678203,
+          "reported": -0.04463338524678203,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Southern Asia]",
+          "recomputed": 0.052719094839543706,
+          "reported": 0.052719094839543706,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Southern Asia]",
+          "recomputed": 0.0018980034481432023,
+          "reported": 0.0018980034481432023,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Southern Europe]",
+          "recomputed": 0.019114114001650945,
+          "reported": 0.019114114001650945,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Southern Europe]",
+          "recomputed": -0.0001057933034646428,
+          "reported": -0.0001057933034646428,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Western Africa]",
+          "recomputed": 0.0342854409360028,
+          "reported": 0.0342854409360028,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Western Africa]",
+          "recomputed": 0.025989568077375427,
+          "reported": 0.025989568077375427,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Western Asia]",
+          "recomputed": 0.04153458346526642,
+          "reported": 0.04153458346526642,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Western Asia]",
+          "recomputed": 0.0034424599344616224,
+          "reported": 0.0034424599344616224,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_rmse[Western Europe]",
+          "recomputed": 0.02094746725151196,
+          "reported": 0.02094746725151196,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_bias[Western Europe]",
+          "recomputed": 0.015104629873114839,
+          "reported": 0.015104629873114839,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/region_count",
+          "recomputed": 20,
+          "reported": 20,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/worst_region.region",
+          "recomputed": "Central Asia",
+          "reported": "Central Asia",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/worst_region.rmse",
+          "recomputed": 0.06936437825893833,
+          "reported": 0.06936437825893833,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/primary_loco/worst_region.n",
+          "recomputed": 4,
+          "reported": 4,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/n_folds",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/fold_rmse_median",
+          "recomputed": 0.0313481403291031,
+          "reported": 0.0313481403291031,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/fold_rmse_min",
+          "recomputed": 1.0588808701805785e-05,
+          "reported": 1.0588808701805785e-05,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/fold_rmse_max",
+          "recomputed": 0.12033387551281349,
+          "reported": 0.12033387551281349,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/worst_fold",
+          "recomputed": 13,
+          "reported": 13,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/worst_fold_units",
+          "recomputed": [
+            "EGY"
+          ],
+          "reported": [
+            "EGY"
+          ],
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/fold_error_iqr",
+          "recomputed": 0.044822035664116494,
+          "reported": 0.044822035664116494,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Australia and New Zealand]",
+          "recomputed": 0.07109904447796131,
+          "reported": 0.07109904447796131,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Australia and New Zealand]",
+          "recomputed": -0.0033569684695763935,
+          "reported": -0.0033569684695763935,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Caribbean]",
+          "recomputed": 0.040435225206720896,
+          "reported": 0.040435225206720896,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Caribbean]",
+          "recomputed": 0.032618443216426686,
+          "reported": 0.032618443216426686,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Central America]",
+          "recomputed": 0.057203083030111235,
+          "reported": 0.057203083030111235,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Central America]",
+          "recomputed": -0.04974865382151673,
+          "reported": -0.04974865382151673,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Central Asia]",
+          "recomputed": 0.07349481277418486,
+          "reported": 0.07349481277418486,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Central Asia]",
+          "recomputed": 0.06954798861826791,
+          "reported": 0.06954798861826791,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Eastern Africa]",
+          "recomputed": 0.02727059107571764,
+          "reported": 0.02727059107571764,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Eastern Africa]",
+          "recomputed": 0.006928811688202303,
+          "reported": 0.006928811688202303,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Eastern Asia]",
+          "recomputed": 0.031444295554851266,
+          "reported": 0.031444295554851266,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Eastern Asia]",
+          "recomputed": -0.0032690202347693932,
+          "reported": -0.0032690202347693932,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Eastern Europe]",
+          "recomputed": 0.04412909238826498,
+          "reported": 0.04412909238826498,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Eastern Europe]",
+          "recomputed": -0.03322545854661611,
+          "reported": -0.03322545854661611,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Melanesia]",
+          "recomputed": 0.08673412042686554,
+          "reported": 0.08673412042686554,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Melanesia]",
+          "recomputed": 0.08673412042686554,
+          "reported": 0.08673412042686554,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Middle Africa]",
+          "recomputed": 0.0404848947693349,
+          "reported": 0.0404848947693349,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Middle Africa]",
+          "recomputed": -0.024394596056235413,
+          "reported": -0.024394596056235413,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Northern Africa]",
+          "recomputed": 0.06930435294303866,
+          "reported": 0.06930435294303866,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Northern Africa]",
+          "recomputed": -0.025627493871230336,
+          "reported": -0.025627493871230336,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Northern America]",
+          "recomputed": 0.06444543638547356,
+          "reported": 0.06444543638547356,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Northern America]",
+          "recomputed": 0.05702001657386371,
+          "reported": 0.05702001657386371,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Northern Europe]",
+          "recomputed": 0.040621734915552495,
+          "reported": 0.040621734915552495,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Northern Europe]",
+          "recomputed": 0.007784633573402086,
+          "reported": 0.007784633573402086,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[South America]",
+          "recomputed": 0.04850386090783773,
+          "reported": 0.04850386090783773,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[South America]",
+          "recomputed": 0.004566415258217328,
+          "reported": 0.004566415258217328,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[South-eastern Asia]",
+          "recomputed": 0.043949321907878175,
+          "reported": 0.043949321907878175,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[South-eastern Asia]",
+          "recomputed": -0.016517841085827788,
+          "reported": -0.016517841085827788,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Southern Africa]",
+          "recomputed": 0.05058747516497448,
+          "reported": 0.05058747516497448,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Southern Africa]",
+          "recomputed": -0.04573124216348766,
+          "reported": -0.04573124216348766,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Southern Asia]",
+          "recomputed": 0.052816245844020365,
+          "reported": 0.052816245844020365,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Southern Asia]",
+          "recomputed": 0.00203005771272816,
+          "reported": 0.00203005771272816,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Southern Europe]",
+          "recomputed": 0.01968452530707858,
+          "reported": 0.01968452530707858,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Southern Europe]",
+          "recomputed": -0.0003586796113746561,
+          "reported": -0.0003586796113746561,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Western Africa]",
+          "recomputed": 0.03520555546814548,
+          "reported": 0.03520555546814548,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Western Africa]",
+          "recomputed": 0.026735352026283885,
+          "reported": 0.026735352026283885,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Western Asia]",
+          "recomputed": 0.045128286869859674,
+          "reported": 0.045128286869859674,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Western Asia]",
+          "recomputed": 0.0037105090553583853,
+          "reported": 0.0037105090553583853,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_rmse[Western Europe]",
+          "recomputed": 0.02081781245941764,
+          "reported": 0.02081781245941764,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_bias[Western Europe]",
+          "recomputed": 0.014984827556773975,
+          "reported": 0.014984827556773975,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/region_count",
+          "recomputed": 20,
+          "reported": 20,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/worst_region.region",
+          "recomputed": "Central Asia",
+          "reported": "Central Asia",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/worst_region.rmse",
+          "recomputed": 0.07349481277418486,
+          "reported": 0.07349481277418486,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/primary_loco/worst_region.n",
+          "recomputed": 4,
+          "reported": 4,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        }
+      ]
+    },
+    "3_paired_interval": {
+      "n_comparisons": 10,
+      "n_failed": 0,
+      "passes": true,
+      "comparisons": [
+        {
+          "check": "primary_total_co2/paired/delta_rmse",
+          "recomputed": 0.0017229850562197266,
+          "reported": 0.0017229850562197266,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/paired/interval_low",
+          "recomputed": 0.0008914057822278219,
+          "reported": 0.0008914057822278219,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/paired/interval_high",
+          "recomputed": 0.0028494442025791093,
+          "reported": 0.0028494442025791093,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/paired/resamples",
+          "recomputed": 2000,
+          "reported": 2000,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/paired/seed",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/paired/delta_rmse",
+          "recomputed": 0.0017229850562198515,
+          "reported": 0.0017229850562198515,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/paired/interval_low",
+          "recomputed": 0.0008914057822278209,
+          "reported": 0.0008914057822278209,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/paired/interval_high",
+          "recomputed": 0.002849444202579502,
+          "reported": 0.002849444202579502,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/paired/resamples",
+          "recomputed": 2000,
+          "reported": 2000,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/paired/seed",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        }
+      ]
+    },
+    "4_sign_condition_and_verdict": {
+      "n_comparisons": 39,
+      "n_failed": 0,
+      "passes": true,
+      "comparisons": [
+        {
+          "check": "primary_total_co2/verdict/coefficient_n_fits",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/coefficient_n_fits_is_151",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/coefficient_negative_n",
+          "recomputed": 68,
+          "reported": 68,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/coefficient_zero_n",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/coefficient_negative_fraction",
+          "recomputed": 0.4503311258278146,
+          "reported": 0.4503311258278146,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/coefficient_full",
+          "recomputed": 0.0004740731807010154,
+          "reported": 0.0004740731807010154,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/m49_rmse_change",
+          "recomputed": 0.0007987584537447259,
+          "reported": 0.0007987584537447259,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/worst_region_rmse_change",
+          "recomputed": 0.004130434515243225,
+          "reported": 0.004130434515243225,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/S1",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/S2",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/A1",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/A2",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/A3",
+          "recomputed": true,
+          "reported": true,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/A4",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/A5",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/label",
+          "recomputed": "not supported",
+          "reported": "not supported",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/association_supported",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/improvement_without_prestated_sign",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/verdict/worsened_generalization",
+          "recomputed": true,
+          "reported": true,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/coefficient_n_fits",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/coefficient_n_fits_is_151",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/coefficient_negative_n",
+          "recomputed": 68,
+          "reported": 68,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/coefficient_zero_n",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/coefficient_negative_fraction",
+          "recomputed": 0.4503311258278146,
+          "reported": 0.4503311258278146,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/coefficient_full",
+          "recomputed": 0.00047407318070103165,
+          "reported": 0.00047407318070103165,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/m49_rmse_change",
+          "recomputed": 0.0007987584537432965,
+          "reported": 0.0007987584537432965,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/worst_region_rmse_change",
+          "recomputed": 0.004130434515246528,
+          "reported": 0.004130434515246528,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/S1",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/S2",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/A1",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/A2",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/A3",
+          "recomputed": true,
+          "reported": true,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/A4",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/A5",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/label",
+          "recomputed": "not supported",
+          "reported": "not supported",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/association_supported",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/improvement_without_prestated_sign",
+          "recomputed": false,
+          "reported": false,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/verdict/worsened_generalization",
+          "recomputed": true,
+          "reported": true,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "scorecard/verdict_label",
+          "recomputed": "not supported",
+          "reported": "not supported",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        }
+      ]
+    },
+    "5_representation_equivalence": {
+      "n_comparisons": 11,
+      "n_failed": 0,
+      "passes": true,
+      "comparisons": [
+        {
+          "check": "equivalence/predictions/M0star/in_sample",
+          "recomputed": 4.424238753131249e-14,
+          "reported": 4.424238753131249e-14,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "equivalence/predictions/M0star/primary_loco",
+          "recomputed": 1.3516965324811281e-14,
+          "reported": 1.3516965324811281e-14,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "equivalence/predictions/M0star/m49_subregion_lo",
+          "recomputed": 1.2434497875801753e-14,
+          "reported": 1.2434497875801753e-14,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "equivalence/predictions/M0star/random10",
+          "recomputed": 1.3988810110276972e-14,
+          "reported": 1.3988810110276972e-14,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "equivalence/predictions/M1b/in_sample",
+          "recomputed": 1.0241807402167069e-14,
+          "reported": 1.0241807402167069e-14,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "equivalence/predictions/M1b/primary_loco",
+          "recomputed": 1.214306433183765e-14,
+          "reported": 1.214306433183765e-14,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "equivalence/predictions/M1b/m49_subregion_lo",
+          "recomputed": 1.2212453270876722e-14,
+          "reported": 1.2212453270876722e-14,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "equivalence/predictions/M1b/random10",
+          "recomputed": 1.6986412276764895e-14,
+          "reported": 1.6986412276764895e-14,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "equivalence/coefficients/baseline_dryness_full",
+          "recomputed": 1.6263032587282567e-17,
+          "reported": 1.6263032587282567e-17,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "equivalence/coefficients/baseline_dryness_training_max",
+          "recomputed": 2.5568621249113035e-16,
+          "reported": 2.5568621249113035e-16,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "equivalence/coefficients/training_fits_compared",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        }
+      ]
+    },
+    "6_share_accounting": {
+      "n_comparisons": 30,
+      "n_failed": 0,
+      "passes": true,
+      "comparisons": [
+        {
+          "check": "primary_total_co2/M0star/shapley/n_coalitions",
+          "recomputed": 16,
+          "reported": 16,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/shapley/share_emissions",
+          "recomputed": 0.013133720535194932,
+          "reported": 0.013133720535194949,
+          "abs_diff": 1.734723475976807e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/shapley/share_geography",
+          "recomputed": 0.5188374533606565,
+          "reported": 0.5188374533606565,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/shapley/share_socioeconomic",
+          "recomputed": 0.06282146968655965,
+          "reported": 0.06282146968655963,
+          "abs_diff": 1.3877787807814457e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/shapley/share_population",
+          "recomputed": 0.041653359172317224,
+          "reported": 0.041653359172317245,
+          "abs_diff": 2.0816681711721685e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/shapley/named_share_sum_minus_in_sample_r2",
+          "recomputed": 0.6364460027547283,
+          "reported": 0.6364460027547281,
+          "abs_diff": 2.220446049250313e-16,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/shapley/named_plus_residual",
+          "recomputed": 1.0000000000000002,
+          "reported": 1.0,
+          "abs_diff": 2.220446049250313e-16,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/shapley/n_coalitions",
+          "recomputed": 32,
+          "reported": 32,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/shapley/share_emissions",
+          "recomputed": 0.011068721845408084,
+          "reported": 0.01106872184540802,
+          "abs_diff": 6.418476861114186e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/shapley/share_geography",
+          "recomputed": 0.48399973950422576,
+          "reported": 0.4839997395042257,
+          "abs_diff": 5.551115123125783e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/shapley/share_socioeconomic",
+          "recomputed": 0.05933837620969218,
+          "reported": 0.05933837620969215,
+          "abs_diff": 2.7755575615628914e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/shapley/share_population",
+          "recomputed": 0.036223255308290195,
+          "reported": 0.03622325530829013,
+          "abs_diff": 6.245004513516506e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/shapley/share_hydroclimate",
+          "recomputed": 0.045826474027712845,
+          "reported": 0.04582647402771282,
+          "abs_diff": 2.7755575615628914e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/shapley/named_share_sum_minus_in_sample_r2",
+          "recomputed": 0.6364565668953291,
+          "reported": 0.6364565668953286,
+          "abs_diff": 5.551115123125783e-16,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/shapley/named_plus_residual",
+          "recomputed": 1.0000000000000004,
+          "reported": 1.0,
+          "abs_diff": 4.440892098500626e-16,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/shapley/n_coalitions",
+          "recomputed": 16,
+          "reported": 16,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/shapley/share_emissions",
+          "recomputed": 0.02043535889149556,
+          "reported": 0.020435358891495586,
+          "abs_diff": 2.7755575615628914e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/shapley/share_geography",
+          "recomputed": 0.513519756654464,
+          "reported": 0.513519756654464,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/shapley/share_socioeconomic",
+          "recomputed": 0.06928246597399396,
+          "reported": 0.06928246597399394,
+          "abs_diff": 1.3877787807814457e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/shapley/share_population",
+          "recomputed": 0.03320842123477476,
+          "reported": 0.03320842123477475,
+          "abs_diff": 6.938893903907228e-18,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/shapley/named_share_sum_minus_in_sample_r2",
+          "recomputed": 0.6364460027547283,
+          "reported": 0.6364460027547281,
+          "abs_diff": 2.220446049250313e-16,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M0star/shapley/named_plus_residual",
+          "recomputed": 1.0000000000000002,
+          "reported": 1.0,
+          "abs_diff": 2.220446049250313e-16,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/shapley/n_coalitions",
+          "recomputed": 32,
+          "reported": 32,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/shapley/share_emissions",
+          "recomputed": 0.01746467892734342,
+          "reported": 0.017464678927343366,
+          "abs_diff": 5.551115123125783e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/shapley/share_geography",
+          "recomputed": 0.48006588995953897,
+          "reported": 0.4800658899595389,
+          "abs_diff": 5.551115123125783e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/shapley/share_socioeconomic",
+          "recomputed": 0.06484342773136549,
+          "reported": 0.06484342773136548,
+          "abs_diff": 1.3877787807814457e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/shapley/share_population",
+          "recomputed": 0.029161777523733598,
+          "reported": 0.02916177752373354,
+          "abs_diff": 5.898059818321144e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/shapley/share_hydroclimate",
+          "recomputed": 0.04492079275334756,
+          "reported": 0.04492079275334753,
+          "abs_diff": 2.7755575615628914e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/shapley/named_share_sum_minus_in_sample_r2",
+          "recomputed": 0.6364565668953291,
+          "reported": 0.6364565668953286,
+          "abs_diff": 5.551115123125783e-16,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "per_capita/M1b/shapley/named_plus_residual",
+          "recomputed": 1.0000000000000004,
+          "reported": 1.0,
+          "abs_diff": 4.440892098500626e-16,
+          "tolerance": 1e-10,
+          "passes": true
+        }
+      ]
+    },
+    "7_residual_morans_i": {
+      "n_comparisons": 4,
+      "n_failed": 0,
+      "passes": true,
+      "comparisons": [
+        {
+          "check": "primary_total_co2/M0star/morans_i/in_sample",
+          "recomputed": 0.2686890161417403,
+          "reported": 0.26868901614174023,
+          "abs_diff": 5.551115123125783e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/morans_i/primary_loco",
+          "recomputed": 0.32154716769275776,
+          "reported": 0.3215471676927579,
+          "abs_diff": 1.1102230246251565e-16,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/morans_i/in_sample",
+          "recomputed": 0.26807496830984434,
+          "reported": 0.26807496830984434,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/morans_i/primary_loco",
+          "recomputed": 0.32691436476555663,
+          "reported": 0.32691436476555663,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        }
+      ]
+    },
+    "8_manifest_digests": {
+      "n_comparisons": 9,
+      "n_failed": 0,
+      "passes": true,
+      "comparisons": [
+        {
+          "check": "manifest/m1b_scorecard.json",
+          "recomputed": "c2a353fe37364711a905cb75380950ff7025d8dd3997276f994b2fd041c1f196",
+          "reported": "c2a353fe37364711a905cb75380950ff7025d8dd3997276f994b2fd041c1f196",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "manifest/m1b_country_predictions.csv",
+          "recomputed": "43f3f6fb61a067bcc1bca9017fcb60a08abfb8f437d6112ae769bd6a8faf2d56",
+          "reported": "43f3f6fb61a067bcc1bca9017fcb60a08abfb8f437d6112ae769bd6a8faf2d56",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "manifest/m1b_primary_country_comparison.csv",
+          "recomputed": "850468478445878deb3f28e44e1657c32187e1c32c5da908e57138021e23312a",
+          "reported": "850468478445878deb3f28e44e1657c32187e1c32c5da908e57138021e23312a",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "manifest/m1b_cv_folds.csv",
+          "recomputed": "6a9e3976f51e60a66c6b70fd65cc56626df1eec28a41e774c39260d1a2a459f1",
+          "reported": "6a9e3976f51e60a66c6b70fd65cc56626df1eec28a41e774c39260d1a2a459f1",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "manifest/m1b_coefficients.csv",
+          "recomputed": "660b2e8dfb7a89ec0c4640f4957528defc4d033fbfd3e9d83d7cb3a98817d16a",
+          "reported": "660b2e8dfb7a89ec0c4640f4957528defc4d033fbfd3e9d83d7cb3a98817d16a",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "manifest/m1b_coefficient_summary.json",
+          "recomputed": "746469e6900d859f1ad88f3f89d8587f5eeb36e8eb69ef48d41553765ee714ea",
+          "reported": "746469e6900d859f1ad88f3f89d8587f5eeb36e8eb69ef48d41553765ee714ea",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "manifest/m1b_shapley_coalitions.csv",
+          "recomputed": "fabe54805763361e2de12d6f74cfd0bfd9536ef19e861971348be73d8bc4fe25",
+          "reported": "fabe54805763361e2de12d6f74cfd0bfd9536ef19e861971348be73d8bc4fe25",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "manifest/m1b_design_matrices.csv",
+          "recomputed": "bbdc8b1df1314b55c409f6ff59db03d39a9109d0a6827bef9ec58ce8a4caa982",
+          "reported": "bbdc8b1df1314b55c409f6ff59db03d39a9109d0a6827bef9ec58ce8a4caa982",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "manifest/m1b_provenance.json",
+          "recomputed": "415a7c6437fa54f2013f894721c6c9dce4e255e173a67b4b3cd85e2650ea1b19",
+          "reported": "415a7c6437fa54f2013f894721c6c9dce4e255e173a67b4b3cd85e2650ea1b19",
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        }
+      ]
+    },
+    "9_area_centroid_morans_i": {
+      "n_comparisons": 7,
+      "n_failed": 0,
+      "passes": true,
+      "comparisons": [
+        {
+          "check": "area_centroid/geometry_covers_frozen_order",
+          "recomputed": 151,
+          "reported": 151,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "area_centroid/source_agreement/centroid_lon",
+          "recomputed": 0.0,
+          "reported": 0.0,
+          "abs_diff": 0.0,
+          "tolerance": 0.0,
+          "passes": true,
+          "note": "country_geometry.csv vs m0_countries.csv, frozen order; required to be bit-identical"
+        },
+        {
+          "check": "area_centroid/source_agreement/centroid_lat",
+          "recomputed": 0.0,
+          "reported": 0.0,
+          "abs_diff": 0.0,
+          "tolerance": 0.0,
+          "passes": true,
+          "note": "country_geometry.csv vs m0_countries.csv, frozen order; required to be bit-identical"
+        },
+        {
+          "check": "primary_total_co2/M0star/area_centroid_morans_i/in_sample",
+          "recomputed": 0.289919176548906,
+          "reported": 0.28991917654890587,
+          "abs_diff": 1.1102230246251565e-16,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M0star/area_centroid_morans_i/primary_loco",
+          "recomputed": 0.3501528749811219,
+          "reported": 0.35015287498112196,
+          "abs_diff": 5.551115123125783e-17,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/area_centroid_morans_i/in_sample",
+          "recomputed": 0.28910854084446025,
+          "reported": 0.28910854084446025,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        },
+        {
+          "check": "primary_total_co2/M1b/area_centroid_morans_i/primary_loco",
+          "recomputed": 0.3614439886126786,
+          "reported": 0.3614439886126786,
+          "abs_diff": 0.0,
+          "tolerance": 1e-10,
+          "passes": true
+        }
+      ]
+    },
+    "10_fold_evidence_consistency": {
+      "n_comparisons": 30,
+      "n_failed": 0,
+      "passes": true,
+      "comparisons": [
+        {
+          "check": "folds/iso3_order",
+          "recomputed": {
+            "n": 151,
+            "sha256_16": "c6855a2b1a0ec3c9"
+          },
+          "reported": {
+            "n": 151,
+            "sha256_16": "c6855a2b1a0ec3c9"
+          },
+          "n_differing": 0,
+          "abs_diff": null,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/primary_fold_is_leave_one_out",
+          "recomputed": {
+            "n": 151,
+            "sha256_16": "c31882386b290527"
+          },
+          "reported": {
+            "n": 151,
+            "sha256_16": "c31882386b290527"
+          },
+          "n_differing": 0,
+          "abs_diff": null,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/training_list_length_equals_primary_n_train",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/held_out_never_in_own_training",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/training_members_are_frozen_countries",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/training_membership_symmetric",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/primary_total_co2/M0star/primary_loco/fold_id_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/primary_total_co2/M0star/primary_loco/n_train_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/primary_total_co2/M0star/m49_subregion_lo/fold_id_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/primary_total_co2/M0star/random10/fold_id_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/primary_total_co2/M1b/primary_loco/fold_id_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/primary_total_co2/M1b/primary_loco/n_train_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/primary_total_co2/M1b/m49_subregion_lo/fold_id_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/primary_total_co2/M1b/random10/fold_id_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/per_capita/M0star/primary_loco/fold_id_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/per_capita/M0star/primary_loco/n_train_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/per_capita/M0star/m49_subregion_lo/fold_id_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/per_capita/M0star/random10/fold_id_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/per_capita/M1b/primary_loco/fold_id_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/per_capita/M1b/primary_loco/n_train_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/per_capita/M1b/m49_subregion_lo/fold_id_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/per_capita/M1b/random10/fold_id_matches",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/m49_fold_constant_within_label",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/m49_fold_distinct_across_labels",
+          "recomputed": 20,
+          "reported": 20,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/m49_label_matches_predictions",
+          "recomputed": {
+            "n": 20,
+            "sha256_16": "b66440be11cd5abf"
+          },
+          "reported": {
+            "n": 20,
+            "sha256_16": "b66440be11cd5abf"
+          },
+          "n_differing": 0,
+          "abs_diff": null,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/random10_equals_default_rng0_permutation_mod_10",
+          "recomputed": 0,
+          "reported": 0,
+          "abs_diff": 0.0,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/primary_total_co2/M0star/held_out_iso3_set",
+          "recomputed": {
+            "n": 151,
+            "sha256_16": "c3049d18e08ad431"
+          },
+          "reported": {
+            "n": 151,
+            "sha256_16": "c3049d18e08ad431"
+          },
+          "n_differing": 0,
+          "abs_diff": null,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/primary_total_co2/M1b/held_out_iso3_set",
+          "recomputed": {
+            "n": 151,
+            "sha256_16": "c3049d18e08ad431"
+          },
+          "reported": {
+            "n": 151,
+            "sha256_16": "c3049d18e08ad431"
+          },
+          "n_differing": 0,
+          "abs_diff": null,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/per_capita/M0star/held_out_iso3_set",
+          "recomputed": {
+            "n": 151,
+            "sha256_16": "c3049d18e08ad431"
+          },
+          "reported": {
+            "n": 151,
+            "sha256_16": "c3049d18e08ad431"
+          },
+          "n_differing": 0,
+          "abs_diff": null,
+          "tolerance": "exact",
+          "passes": true
+        },
+        {
+          "check": "folds/per_capita/M1b/held_out_iso3_set",
+          "recomputed": {
+            "n": 151,
+            "sha256_16": "c3049d18e08ad431"
+          },
+          "reported": {
+            "n": 151,
+            "sha256_16": "c3049d18e08ad431"
+          },
+          "n_differing": 0,
+          "abs_diff": null,
+          "tolerance": "exact",
+          "passes": true
+        }
+      ]
+    }
+  }
+}

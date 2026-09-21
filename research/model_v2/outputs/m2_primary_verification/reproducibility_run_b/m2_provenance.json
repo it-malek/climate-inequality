@@ -1,0 +1,240 @@
+{
+  "documents_sha256": {
+    "research/model_v2/M2_EVALUATION_CONTRACT.md": "93607a9283be572b8908b90831a42460bf8b1a671dd8dba093c0cc90f71f7eef",
+    "research/model_v2/M2_EVALUATOR_SPEC.md": "2dbd7d918d962d3705be6258a2678d7631421a14908b87f969423a0b5faba552",
+    "research/model_v2/M2_DESIGN.md": "f2b8f11f38e1200b7790d708dfc9164a1edc8191bb4685e35c09565ec6169978",
+    "research/model_v2/M2_PROVENANCE_AUDIT.md": "0e5cc48535f1f376fdba77b006e66db9ad1f1c18f5912bdd277130863125a6db",
+    "research/model_v2/M2_FEASIBILITY_AUDIT.md": "767f7280eea5d7c50d129816fab5a9436e6c57466cddcce16849a09829668681",
+    "research/model_v2/M2_PRE_SCORE_RESOLUTIONS.md": "aca17cda855f96090afdff557211173c12255444f19e97e91e2c6ce668459496",
+    "research/model_v2/DOWNSTREAM_COMPLETION_SPEC.md": "1395d9a3a866c6a9f824ba820564b77cda16f5863fa9d3564d79c7feab83d03e"
+  },
+  "code": {
+    "commit": "b13bb04e11b831cf7f9a9f61e63899a4f0e2fe42",
+    "upstream": "origin/research/model-v2-residual-structure",
+    "code_closure_clean_and_pushed": true,
+    "code_closure_sha256": {
+      "pyproject.toml": "b32ba3b840bde445ff5c0f9ed20da0ac57eb7e25d8b7666ef1fac72e8d29dd45",
+      "research/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "research/model_v2/DOWNSTREAM_COMPLETION_SPEC.md": "1395d9a3a866c6a9f824ba820564b77cda16f5863fa9d3564d79c7feab83d03e",
+      "research/model_v2/M2_DESIGN.md": "f2b8f11f38e1200b7790d708dfc9164a1edc8191bb4685e35c09565ec6169978",
+      "research/model_v2/M2_EVALUATION_CONTRACT.md": "93607a9283be572b8908b90831a42460bf8b1a671dd8dba093c0cc90f71f7eef",
+      "research/model_v2/M2_EVALUATOR_SPEC.md": "2dbd7d918d962d3705be6258a2678d7631421a14908b87f969423a0b5faba552",
+      "research/model_v2/M2_FEASIBILITY_AUDIT.md": "767f7280eea5d7c50d129816fab5a9436e6c57466cddcce16849a09829668681",
+      "research/model_v2/M2_PRE_SCORE_RESOLUTIONS.md": "aca17cda855f96090afdff557211173c12255444f19e97e91e2c6ce668459496",
+      "research/model_v2/M2_PROVENANCE_AUDIT.md": "0e5cc48535f1f376fdba77b006e66db9ad1f1c18f5912bdd277130863125a6db",
+      "research/model_v2/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "research/model_v2/borders.py": "daf50c12b472b45144bac1bc4359f23921de88e7fe53520f1a554fce4c5d4f81",
+      "research/model_v2/cells.py": "3d02f25b02da954ae3e8c040b905a621b9d522d23d43a1064951b2a17439602c",
+      "research/model_v2/cv.py": "836b367d66f1b564504f54eca4bc210af7f73eb12ae662db96224784ccb7914c",
+      "research/model_v2/diagnostics.py": "176df71f4ea78ed0bba3ab8c0d2a308c72d799f8e6c0f29e71e6af530a91c44f",
+      "research/model_v2/geometry.py": "5ab4f44b97c04652f08d66d8841b3d57e8fd2acbf05ac55583cb86a3d887d3ef",
+      "research/model_v2/m0.py": "f3f758ee90e45d457c43ed3d0187446d353a5cdc8a9801c9707334486c23b8e4",
+      "research/model_v2/m2_conditional.py": "addbc2cd0693180a27e8ec3370d4b154380b43277534d4f37858aa09a1a71b80",
+      "research/model_v2/m2_evaluate.py": "6c78f13047eb4c762bf621d7845274103a5c54558ee218f9dd59838ed3fbc421",
+      "research/model_v2/m2_feasibility.py": "8bcbf364e0f8cc2424acfe839f9f7cc798578e88b5ceb8471bb0608e77fa61dc",
+      "research/model_v2/m2_latitude_basis.py": "86024958de49f6c83825e063c05b6e4f114f576efbe93477d3892299de5bb304",
+      "research/model_v2/regions.py": "c81150ab482d4d1bce3b48187c87b124222c2bdcf82ee2619c357ef27d6db411",
+      "research/model_v2/run_m0_scorecard.py": "8755de8e7bce2eb3c8c4e06b45ab26589cff2667a40592bd792da8667bd06aa0",
+      "research/model_v2/run_territory_correction.py": "63b6daaaa4f1005596ced823e2ed4353e41a48063c82d3c6646eb203ada8b35a",
+      "research/model_v2/spatial.py": "c4cbd21fc0f3513d1c7bf5a7cc666e22c1b743e5fac75042b57842f097b353cf",
+      "research/model_v2/territory.py": "1703a2afd231a028172c690c51d3c90a02686e49819547b379f5a76bbcf0ebf1",
+      "research/model_v2/v2_provenance.py": "a8b729adb7d3a9d5769d0331fcdcc1c10cc4df8bd887996021fd0797016c5220",
+      "src/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/area_weighting.py": "9c3564a109b75958a05fa0571c019e0122f75efbf737751a728f222b138fd510",
+      "src/cleaning.py": "8b0eea05c4c1e82f220bc734cf95a7305a249c0d90779ddd41a382b3380255a7",
+      "src/data_io.py": "547cefff2c7c1de7b8f18a0db3482c0473c6068289d77531035813a4e547db2e",
+      "src/decomposition.py": "e6bb67560a37a51f91fb5de8ebed7119f6bb3eae615250f6365b32fe96f5ec06",
+      "src/emissions.py": "169a692a5860284399304d46d73c27b809a194c57032d14638d645741b9bff19",
+      "src/explain.py": "0d0f67b030e912e0d997a7fe3d6c6eec439aae832812e93af473ac647524e8b5",
+      "src/feature_schema.py": "78d0c302ea9ba911947b62739f14702cf2ca0d5fd608b18d0c6d78ba9ecfe3ec",
+      "src/figures.py": "8d160a6fef0b58d7dd84f3406f7e49206d711bde686327f789484437d7ad0c24",
+      "src/grids.py": "89f419be8a19e4fab91c00001192c8c027bfbbe4769cec5d055d089a93a83eed",
+      "src/interpolate.py": "c89b62cfd6182fe05eb171347220bcf7a1a06d1b3a4bc01967a17c29fb52abed",
+      "src/population.py": "10872eab45b9e73c17cf1f5a6debb895669dda784d8617c1ad2c3cdd34a6c652",
+      "src/stability.py": "ee3a6fa5d0b4850a537eace41832c36e7252452c51a8f751abb67fdf58a9696c",
+      "src/trends.py": "56b0abc1243e7b10cbc49fccf63c6fc819ef0decd1a63997aaa115bb439639ae",
+      "uv.lock": "2ce75d74bb683bcf2000c12fb565b8d6fcac003a35a4ddef5f8936253aece0d5"
+    }
+  },
+  "inputs": {
+    "research/model_v2/outputs/m0_countries.csv": {
+      "sha256": "9e99b3798e91f2b7e40250921edd5e5a788e4191df3e9027dceb98fe76b43536",
+      "frozen_at": "af97bd2"
+    },
+    "research/model_v2/outputs/country_geometry.csv": {
+      "sha256": "c8d72866d97d13288b3024781cd262f378ce08749d5166e0d4805bea01903e3a",
+      "frozen_at": "af97bd2"
+    },
+    "research/model_v2/outputs/cv_fold_membership.csv": {
+      "sha256": "0100c5c7677ed0b4d3073b12b35300a3a973b3f126dff4cdcfacde4a86ac56f2",
+      "frozen_at": "af97bd2"
+    },
+    "research/model_v2/outputs/territory_distance_lower_km.csv": {
+      "sha256": "79a20f007ebe08044833753956cdf859c27d505a2c10747b5e4df3469ee2c6e4",
+      "frozen_at": "4263429"
+    },
+    "research/model_v2/outputs/territory_cv_membership_comparison.csv": {
+      "sha256": "946be248edd0b7c3f49bd2bb34c94d3c921fd8cbf1b13e6be95e5ebf8b4706ef",
+      "frozen_at": "4263429"
+    },
+    "research/model_v2/outputs/m0_cv_errors_territory_corrected.csv": {
+      "sha256": "d9d800e322e27a7532d673a7613be5cccf4d694fc5914eb2b37f678ee3062d65",
+      "frozen_at": "4263429"
+    },
+    "research/model_v2/outputs/m0_scorecard_territory_corrected.json": {
+      "sha256": "396a6a6099db789c99a2e415c5bf5cae46d93e67b2f5a63d57c8f5efc89c7311",
+      "frozen_at": "4263429"
+    },
+    "research/model_v2/outputs/rank_audit.json": {
+      "sha256": "bb1a5ccd711a71969432ea6ce2e2a9c3b90ee0c45e3dc845bef25e5895bf362a",
+      "frozen_at": "9fb56e1"
+    },
+    "research/model_v2/outputs/rank_audit_country_predictions.csv": {
+      "sha256": "77ae9c6a40205354be7e98d9b41012f84e52df4c6e3f7b0e65518a42ff45217c",
+      "frozen_at": "9fb56e1"
+    },
+    "research/model_v2/outputs/product_stability_aligned_era5_trends.csv": {
+      "sha256": "23c96aeaf400433fea773903ede12fa593f549acf16a7286362b1f6078294922",
+      "frozen_at": "9fb56e1"
+    },
+    "research/model_v2/outputs/product_stability_aligned_summary.json": {
+      "sha256": "aaac5683728b22f23fb5e2392dd0f3a3f67d081db397b4a972051d75183f40f0",
+      "frozen_at": "9fb56e1"
+    },
+    "research/model_v2/outputs/m1a_geography_features.csv": {
+      "sha256": "a62d04d478b4500656c83e28d4fb4fb2d5307388b8ea5142a0f8de8dc059c4b3",
+      "frozen_at": "a7dea34"
+    },
+    "research/model_v2/outputs/m1a_measurement_manifest.json": {
+      "sha256": "c9d9645203bb32a0698e07cc4cff4824bb5231194bdcc40ae2d91daf3d8b6947",
+      "frozen_at": "a7dea34"
+    },
+    "research/model_v2/outputs/m1a_scorecard.json": {
+      "sha256": "9b6b0a778fd636a5373b33a611895c9310fbfd0c55088e3604e9712cbdd9ab24",
+      "frozen_at": "7003ff4"
+    },
+    "research/model_v2/outputs/m1b_primary/m1b_design_matrices.csv": {
+      "sha256": "bbdc8b1df1314b55c409f6ff59db03d39a9109d0a6827bef9ec58ce8a4caa982",
+      "frozen_at": "1680d85"
+    },
+    "research/model_v2/outputs/m1b_primary/m1b_cv_folds.csv": {
+      "sha256": "6a9e3976f51e60a66c6b70fd65cc56626df1eec28a41e774c39260d1a2a459f1",
+      "frozen_at": "1680d85"
+    },
+    "research/model_v2/outputs/m1b_primary/m1b_result_manifest.json": {
+      "sha256": "5998dd5cb7c675951c6275127338240e40e5755823312930db17fd67a2c4666a",
+      "frozen_at": "1680d85"
+    },
+    "research/model_v2/outputs/m1b_primary/m1b_provenance.json": {
+      "sha256": "415a7c6437fa54f2013f894721c6c9dce4e255e173a67b4b3cd85e2650ea1b19",
+      "frozen_at": "1680d85"
+    },
+    "research/model_v2/outputs/m1b_primary/m1b_country_predictions.csv": {
+      "sha256": "43f3f6fb61a067bcc1bca9017fcb60a08abfb8f437d6112ae769bd6a8faf2d56",
+      "frozen_at": "1680d85"
+    },
+    "research/model_v2/outputs/m1b_primary/m1b_scorecard.json": {
+      "sha256": "c2a353fe37364711a905cb75380950ff7025d8dd3997276f994b2fd041c1f196",
+      "frozen_at": "1680d85"
+    },
+    "research/model_v2/outputs/m2_feasibility/m2_feasibility_summary.json": {
+      "sha256": "9775714e57915336bd615e3907a89d2afec79a6c8a372dadfb62da3f8f5b6212",
+      "frozen_at": "23d31f4"
+    },
+    "research/model_v2/outputs/m2_feasibility/m2_feasibility_fits.csv": {
+      "sha256": "810823b4c6e2ad4851499a6bfdd9b975beb0110604737ed09e2a4cbf1ffc252c",
+      "frozen_at": "23d31f4"
+    },
+    "research/model_v2/outputs/m2_feasibility/m2_feasibility_manifest.json": {
+      "sha256": "6a0c5e2eee534f1211624f0a3fce70fe7cc229920fac3dcc70f60bdc256f60f3",
+      "frozen_at": "23d31f4"
+    }
+  },
+  "reference_cards": {
+    "primary_total_co2": "drop_per_capita",
+    "per_capita": "drop_total"
+  },
+  "protocols": {
+    "primary": "corrected 500 km footprint-certified LOCO (4263429 bounds)",
+    "secondary": "leave one M49 subregion out",
+    "reference_only": "random 10-fold, seed 0"
+  },
+  "basis_version": "m2-latitude-basis-v1",
+  "software": {
+    "python": "3.11.12",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "scipy": "1.17.1",
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "machine": "arm64"
+  },
+  "identity": {
+    "n": 151,
+    "outcome_vector_sha256": "3a07ac6f40cc1397c895a9acdf60868fcf89d444d139565e80b713231a6db6a2",
+    "outcome_binding": "rank_audit_country_predictions.csv drop_per_capita observed; equal to the M0 pipeline and the committed M1b record",
+    "encoded_identity": {
+      "primary_total_co2": {
+        "columns": [
+          "intercept",
+          "cum_co2_total",
+          "abs_latitude",
+          "elevation",
+          "continentality",
+          "population",
+          "station_density",
+          "climate_zone=B",
+          "climate_zone=C",
+          "climate_zone=D",
+          "climate_zone=E",
+          "hemisphere=S",
+          "spatial_block=Asia",
+          "spatial_block=Europe",
+          "spatial_block=North America",
+          "spatial_block=Oceania",
+          "spatial_block=South America",
+          "income_group=Low-income countries",
+          "income_group=Lower-middle-income countries",
+          "income_group=Upper-middle-income countries"
+        ],
+        "value_for_value_after_name_alignment": true,
+        "dummy_columns_bit_identical_from_labels": true,
+        "groups_identical": true,
+        "design_sha256": "22b08649a3e2aba44798c413cbe21315126be78a109989e28c3ed5b44af93b58"
+      },
+      "per_capita": {
+        "columns": [
+          "intercept",
+          "cum_co2_per_capita",
+          "abs_latitude",
+          "elevation",
+          "continentality",
+          "population",
+          "station_density",
+          "climate_zone=B",
+          "climate_zone=C",
+          "climate_zone=D",
+          "climate_zone=E",
+          "hemisphere=S",
+          "spatial_block=Asia",
+          "spatial_block=Europe",
+          "spatial_block=North America",
+          "spatial_block=Oceania",
+          "spatial_block=South America",
+          "income_group=Low-income countries",
+          "income_group=Lower-middle-income countries",
+          "income_group=Upper-middle-income countries"
+        ],
+        "value_for_value_after_name_alignment": true,
+        "dummy_columns_bit_identical_from_labels": true,
+        "groups_identical": true,
+        "design_sha256": "c80b9b41c8b68987db6a79bb6e7db4306cb0340e0b2cc10bbad6b887c12f59d2"
+      }
+    },
+    "representation_identity_max_abs_error": 1.7763568394002505e-15,
+    "primary_membership_sha256": "bfcedfb463a758f37fdade39314213888581efac29fbc0e54318052e5490b8b5",
+    "m49_fold_sha256": "f4b8e6e685abbd079f0dda8d17aa38c17247418ba719a3d8c4e42949cc148a04",
+    "random10_fold_sha256": "ba62284d30de7c874b56d775d57e154080ba7715fe80d295c5043dcbaeeb1ac9",
+    "station_weights_sha256": "2667b370ccbfbce1ad0123030a79e01abe387dc79e0576d4903fb690ef727a57",
+    "area_weights_sha256": "8fabb6c8e7bfed889000ae37754a767579d2e52895c135a3f120df3368a14b1b"
+  }
+}

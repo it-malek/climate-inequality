@@ -1,0 +1,35 @@
+# Data (not committed)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+outputs/*
+!outputs/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment / secrets
+.env
+kaggle.json
+.cdsapirc
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+
+# Private study notes (not part of the repository)
+notes/

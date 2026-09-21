@@ -1,0 +1,15 @@
+{
+  "started_utc": "2026-09-16T20:11:30+00:00",
+  "finished_utc": "2026-09-16T20:12:06+00:00",
+  "wall_seconds": 35.55953600000066,
+  "host": "[private workstation identifier omitted from public derivative]",
+  "executable": "${VIRTUAL_ENV}/bin/python3",
+  "argv": [
+    "research/model_v2/m3_evaluate.py",
+    "--weights",
+    "station"
+  ],
+  "output_root": "research/model_v2/outputs/m3_station",
+  "pythonhashseed": "0",
+  "live_remote_commit": "a6df380445d93f42a1d9b1dac55e284a5ee660ab"
+}

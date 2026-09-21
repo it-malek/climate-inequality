@@ -1,0 +1,182 @@
+"""City-level drivers page: what explains where warming is fast, at the station level."""
+
+from __future__ import annotations
+
+import pandas as pd
+import streamlit as st
+
+from app import loaders, theme
+from src.figures import render_coefficient_stability, render_partial_effect_scatter
+
+_NOT_BUILT = (
+    "The explanatory-variables bundle has not been built yet. "
+    "Run `python -m src.explain` then `python -m src.app_assets` to populate this page."
+)
+
+
+def render() -> None:
+    """Render the city-level drivers page."""
+    stats = loaders.load_stats()
+    if "explain" not in stats:
+        st.title("What explains where warming is fast?")
+        st.info(_NOT_BUILT)
+        return
+
+    e = stats["explain"]
+    city = e["city_model"]
+    country = e["country_model"]
+    country_specs = country["specs"]
+
+    st.title("What explains where warming is fast?")
+
+    st.subheader("Does the emissions link survive a latitude control?")
+    st.markdown(
+        "Within continents, station-weighted country warming rises by about "
+        "**+0.029 °C/decade per tenfold cumulative per-capita CO₂**. This section asks "
+        "whether that survives a control for the fact that historically high-emitting "
+        "countries also sit at higher latitudes, where polar amplification raises warming "
+        "regardless of emissions."
+    )
+
+    pooled = next((s for s in country_specs if s["spec_name"] == "pooled"), None)
+    fe = next((s for s in country_specs if s["spec_name"] == "continent_fe"), None)
+    lat_cont = next((s for s in country_specs if s["spec_name"] == "lat_continent"), None)
+
+    col1, col2, col3 = st.columns(3)
+    if pooled and pooled["emissions"]:
+        em = pooled["emissions"]
+        col1.metric(
+            "Pooled effect",
+            f"{em['coef']:+.3f}",
+            help=(
+                f"°C/decade per tenfold CO₂, pooled OLS with HC1 standard errors. "
+                f"95% interval [{em['ci_low']:+.3f}, {em['ci_high']:+.3f}], "
+                f"p = {em['p_value']:.2g}."
+            ),
+        )
+    if fe and fe["emissions"]:
+        em = fe["emissions"]
+        col2.metric(
+            "Within-continent (FE)",
+            f"{em['coef']:+.3f}",
+            help=(
+                f"°C/decade per tenfold CO₂, continent fixed effects with HC1 standard errors. "
+                f"95% interval [{em['ci_low']:+.3f}, {em['ci_high']:+.3f}], "
+                f"p = {em['p_value']:.2g}."
+            ),
+        )
+    if lat_cont and lat_cont["emissions"]:
+        em = lat_cont["emissions"]
+        col3.metric(
+            "+ mean |latitude| control",
+            f"{em['coef']:+.3f}",
+            help=(
+                f"°C/decade per tenfold CO₂, with mean absolute latitude added within "
+                f"continents, HC1 standard errors. 95% interval [{em['ci_low']:+.3f}, "
+                f"{em['ci_high']:+.3f}], p = {em['p_value']:.2g}. The coefficient halves "
+                "and loses statistical significance: the within-continent link is carried "
+                "by latitude, not by emissions responsibility as such."
+            ),
+        )
+
+    fig_stability = render_coefficient_stability(country_specs, title="")
+    theme.plotly_chart(fig_stability, width="stretch")
+    st.caption(
+        "Each row is one model specification. The x-axis is the log₁₀(emissions) "
+        "coefficient (°C/decade per tenfold cumulative per-capita CO₂) with its 95% "
+        "interval. Colored dots: the interval excludes zero; grey dots: it includes zero. "
+        "Adding mean absolute latitude within continents (`lat_continent`) halves the "
+        "coefficient and pushes the interval to include zero."
+    )
+
+    st.subheader("The spatial pattern is mostly latitude, with an arid hotspot")
+
+    city_specs = city["specs"]
+    baseline = next((s for s in city_specs if s["spec_name"] == "baseline"), None)
+    full = next((s for s in city_specs if s["spec_name"] == "full"), None)
+    interaction = next((s for s in city_specs if s["spec_name"] == "interaction"), None)
+
+    c1, c2, c3 = st.columns(3)
+    if baseline:
+        c1.metric(
+            "Baseline R² (|latitude| only)",
+            f"{baseline['r2']:.3f}",
+            help="OLS of warming trend on absolute latitude alone, with country-clustered "
+            "standard errors.",
+        )
+    if full:
+        c2.metric(
+            "Full model R²",
+            f"{full['r2']:.3f}",
+            help=(
+                "OLS adding elevation, coast distance, Köppen class and station density. "
+                f"Moran's I on residuals = {city.get('moran_i_full', 'n/a'):.3f} "
+                f"(p = {city.get('moran_p_full', float('nan')):.3g}): significant spatial "
+                "autocorrelation remains."
+                if city.get("moran_i_full") is not None else
+                "OLS adding elevation, coast distance, Köppen class and station density."
+            ),
+        )
+    if interaction:
+        c3.metric(
+            "Interaction R²",
+            f"{interaction['r2']:.3f}",
+            help="Full model plus absolute latitude by Köppen class interactions.",
+        )
+
+    features = loaders.load_explain_features()
+    fig_scatter = render_partial_effect_scatter(features, title="")
+    theme.plotly_chart(fig_scatter, width="stretch")
+
+    abs_lat_info = city.get("abs_latitude_baseline")
+    koppen_b_info = city.get("koppen_b_full")
+    caption_parts = [
+        "Warming trend against absolute latitude, colored by major Köppen climate class. "
+        "Grey line: overall OLS trend line."
+    ]
+    if abs_lat_info:
+        caption_parts.append(
+            f"Absolute-latitude coefficient (baseline): {abs_lat_info['coef']:+.5f} "
+            f"[{abs_lat_info['ci_low']:+.5f}, {abs_lat_info['ci_high']:+.5f}] "
+            "°C/decade per degree."
+        )
+    if koppen_b_info:
+        verdict = "supports" if koppen_b_info["coef"] > 0 else "does not support"
+        caption_parts.append(
+            f"Köppen B (arid) against the reference class (full model): "
+            f"{koppen_b_info['coef']:+.5f} "
+            f"[{koppen_b_info['ci_low']:+.5f}, {koppen_b_info['ci_high']:+.5f}], "
+            f"p = {koppen_b_info['p_value']:.3g}; this {verdict} the arid-hotspot hypothesis."
+        )
+    if city.get("moran_i_full") is not None:
+        caption_parts.append(
+            f"Moran's I on full-model residuals = {city['moran_i_full']:.4f} "
+            f"(p = {city['moran_p_full']:.3g}): spatial autocorrelation persists after "
+            "controlling for geography."
+        )
+    st.caption(" ".join(caption_parts))
+
+    with st.expander("Full city-model coefficients"):
+        for spec in city_specs:
+            st.markdown(f"**{spec['spec_name']}** (n = {spec['n']}, R² = {spec['r2']:.3f})")
+            if spec["terms"]:
+                term_df = pd.DataFrame(
+                    [
+                        {
+                            "term": t["term"],
+                            "coef": t["coef"],
+                            "ci_low": t["ci_low"],
+                            "ci_high": t["ci_high"],
+                            "p_value": t["p_value"],
+                        }
+                        for t in spec["terms"]
+                    ]
+                )
+                st.dataframe(term_df, hide_index=True, width="stretch")
+            if spec.get("partial_r2"):
+                st.caption(
+                    "Partial R²: "
+                    + ", ".join(
+                        f"{k} = {v:.4f}" for k, v in spec["partial_r2"].items()
+                    )
+                )

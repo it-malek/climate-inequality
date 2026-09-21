@@ -1,0 +1,184 @@
+{
+  "coverage": {
+    "n_countries": 157,
+    "mean_pop_weight_coverage": 0.8914933631
+  },
+  "station_vs_people": {
+    "spearman_rho": 0.9879006969,
+    "n_high_impact_low_responsibility": 102,
+    "inequality_coefficient": 0.002126531536,
+    "top_suffer_least_cause": [
+      [
+        "Argentina",
+        0.7004673688
+      ],
+      [
+        "Cameroon",
+        0.4226433326
+      ],
+      [
+        "Croatia",
+        0.2067809873
+      ],
+      [
+        "Saudi Arabia",
+        0.1890229763
+      ],
+      [
+        "Bolivia",
+        0.1747786668
+      ],
+      [
+        "Finland",
+        0.1452384957
+      ],
+      [
+        "Bosnia And Herzegovina",
+        0.1368697769
+      ],
+      [
+        "Niger",
+        0.1290243905
+      ],
+      [
+        "Somalia",
+        0.1264027019
+      ],
+      [
+        "Greece",
+        0.1223706687
+      ]
+    ],
+    "top_cause_least_suffer": [
+      [
+        "Australia",
+        -0.5274087377
+      ],
+      [
+        "China",
+        -0.4933476312
+      ],
+      [
+        "Belarus",
+        -0.436824921
+      ],
+      [
+        "Uzbekistan",
+        -0.3578054482
+      ],
+      [
+        "Canada",
+        -0.3313255789
+      ],
+      [
+        "Libya",
+        -0.1981686801
+      ],
+      [
+        "India",
+        -0.1915774711
+      ],
+      [
+        "Kazakhstan",
+        -0.1911687275
+      ],
+      [
+        "United States",
+        -0.1685643486
+      ],
+      [
+        "Peru",
+        -0.1673187217
+      ]
+    ]
+  },
+  "people_weighted_inequality": {
+    "spearman_rho": 0.3417509749,
+    "n_high_impact_low_responsibility": 81,
+    "inequality_coefficient": 0.565603146,
+    "top_suffer_least_cause": [
+      [
+        "Mongolia",
+        2.890890629
+      ],
+      [
+        "Iran",
+        2.60469316
+      ],
+      [
+        "Afghanistan",
+        2.58511665
+      ],
+      [
+        "Turkmenistan",
+        2.479437584
+      ],
+      [
+        "Tajikistan",
+        2.143809258
+      ],
+      [
+        "Tunisia",
+        1.91774647
+      ],
+      [
+        "Uzbekistan",
+        1.794080521
+      ],
+      [
+        "Niger",
+        1.69742312
+      ],
+      [
+        "Algeria",
+        1.640837174
+      ],
+      [
+        "Mauritania",
+        1.636874948
+      ]
+    ],
+    "top_cause_least_suffer": [
+      [
+        "United States",
+        -4.074179534
+      ],
+      [
+        "United Kingdom",
+        -3.192675569
+      ],
+      [
+        "Belgium",
+        -2.540470048
+      ],
+      [
+        "Germany",
+        -2.491475647
+      ],
+      [
+        "Czech Republic",
+        -2.356446387
+      ],
+      [
+        "Hong Kong",
+        -2.242221729
+      ],
+      [
+        "Australia",
+        -2.164706414
+      ],
+      [
+        "Canada",
+        -2.118916859
+      ],
+      [
+        "New Zealand",
+        -1.997957069
+      ],
+      [
+        "Japan",
+        -1.851969572
+      ]
+    ]
+  }
+}

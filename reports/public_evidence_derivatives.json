@@ -1,0 +1,477 @@
+{
+  "schema_version": 1,
+  "prepared_on": "2026-10-23",
+  "status": "Labeled public derivatives of historical execution metadata; original records remain in private recovery",
+  "files": {
+    "research/model_v2/outputs/m1b_amendment1_stopped_build/m1b_amendment1_stop_record.json": {
+      "original_sha256": "8dec89db13fd0bf40428d823c051f32695b78aac253582be5003c7b970f31ee7",
+      "public_sha256": "93e1254bbb2853f15b8b09d8e8e183791127bbff119f6793d20ceec241eb02ba",
+      "protected_sha256": "2d762a296386a5bdfe7088bd9615898c1645b693ff9c91f4f0f994287d811602",
+      "edits": [
+        {
+          "pointer": "/determinism/runs/build_a/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/determinism/runs/build_b/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m1b_amendment1_stopped_build/m1b_build_run.json": {
+      "original_sha256": "2a60fedeaddfa6660dc2ca652ef6539b44f81483d11ce5d3113cb0c7ef1f9561",
+      "public_sha256": "8a877037528cc3653daafe222d8f4dc6e8555eb5fbf712a153c23b1adf0e693a",
+      "protected_sha256": "d8e675a634ec9af19225269a14b957573881104ce8249fedb29bb6ff13f9da31",
+      "edits": [
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m1b_amendment1_stopped_build/m1b_build_run_b.json": {
+      "original_sha256": "19f1ba80bfeaa2e619d8c36f8707055c2c9f4b891291994369eb08260ded04ff",
+      "public_sha256": "8fe6a239eec0ba8be58b7c37ae55f557b5c8afab55a2a283b240d68cbc62eeb3",
+      "protected_sha256": "f669985623f06a0ea75f92d82e04455ec19fde8d880963835912dd7d82b89ef0",
+      "edits": [
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m1b_build_run.json": {
+      "original_sha256": "0ebdca9bb8ba5716352984b738229c0243c83d7b310282d167eac35093728e6d",
+      "public_sha256": "3dfd3d327e89ae4f2685b6f33ff706a7d58e473726b84bbf43862301c44af05e",
+      "protected_sha256": "8670ce585fbaff92cf494d74c85cd0a0a72ce35f9fc9f3f4460176bf22336442",
+      "edits": [
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m1b_build_run_b.json": {
+      "original_sha256": "0a4ab2fb989cd9bf9313aa40aff9abe94cfb87b4de1de1777c895f77ad6322fa",
+      "public_sha256": "4be0a775d8cb0b6622b9a26e44b6354a80c2fcf2ad2f729ae7159b0cbe901078",
+      "protected_sha256": "e3d495e4c4ee55d5a2ac675cd076cb3714b17447e8789e9255d52176a4e97a9b",
+      "edits": [
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m1b_conditional/m1b_conditional_run_metadata.json": {
+      "original_sha256": "11464dbeed59aa04821f45253776d5aafa51f2c030f9f89dc80727324a29fa19",
+      "public_sha256": "cbe9dc4b3be60a0bd2ff672c4059c692f9659dc5deaeb7abc61eeb982c420341",
+      "protected_sha256": "93e146e425c4888d66fa26622d7f99768dba37e42f3590f04ade2020c765bfb7",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "50809ebb44c60dfc31eda57fb9576377c69040ec838783bf68911148436a4266",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python",
+          "original_value_sha256": "8597f8ddbdbcb372362edef976a22d593cd6d7d7f4743837249096ffb2516755",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m1b_sensitivity.py",
+          "original_value_sha256": "f6d5f8683160e4e717d1cd7d3301ac73ab229e5846be8cc14c39753e35be5e6d",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m1b_package_record.json": {
+      "original_sha256": "925f3a97d3b0ef3a1cdacfd8c629f392f5c70952a3f84141b79b587696765c5f",
+      "public_sha256": "0aff9e5379d73b05b1cc0ece048f92231a96ff886a64edc6745b73e7174c6a72",
+      "protected_sha256": "7f57a032f65830eeb0fe8e3e9e7f4749c3698c4f423515800749051ff6087c6a",
+      "edits": [
+        {
+          "pointer": "/determinism/runs/build_a/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/determinism/runs/build_b/argv/0",
+          "public_value": "research/model_v2/m1b_hydroclimate.py",
+          "original_value_sha256": "ddcdbb07d12938ae0d22a7cd080fe54887ecdd5130cd381be1017f515a6bea23",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m1b_primary/m1b_run_metadata.json": {
+      "original_sha256": "a2a00ec5c09f0de44479b57bab4e3acbfcd0b4b57f92df8e12ff570251fdbff4",
+      "public_sha256": "693ba9fd7a118f342cc4e7db437b08f2625847b344bb309f208efc0e54343bd7",
+      "protected_sha256": "46dedbd7150c784e4a4be2f365483dc288b8f222abbc8542a88c2f51f1b4e38f",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "50809ebb44c60dfc31eda57fb9576377c69040ec838783bf68911148436a4266",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python",
+          "original_value_sha256": "8597f8ddbdbcb372362edef976a22d593cd6d7d7f4743837249096ffb2516755",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m1b_evaluate.py",
+          "original_value_sha256": "34d53a226863e82323211f9394c3019256bdd87e9e3d2797fb1eab0f4b308289",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/output_root",
+          "public_value": "research/model_v2/outputs/m1b_primary",
+          "original_value_sha256": "7ba4827fd7ede9a4cfcc779c1b022a10f33517bf4950071dc7a7312ca53dbeaf",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m2_conditional/m2_conditional_run_metadata.json": {
+      "original_sha256": "533330f7b9db50cf5f705b097bdd86177bfca4da250ce75c03cb2eb111ebc5e8",
+      "public_sha256": "014e89821a15fa617898e2cbe538918626aa96c6e33f7000ffe7c73cd7435573",
+      "protected_sha256": "060ae77f84037fd8563d5137264560faadd442b2e7a9290db5be6407abbefe6c",
+      "edits": [
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python3",
+          "original_value_sha256": "e01d2f659a2214210f286f826ca54d21d8cf9b3bccfbdf0374701ef66bdf377f",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m2_conditional.py",
+          "original_value_sha256": "72ef45e1cf860a2475342414ef42f081628525f9cd95a1e9bedd4fd3fc018d49",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m2_primary/m2_run_metadata.json": {
+      "original_sha256": "3f6938ada0907625e24e8cb6baf3a8895c01a804d156d6d355a7be856bd226d1",
+      "public_sha256": "fe44b5a7caf3f3db883b30d075c76b3d6ce228a9b603420a592d8cfcd0d4c600",
+      "protected_sha256": "4be987e7e781018795abd8829ea3f19806513e216955445a2c89ad6dd30e6d9d",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "59d6096c214ba48887c4b409a3a9c0f351417dff668bd8d6ebbf7c57f2eda322",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python3",
+          "original_value_sha256": "e01d2f659a2214210f286f826ca54d21d8cf9b3bccfbdf0374701ef66bdf377f",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m2_evaluate.py",
+          "original_value_sha256": "7c0e1d037378b3ff70ca5eb1ef2c33ffe61098e162a0549a56a15181aca7effd",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/output_root",
+          "public_value": "research/model_v2/outputs/m2_primary",
+          "original_value_sha256": "9f5c301984f042fc5c9eaea91d5dd5ed27bd5cdc624740b5e266e208fa0d7494",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m2_primary_verification/m2_independent_check.json": {
+      "original_sha256": "f1504fe36e12f19e6e674b8f7f61c2494dc51ac00439895fafb2f8ecc8afd2b4",
+      "public_sha256": "5d2fd4fa82142f32c3af03a46651c40d3f635e4e0b00974c188362f2217c7ee6",
+      "protected_sha256": "bfd5961668c9d332894dd58580aa2667a3468ae0697309d699ea8c7ea63c84ae",
+      "edits": [
+        {
+          "pointer": "/inputs/auxiliary/countries/path",
+          "public_value": "research/model_v2/outputs/m0_countries.csv",
+          "original_value_sha256": "ab29271e72dacacb9e37cc4bb39471c2c3f2c9fb1c7f1ed3bc5d3af9221cbba5",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/inputs/auxiliary/m1a_scorecard/path",
+          "public_value": "research/model_v2/outputs/m1a_scorecard.json",
+          "original_value_sha256": "ca626d3affa178863766b2a9d91fbb495d0dca6a80ee0dc3b64a3ba50a92f260",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/inputs/auxiliary/m1b_scorecard/path",
+          "public_value": "research/model_v2/outputs/m1b_primary/m1b_scorecard.json",
+          "original_value_sha256": "0f9d525b9c33aa931a139e8f9ac3665dfea5f6ebcc08281727147598a96202fa",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m2_primary_verification/reproducibility_run_b/m2_run_metadata.json": {
+      "original_sha256": "8e5e967e4925ac46387feea8f3651ef98031c3ee3c463eda5efc2add20ca370a",
+      "public_sha256": "37312f52fc40385a566496370e487e3b4ce086f1aa734f2e5c800f3c19e7ff51",
+      "protected_sha256": "a956e64ce9653d269a0015897c57872a332311cd95d50388d7e183318c926335",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "59d6096c214ba48887c4b409a3a9c0f351417dff668bd8d6ebbf7c57f2eda322",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python3",
+          "original_value_sha256": "e01d2f659a2214210f286f826ca54d21d8cf9b3bccfbdf0374701ef66bdf377f",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m2_evaluate.py",
+          "original_value_sha256": "7c0e1d037378b3ff70ca5eb1ef2c33ffe61098e162a0549a56a15181aca7effd",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m3_land_centroid/m3_run_metadata.json": {
+      "original_sha256": "0693e1b835a3e832308dd4485732405ace767c3865fe7bd8a65ffb4356d0b2e7",
+      "public_sha256": "9e3d8b12a33b54e1ee6101b702332d9b06b9fc2d7a7e1131422004f4b2eca6b3",
+      "protected_sha256": "1b5cde7c868cf985628b32f5f453f95e04600b4bb599e3635e714919f07c0501",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "59d6096c214ba48887c4b409a3a9c0f351417dff668bd8d6ebbf7c57f2eda322",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python3",
+          "original_value_sha256": "e01d2f659a2214210f286f826ca54d21d8cf9b3bccfbdf0374701ef66bdf377f",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m3_evaluate.py",
+          "original_value_sha256": "f2f12624caf29f53bea97e3255a6ab8192136a044ed54be30ebfc22f7e5fbff1",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/output_root",
+          "public_value": "research/model_v2/outputs/m3_land_centroid",
+          "original_value_sha256": "ce816e190174858adb34912f992627a5b0bbb3613fffb7396781d68ac9402712",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m3_land_centroid_verification/m3_independent_check.json": {
+      "original_sha256": "24a24b53936422a547fa02bfd066b726d423112eb73eb9458f07c9d8378a4be0",
+      "public_sha256": "b3176a1c5e76a1bfad399ff100ef9f2a6c95ce06b9171995b2a45bb4691a3b8f",
+      "protected_sha256": "ee4261628f116bb5457a2e07fead6924046ed548185905e2b6b1c5ad73e67fe3",
+      "edits": [
+        {
+          "pointer": "/inputs/pinned_inputs/countries/path",
+          "public_value": "research/model_v2/outputs/m0_countries.csv",
+          "original_value_sha256": "ab29271e72dacacb9e37cc4bb39471c2c3f2c9fb1c7f1ed3bc5d3af9221cbba5",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/inputs/pinned_inputs/design/path",
+          "public_value": "research/model_v2/outputs/m1b_primary/m1b_design_matrices.csv",
+          "original_value_sha256": "5d50fc2a3c1d3a897257e23c70d3c1b2ad2a7bb4944ccf50a6d1dbf0947d08cf",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/inputs/pinned_inputs/geometry/path",
+          "public_value": "research/model_v2/outputs/country_geometry.csv",
+          "original_value_sha256": "29b60174337725244128563b80c4647b6b1971a59232275aa5909b19dcc804c4",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/inputs/pinned_inputs/rank_audit/path",
+          "public_value": "research/model_v2/outputs/rank_audit_country_predictions.csv",
+          "original_value_sha256": "781cf2252552e7b4f3eaf2910877cfc641e155a4bb4d66d7d3a4904fd99f8fb0",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m3_land_centroid_verification/reproducibility_run_b/m3_run_metadata.json": {
+      "original_sha256": "e4aa4bfd0969786a71806b2ad1da076e29536d7bad538c0d5cc7a759967d50e9",
+      "public_sha256": "0b2c3c952403be403945d591857f149fe1374ac92c699fb9b8bc3c38a17f616b",
+      "protected_sha256": "f1149a78bf764157fa5d82a95439f85088f6179664e3d421364c295ef2eb2929",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "59d6096c214ba48887c4b409a3a9c0f351417dff668bd8d6ebbf7c57f2eda322",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python3",
+          "original_value_sha256": "e01d2f659a2214210f286f826ca54d21d8cf9b3bccfbdf0374701ef66bdf377f",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m3_evaluate.py",
+          "original_value_sha256": "f2f12624caf29f53bea97e3255a6ab8192136a044ed54be30ebfc22f7e5fbff1",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m3_station/m3_run_metadata.json": {
+      "original_sha256": "c637db0dec6eb47781e4b06fe8a2c9b61c1d5c69209c75f729ca698f71b3f3f3",
+      "public_sha256": "32af6ffb32bf149503d3df2f828d6cfb4ddfda9f6efed9c6e170171ff99138d4",
+      "protected_sha256": "fd2bd1736e784ef4241c69b95c188adc42d3084c992cc15f940b99e13a330c38",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "59d6096c214ba48887c4b409a3a9c0f351417dff668bd8d6ebbf7c57f2eda322",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python3",
+          "original_value_sha256": "e01d2f659a2214210f286f826ca54d21d8cf9b3bccfbdf0374701ef66bdf377f",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m3_evaluate.py",
+          "original_value_sha256": "f2f12624caf29f53bea97e3255a6ab8192136a044ed54be30ebfc22f7e5fbff1",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/output_root",
+          "public_value": "research/model_v2/outputs/m3_station",
+          "original_value_sha256": "b46a1f7458df06c0223e29b7bc280dd68b5c7141964cb7bdb5423887e2d4bd59",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m3_station_verification/m3_independent_check.json": {
+      "original_sha256": "4b292187714a0eb275ca3320c5576455c3d153377f439d8175a9de5c5173b761",
+      "public_sha256": "d1512c4a304f2920d2a9c9ad5d2a046036e5bc45027afe25d76cf31d4127aa3a",
+      "protected_sha256": "e85c65a496102ec0a27d7fc8d34943ab70cc382392da494c94c2c4df5ca13255",
+      "edits": [
+        {
+          "pointer": "/inputs/pinned_inputs/countries/path",
+          "public_value": "research/model_v2/outputs/m0_countries.csv",
+          "original_value_sha256": "ab29271e72dacacb9e37cc4bb39471c2c3f2c9fb1c7f1ed3bc5d3af9221cbba5",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/inputs/pinned_inputs/design/path",
+          "public_value": "research/model_v2/outputs/m1b_primary/m1b_design_matrices.csv",
+          "original_value_sha256": "5d50fc2a3c1d3a897257e23c70d3c1b2ad2a7bb4944ccf50a6d1dbf0947d08cf",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/inputs/pinned_inputs/geometry/path",
+          "public_value": "research/model_v2/outputs/country_geometry.csv",
+          "original_value_sha256": "29b60174337725244128563b80c4647b6b1971a59232275aa5909b19dcc804c4",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/inputs/pinned_inputs/rank_audit/path",
+          "public_value": "research/model_v2/outputs/rank_audit_country_predictions.csv",
+          "original_value_sha256": "781cf2252552e7b4f3eaf2910877cfc641e155a4bb4d66d7d3a4904fd99f8fb0",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m3_station_verification/reproducibility_run_b/m3_run_metadata.json": {
+      "original_sha256": "c1d870bae229e08a33cc6358191cd7c5c55bd3d6d01c9cb13fb1212be2d4e54c",
+      "public_sha256": "fda32704f741c3596253acabe91f1541e18348d306b5aa1bbb01f775031bc142",
+      "protected_sha256": "3600b68ef9b0f7b5078e5902e975168a090172f1494997c4f8e82a4628ceab1a",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "59d6096c214ba48887c4b409a3a9c0f351417dff668bd8d6ebbf7c57f2eda322",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python3",
+          "original_value_sha256": "e01d2f659a2214210f286f826ca54d21d8cf9b3bccfbdf0374701ef66bdf377f",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m3_evaluate.py",
+          "original_value_sha256": "f2f12624caf29f53bea97e3255a6ab8192136a044ed54be30ebfc22f7e5fbff1",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m4_final/m4_run_metadata.json": {
+      "original_sha256": "6474c667a83c3526c20f18a823dae45fbd9c9267c0507950a30d15cc41fb2095",
+      "public_sha256": "5e1717534fd1009d2a3120979986a8119d491cfda817a3e73ee867b0f1253046",
+      "protected_sha256": "d35a15f028124914ff40e9434334f05cfa559969c96f922c5664e3af5f831a72",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "59d6096c214ba48887c4b409a3a9c0f351417dff668bd8d6ebbf7c57f2eda322",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python3",
+          "original_value_sha256": "e01d2f659a2214210f286f826ca54d21d8cf9b3bccfbdf0374701ef66bdf377f",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m4_evaluate.py",
+          "original_value_sha256": "b34a366393de5d84261988a19700df69ca6102d7cc08c6be19219c51f1369dc6",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    },
+    "research/model_v2/outputs/m4_final_verification/reproducibility_run_b/m4_run_metadata.json": {
+      "original_sha256": "c579142466a11e4f9a39497b226451c74196d6f69a2397cfc47c8a71d6b0d0fd",
+      "public_sha256": "f1b566d7eeb3a3a2bbcc31ca9e31f519a8bdb45f875d945f3408078d4b6a2eb6",
+      "protected_sha256": "305a23f90e17384d8383e1a9477297c555eb2323ba69b7562349c253ce90fe57",
+      "edits": [
+        {
+          "pointer": "/host",
+          "public_value": "[private workstation identifier omitted from public derivative]",
+          "original_value_sha256": "59d6096c214ba48887c4b409a3a9c0f351417dff668bd8d6ebbf7c57f2eda322",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/executable",
+          "public_value": "${VIRTUAL_ENV}/bin/python3",
+          "original_value_sha256": "e01d2f659a2214210f286f826ca54d21d8cf9b3bccfbdf0374701ef66bdf377f",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        },
+        {
+          "pointer": "/argv/0",
+          "public_value": "research/model_v2/m4_evaluate.py",
+          "original_value_sha256": "b34a366393de5d84261988a19700df69ca6102d7cc08c6be19219c51f1369dc6",
+          "reason": "Omit incidental workstation location or host identifier; scientific settings, identities and values are preserved."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "coverage": {
+    "n_countries": 154,
+    "mean_area_cell_coverage": 0.9782339939
+  },
+  "station_vs_area": {
+    "spearman_rho": 0.8069139267,
+    "n_high_impact_low_responsibility": 71,
+    "inequality_coefficient": 0.05028442661,
+    "top_suffer_least_cause": [
+      [
+        "Philippines",
+        1.501389766
+      ],
+      [
+        "Mali",
+        1.385026882
+      ],
+      [
+        "Central African Republic",
+        1.162611334
+      ],
+      [
+        "Guinea Bissau",
+        1.142570349
+      ],
+      [
+        "Canada",
+        1.13827446
+      ],
+      [
+        "Guinea",
+        1.118177391
+      ],
+      [
+        "Gambia",
+        1.111338676
+      ],
+      [
+        "Uganda",
+        1.060616903
+      ],
+      [
+        "Chad",
+        1.056894837
+      ],
+      [
+        "Kenya",
+        1.022600741
+      ]
+    ],
+    "top_cause_least_suffer": [
+      [
+        "Mexico",
+        -1.381953048
+      ],
+      [
+        "Guatemala",
+        -1.368212919
+      ],
+      [
+        "El Salvador",
+        -1.193036317
+      ],
+      [
+        "Georgia",
+        -1.130591173
+      ],
+      [
+        "Azerbaijan",
+        -1.106822708
+      ],
+      [
+        "Honduras",
+        -1.099955159
+      ],
+      [
+        "United Arab Emirates",
+        -1.090544866
+      ],
+      [
+        "Iraq",
+        -1.081924245
+      ],
+      [
+        "Nicaragua",
+        -0.9942727979
+      ],
+      [
+        "Jordan",
+        -0.9731350115
+      ]
+    ]
+  },
+  "area_weighted_inequality": {
+    "spearman_rho": 0.01066725811,
+    "n_high_impact_low_responsibility": 77,
+    "inequality_coefficient": 0.6068803105,
+    "top_suffer_least_cause": [
+      [
+        "Mauritania",
+        2.510804364
+      ],
+      [
+        "Mali",
+        2.298252045
+      ],
+      [
+        "Mongolia",
+        2.281105321
+      ],
+      [
+        "Afghanistan",
+        2.280427616
+      ],
+      [
+        "Uzbekistan",
+        2.268416735
+      ],
+      [
+        "Gambia",
+        2.193323008
+      ],
+      [
+        "Senegal",
+        2.113619711
+      ],
+      [
+        "Niger",
+        2.100730934
+      ],
+      [
+        "Morocco",
+        2.037034714
+      ],
+      [
+        "Guinea Bissau",
+        1.980170591
+      ]
+    ],
+    "top_cause_least_suffer": [
+      [
+        "United Kingdom",
+        -3.818327084
+      ],
+      [
+        "United States",
+        -3.681505119
+      ],
+      [
+        "Czech Republic",
+        -2.774228458
+      ],
+      [
+        "Germany",
+        -2.742286735
+      ],
+      [
+        "Belgium",
+        -2.696780394
+      ],
+      [
+        "Mexico",
+        -2.667957335
+      ],
+      [
+        "New Zealand",
+        -2.201859198
+      ],
+      [
+        "Guatemala",
+        -2.004599664
+      ],
+      [
+        "Australia",
+        -1.969635435
+      ],
+      [
+        "Slovakia",
+        -1.801588668
+      ]
+    ]
+  }
+}

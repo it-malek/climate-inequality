@@ -1,0 +1,1312 @@
+{
+  "common_n": 151,
+  "m0_n": 151,
+  "era5_bundle_n": 207,
+  "excluded_m0_countries": [],
+  "design_columns": [
+    "intercept",
+    "cum_co2_per_capita",
+    "cum_co2_total",
+    "abs_latitude",
+    "elevation",
+    "continentality",
+    "climate_zone=B",
+    "climate_zone=C",
+    "climate_zone=D",
+    "climate_zone=E",
+    "hemisphere=S",
+    "spatial_block=Asia",
+    "spatial_block=Europe",
+    "spatial_block=North America",
+    "spatial_block=Oceania",
+    "spatial_block=South America",
+    "income_group=Low-income countries",
+    "income_group=Lower-middle-income countries",
+    "income_group=Upper-middle-income countries",
+    "population",
+    "station_density"
+  ],
+  "groups": {
+    "emissions": [
+      "cum_co2_per_capita",
+      "cum_co2_total"
+    ],
+    "geography": [
+      "abs_latitude",
+      "elevation",
+      "continentality",
+      "climate_zone=B",
+      "climate_zone=C",
+      "climate_zone=D",
+      "climate_zone=E",
+      "hemisphere=S",
+      "spatial_block=Asia",
+      "spatial_block=Europe",
+      "spatial_block=North America",
+      "spatial_block=Oceania",
+      "spatial_block=South America"
+    ],
+    "socioeconomic": [
+      "income_group=Low-income countries",
+      "income_group=Lower-middle-income countries",
+      "income_group=Upper-middle-income countries"
+    ],
+    "population": [
+      "population",
+      "station_density"
+    ]
+  },
+  "design_rank": 20,
+  "outcomes": {
+    "berkeley": {
+      "mean": 0.1761559564098756,
+      "sample_sd": 0.046741350214455094
+    },
+    "era5": {
+      "mean": 0.19217530301129995,
+      "sample_sd": 0.06932617301023676
+    }
+  },
+  "b_minus_e": {
+    "mean": -0.01601934660142429,
+    "median": -0.008180586961699654,
+    "sample_sd": 0.059077306104569835,
+    "rmse": 0.06102158741794968
+  },
+  "systematic_bias": {
+    "era5_greater_n": 83,
+    "berkeley_greater_n": 68,
+    "era5_on_berkeley_ols": {
+      "slope": 0.8011758477553184,
+      "intercept": 0.05104340529746899
+    },
+    "era5_to_berkeley_sd_ratio": 1.4831872141510614
+  },
+  "outcome_correlations": {
+    "pearson": 0.5401717599176381,
+    "spearman": 0.6188985709306377
+  },
+  "residual_correlations": {
+    "pearson": 0.33373634754112935,
+    "spearman": 0.32598814918089924
+  },
+  "berkeley_residual_vs_era5_minus_berkeley": {
+    "pearson": -0.19069380035764358,
+    "spearman": -0.216036946671314
+  },
+  "residual_sample_sd": {
+    "berkeley": 0.028182902338310355,
+    "era5": 0.05069039212234231
+  },
+  "r2": {
+    "berkeley": 0.6364460027547282,
+    "era5": 0.4653656626320404
+  },
+  "sign_agreement_n": 89,
+  "tail_overlap": {
+    "positive": {
+      "k": 15,
+      "berkeley": [
+        "AGO",
+        "BRA",
+        "CAN",
+        "DOM",
+        "EST",
+        "HTI",
+        "IDN",
+        "IRN",
+        "KEN",
+        "LVA",
+        "MAR",
+        "MRT",
+        "SEN",
+        "TKM",
+        "TZA"
+      ],
+      "era5": [
+        "BOL",
+        "CAN",
+        "DZA",
+        "EST",
+        "GTM",
+        "IDN",
+        "IRQ",
+        "KEN",
+        "MLI",
+        "NOR",
+        "PRY",
+        "SAU",
+        "SVN",
+        "TUN",
+        "YEM"
+      ],
+      "intersection": [
+        "CAN",
+        "EST",
+        "IDN",
+        "KEN"
+      ],
+      "n_overlap": 4,
+      "jaccard": 0.15384615384615385
+    },
+    "negative": {
+      "k": 15,
+      "berkeley": [
+        "ARG",
+        "BWA",
+        "CAF",
+        "EGY",
+        "IND",
+        "ISR",
+        "KOR",
+        "LBY",
+        "MEX",
+        "MMR",
+        "NZL",
+        "ROU",
+        "SDN",
+        "SVK",
+        "SYR"
+      ],
+      "era5": [
+        "ARG",
+        "CAF",
+        "CMR",
+        "COL",
+        "GEO",
+        "GRC",
+        "HUN",
+        "IND",
+        "IRL",
+        "KOR",
+        "LBR",
+        "MNG",
+        "PAK",
+        "SLE",
+        "SOM"
+      ],
+      "intersection": [
+        "ARG",
+        "CAF",
+        "IND",
+        "KOR"
+      ],
+      "n_overlap": 4,
+      "jaccard": 0.15384615384615385
+    },
+    "absolute": {
+      "k": 15,
+      "berkeley": [
+        "AGO",
+        "ARG",
+        "BRA",
+        "BWA",
+        "CAN",
+        "EGY",
+        "IRN",
+        "ISR",
+        "KOR",
+        "LBY",
+        "MEX",
+        "MRT",
+        "NZL",
+        "SYR",
+        "TKM"
+      ],
+      "era5": [
+        "CAF",
+        "EST",
+        "GRC",
+        "HUN",
+        "IRL",
+        "IRQ",
+        "KOR",
+        "MLI",
+        "NOR",
+        "PAK",
+        "SAU",
+        "SLE",
+        "SOM",
+        "TUN",
+        "YEM"
+      ],
+      "intersection": [
+        "KOR"
+      ],
+      "n_overlap": 1,
+      "jaccard": 0.034482758620689655
+    }
+  },
+  "region_material_threshold": {
+    "berkeley": 0.014091451169155177,
+    "era5": 0.025345196061171155
+  },
+  "spatial": {
+    "station_knn8": {
+      "b_minus_e": {
+        "statistic": 0.12060872561591789,
+        "expected": -0.006666666666666667,
+        "p_value": 0.0023,
+        "z_score": 3.5188223916793078,
+        "n_permutations": 9999
+      },
+      "b_residual": {
+        "statistic": 0.268689016141741,
+        "expected": -0.006666666666666667,
+        "p_value": 0.0001,
+        "z_score": 7.5296291185999085,
+        "n_permutations": 9999
+      },
+      "e_residual": {
+        "statistic": 0.08132653629804985,
+        "expected": -0.006666666666666667,
+        "p_value": 0.0229,
+        "z_score": 2.4090800298709203,
+        "n_permutations": 9999
+      }
+    },
+    "area_knn8": {
+      "b_minus_e": {
+        "statistic": 0.12378439654010079,
+        "expected": -0.006666666666666667,
+        "p_value": 0.0012,
+        "z_score": 3.6011107420517865,
+        "n_permutations": 9999
+      },
+      "b_residual": {
+        "statistic": 0.2899191765489137,
+        "expected": -0.006666666666666667,
+        "p_value": 0.0001,
+        "z_score": 8.10164949027955,
+        "n_permutations": 9999
+      },
+      "e_residual": {
+        "statistic": 0.11182480004186919,
+        "expected": -0.006666666666666667,
+        "p_value": 0.002,
+        "z_score": 3.247735666225382,
+        "n_permutations": 9999
+      }
+    }
+  },
+  "permutations": 9999,
+  "seed": 0,
+  "lisa_overlap": {
+    "station_knn8_label_HH": {
+      "berkeley": [
+        "AFG",
+        "ARE",
+        "GIN",
+        "GNB",
+        "KAZ",
+        "LBR",
+        "MRT",
+        "QAT",
+        "SEN",
+        "SLE",
+        "SUR",
+        "TJK",
+        "TKM",
+        "UZB"
+      ],
+      "era5": [
+        "ARE",
+        "EST",
+        "FIN",
+        "SWE"
+      ],
+      "intersection": [
+        "ARE"
+      ],
+      "n_overlap": 1,
+      "jaccard": 0.058823529411764705
+    },
+    "station_knn8_label_LL": {
+      "berkeley": [
+        "BGD",
+        "CYP",
+        "EGY",
+        "ISR",
+        "JOR",
+        "LAO",
+        "LBN",
+        "LKA",
+        "LSO",
+        "MDA",
+        "MMR",
+        "ROU",
+        "SYR",
+        "THA",
+        "TUR"
+      ],
+      "era5": [
+        "ALB",
+        "BGR",
+        "BWA",
+        "GRC",
+        "LSO",
+        "MKD",
+        "NAM",
+        "SRB",
+        "SWZ",
+        "ZAF",
+        "ZWE"
+      ],
+      "intersection": [
+        "LSO"
+      ],
+      "n_overlap": 1,
+      "jaccard": 0.04
+    },
+    "station_knn8_label_HL": {
+      "berkeley": [],
+      "era5": [
+        "BIH",
+        "MDG"
+      ],
+      "intersection": [],
+      "n_overlap": 0,
+      "jaccard": 0.0
+    },
+    "station_knn8_label_LH": {
+      "berkeley": [],
+      "era5": [
+        "QAT"
+      ],
+      "intersection": [],
+      "n_overlap": 0,
+      "jaccard": 0.0
+    },
+    "station_knn8_fdr_label_HH": {
+      "berkeley": [
+        "ARE"
+      ],
+      "era5": [],
+      "intersection": [],
+      "n_overlap": 0,
+      "jaccard": 0.0
+    },
+    "station_knn8_fdr_label_LL": {
+      "berkeley": [
+        "CYP",
+        "JOR",
+        "LBN",
+        "LKA"
+      ],
+      "era5": [],
+      "intersection": [],
+      "n_overlap": 0,
+      "jaccard": 0.0
+    },
+    "station_knn8_fdr_label_HL": {
+      "berkeley": [],
+      "era5": [],
+      "intersection": [],
+      "n_overlap": 0,
+      "jaccard": null
+    },
+    "station_knn8_fdr_label_LH": {
+      "berkeley": [],
+      "era5": [],
+      "intersection": [],
+      "n_overlap": 0,
+      "jaccard": null
+    },
+    "area_knn8_label_HH": {
+      "berkeley": [
+        "AFG",
+        "ARE",
+        "GIN",
+        "GNB",
+        "IRN",
+        "KAZ",
+        "MAR",
+        "MLI",
+        "MRT",
+        "OMN",
+        "RUS",
+        "SEN",
+        "SLE",
+        "SUR",
+        "TKM",
+        "UZB"
+      ],
+      "era5": [
+        "ARE",
+        "DJI",
+        "DZA",
+        "EST",
+        "FIN",
+        "NOR",
+        "SAU",
+        "SWE"
+      ],
+      "intersection": [
+        "ARE"
+      ],
+      "n_overlap": 1,
+      "jaccard": 0.043478260869565216
+    },
+    "area_knn8_label_LL": {
+      "berkeley": [
+        "BGD",
+        "CYP",
+        "EGY",
+        "ISR",
+        "JOR",
+        "LBN",
+        "LKA",
+        "LSO",
+        "MDA",
+        "MMR",
+        "SDN",
+        "TCD",
+        "THA",
+        "TUR",
+        "UKR"
+      ],
+      "era5": [
+        "ALB",
+        "GRC",
+        "LSO",
+        "MKD",
+        "NAM",
+        "SRB",
+        "SWZ",
+        "ZAF",
+        "ZWE"
+      ],
+      "intersection": [
+        "LSO"
+      ],
+      "n_overlap": 1,
+      "jaccard": 0.043478260869565216
+    },
+    "area_knn8_label_HL": {
+      "berkeley": [
+        "CHN"
+      ],
+      "era5": [
+        "NPL"
+      ],
+      "intersection": [],
+      "n_overlap": 0,
+      "jaccard": 0.0
+    },
+    "area_knn8_label_LH": {
+      "berkeley": [
+        "PAK"
+      ],
+      "era5": [
+        "QAT"
+      ],
+      "intersection": [],
+      "n_overlap": 0,
+      "jaccard": 0.0
+    },
+    "area_knn8_fdr_label_HH": {
+      "berkeley": [],
+      "era5": [],
+      "intersection": [],
+      "n_overlap": 0,
+      "jaccard": null
+    },
+    "area_knn8_fdr_label_LL": {
+      "berkeley": [],
+      "era5": [],
+      "intersection": [],
+      "n_overlap": 0,
+      "jaccard": null
+    },
+    "area_knn8_fdr_label_HL": {
+      "berkeley": [],
+      "era5": [],
+      "intersection": [],
+      "n_overlap": 0,
+      "jaccard": null
+    },
+    "area_knn8_fdr_label_LH": {
+      "berkeley": [],
+      "era5": [],
+      "intersection": [],
+      "n_overlap": 0,
+      "jaccard": null
+    }
+  },
+  "lisa_fdr_counts": {
+    "station_knn8_b_minus_e_fdr_label": {
+      "ns": 151
+    },
+    "station_knn8_b_residual_fdr_label": {
+      "ns": 146,
+      "LL": 4,
+      "HH": 1
+    },
+    "station_knn8_e_residual_fdr_label": {
+      "ns": 151
+    },
+    "area_knn8_b_minus_e_fdr_label": {
+      "ns": 151
+    },
+    "area_knn8_b_residual_fdr_label": {
+      "ns": 151
+    },
+    "area_knn8_e_residual_fdr_label": {
+      "ns": 151
+    }
+  },
+  "provenance": {
+    "raw_grids": {
+      "berkeley": {
+        "path": "data/raw/berkeley_gridded/Complete_TAVG_LatLong1.nc",
+        "variable": "temperature",
+        "units": "degree C",
+        "raw_months": 3300,
+        "raw_start": "1750-01-01 00:00:00",
+        "raw_end": "2024-12-01 00:00:00",
+        "window_months": 765,
+        "window_start": "1950-01-01 00:00:00",
+        "window_end": "2013-09-01 00:00:00",
+        "latitude_count": 180,
+        "longitude_count": 360,
+        "latitude_first_last": [
+          -89.5,
+          89.5
+        ],
+        "longitude_first_last": [
+          -179.5,
+          179.5
+        ],
+        "latitude_step": 1.0,
+        "longitude_step": 1.0,
+        "assigned_cells": 16659,
+        "assigned_country_counts": {
+          "RUS": 3095,
+          "CAN": 1932,
+          "USA": 1192,
+          "CHN": 968,
+          "AUS": 739,
+          "GRL": 729,
+          "BRA": 719,
+          "KAZ": 332,
+          "IND": 293,
+          "ARG": 284,
+          "IDN": 242,
+          "DZA": 217,
+          "MEX": 194,
+          "COD": 188,
+          "MNG": 183,
+          "SAU": 177,
+          "SDN": 161,
+          "IRN": 161,
+          "LBY": 151,
+          "ZAF": 114,
+          "PER": 110,
+          "AGO": 109,
+          "TCD": 107,
+          "MLI": 105,
+          "CHL": 100,
+          "NER": 99,
+          "COL": 95,
+          "BOL": 93,
+          "ETH": 92,
+          "EGY": 92,
+          "MRT": 91,
+          "SWE": 90,
+          "TUR": 86,
+          "PAK": 84,
+          "VEN": 82,
+          "TZA": 80,
+          "NOR": 77,
+          "UKR": 76,
+          "NAM": 75,
+          "NGA": 75,
+          "MOZ": 72,
+          "FRA": 72,
+          "FIN": 67,
+          "MMR": 65,
+          "ZMB": 63,
+          "JPN": 61,
+          "ESP": 60,
+          "MDG": 59,
+          "PNG": 59,
+          "AFG": 59,
+          "SOM": 54,
+          "TKM": 52,
+          "BWA": 51,
+          "CAF": 51,
+          "DEU": 50,
+          "SSD": 49,
+          "KEN": 48,
+          "THA": 48,
+          "UZB": 48,
+          "PHL": 47,
+          "GBR": 47,
+          "YEM": 45,
+          "IRQ": 44,
+          "POL": 43,
+          "NZL": 41,
+          "ITA": 41,
+          "CMR": 40,
+          "MAR": 40,
+          "SJM": 40,
+          "PRY": 36,
+          "VNM": 36,
+          "ZWE": 34,
+          "MYS": 33,
+          "COG": 31,
+          "OMN": 31,
+          "BLR": 29,
+          "CIV": 28,
+          "ESH": 27,
+          "GRC": 27,
+          "ROU": 26,
+          "KGZ": 25,
+          "ECU": 24,
+          "ISL": 24,
+          "BFA": 23,
+          "GAB": 22,
+          "GIN": 21,
+          "SYR": 21,
+          "PYF": 20,
+          "LAO": 20,
+          "UGA": 19,
+          "GHA": 19,
+          "GUY": 18,
+          "URY": 17,
+          "SEN": 17,
+          "TUN": 17,
+          "CUB": 16,
+          "KOR": 16,
+          "BGR": 16,
+          "KHM": 15,
+          "TJK": 15,
+          "PRK": 15,
+          "ERI": 14,
+          "BGD": 14,
+          "NPL": 14,
+          "PRT": 14,
+          "SUR": 13,
+          "NIC": 13,
+          "IRL": 13,
+          "DNK": 12,
+          "SLB": 11,
+          "GTM": 11,
+          "AZE": 11,
+          "HUN": 11,
+          "CZE": 11,
+          "LVA": 11,
+          "MWI": 10,
+          "BHS": 10,
+          "HRV": 10,
+          "BEN": 9,
+          "PAN": 9,
+          "HND": 9,
+          "JOR": 9,
+          "GEO": 9,
+          "EST": 9,
+          "VUT": 8,
+          "LBR": 8,
+          "TWN": 8,
+          "ARE": 8,
+          "SRB": 8,
+          "AUT": 8,
+          "LTU": 8,
+          "FJI": 7,
+          "GUF": 7,
+          "FSM": 7,
+          "TGO": 7,
+          "LKA": 7,
+          "CRI": 7,
+          "DOM": 7,
+          "SLE": 6,
+          "NLD": 6,
+          "NCL": 5,
+          "MDV": 5,
+          "HTI": 5,
+          "BIH": 5,
+          "CHE": 5,
+          "SVK": 5,
+          "SGS": 4,
+          "FLK": 4,
+          "ATF": 4,
+          "RWA": 4,
+          "GNQ": 4,
+          "MHL": 4,
+          "GNB": 4,
+          "MDA": 4,
+          "BEL": 4,
+          "LSO": 3,
+          "MUS": 3,
+          "SYC": 3,
+          "KIR": 3,
+          "BDI": 3,
+          "ALB": 3,
+          "MKD": 3,
+          "SVN": 3,
+          "COM": 2,
+          "TLS": 2,
+          "SLV": 2,
+          "BLZ": 2,
+          "TCA": 2,
+          "QAT": 2,
+          "BTN": 2,
+          "KWT": 2,
+          "ISR": 2,
+          "CYP": 2,
+          "ARM": 2,
+          "MNE": 2,
+          "KOS": 2,
+          "SHN": 1,
+          "SWZ": 1,
+          "PCN": 1,
+          "REU": 1,
+          "ASM": 1,
+          "WLF": 1,
+          "WSM": 1,
+          "TKL": 1,
+          "TUV": 1,
+          "IOT": 1,
+          "BRN": 1,
+          "PLW": 1,
+          "TTO": 1,
+          "DJI": 1,
+          "VCT": 1,
+          "GMB": 1,
+          "DMA": 1,
+          "GLP": 1,
+          "CPV": 1,
+          "JAM": 1,
+          "BES": 1,
+          "VGB": 1,
+          "AIA": 1,
+          "MNP": 1,
+          "LBN": 1,
+          "GGY": 1
+        },
+        "variable_attrs": {
+          "units": "degree C",
+          "standard_name": "surface_temperature_anomaly",
+          "long_name": "Air Surface Temperature Anomaly",
+          "valid_min": "-16.295777024848707",
+          "valid_max": "17.883551529596865"
+        }
+      },
+      "era5": {
+        "path": "data/raw/era5/era5_t2m_monthly_1950_2013_1deg.nc",
+        "variable": "t2m",
+        "units": "K",
+        "raw_months": 768,
+        "raw_start": "1950-01-01 00:00:00",
+        "raw_end": "2013-12-01 00:00:00",
+        "window_months": 765,
+        "window_start": "1950-01-01 00:00:00",
+        "window_end": "2013-09-01 00:00:00",
+        "latitude_count": 181,
+        "longitude_count": 360,
+        "latitude_first_last": [
+          90.0,
+          -90.0
+        ],
+        "longitude_first_last": [
+          0.0,
+          359.0
+        ],
+        "latitude_step": -1.0,
+        "longitude_step": 1.0,
+        "assigned_cells": 16720,
+        "assigned_country_counts": {
+          "RUS": 3078,
+          "CAN": 1923,
+          "USA": 1182,
+          "CHN": 967,
+          "AUS": 758,
+          "GRL": 733,
+          "BRA": 727,
+          "KAZ": 327,
+          "IND": 294,
+          "ARG": 293,
+          "IDN": 244,
+          "DZA": 213,
+          "MEX": 194,
+          "COD": 194,
+          "MNG": 188,
+          "SAU": 176,
+          "IRN": 159,
+          "SDN": 157,
+          "LBY": 147,
+          "ZAF": 121,
+          "PER": 110,
+          "MLI": 108,
+          "TCD": 105,
+          "AGO": 104,
+          "EGY": 102,
+          "COL": 102,
+          "NER": 100,
+          "CHL": 96,
+          "BOL": 94,
+          "ETH": 92,
+          "MRT": 91,
+          "TUR": 88,
+          "NOR": 85,
+          "SWE": 85,
+          "VEN": 81,
+          "PAK": 80,
+          "UKR": 78,
+          "TZA": 76,
+          "NGA": 75,
+          "MOZ": 73,
+          "NAM": 71,
+          "FRA": 68,
+          "JPN": 68,
+          "FIN": 66,
+          "AFG": 66,
+          "MMR": 64,
+          "ESP": 63,
+          "PNG": 63,
+          "ZMB": 62,
+          "MDG": 61,
+          "SOM": 58,
+          "TKM": 54,
+          "PHL": 54,
+          "SSD": 53,
+          "UZB": 50,
+          "CAF": 50,
+          "KEN": 49,
+          "BWA": 49,
+          "DEU": 48,
+          "THA": 47,
+          "NZL": 46,
+          "ITA": 45,
+          "SJM": 43,
+          "GBR": 43,
+          "IRQ": 43,
+          "YEM": 43,
+          "POL": 42,
+          "MAR": 41,
+          "CMR": 36,
+          "MYS": 34,
+          "ZWE": 34,
+          "PRY": 33,
+          "VNM": 32,
+          "GRC": 30,
+          "OMN": 30,
+          "BLR": 29,
+          "CIV": 28,
+          "ISL": 27,
+          "COG": 27,
+          "ECU": 27,
+          "ROU": 26,
+          "ESH": 24,
+          "BFA": 24,
+          "GAB": 23,
+          "KGZ": 21,
+          "GIN": 21,
+          "GHA": 20,
+          "SYR": 19,
+          "LAO": 19,
+          "UGA": 19,
+          "KOR": 18,
+          "TUN": 18,
+          "CUB": 18,
+          "SEN": 18,
+          "KHM": 18,
+          "URY": 18,
+          "BGD": 17,
+          "GUY": 17,
+          "PYF": 17,
+          "PRK": 15,
+          "TJK": 14,
+          "NIC": 14,
+          "PAN": 14,
+          "SLB": 14,
+          "IRL": 13,
+          "BGR": 13,
+          "BHS": 13,
+          "HND": 13,
+          "DNK": 12,
+          "PRT": 12,
+          "NPL": 12,
+          "ARE": 12,
+          "ERI": 12,
+          "SUR": 12,
+          "AUT": 11,
+          "HRV": 11,
+          "MWI": 11,
+          "EST": 10,
+          "LTU": 10,
+          "HUN": 10,
+          "FJI": 10,
+          "LVA": 9,
+          "CZE": 9,
+          "SRB": 9,
+          "AZE": 9,
+          "GTM": 9,
+          "BEN": 9,
+          "MHL": 9,
+          "LBR": 9,
+          "SVK": 8,
+          "JOR": 8,
+          "HTI": 8,
+          "LKA": 7,
+          "SLE": 7,
+          "GUF": 7,
+          "NLD": 6,
+          "GEO": 6,
+          "TWN": 6,
+          "MDV": 6,
+          "VUT": 6,
+          "MDA": 5,
+          "BIH": 5,
+          "ARM": 5,
+          "DOM": 5,
+          "BEL": 4,
+          "CHE": 4,
+          "BTN": 4,
+          "BLZ": 4,
+          "JAM": 4,
+          "TGO": 4,
+          "CRI": 4,
+          "GNQ": 4,
+          "COK": 4,
+          "FLK": 4,
+          "ALB": 3,
+          "MKD": 3,
+          "ISR": 3,
+          "MNP": 3,
+          "PRI": 3,
+          "CPV": 3,
+          "SLV": 3,
+          "GNB": 3,
+          "TTO": 3,
+          "FSM": 3,
+          "BDI": 3,
+          "TON": 3,
+          "NCL": 3,
+          "LSO": 3,
+          "SGS": 3,
+          "SVN": 2,
+          "MNE": 2,
+          "CYP": 2,
+          "KWT": 2,
+          "QAT": 2,
+          "VIR": 2,
+          "DJI": 2,
+          "SPR": 2,
+          "KIR": 2,
+          "TLS": 2,
+          "FRO": 1,
+          "ALA": 1,
+          "IMN": 1,
+          "MLT": 1,
+          "LBN": 1,
+          "PSE": 1,
+          "BMU": 1,
+          "HKG": 1,
+          "TCA": 1,
+          "AIA": 1,
+          "ATG": 1,
+          "GLP": 1,
+          "LCA": 1,
+          "GMB": 1,
+          "CUW": 1,
+          "GRD": 1,
+          "PLW": 1,
+          "BRN": 1,
+          "RWA": 1,
+          "SYC": 1,
+          "COM": 1,
+          "MYT": 1,
+          "WSM": 1,
+          "SHN": 1,
+          "NIU": 1,
+          "PCN": 1,
+          "SWZ": 1,
+          "ATF": 1
+        },
+        "variable_attrs": {
+          "GRIB_paramId": "167",
+          "GRIB_dataType": "an",
+          "GRIB_numberOfPoints": "65160",
+          "GRIB_typeOfLevel": "surface",
+          "GRIB_stepUnits": "1",
+          "GRIB_stepType": "avgua",
+          "GRIB_gridType": "regular_ll",
+          "GRIB_uvRelativeToGrid": "0",
+          "GRIB_NV": "0",
+          "GRIB_Nx": "360",
+          "GRIB_Ny": "181",
+          "GRIB_cfName": "unknown",
+          "GRIB_cfVarName": "t2m",
+          "GRIB_gridDefinitionDescription": "Latitude/Longitude Grid",
+          "GRIB_iDirectionIncrementInDegrees": "1.0",
+          "GRIB_iScansNegatively": "0",
+          "GRIB_jDirectionIncrementInDegrees": "1.0",
+          "GRIB_jPointsAreConsecutive": "0",
+          "GRIB_jScansPositively": "0",
+          "GRIB_latitudeOfFirstGridPointInDegrees": "90.0",
+          "GRIB_latitudeOfLastGridPointInDegrees": "-90.0",
+          "GRIB_longitudeOfFirstGridPointInDegrees": "0.0",
+          "GRIB_longitudeOfLastGridPointInDegrees": "359.0",
+          "GRIB_missingValue": "3.4028234663852886e+38",
+          "GRIB_name": "2 metre temperature",
+          "GRIB_shortName": "2t",
+          "GRIB_totalNumber": "0",
+          "GRIB_units": "K",
+          "long_name": "2 metre temperature",
+          "units": "K",
+          "standard_name": "unknown",
+          "GRIB_surface": "0.0"
+        }
+      }
+    },
+    "files": {
+      "data/raw/berkeley_gridded/Complete_TAVG_LatLong1.nc": {
+        "sha256": "4b78118b5552cc4987a7c575b042a0ea92de55d7c01f47783edb81d082c40664",
+        "bytes": 198958040
+      },
+      "data/raw/era5/era5_t2m_monthly_1950_2013_1deg.nc": {
+        "sha256": "a2b6330d5aa25608774d12ea58d85699d2893923827fbfbbabacaf08c8782cf0",
+        "bytes": 78744130
+      },
+      "data/raw/gpw-v4-population-count-adjusted-to-2015-unwpp-country-totals-rev11_totpop_15_min_nc/gpw_v4_population_count_adjusted_rev11_15_min.nc": {
+        "sha256": "e15f622851c04d0d3842e9966c30695d3b5d31050608e491d44abc5e48dab85d",
+        "bytes": 82962664
+      },
+      "data/raw/gpw-v4-population-count-adjusted-to-2015-unwpp-country-totals-rev11_totpop_15_min_nc/gpw_v4_national_identifier_grid_rev11_lookup.txt": {
+        "sha256": "bbe7b1359b48d801a5a602bb63e6315fc8b532ccd00373b1131123785762e089",
+        "bytes": 21867
+      },
+      "data/processed/country_inequality.parquet": {
+        "sha256": "74bbad767106b589b486995b2373e49ba17ae32897e5e0b0cc678205460567f4",
+        "bytes": 15936
+      },
+      "data/processed/city_features.parquet": {
+        "sha256": "7d4a95fa624d2c1811073a157f9ffd145b97bbb5d69fa2f4bd97c1d666289d64",
+        "bytes": 112239
+      },
+      "data/raw/worldbank/world-bank-income-groups.csv": {
+        "sha256": "79569499049031746c4c56019e430d02c3c182ad7e9011247fb82183227d41a5",
+        "bytes": 355056
+      },
+      "data/raw/owid/owid-co2-data.csv": {
+        "sha256": "7f78e2b218ce4bb8c538bbec04fdc9a7982e8d40bff972e650df603899edd5f6",
+        "bytes": 14377942
+      },
+      "app/data/era5_area_trends.parquet": {
+        "sha256": "5a18ccbaea44bfef09788b7261ea081a132ff794295e382fc504d459b982a43c",
+        "bytes": 3220
+      },
+      "app/data/era5_validation_summary.json": {
+        "sha256": "95a4488d8212088830807a103231433b994878fe3e37f0d356f089c913afd2bd",
+        "bytes": 1538
+      },
+      "research/model_v2/outputs/m0_countries.csv": {
+        "sha256": "9e99b3798e91f2b7e40250921edd5e5a788e4191df3e9027dceb98fe76b43536",
+        "bytes": 90806
+      },
+      "research/model_v2/outputs/country_geometry.csv": {
+        "sha256": "c8d72866d97d13288b3024781cd262f378ce08749d5166e0d4805bea01903e3a",
+        "bytes": 35845
+      },
+      "src/area_weighting.py": {
+        "sha256": "9c3564a109b75958a05fa0571c019e0122f75efbf737751a728f222b138fd510",
+        "bytes": 15648
+      },
+      "src/era5_weighting.py": {
+        "sha256": "59628f76467ecda1237bb92845cf6e1c61cf18e9425dde3401e0ed67908031ef",
+        "bytes": 5764
+      },
+      "src/cleaning.py": {
+        "sha256": "8b0eea05c4c1e82f220bc734cf95a7305a249c0d90779ddd41a382b3380255a7",
+        "bytes": 5661
+      },
+      "src/grids.py": {
+        "sha256": "89f419be8a19e4fab91c00001192c8c027bfbbe4769cec5d055d089a93a83eed",
+        "bytes": 7733
+      },
+      "scripts/fetch_era5.py": {
+        "sha256": "3967e2c68dc72eec9b26ff949346a561c25dcd623ca40f586c54f93ded1aa1b7",
+        "bytes": 5176
+      },
+      "src/decomposition.py": {
+        "sha256": "e6bb67560a37a51f91fb5de8ebed7119f6bb3eae615250f6365b32fe96f5ec06",
+        "bytes": 21647
+      },
+      "src/feature_schema.py": {
+        "sha256": "78d0c302ea9ba911947b62739f14702cf2ca0d5fd608b18d0c6d78ba9ecfe3ec",
+        "bytes": 20485
+      },
+      "research/model_v2/m0.py": {
+        "sha256": "f3f758ee90e45d457c43ed3d0187446d353a5cdc8a9801c9707334486c23b8e4",
+        "bytes": 11651
+      },
+      "research/model_v2/spatial.py": {
+        "sha256": "c4cbd21fc0f3513d1c7bf5a7cc666e22c1b743e5fac75042b57842f097b353cf",
+        "bytes": 6934
+      },
+      "research/model_v2/product_stability.py": {
+        "sha256": "abd79c3f03c4644749f6a28bed972a72df02a59f645a6d28279a577b14e12f74",
+        "bytes": 23228
+      }
+    },
+    "limitation": "Raw coordinate/time/mask inspection and code tracing; full expensive per-cell Theil-Sen rebuild not rerun."
+  },
+  "across_preprocessing_arms": {
+    "aligned_minus_absolute_era5_mean": -0.013706533868759715,
+    "aligned_minus_absolute_era5_sample_sd": 0.016241269030649094,
+    "aligned_minus_absolute_era5_rmse": 0.02121087010993525,
+    "era5_outcome_correlations_across_preprocessing": {
+      "pearson": 0.9797276861535713,
+      "spearman": 0.9711746253049842
+    },
+    "era5_residual_correlations_across_preprocessing": {
+      "pearson": 0.9877970133170958,
+      "spearman": 0.9859079818752177
+    },
+    "era5_residual_sign_agreement_across_preprocessing": 144,
+    "regional_classifications": {
+      "Australia and New Zealand": {
+        "absolute": "unresolved",
+        "aligned": "unresolved",
+        "robust_in_both": false
+      },
+      "Caribbean": {
+        "absolute": "product-sensitive",
+        "aligned": "product-sensitive",
+        "robust_in_both": false
+      },
+      "Central America": {
+        "absolute": "product-sensitive",
+        "aligned": "product-sensitive",
+        "robust_in_both": false
+      },
+      "Central Asia": {
+        "absolute": "product-sensitive",
+        "aligned": "product-sensitive",
+        "robust_in_both": false
+      },
+      "Eastern Africa": {
+        "absolute": "unresolved",
+        "aligned": "unresolved",
+        "robust_in_both": false
+      },
+      "Eastern Asia": {
+        "absolute": "product-sensitive",
+        "aligned": "product-sensitive",
+        "robust_in_both": false
+      },
+      "Eastern Europe": {
+        "absolute": "product-sensitive",
+        "aligned": "product-sensitive",
+        "robust_in_both": false
+      },
+      "Melanesia": {
+        "absolute": "unresolved",
+        "aligned": "unresolved",
+        "robust_in_both": false
+      },
+      "Middle Africa": {
+        "absolute": "unresolved",
+        "aligned": "unresolved",
+        "robust_in_both": false
+      },
+      "Northern Africa": {
+        "absolute": "product-sensitive",
+        "aligned": "product-sensitive",
+        "robust_in_both": false
+      },
+      "Northern America": {
+        "absolute": "unresolved",
+        "aligned": "unresolved",
+        "robust_in_both": false
+      },
+      "Northern Europe": {
+        "absolute": "unresolved",
+        "aligned": "product-sensitive",
+        "robust_in_both": false
+      },
+      "South America": {
+        "absolute": "unresolved",
+        "aligned": "unresolved",
+        "robust_in_both": false
+      },
+      "South-eastern Asia": {
+        "absolute": "unresolved",
+        "aligned": "unresolved",
+        "robust_in_both": false
+      },
+      "Southern Africa": {
+        "absolute": "product-robust",
+        "aligned": "product-robust",
+        "robust_in_both": true
+      },
+      "Southern Asia": {
+        "absolute": "unresolved",
+        "aligned": "unresolved",
+        "robust_in_both": false
+      },
+      "Southern Europe": {
+        "absolute": "unresolved",
+        "aligned": "unresolved",
+        "robust_in_both": false
+      },
+      "Western Africa": {
+        "absolute": "product-sensitive",
+        "aligned": "product-sensitive",
+        "robust_in_both": false
+      },
+      "Western Asia": {
+        "absolute": "unresolved",
+        "aligned": "unresolved",
+        "robust_in_both": false
+      },
+      "Western Europe": {
+        "absolute": "unresolved",
+        "aligned": "unresolved",
+        "robust_in_both": false
+      }
+    }
+  },
+  "alignment": {
+    "berkeley_climatology_long_name": "Air Surface Temperature Climatology (Jan 1951 - Dec 1980)",
+    "era5_normalization": "Subtract own 1951\u20131980 cell/calendar-month mean before shared Theil\u2013Sen.",
+    "analysis_window": [
+      "1950-01-01",
+      "2013-09-01"
+    ],
+    "mask_and_grid": "Native ERA5, unchanged GPW operator; half-degree offset persists.",
+    "selected_before_aligned_results": true,
+    "source_sha256": "a2b6330d5aa25608774d12ea58d85699d2893923827fbfbbabacaf08c8782cf0",
+    "baseline_months": 360,
+    "baseline_years_per_calendar_month": 30
+  },
+  "aligned_outcome_sha256": "23c96aeaf400433fea773903ede12fa593f549acf16a7286362b1f6078294922",
+  "pattern_classification_counts": {
+    "global": {
+      "product-robust": 2,
+      "product-sensitive": 2,
+      "unresolved": 0
+    },
+    "local": {
+      "product-robust": 0,
+      "product-sensitive": 4,
+      "unresolved": 4
+    },
+    "regional": {
+      "product-robust": 1,
+      "product-sensitive": 7,
+      "unresolved": 12
+    },
+    "tail_country": {
+      "product-robust": 7,
+      "product-sensitive": 28,
+      "unresolved": 22
+    },
+    "tail_list": {
+      "product-robust": 0,
+      "product-sensitive": 3,
+      "unresolved": 0
+    }
+  }
+}
