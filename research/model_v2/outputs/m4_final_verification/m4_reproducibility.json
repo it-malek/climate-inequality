@@ -1,0 +1,125 @@
+{
+  "comparison": "unchanged-code rerun in a separate process and output root, compared by SHA-256",
+  "run_a": "research/model_v2/outputs/m4_final",
+  "run_b": "research/model_v2/outputs/m4_final_verification/reproducibility_run_b",
+  "artifacts": {
+    "m4_bootstrap_draws.csv": {
+      "run_a_sha256": "4dc83abad1782c3f6e427d7f66a822b46d85fb67f339dbbc7ac90a01a746aa10",
+      "run_b_sha256": "4dc83abad1782c3f6e427d7f66a822b46d85fb67f339dbbc7ac90a01a746aa10",
+      "identical": true
+    },
+    "m4_bootstrap_summary.json": {
+      "run_a_sha256": "c1e54795e68b95d77643f3bb57722c07f5f26137573b470188b5ccd5987bf2d7",
+      "run_b_sha256": "c1e54795e68b95d77643f3bb57722c07f5f26137573b470188b5ccd5987bf2d7",
+      "identical": true
+    },
+    "m4_sensitivities.json": {
+      "run_a_sha256": "f31760210d75c0f56df19036182f14cde265d5557741ff68079ac3b2fee83358",
+      "run_b_sha256": "f31760210d75c0f56df19036182f14cde265d5557741ff68079ac3b2fee83358",
+      "identical": true
+    },
+    "m4_sensitivity_predictions.csv": {
+      "run_a_sha256": "c9642bdd7e53530fa3d93b5ac4d8f3ff0f4e615a722d94e2eefa06278fc2e7ce",
+      "run_b_sha256": "c9642bdd7e53530fa3d93b5ac4d8f3ff0f4e615a722d94e2eefa06278fc2e7ce",
+      "identical": true
+    },
+    "m4_products.json": {
+      "run_a_sha256": "46b4e64519a5b8d58a8f39c8ab48ff7432283e35a949f1ab6a3fe4c8ad0219f7",
+      "run_b_sha256": "46b4e64519a5b8d58a8f39c8ab48ff7432283e35a949f1ab6a3fe4c8ad0219f7",
+      "identical": true
+    },
+    "m4_product_predictions.csv": {
+      "run_a_sha256": "85d3583acedbcc04eb30e1f29a2c6aee39ea3974ca14f5065618600c417dd39c",
+      "run_b_sha256": "85d3583acedbcc04eb30e1f29a2c6aee39ea3974ca14f5065618600c417dd39c",
+      "identical": true
+    },
+    "m4_consolidated_table.json": {
+      "run_a_sha256": "8b899c0e8e55a66b5539ee9d53aa9bd1c9484d88232631074d08394c9a112e10",
+      "run_b_sha256": "8b899c0e8e55a66b5539ee9d53aa9bd1c9484d88232631074d08394c9a112e10",
+      "identical": true
+    },
+    "m4_consolidated_table.csv": {
+      "run_a_sha256": "de3cfd6e1f7c84ddd509079bbd693f7a8a05343c91f129ae5625301bc1cb4a0d",
+      "run_b_sha256": "de3cfd6e1f7c84ddd509079bbd693f7a8a05343c91f129ae5625301bc1cb4a0d",
+      "identical": true
+    },
+    "m4_inventory_status.json": {
+      "run_a_sha256": "eb95157b6089710b3cfdf04f5db555e86b0b1e03f62f702e3f3891f5239b2fce",
+      "run_b_sha256": "eb95157b6089710b3cfdf04f5db555e86b0b1e03f62f702e3f3891f5239b2fce",
+      "identical": true
+    },
+    "m4_final_specification.json": {
+      "run_a_sha256": "b9312767bfb9c1a4a1ddbe7e4246c3ecd77940c4cd3ede1dc5e459a77350fe3d",
+      "run_b_sha256": "b9312767bfb9c1a4a1ddbe7e4246c3ecd77940c4cd3ede1dc5e459a77350fe3d",
+      "identical": true
+    },
+    "m4_provenance.json": {
+      "run_a_sha256": "45b49426aeb3719ca02106432a724b502db706288b0e619049b73be61d555c40",
+      "run_b_sha256": "45b49426aeb3719ca02106432a724b502db706288b0e619049b73be61d555c40",
+      "identical": true
+    },
+    "m4_result_manifest.json": {
+      "run_a_sha256": "7103213bc8d6bc717266d3150034d53cde2a1eb976148db8b4f44d8143ea9fc8",
+      "run_b_sha256": "7103213bc8d6bc717266d3150034d53cde2a1eb976148db8b4f44d8143ea9fc8",
+      "identical": true
+    }
+  },
+  "byte_identical": true,
+  "excluded_as_run_metadata": [
+    "m4_run_metadata.json"
+  ],
+  "run_metadata_differences": [
+    "argv",
+    "finished_utc",
+    "started_utc",
+    "wall_seconds"
+  ],
+  "tool_note": "m4_evaluate --compare is defective (it calls the M3 comparison helper, which lists M3 artifact names); this record was produced by a direct digest comparison instead. The defect affects no computed number and the frozen evaluator was not patched.",
+  "code": {
+    "commit": "0366281c370909fadeb02d9985ce7002cf5a0f50",
+    "upstream": "origin/research/model-v2-residual-structure",
+    "live_remote_commit": "0366281c370909fadeb02d9985ce7002cf5a0f50",
+    "code_closure_clean_and_pushed": true,
+    "code_closure_sha256": {
+      "pyproject.toml": "b32ba3b840bde445ff5c0f9ed20da0ac57eb7e25d8b7666ef1fac72e8d29dd45",
+      "research/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "research/model_v2/DOWNSTREAM_COMPLETION_SPEC.md": "1395d9a3a866c6a9f824ba820564b77cda16f5863fa9d3564d79c7feab83d03e",
+      "research/model_v2/M4_EVALUATOR_SPEC.md": "49183ead4d10f3d603a7dd12ac2f09da6e62a63552a30047a8779ce78c76250a",
+      "research/model_v2/M4_EVIDENCE_INVENTORY.md": "d8260a86e5cecd7fe4bb50edd444b261e8c83a8e8fc6a8930b1d7eef6aea3e97",
+      "research/model_v2/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "research/model_v2/borders.py": "daf50c12b472b45144bac1bc4359f23921de88e7fe53520f1a554fce4c5d4f81",
+      "research/model_v2/cells.py": "3d02f25b02da954ae3e8c040b905a621b9d522d23d43a1064951b2a17439602c",
+      "research/model_v2/cv.py": "836b367d66f1b564504f54eca4bc210af7f73eb12ae662db96224784ccb7914c",
+      "research/model_v2/diagnostics.py": "176df71f4ea78ed0bba3ab8c0d2a308c72d799f8e6c0f29e71e6af530a91c44f",
+      "research/model_v2/geometry.py": "5ab4f44b97c04652f08d66d8841b3d57e8fd2acbf05ac55583cb86a3d887d3ef",
+      "research/model_v2/m0.py": "f3f758ee90e45d457c43ed3d0187446d353a5cdc8a9801c9707334486c23b8e4",
+      "research/model_v2/m2_evaluate.py": "6c78f13047eb4c762bf621d7845274103a5c54558ee218f9dd59838ed3fbc421",
+      "research/model_v2/m2_feasibility.py": "8bcbf364e0f8cc2424acfe839f9f7cc798578e88b5ceb8471bb0608e77fa61dc",
+      "research/model_v2/m2_latitude_basis.py": "86024958de49f6c83825e063c05b6e4f114f576efbe93477d3892299de5bb304",
+      "research/model_v2/m3_evaluate.py": "7cb20ce04dba72c0c5f126aa671a8999bbd2fa09fa470a6d5f0a4d3a86744dc4",
+      "research/model_v2/m3_spatial.py": "252bdd31587a0c2c3b897616bd80e767075878d2b3d1f9bdeb20ae984cc3d536",
+      "research/model_v2/m4_evaluate.py": "b3d229411e9d5fa138ee8fad0273bce8099d72a46ec319d9aa073f01e9135ff2",
+      "research/model_v2/regions.py": "c81150ab482d4d1bce3b48187c87b124222c2bdcf82ee2619c357ef27d6db411",
+      "research/model_v2/run_m0_scorecard.py": "8755de8e7bce2eb3c8c4e06b45ab26589cff2667a40592bd792da8667bd06aa0",
+      "research/model_v2/run_territory_correction.py": "63b6daaaa4f1005596ced823e2ed4353e41a48063c82d3c6646eb203ada8b35a",
+      "research/model_v2/spatial.py": "c4cbd21fc0f3513d1c7bf5a7cc666e22c1b743e5fac75042b57842f097b353cf",
+      "research/model_v2/territory.py": "1703a2afd231a028172c690c51d3c90a02686e49819547b379f5a76bbcf0ebf1",
+      "research/model_v2/v2_provenance.py": "a8b729adb7d3a9d5769d0331fcdcc1c10cc4df8bd887996021fd0797016c5220",
+      "src/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "src/area_weighting.py": "9c3564a109b75958a05fa0571c019e0122f75efbf737751a728f222b138fd510",
+      "src/cleaning.py": "8b0eea05c4c1e82f220bc734cf95a7305a249c0d90779ddd41a382b3380255a7",
+      "src/data_io.py": "547cefff2c7c1de7b8f18a0db3482c0473c6068289d77531035813a4e547db2e",
+      "src/decomposition.py": "e6bb67560a37a51f91fb5de8ebed7119f6bb3eae615250f6365b32fe96f5ec06",
+      "src/emissions.py": "169a692a5860284399304d46d73c27b809a194c57032d14638d645741b9bff19",
+      "src/explain.py": "0d0f67b030e912e0d997a7fe3d6c6eec439aae832812e93af473ac647524e8b5",
+      "src/feature_schema.py": "78d0c302ea9ba911947b62739f14702cf2ca0d5fd608b18d0c6d78ba9ecfe3ec",
+      "src/figures.py": "8d160a6fef0b58d7dd84f3406f7e49206d711bde686327f789484437d7ad0c24",
+      "src/grids.py": "89f419be8a19e4fab91c00001192c8c027bfbbe4769cec5d055d089a93a83eed",
+      "src/interpolate.py": "c89b62cfd6182fe05eb171347220bcf7a1a06d1b3a4bc01967a17c29fb52abed",
+      "src/population.py": "10872eab45b9e73c17cf1f5a6debb895669dda784d8617c1ad2c3cdd34a6c652",
+      "src/stability.py": "ee3a6fa5d0b4850a537eace41832c36e7252452c51a8f751abb67fdf58a9696c",
+      "src/trends.py": "56b0abc1243e7b10cbc49fccf63c6fc819ef0decd1a63997aaa115bb439639ae",
+      "uv.lock": "2ce75d74bb683bcf2000c12fb565b8d6fcac003a35a4ddef5f8936253aece0d5"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "status": "HISTORICAL",
+  "source_commit": "3c22900b33bb1663fecfc2de0f052a48f7d91ad3",
+  "documents": {
+    "research/model_v2/DOWNSTREAM_COMPLETION_SPEC.md": {
+      "path": "research/model_v2/evidence/DOWNSTREAM_COMPLETION_SPEC.md",
+      "sha256": "1395d9a3a866c6a9f824ba820564b77cda16f5863fa9d3564d79c7feab83d03e"
+    },
+    "research/model_v2/M1B_EVALUATION_CONTRACT.md": {
+      "path": "research/model_v2/evidence/M1B_EVALUATION_CONTRACT.md",
+      "sha256": "721b87d456bb6ed1575762ec725cf91ec43e048c23804e68e8980ad0cad33f7d"
+    },
+    "research/model_v2/M1B_EVALUATOR_SPEC.md": {
+      "path": "research/model_v2/evidence/M1B_EVALUATOR_SPEC.md",
+      "sha256": "3b0af0b26938abeb77a16e57705b737bed2214504970433029d90a082188dcc0"
+    },
+    "research/model_v2/M2_PRE_SCORE_RESOLUTIONS.md": {
+      "path": "research/model_v2/evidence/M2_PRE_SCORE_RESOLUTIONS.md",
+      "sha256": "aca17cda855f96090afdff557211173c12255444f19e97e91e2c6ce668459496"
+    },
+    "research/model_v2/M4_EVIDENCE_INVENTORY.md": {
+      "path": "research/model_v2/evidence/M4_EVIDENCE_INVENTORY.md",
+      "sha256": "d8260a86e5cecd7fe4bb50edd444b261e8c83a8e8fc6a8930b1d7eef6aea3e97"
+    }
+  }
+}

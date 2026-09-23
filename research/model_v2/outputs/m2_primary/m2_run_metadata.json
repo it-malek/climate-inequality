@@ -1,0 +1,15 @@
+{
+  "started_utc": "2026-09-16T19:48:01+00:00",
+  "finished_utc": "2026-09-16T19:48:13+00:00",
+  "wall_seconds": 11.300870082999609,
+  "host": "Maleks-MacBook-Air.local",
+  "executable": "/Users/malek/projects/climate-inequality/.venv/bin/python3",
+  "argv": [
+    "/Users/malek/projects/climate-inequality/research/model_v2/m2_evaluate.py"
+  ],
+  "output_root": "/Users/malek/projects/climate-inequality/research/model_v2/outputs/m2_primary",
+  "pythonhashseed": "0",
+  "upstream": "origin/research/model-v2-residual-structure",
+  "live_remote_commit": "b13bb04e11b831cf7f9a9f61e63899a4f0e2fe42",
+  "note": "run metadata is deliberately outside the byte-compared deterministic artifacts"
+}

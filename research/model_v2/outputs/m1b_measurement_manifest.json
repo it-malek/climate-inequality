@@ -1,0 +1,183 @@
+{
+  "contract": "research/model_v2/M1B_EVALUATION_CONTRACT.md",
+  "contract_freeze_commit": "60111ae1d44bdf9da6c613852a32de541f9b2d7a",
+  "contract_sha256": "721b87d456bb6ed1575762ec725cf91ec43e048c23804e68e8980ad0cad33f7d",
+  "amendments": [
+    "Amendment 1 (2026-09-15): one-ring structural CRU land-mask harmonization",
+    "Amendment 2 (2026-09-15): station-support sensitivity registration; outcome-free redundancy inputs",
+    "Amendment 3 (2026-09-15): non-structural invalid support stays unresolved and counts against coverage; no presence stop; package integrity digests"
+  ],
+  "gate_version": "M1B_EVALUATION_CONTRACT.md Amendment 3",
+  "git": {
+    "commit": "58e64bfbe6a6b12503a8b08cea51fecd5415e1a5",
+    "code_path": [
+      "research/model_v2/m1b_hydroclimate.py",
+      "research/model_v2/M1B_EVALUATION_CONTRACT.md",
+      "research/model_v2/m0.py",
+      "research/model_v2/m1a_geography.py",
+      "research/model_v2/geometry.py",
+      "research/model_v2/territory.py",
+      "src/population.py",
+      "src/area_weighting.py"
+    ],
+    "code_path_matches_commit": true,
+    "contract_amendment_commit": "58e64bfbe6a6b12503a8b08cea51fecd5415e1a5"
+  },
+  "description": "CRU-reconstructed 1920-1949 baseline hydroclimatic dryness (not purely observed pre-1950 dryness)",
+  "sources": {
+    "pre": {
+      "url": "https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.10/cruts.2604091129.v4.10/pre/cru_ts4.10.1901.2025.pre.dat.nc.gz",
+      "gz_bytes": 698006393,
+      "gz_sha256": "b7e7a3b74e9887db74d8db62227800708ff89ebbabeed5b11f302c99a551edaa",
+      "nc_bytes": 6220812084,
+      "nc_sha256": "efe27c453101fd8b98b0544a198f457b872cf983a9cadb791ecd8e9cddbb3eae",
+      "units": "mm/month",
+      "global_attrs": {
+        "Conventions": "CF-1.4",
+        "title": "CRU TS4.10 Precipitation",
+        "institution": "Data held at British Atmospheric Data Centre, RAL, UK.",
+        "source": "Run ID = 2604091129. Data generated from:pre.2604081855.dtb",
+        "history": "Thu  9 Apr 14:20:33 BST 2026 : User sadmin : Program makegridsauto.for called by update.for",
+        "references": "Information on the data is available at http://badc.nerc.ac.uk/data/cru/",
+        "comment": "Access to these data is available to any registered CEDA user.",
+        "contact": "support@ceda.ac.uk"
+      },
+      "window_first_last": [
+        "1920-01-16",
+        "1949-12-16"
+      ],
+      "record_months": 1500
+    },
+    "pet": {
+      "url": "https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.10/cruts.2604091129.v4.10/pet/cru_ts4.10.1901.2025.pet.dat.nc.gz",
+      "gz_bytes": 72951284,
+      "gz_sha256": "fcc792b090a651d9a19187acf105cd726d680171d01ee48630f0a1a10816f013",
+      "nc_bytes": 1555211692,
+      "nc_sha256": "0bc9a1319f76d93a9f8fb8517ce82399b8c5f6e59dfcf26d802f0dbbd1e00715",
+      "units": "mm/day",
+      "global_attrs": {
+        "Conventions": "CF-1.4",
+        "title": "CRU TS4.10 Potential Evapotranspiration",
+        "institution": "Data held at British Atmospheric Data Centre, RAL, UK.",
+        "source": "Run ID = 2604091129. Data generated from:PET derived from multiple gridded absolutes:, tmp.2604081855.dtb, dtr.2604081855.dtb, vap.2604081855.dtb, cld.2604081855.dtb, tmn.2604081855.dtb, tmx.2604081855.dtb",
+        "history": "Thu  9 Apr 20:12:53 BST 2026 : User sadmin : Program makegridsauto.for called by update.for",
+        "references": "Information on the data is available at http://badc.nerc.ac.uk/data/cru/",
+        "comment": "Access to these data is available to any registered CEDA user.",
+        "contact": "support@ceda.ac.uk"
+      },
+      "window_first_last": [
+        "1920-01-16",
+        "1949-12-16"
+      ],
+      "record_months": 1500
+    }
+  },
+  "cru_version": "4.10",
+  "cru_run_id": "2604091129",
+  "support_inputs": {
+    "m1a_cell_land_area_sha256": "642cbe5abe48457682f312884c03510c13b133a74bc083039b537f0b738466cf",
+    "m1a_geography_qa_sha256": "bdc4f1caff740fea7949b636c367afb6c68b423eccebb07c9391b357358425c8",
+    "land_support_commit": "a7dea346b0d808aab8d9cf84058cfac25c5796b0",
+    "land_support_pins_asserted": true,
+    "gpw_and_lookup_pins_asserted": true,
+    "gpw_path": "data/raw/gpw-v4-population-count-adjusted-to-2015-unwpp-country-totals-rev11_totpop_15_min_nc/gpw_v4_population_count_adjusted_rev11_15_min.nc",
+    "gpw_sha256": "e15f622851c04d0d3842e9966c30695d3b5d31050608e491d44abc5e48dab85d",
+    "gpw_national_identifier_lookup_sha256": "bbe7b1359b48d801a5a602bb63e6315fc8b532ccd00373b1131123785762e089",
+    "country_list_sha256": "8b68ce740bf1c20e639a2f8641a7e884b058244affaac92ccc89f4bb2f27f63a",
+    "grid_nesting": "GPW 0.25 deg nests 2x2 inside CRU 0.5 deg (asserted)"
+  },
+  "window": [
+    "1920-01",
+    "1949-12"
+  ],
+  "n_months": 360,
+  "formula": "x_j = log10((1/30)*sum PRE / ((1/30)*sum PET*days)); C2 = terrestrial-area-weighted mean of x_j over native-valid cells and Amendment 1 harmonized structural-mask cells",
+  "formula_version": "contract section 2 + Amendment 1",
+  "harmonization_rule": {
+    "targets": "M1a support cell, not native-valid, at least one of PRE/PET fill in every record month, each variable masked or complete (all 360 window months finite with a positive mean)",
+    "candidates": "the 8 adjacent CRU cells; longitude index wraps modulo 720; latitude does not wrap",
+    "donor_eligibility": "native-valid CRU cell, any country or none; harmonized cells never donate",
+    "distance": "WGS84 ellipsoidal geodesic between cell centres (Karney inverse, pyproj Geod), tabulated from whole-cell offsets",
+    "tie_break": [
+      "minimum distance",
+      "minimum latitude index",
+      "minimum wrapped longitude index"
+    ],
+    "value": "donor's native x_j as one derived value"
+  },
+  "coverage_min": 0.98,
+  "cells_native_valid_global": 66501,
+  "cells_fixed_mask_any_variable_global": 192699,
+  "variable_states_in_support": {
+    "pre": {
+      "complete": 63152,
+      "masked": 2182,
+      "nonpositive_mean": 1
+    },
+    "pet": {
+      "complete": 62582,
+      "masked": 2753
+    }
+  },
+  "harmonization": {
+    "n_structural_target_cells": 2752,
+    "n_harmonized_cells": 2408,
+    "n_unresolved_structural_cells": 344,
+    "n_non_structural_invalid_cells": 1,
+    "harmonized_area_km2": 122615.2743255615,
+    "unresolved_area_km2": 6598.685827901064,
+    "unresolved_structural_area_km2": 6575.673296194504,
+    "non_structural_invalid_area_km2": 23.01253170656061,
+    "donor_distance_km": {
+      "min": 6.563783735667903,
+      "median": 52.24042278322775,
+      "mean": 45.113420186920195,
+      "p95": 72.45552325729396,
+      "max": 78.45161398316293
+    },
+    "donor_distance_statistics_over": "distinct harmonized target cells; quantiles by numpy linear interpolation",
+    "n_cross_border_country_cells": 56,
+    "cross_border_area_km2": 2188.016585777729,
+    "n_distinct_donor_cells": 2072,
+    "n_donor_cells_outside_all_support": 4
+  },
+  "country_area_reproduces_m1a_max_relative_error": 1.1372014441235478e-12,
+  "area_partition_max_relative_error": 1.1102230246251565e-15,
+  "hard_stop_rules": [
+    "coverage < 0.98 (resolved = native-valid + structurally harmonized area)",
+    "malformed area QA (non-finite, negative or non-positive total area)",
+    "no native-valid terrestrial area: station audit undefined",
+    "pathological: entire terrestrial area pure climatology for all 360 months",
+    "non-finite C2"
+  ],
+  "unresolved_support": {
+    "rows": 346,
+    "area_km2": 6598.685827901064,
+    "structural_area_km2": 6575.673296194504,
+    "non_structural_invalid_area_km2": 23.01253170656061
+  },
+  "hard_stops": [],
+  "all_hard_stops_pass": true,
+  "code_sha256": "e874a68088893027d2839b5b2add9449abbe559dc001fbc505ee121bf801e71c",
+  "software": {
+    "python": "3.11.12",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "xarray": "2026.4.0",
+    "netcdf4_python": "1.7.4",
+    "netcdf_c": "4.9.3",
+    "hdf5": "1.14.6",
+    "pyproj": "3.7.2",
+    "proj": "9.5.1",
+    "xarray_engine": "netcdf4",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "machine": "arm64"
+  },
+  "artifact_sha256": {
+    "m1b_hydroclimate_features.csv": "cf33ba7cfb87c2184a94df5e5686f0951adf692819af8de27329ea698d72e1f4",
+    "m1b_hydroclimate_qa.csv": "e00cbb619d7ad1e1bac0f732c8d030bc49dd0329c2820c38e83e226c65ff54a7",
+    "m1b_harmonization_cells.csv": "bd40fa76a48842495ab76f8d3d2d67138e16426098536d4031e6d4d64a23ebfe",
+    "m1b_unresolved_support.csv": "5f8e202f4dc99deeb42e22ff1dd98b0d0d4c02a4bd5ecae317d30512a256f317",
+    "m1b_support_checkpoint.json": "405e5bdd63e84d1e74f18401f15f898dec64079aa79096e5cc25a585d792307e"
+  }
+}

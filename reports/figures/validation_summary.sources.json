@@ -1,0 +1,7 @@
+{
+  "generator": "python -m scripts.research_summary_figure",
+  "source": "app/data/residual_structure_summary.json",
+  "sha256": "7b726ffe8b8974a7ce2776c02e94d2dc63e98799a62bfbdfa61a3095d7f1fca8",
+  "matplotlib": "3.11.2",
+  "note": "Presentation only; no new estimates. Intervals do not imply independent countries."
+}

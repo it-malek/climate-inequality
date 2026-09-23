@@ -1,0 +1,93 @@
+{
+  "retained_static_specification": "M0*",
+  "qualifying_spatial_extensions": [
+    "M3-SEM(M0*)",
+    "M3-SAR(M0*)"
+  ],
+  "final_primary_predictive_model": null,
+  "final_naming_reason": "two qualifying spatial extensions; no historical unique-family selection rule",
+  "m2_label": "not supported",
+  "static_stopping_indicator": {
+    "point_delta_rmse_vs_m0star": {
+      "M1a": 0.002342838562091845,
+      "M1b": 0.0017229850562197266,
+      "M2": -0.002952085787570634
+    },
+    "best": -0.002952085787570634,
+    "threshold": -0.002,
+    "fires": false,
+    "m2_decides": true,
+    "rule": "fires iff the smallest primary total-CO2 Berkeley point delta over M1a, M1b and M2 is > -0.002 degC/decade; equality does not fire; independent of promotion"
+  },
+  "m3_family_dispositions": {
+    "station/sem": [
+      "computable",
+      true
+    ],
+    "station/sar": [
+      "computable",
+      true
+    ],
+    "land/sem": [
+      "computable",
+      null
+    ],
+    "land/sar": [
+      "computable",
+      null
+    ]
+  },
+  "three_numbers_per_retained_stage": {
+    "M0*": {
+      "primary_rmse_minus_m0star": 0.0,
+      "oof_morans_i": 0.3215471676927579,
+      "geography_share": 0.5188374533606563,
+      "geography_share_country_bootstrap_95": [
+        0.4522525803194503,
+        0.6297692084995653
+      ]
+    },
+    "M3-SEM(M0*)": {
+      "primary_rmse_minus_m0star": -0.0031049087495971794,
+      "oof_morans_i": 0.259069296279818,
+      "geography_share_filtered_trend": 0.27950067307890636,
+      "geography_share_interval": "not applicable (spec \u00a73.3)"
+    },
+    "M3-SAR(M0*)": {
+      "primary_rmse_minus_m0star": -0.004764255510104322,
+      "oof_morans_i": 0.25620504860333415,
+      "geography_share_filtered_trend": 0.31313643903511446,
+      "geography_share_interval": "not applicable (spec \u00a73.3)"
+    }
+  },
+  "material_change_to_v1_conclusion": {
+    "primary_total_co2": {
+      "point_geography_not_largest": false,
+      "interval_geography_not_established_country": false,
+      "interval_geography_not_established_block": false,
+      "responsibility_exceeds_0_10": false,
+      "responsibility_upper_country_ci_exceeds_0_10": false,
+      "material_change_to_v1_conclusion": false
+    },
+    "per_capita": {
+      "point_geography_not_largest": false,
+      "interval_geography_not_established_country": false,
+      "interval_geography_not_established_block": false,
+      "responsibility_exceeds_0_10": false,
+      "responsibility_upper_country_ci_exceeds_0_10": false,
+      "material_change_to_v1_conclusion": false
+    }
+  },
+  "commits": {
+    "downstream_specification": "4dc2fadc4d53ef05014c07ebba368a53cf6239ac",
+    "downstream_specification_amendment_A1": "ef04958",
+    "m2_evaluator": "b13bb04e11b831cf7f9a9f61e63899a4f0e2fe42",
+    "m2_result": "99f600bcc9af7eedaf3c3b636386d5d0eb188aa4",
+    "m2_conditional_disposition": "2c1d8f7d50fb69e89afa8ea8b26275d9fd3c2583",
+    "m3_evaluator": "a6df380445d93f42a1d9b1dac55e284a5ee660ab",
+    "m3_station_result": "e049ebad5e075a6bef8606261245f7a8ec0726d0",
+    "m3_land_result": "805b7949f730ac2f6ec21512dd690368267fcf3b",
+    "m4_evaluator": "0366281c370909fadeb02d9985ce7002cf5a0f50"
+  },
+  "residual_description": "variance in cross-country warming differences not captured at country resolution by the tested models with these observations; not an unknown climate cause"
+}

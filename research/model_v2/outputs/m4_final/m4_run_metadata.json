@@ -1,0 +1,12 @@
+{
+  "started_utc": "2026-09-16T20:21:51+00:00",
+  "finished_utc": "2026-09-16T20:24:12+00:00",
+  "wall_seconds": 140.56823175000318,
+  "host": "Maleks-MacBook-Air.local",
+  "executable": "/Users/malek/projects/climate-inequality/.venv/bin/python3",
+  "argv": [
+    "/Users/malek/projects/climate-inequality/research/model_v2/m4_evaluate.py"
+  ],
+  "pythonhashseed": "0",
+  "live_remote_commit": "0366281c370909fadeb02d9985ce7002cf5a0f50"
+}

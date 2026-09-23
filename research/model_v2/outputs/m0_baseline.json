@@ -1,0 +1,69 @@
+{
+ "n": {
+  "refit": 151.0,
+  "bundle": 151.0,
+  "reference": 151.0,
+  "refit_minus_bundle": 0.0,
+  "bundle_equals_reference": true
+ },
+ "in_sample_r2": {
+  "refit": 0.6364460027547281,
+  "bundle": 0.6364460028,
+  "reference": 0.6364460028,
+  "refit_minus_bundle": -4.5271897342047396e-11,
+  "bundle_equals_reference": true
+ },
+ "residual_share": {
+  "refit": 0.36355399724527193,
+  "bundle": 0.3635539972,
+  "reference": 0.3635539972,
+  "refit_minus_bundle": 4.527195285319863e-11,
+  "bundle_equals_reference": true
+ },
+ "residual_morans_i": {
+  "refit": 0.26868901614174107,
+  "bundle": 0.2686890161,
+  "reference": 0.2686890161,
+  "refit_minus_bundle": 4.174105505683201e-11,
+  "bundle_equals_reference": true
+ },
+ "residual_morans_i_p": {
+  "refit": 0.005,
+  "bundle": 0.005,
+  "reference": 0.005,
+  "refit_minus_bundle": 0.0,
+  "bundle_equals_reference": true
+ },
+ "share_emissions": {
+  "refit": 0.021392838794997156,
+  "bundle": 0.02139283879,
+  "reference": 0.02139283879,
+  "refit_minus_bundle": 4.997155467201253e-12,
+  "bundle_equals_reference": true
+ },
+ "share_geography": {
+  "refit": 0.5130328657008392,
+  "bundle": 0.5130328657,
+  "reference": 0.5130328657,
+  "refit_minus_bundle": 8.392175843141558e-13,
+  "bundle_equals_reference": true
+ },
+ "share_socioeconomic": {
+  "refit": 0.06932302425611886,
+  "bundle": 0.06932302426,
+  "reference": 0.06932302426,
+  "refit_minus_bundle": -3.881145405060238e-12,
+  "bundle_equals_reference": true
+ },
+ "share_population": {
+  "refit": 0.03269727400277303,
+  "bundle": 0.032697274,
+  "reference": 0.032697274,
+  "refit_minus_bundle": 2.773031804181869e-12,
+  "bundle_equals_reference": true
+ },
+ "full_model_r2_equals_total_r2": true,
+ "design_rank": 20,
+ "design_columns": 21,
+ "all_bundle_values_match_reference": true
+}

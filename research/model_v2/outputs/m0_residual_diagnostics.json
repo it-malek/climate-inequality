@@ -1,0 +1,1702 @@
+{
+ "m0": {
+  "n": 151,
+  "r2": 0.6364460027547281,
+  "rank": 20,
+  "columns": 21,
+  "sigma": 0.03015752506089577,
+  "outcome_sd": 0.046741350214455094
+ },
+ "distribution": {
+  "n": 151,
+  "mean": 2.6193175663755764e-17,
+  "sd": 0.028182902338310355,
+  "rmse": 0.02808942645115843,
+  "mae": 0.02238727890761409,
+  "skew": 0.0317096765367254,
+  "excess_kurtosis": -0.23339537305199043,
+  "quantiles": {
+   "p1": -0.061243495232996964,
+   "p5": -0.04624056229437849,
+   "p10": -0.03371586272853852,
+   "p25": -0.019859438705618876,
+   "p50": 0.0014961793189569028,
+   "p75": 0.01802134589707144,
+   "p90": 0.037253147356408584,
+   "p95": 0.043365105086365395,
+   "p99": 0.06313786846237737
+  },
+  "shapiro_w": 0.9964906027765673,
+  "shapiro_p": 0.9782201827118965,
+  "jarque_bera_p": 0.8319218067899335
+ },
+ "concentration": {
+  "top5_share_of_ss": 0.18921692057472073,
+  "top10_share_of_ss": 0.32330327156666044,
+  "top20_share_of_ss": 0.5012608677100647,
+  "countries_for_half_of_ss": 20,
+  "expected_top10_share_if_uniform": 0.06622516556291391,
+  "top20": [
+   {
+    "country": "Brazil",
+    "residual": 0.07416292598993832,
+    "share_of_ss": 0.046164806697968075
+   },
+   {
+    "country": "Egypt",
+    "residual": -0.07206207616360652,
+    "share_of_ss": 0.043586384952996576
+   },
+   {
+    "country": "Canada",
+    "residual": 0.06360355776476892,
+    "share_of_ss": 0.03395471801367351
+   },
+   {
+    "country": "Iran",
+    "residual": 0.06267217915998582,
+    "share_of_ss": 0.0329675672666377
+   },
+   {
+    "country": "Turkmenistan",
+    "residual": 0.06226773931519905,
+    "share_of_ss": 0.03254344364344487
+   },
+   {
+    "country": "Mexico",
+    "residual": -0.061457157366937354,
+    "share_of_ss": 0.031701677726687874
+   },
+   {
+    "country": "Israel",
+    "residual": -0.061029833099056574,
+    "share_of_ss": 0.03126235382612694
+   },
+   {
+    "country": "Botswana",
+    "residual": -0.056179577372255846,
+    "share_of_ss": 0.026490749449525383
+   },
+   {
+    "country": "Argentina",
+    "residual": -0.05162645182203987,
+    "share_of_ss": 0.02237081804239505
+   },
+   {
+    "country": "Mauritania",
+    "residual": 0.05149929222154942,
+    "share_of_ss": 0.02226075194720444
+   },
+   {
+    "country": "Syria",
+    "residual": -0.05114302966828749,
+    "share_of_ss": 0.021953825753655204
+   },
+   {
+    "country": "Angola",
+    "residual": 0.0476945686353156,
+    "share_of_ss": 0.01909304341336082
+   },
+   {
+    "country": "South Korea",
+    "residual": -0.04749599660523143,
+    "share_of_ss": 0.018934390047188963
+   },
+   {
+    "country": "New Zealand",
+    "residual": -0.04640536092285433,
+    "share_of_ss": 0.018074804939244855
+   },
+   {
+    "country": "Libya",
+    "residual": -0.04607576366590266,
+    "share_of_ss": 0.017818961667383046
+   },
+   {
+    "country": "Estonia",
+    "residual": 0.045394609463763724,
+    "share_of_ss": 0.01729600801510897
+   },
+   {
+    "country": "India",
+    "residual": -0.04470802857778913,
+    "share_of_ss": 0.016776769947695166
+   },
+   {
+    "country": "Slovakia",
+    "residual": -0.044259069195859285,
+    "share_of_ss": 0.016441516089485
+   },
+   {
+    "country": "Dominican Republic",
+    "residual": 0.043474369351398756,
+    "share_of_ss": 0.01586367818468813
+   },
+   {
+    "country": "Indonesia",
+    "residual": 0.043255840821332034,
+    "share_of_ss": 0.01570459808559421
+   }
+  ]
+ },
+ "heteroscedasticity": {
+  "spearman_abs_residual_vs_fitted": {
+   "rho": 0.05873126524921574,
+   "p": 0.47379174654243866
+  },
+  "spearman_abs_residual_vs_warming_trend": {
+   "rho": 0.0043464621819449285,
+   "p": 0.9577584886485739
+  },
+  "spearman_abs_residual_vs_abs_latitude": {
+   "rho": -0.0019014620894338486,
+   "p": 0.9815135414564949
+  },
+  "spearman_abs_residual_vs_log10_land_area": {
+   "rho": 0.16044963401882187,
+   "p": 0.04906529209604374
+  },
+  "breusch_pagan_on_fitted": {
+   "lm": 0.007913539828965144,
+   "p": 0.9291152260497795
+  }
+ },
+ "influence": {
+  "rank": 20,
+  "n": 151,
+  "mean_leverage": 0.13245033112582782,
+  "high_leverage_threshold_2p_over_n": 0.26490066225165565,
+  "n_high_leverage": 6,
+  "high_leverage": [
+   {
+    "country": "Iceland",
+    "leverage": 1.0000000000000013,
+    "note": "only K\u00f6ppen E country"
+   },
+   {
+    "country": "Japan",
+    "leverage": 0.47215536080339104,
+    "note": "station density 30"
+   },
+   {
+    "country": "Papua New Guinea",
+    "leverage": 0.39463715830104285,
+    "note": "Oceania block (3 countries)"
+   },
+   {
+    "country": "Australia",
+    "leverage": 0.35936918218995884,
+    "note": "Oceania block (3 countries); negative station elevation -465 m (offshore grid snap)"
+   },
+   {
+    "country": "New Zealand",
+    "leverage": 0.35863694105262317,
+    "note": "Oceania block (3 countries); negative station elevation -5 m (offshore grid snap)"
+   },
+   {
+    "country": "Bolivia",
+    "leverage": 0.3053658636330418,
+    "note": "station elevation 3353 m"
+   }
+  ],
+  "exactly_fitted": [
+   "Iceland"
+  ],
+  "n_abs_studentized_gt_2": 8,
+  "abs_studentized_gt_2": [
+   {
+    "Country": "Egypt",
+    "studentized": -2.6084720727959647
+   },
+   {
+    "Country": "Mexico",
+    "studentized": -2.2632057115948405
+   },
+   {
+    "Country": "Israel",
+    "studentized": -2.159183575558245
+   },
+   {
+    "Country": "Botswana",
+    "studentized": -2.0441998107795123
+   },
+   {
+    "Country": "Turkmenistan",
+    "studentized": 2.1974227728226734
+   },
+   {
+    "Country": "Iran",
+    "studentized": 2.252213286353693
+   },
+   {
+    "Country": "Canada",
+    "studentized": 2.4099041293964776
+   },
+   {
+    "Country": "Brazil",
+    "studentized": 2.7755448984643825
+   }
+  ],
+  "cooks_top10": [
+   {
+    "country": "New Zealand",
+    "cooks_d": 0.10321957269881182
+   },
+   {
+    "country": "Brazil",
+    "cooks_d": 0.07761941217189304
+   },
+   {
+    "country": "Canada",
+    "cooks_d": 0.0726678866734002
+   },
+   {
+    "country": "Papua New Guinea",
+    "cooks_d": 0.05508807955456134
+   },
+   {
+    "country": "Mexico",
+    "cooks_d": 0.048602529198252704
+   },
+   {
+    "country": "Egypt",
+    "cooks_d": 0.045965333526604236
+   },
+   {
+    "country": "Syria",
+    "cooks_d": 0.045450454911904845
+   },
+   {
+    "country": "Indonesia",
+    "cooks_d": 0.04031900813462687
+   },
+   {
+    "country": "Botswana",
+    "cooks_d": 0.03582529380044802
+   },
+   {
+    "country": "Argentina",
+    "cooks_d": 0.035309614987132934
+   }
+  ],
+  "cooks_threshold_4_over_n": 0.026490066225165563
+ },
+ "descriptor_associations": {
+  "log10_land_area": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": 0.03777622865109794,
+    "spearman_p": 0.6451508731819342,
+    "pearson_r": 0.08982242065579595,
+    "pearson_p": 0.2727275022024862
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": 0.16044963401882187,
+    "spearman_p": 0.04906529209604374,
+    "pearson_r": 0.22223182272186404,
+    "pearson_p": 0.00609699247708929
+   }
+  },
+  "coastal_cell_fraction": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": 0.10560926720139614,
+    "spearman_p": 0.19685052899786792,
+    "pearson_r": 0.05456214366946896,
+    "pearson_p": 0.5057977260496863
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": 0.02005019596887689,
+    "spearman_p": 0.8069534812100763,
+    "pearson_r": -0.0687128512358854,
+    "pearson_p": 0.40184393373282845
+   }
+  },
+  "elev_sd_m": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": -0.03476821192052979,
+    "spearman_p": 0.6716994018954198,
+    "pearson_r": -0.04504745199461602,
+    "pearson_p": 0.5828466874581102
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": -0.04363889857093063,
+    "spearman_p": 0.5946974463782584,
+    "pearson_r": -0.03689471795741402,
+    "pearson_p": 0.6528866517023975
+   }
+  },
+  "elev_mean_m": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": -0.12069013593586614,
+    "spearman_p": 0.1399056214983461,
+    "pearson_r": -0.02348283977140265,
+    "pearson_p": 0.7747222371511169
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": -0.03226211223422795,
+    "spearman_p": 0.6941337437415076,
+    "pearson_r": -0.06333672508525146,
+    "pearson_p": 0.43975716474870014
+   }
+  },
+  "cell_sd": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": 0.04264066435038458,
+    "spearman_p": 0.6031614154685518,
+    "pearson_r": 0.13704001157540277,
+    "pearson_p": 0.09336505993329246
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": 0.10334004305065614,
+    "spearman_p": 0.20669885627053336,
+    "pearson_r": 0.19766204042176433,
+    "pearson_p": 0.014983390966267409
+   }
+  },
+  "lat_sd_area_weighted": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": -0.024928546531892637,
+    "spearman_p": 0.761258322287197,
+    "pearson_r": 0.03007535728082686,
+    "pearson_p": 0.713929315057599
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": 0.12749738584872777,
+    "spearman_p": 0.11874363666172374,
+    "pearson_r": 0.2205185729326641,
+    "pearson_p": 0.006511671541075122
+   }
+  },
+  "abs_centroid_lat": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": -0.0193168351341931,
+    "spearman_p": 0.813883766692892,
+    "pearson_r": 0.0014560158539094967,
+    "pearson_p": 0.9858437551279149
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": 0.008985709306378528,
+    "spearman_p": 0.912803627071651,
+    "pearson_r": 0.0040635921510633055,
+    "pearson_p": 0.9605052872069958
+   }
+  },
+  "station_lat_minus_centroid_lat": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": 0.06465667479958173,
+    "spearman_p": 0.4302651565929181,
+    "pearson_r": -0.010072847715751568,
+    "pearson_p": 0.9023036705183336
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": -0.10018473335657022,
+    "spearman_p": 0.2209739833892784,
+    "pearson_r": -0.023165735096529555,
+    "pearson_p": 0.7776845890470443
+   }
+  },
+  "era5_minus_berkeley": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": -0.1422063436737539,
+    "spearman_p": 0.0815429128123354,
+    "pearson_r": -0.13709132705018884,
+    "pearson_p": 0.0932412786359388
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": 0.0286859532938306,
+    "spearman_p": 0.7266076445156954,
+    "pearson_r": 0.015415702531894296,
+    "pearson_p": 0.850979861820794
+   }
+  },
+  "station_minus_area": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": -0.11488672011153711,
+    "spearman_p": 0.16011770445110388,
+    "pearson_r": -0.14500814271184437,
+    "pearson_p": 0.07565309767733548
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": -0.0003485535029627048,
+    "spearman_p": 0.996610991342925,
+    "pearson_r": 0.02626520027036244,
+    "pearson_p": 0.7488732691422905
+   }
+  },
+  "koppen_share_B": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": 0.028631098051908308,
+    "spearman_p": 0.727109750150798,
+    "pearson_r": 0.05418517667159776,
+    "pearson_p": 0.508746181894601
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": 0.19272907541804926,
+    "spearman_p": 0.017745480699816595,
+    "pearson_r": 0.22855444439419015,
+    "pearson_p": 0.00476291133714635
+   }
+  },
+  "koppen_share_A": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": 0.0007737456598257209,
+    "spearman_p": 0.9924769079623708,
+    "pearson_r": 0.04752015509174463,
+    "pearson_p": 0.5623108782928444
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": -0.045383013725582774,
+    "spearman_p": 0.5800396331336495,
+    "pearson_r": -0.07021909005608341,
+    "pearson_p": 0.39158056419645665
+   }
+  },
+  "koppen_share_D": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": 0.06830588639206009,
+    "spearman_p": 0.4046441266788932,
+    "pearson_r": 0.01939150941565201,
+    "pearson_p": 0.8131774225385753
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": -0.06431300702799063,
+    "spearman_p": 0.43272513338995516,
+    "pearson_r": -0.05960862254754326,
+    "pearson_p": 0.46719959610598977
+   }
+  },
+  "n_cities": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": -0.037375661068899,
+    "spearman_p": 0.6486614438823272,
+    "pearson_r": 0.0557017060955566,
+    "pearson_p": 0.4969390417360721
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": 0.1111441047620501,
+    "spearman_p": 0.1742652393015134,
+    "pearson_r": 0.13809152260227406,
+    "pearson_p": 0.09085457529664547
+   }
+  },
+  "area_cell_coverage": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": -0.01782822501386536,
+    "spearman_p": 0.8279950760955983,
+    "pearson_r": 0.053727628722277626,
+    "pearson_p": 0.5123368470915749
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": -0.031561240203460766,
+    "spearman_p": 0.7004566831559565,
+    "pearson_r": 0.0710342107022295,
+    "pearson_p": 0.3860926999097605
+   }
+  },
+  "leverage": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": 0.007831997211571975,
+    "spearman_p": 0.9239630390093158,
+    "pearson_r": 0.01792498707361362,
+    "pearson_p": 0.827076094122947
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": 0.01920878354827466,
+    "spearman_p": 0.8149060919639292,
+    "pearson_r": -0.050704701166497,
+    "pearson_p": 0.536384137911667
+   }
+  },
+  "abs_latitude": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": -0.0033428086961815964,
+    "spearman_p": 0.9675064503223976,
+    "pearson_r": -2.147587663259287e-15,
+    "pearson_p": 0.9999999999999786
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": -0.0019014620894338486,
+    "spearman_p": 0.9815135414564949,
+    "pearson_r": 0.0007379613241837724,
+    "pearson_p": 0.9928248278366201
+   }
+  },
+  "elevation": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": -0.044057201165232096,
+    "spearman_p": 0.5911667254446454,
+    "pearson_r": 2.9108659926890823e-15,
+    "pearson_p": 0.9999999999999731
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": -0.09465675728197849,
+    "spearman_p": 0.24764277351706737,
+    "pearson_r": -0.10042954966127919,
+    "pearson_p": 0.21984197929914434
+   }
+  },
+  "continentality": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": -0.08524231896336364,
+    "spearman_p": 0.29803046082297013,
+    "pearson_r": 2.7613328290598815e-14,
+    "pearson_p": 0.9999999999997318
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": -0.02112933176136368,
+    "spearman_p": 0.7967829777329541,
+    "pearson_r": -0.02932307571539809,
+    "pearson_p": 0.7207844467887079
+   }
+  },
+  "station_density": {
+   "residual": {
+    "n": 151,
+    "spearman_rho": -0.09040829058524603,
+    "spearman_p": 0.2695990668487977,
+    "pearson_r": -8.895661984809067e-15,
+    "pearson_p": 0.9999999999999125
+   },
+   "abs_residual": {
+    "n": 151,
+    "spearman_rho": 0.06015394867540145,
+    "spearman_p": 0.46312771861299223,
+    "pearson_r": 0.018379448976393164,
+    "pearson_p": 0.8227630709017918
+   }
+  }
+ },
+ "group_structure": {
+  "m49_subregion": {
+   "anova_f": NaN,
+   "anova_p": NaN,
+   "eta_squared": 0.25798886773796975,
+   "groups": {
+    "Southern Africa": {
+     "n": 5,
+     "mean": -0.026493983204985756,
+     "sd": 0.018017769511272718,
+     "min": -0.056179577372255846,
+     "max": -0.010606383967513983
+    },
+    "Central America": {
+     "n": 7,
+     "mean": -0.02399415158312778,
+     "sd": 0.01976670559325395,
+     "min": -0.061457157366937354,
+     "max": 0.003994310863230474
+    },
+    "Eastern Europe": {
+     "n": 10,
+     "mean": -0.019800890048051353,
+     "sd": 0.020880574875461362,
+     "min": -0.044259069195859285,
+     "max": 0.024589565030806726
+    },
+    "Australia and New Zealand": {
+     "n": 2,
+     "mean": -0.015251982133613465,
+     "sd": 0.04405753079749074,
+     "min": -0.04640536092285433,
+     "max": 0.015901396655627398
+    },
+    "Northern Africa": {
+     "n": 6,
+     "mean": -0.013590091021126785,
+     "sd": 0.0452328359253001,
+     "min": -0.07206207616360652,
+     "max": 0.04057011572621527
+    },
+    "Middle Africa": {
+     "n": 8,
+     "mean": -0.013123029636096486,
+     "sd": 0.027463917479972285,
+     "min": -0.038286475943231785,
+     "max": 0.0476945686353156
+    },
+    "South-eastern Asia": {
+     "n": 8,
+     "mean": -0.009746128334464555,
+     "sd": 0.031257752900418496,
+     "min": -0.04218543039288224,
+     "max": 0.043255840821332034
+    },
+    "Southern Asia": {
+     "n": 7,
+     "mean": -0.0023953654335068125,
+     "sd": 0.038096366803638086,
+     "min": -0.04470802857778913,
+     "max": 0.06267217915998582
+    },
+    "Western Asia": {
+     "n": 15,
+     "mean": -0.0018610857190399898,
+     "sd": 0.02992519555797795,
+     "min": -0.061029833099056574,
+     "max": 0.037253147356408584
+    },
+    "Eastern Asia": {
+     "n": 5,
+     "mean": -0.0010694121423990121,
+     "sd": 0.03001903860015899,
+     "min": -0.04749599660523143,
+     "max": 0.029581527054748757
+    },
+    "South America": {
+     "n": 11,
+     "mean": -7.418308391813546e-16,
+     "sd": 0.032924934491388426,
+     "min": -0.05162645182203987,
+     "max": 0.07416292598993832
+    },
+    "Eastern Africa": {
+     "n": 14,
+     "mean": 0.004445229874970375,
+     "sd": 0.018285137429608567,
+     "min": -0.02228706677304762,
+     "max": 0.040841634121221465
+    },
+    "Southern Europe": {
+     "n": 11,
+     "mean": 0.00540738849033466,
+     "sd": 0.014786632935410361,
+     "min": -0.026061710831566942,
+     "max": 0.021760975233935248
+    },
+    "Northern Europe": {
+     "n": 10,
+     "mean": 0.00928582814556718,
+     "sd": 0.022010344678841106,
+     "min": -0.017785728038261395,
+     "max": 0.045394609463763724
+    },
+    "Western Europe": {
+     "n": 6,
+     "mean": 0.010512860298200958,
+     "sd": 0.009844012770431369,
+     "min": 0.0016261829290491192,
+     "max": 0.027943272704141098
+    },
+    "Caribbean": {
+     "n": 5,
+     "mean": 0.018056396097683346,
+     "sd": 0.023236985370826684,
+     "min": -0.0057427483065260465,
+     "max": 0.043474369351398756
+    },
+    "Western Africa": {
+     "n": 14,
+     "mean": 0.018340105785064263,
+     "sd": 0.017485330569211484,
+     "min": -0.01198169831242235,
+     "max": 0.05149929222154942
+    },
+    "Central Asia": {
+     "n": 4,
+     "mean": 0.027648028762452627,
+     "sd": 0.02657153089341181,
+     "min": 0.0014961793189569028,
+     "max": 0.06226773931519905
+    },
+    "Melanesia": {
+     "n": 1,
+     "mean": 0.030503964267224917,
+     "sd": NaN,
+     "min": 0.030503964267224917,
+     "max": 0.030503964267224917
+    },
+    "Northern America": {
+     "n": 2,
+     "mean": 0.03883854029673578,
+     "sd": 0.03502302357569907,
+     "min": 0.01407352282870264,
+     "max": 0.06360355776476892
+    }
+   }
+  },
+  "koppen_area_dominant": {
+   "anova_f": 0.23651680730206945,
+   "anova_p": 0.9173618639036044,
+   "eta_squared": 0.006438193597468592,
+   "groups": {
+    "C": {
+     "n": 23,
+     "mean": -0.004920632389708637,
+     "sd": 0.018552212949182773,
+     "min": -0.04640536092285433,
+     "max": 0.027943272704141098
+    },
+    "D": {
+     "n": 29,
+     "mean": -0.00024250581496872291,
+     "sd": 0.026695329349864114,
+     "min": -0.04749599660523143,
+     "max": 0.06360355776476892
+    },
+    "A": {
+     "n": 54,
+     "mean": 0.001016333099332768,
+     "sd": 0.026627807150552057,
+     "min": -0.04470802857778913,
+     "max": 0.07416292598993832
+    },
+    "B": {
+     "n": 43,
+     "mean": 0.001207144144326519,
+     "sd": 0.0355833013656242,
+     "min": -0.07206207616360652,
+     "max": 0.06267217915998582
+    },
+    "E": {
+     "n": 2,
+     "mean": 0.006709014013692879,
+     "sd": 0.009487978608315585,
+     "min": 2.7755575615628914e-17,
+     "max": 0.013418028027385731
+    }
+   }
+  },
+  "koppen_modal_vs_area_mismatch": {
+   "anova_f": 0.5960496730848459,
+   "anova_p": 0.44131202934333197,
+   "eta_squared": 0.003984394470224347,
+   "groups": {
+    "False": {
+     "n": 125,
+     "mean": -0.0008086408996263165,
+     "sd": 0.027961835803572477,
+     "min": -0.07206207616360652,
+     "max": 0.06360355776476892
+    },
+    "True": {
+     "n": 26,
+     "mean": 0.0038876966328189808,
+     "sd": 0.02947237545836793,
+     "min": -0.061457157366937354,
+     "max": 0.07416292598993832
+    }
+   }
+  },
+  "spatial_block_v1": {
+   "anova_f": 5.624506804924305e-27,
+   "anova_p": 1.0,
+   "eta_squared": 1.9404532751220124e-28,
+   "groups": {
+    "South America": {
+     "n": 11,
+     "mean": -7.418308391813546e-16,
+     "sd": 0.032924934491388426,
+     "min": -0.05162645182203987,
+     "max": 0.07416292598993832
+    },
+    "Oceania": {
+     "n": 3,
+     "mean": -6.707597440443654e-16,
+     "sd": 0.040846075539738874,
+     "min": -0.04640536092285433,
+     "max": 0.030503964267224917
+    },
+    "North America": {
+     "n": 14,
+     "mean": -4.401241276192585e-16,
+     "sd": 0.03329107622777472,
+     "min": -0.061457157366937354,
+     "max": 0.06360355776476892
+    },
+    "Europe": {
+     "n": 38,
+     "mean": -1.672638635783953e-16,
+     "sd": 0.02145130343784789,
+     "min": -0.044259069195859285,
+     "max": 0.045394609463763724
+    },
+    "Asia": {
+     "n": 38,
+     "mean": 8.14407021353322e-17,
+     "sd": 0.03180159615955065,
+     "min": -0.061029833099056574,
+     "max": 0.06267217915998582
+    },
+    "Africa": {
+     "n": 47,
+     "mean": 5.007814494053897e-16,
+     "sd": 0.028018137846243008,
+     "min": -0.07206207616360652,
+     "max": 0.05149929222154942
+    }
+   }
+  },
+  "climate_zone_v1": {
+   "anova_f": NaN,
+   "anova_p": NaN,
+   "eta_squared": 6.477666160015526e-29,
+   "groups": {
+    "C": {
+     "n": 37,
+     "mean": -3.278158525413469e-16,
+     "sd": 0.026362509463620905,
+     "min": -0.061457157366937354,
+     "max": 0.07416292598993832
+    },
+    "D": {
+     "n": 30,
+     "mean": -3.9782991715734776e-17,
+     "sd": 0.0263269348746774,
+     "min": -0.04749599660523143,
+     "max": 0.06360355776476892
+    },
+    "E": {
+     "n": 1,
+     "mean": 2.7755575615628914e-17,
+     "sd": NaN,
+     "min": 2.7755575615628914e-17,
+     "max": 2.7755575615628914e-17
+    },
+    "B": {
+     "n": 29,
+     "mean": 1.3734224485664651e-16,
+     "sd": 0.038760040421131556,
+     "min": -0.07206207616360652,
+     "max": 0.06267217915998582
+    },
+    "A": {
+     "n": 54,
+     "mean": 2.4543124734190384e-16,
+     "sd": 0.024555055971783046,
+     "min": -0.04470802857778913,
+     "max": 0.043474369351398756
+    }
+   }
+  },
+  "hemisphere_v1": {
+   "anova_f": 4.5603562254849885e-30,
+   "anova_p": 0.9999999999999983,
+   "eta_squared": 3.1774548275033425e-32,
+   "groups": {
+    "N": {
+     "n": 122,
+     "mean": 2.3660490688732843e-17,
+     "sd": 0.027537396017300122,
+     "min": -0.07206207616360652,
+     "max": 0.06360355776476892
+    },
+    "S": {
+     "n": 29,
+     "mean": 3.6369374944617196e-17,
+     "sd": 0.031274195160686226,
+     "min": -0.056179577372255846,
+     "max": 0.07416292598993832
+    }
+   }
+  },
+  "income_group_v1": {
+   "anova_f": 2.393476694994867e-26,
+   "anova_p": 1.0,
+   "eta_squared": 4.884832862783784e-28,
+   "groups": {
+    "High-income countries": {
+     "n": 47,
+     "mean": -4.691873367365356e-16,
+     "sd": 0.026727899698181592,
+     "min": -0.061029833099056574,
+     "max": 0.06360355776476892
+    },
+    "Upper-middle-income countries": {
+     "n": 41,
+     "mean": -3.760542013288259e-16,
+     "sd": 0.03131430826192398,
+     "min": -0.061457157366937354,
+     "max": 0.07416292598993832
+    },
+    "Lower-middle-income countries": {
+     "n": 40,
+     "mean": 2.8796409701215e-16,
+     "sd": 0.029958705863369673,
+     "min": -0.07206207616360652,
+     "max": 0.05149929222154942
+    },
+    "Low-income countries": {
+     "n": 23,
+     "mean": 1.299684997305754e-15,
+     "sd": 0.023406501337227742,
+     "min": -0.05114302966828749,
+     "max": 0.03571676781823632
+    }
+   }
+  }
+ },
+ "latitude_structure": {
+  "bins_deg": [
+   0,
+   10,
+   20,
+   30,
+   40,
+   50,
+   70
+  ],
+  "overall": {
+   "[0, 10)": {
+    "n": 31,
+    "mean": 0.004704769333507144,
+    "se": 0.0037108332928307763
+   },
+   "[10, 20)": {
+    "n": 31,
+    "mean": 0.0032282989933273064,
+    "se": 0.005278324092735818
+   },
+   "[20, 30)": {
+    "n": 24,
+    "mean": -0.013112753225380705,
+    "se": 0.00674420090809807
+   },
+   "[30, 40)": {
+    "n": 22,
+    "mean": -0.0021475706191305707,
+    "se": 0.007510348154091288
+   },
+   "[40, 50)": {
+    "n": 26,
+    "mean": -0.003957049253418888,
+    "se": 0.004313704198873321
+   },
+   "[50, 70)": {
+    "n": 17,
+    "mean": 0.012877105499237443,
+    "se": 0.005655340909589627
+   }
+  },
+  "by_hemisphere": {
+   "N": {
+    "[0, 10)": {
+     "n": 21,
+     "mean": -0.001985080631679628
+    },
+    "[10, 20)": {
+     "n": 23,
+     "mean": 0.0008887742524888231
+    },
+    "[20, 30)": {
+     "n": 17,
+     "mean": -0.010278610109616736
+    },
+    "[30, 40)": {
+     "n": 19,
+     "mean": 0.001765704394764047
+    },
+    "[40, 50)": {
+     "n": 25,
+     "mean": -0.002259116786641471
+    },
+    "[50, 70)": {
+     "n": 17,
+     "mean": 0.012877105499237443
+    },
+    "spearman_residual_vs_abs_lat": {
+     "rho": 0.10897789644472788,
+     "p": 0.23213740871671598,
+     "n": 122
+    }
+   },
+   "S": {
+    "[0, 10)": {
+     "n": 10,
+     "mean": 0.018753454260399365
+    },
+    "[10, 20)": {
+     "n": 8,
+     "mean": 0.009954432623237947
+    },
+    "[20, 30)": {
+     "n": 7,
+     "mean": -0.019995672220807486
+    },
+    "[30, 40)": {
+     "n": 3,
+     "mean": -0.026931645707129817
+    },
+    "[40, 50)": {
+     "n": 1,
+     "mean": -0.04640536092285433
+    },
+    "spearman_residual_vs_abs_lat": {
+     "rho": -0.6773399014778324,
+     "p": 5.44043488225751e-05,
+     "n": 29
+    }
+   }
+  },
+  "slope_residual_on_abs_lat": {
+   "N": 0.00019097635494901125,
+   "S": -0.001706681380797428,
+   "units": "degC/decade per degree of latitude"
+  }
+ },
+ "weights_sensitivity": {
+  "knn_k4_station": {
+   "morans_i": 0.3879208703727633,
+   "p": 0.001,
+   "z": 7.676625672621363
+  },
+  "knn_k6_station": {
+   "morans_i": 0.33744826858717136,
+   "p": 0.001,
+   "z": 8.22412114277074
+  },
+  "knn_k8_station": {
+   "morans_i": 0.26868901614174107,
+   "p": 0.001,
+   "z": 7.6375221793347805
+  },
+  "knn_k10_station": {
+   "morans_i": 0.19913885138690313,
+   "p": 0.001,
+   "z": 6.365574707425182
+  },
+  "knn_k12_station": {
+   "morans_i": 0.16660506616972034,
+   "p": 0.001,
+   "z": 6.016439081066785
+  },
+  "knn_k15_station": {
+   "morans_i": 0.11003169804747917,
+   "p": 0.002,
+   "z": 4.521201789218185
+  },
+  "band_1000km_station": {
+   "morans_i": 0.4082173409106305,
+   "p": 0.001,
+   "z": 6.7521417202140235,
+   "n_isolates_given_nearest": 22
+  },
+  "band_1500km_station": {
+   "morans_i": 0.28967884067056693,
+   "p": 0.001,
+   "z": 6.132956672916793,
+   "n_isolates_given_nearest": 6
+  },
+  "band_2000km_station": {
+   "morans_i": 0.19599195793717006,
+   "p": 0.001,
+   "z": 5.233905812412724,
+   "n_isolates_given_nearest": 3
+  },
+  "band_3000km_station": {
+   "morans_i": 0.0004183538256085298,
+   "p": 0.985,
+   "z": 0.27354355370855665,
+   "n_isolates_given_nearest": 0
+  },
+  "idw_p1_3000km_station": {
+   "morans_i": 0.1538188712416144,
+   "p": 0.001,
+   "z": 5.0233542394449495
+  },
+  "idw_p2_3000km_station": {
+   "morans_i": 0.3060788690863883,
+   "p": 0.001,
+   "z": 6.5436423907488965
+  },
+  "knn_k4_area": {
+   "morans_i": 0.4359474811915828,
+   "p": 0.001,
+   "z": 8.604277025193156
+  },
+  "knn_k6_area": {
+   "morans_i": 0.34944903164546426,
+   "p": 0.001,
+   "z": 8.497767320772152
+  },
+  "knn_k8_area": {
+   "morans_i": 0.28991917654891375,
+   "p": 0.001,
+   "z": 8.12200052030125
+  },
+  "knn_k10_area": {
+   "morans_i": 0.23237416689108636,
+   "p": 0.001,
+   "z": 7.514698314576661
+  },
+  "knn_k12_area": {
+   "morans_i": 0.20331187231591644,
+   "p": 0.001,
+   "z": 7.161790382095103
+  },
+  "knn_k15_area": {
+   "morans_i": 0.14582419138041083,
+   "p": 0.001,
+   "z": 5.8912919847183725
+  },
+  "band_1000km_area": {
+   "morans_i": 0.4485972204375458,
+   "p": 0.001,
+   "z": 7.0695477257788495,
+   "n_isolates_given_nearest": 21
+  },
+  "band_1500km_area": {
+   "morans_i": 0.37249264540211596,
+   "p": 0.001,
+   "z": 7.587179193074552,
+   "n_isolates_given_nearest": 8
+  },
+  "band_2000km_area": {
+   "morans_i": 0.2534827303756418,
+   "p": 0.001,
+   "z": 6.362493113849375,
+   "n_isolates_given_nearest": 4
+  },
+  "band_3000km_area": {
+   "morans_i": 0.05003681356947505,
+   "p": 0.114,
+   "z": 1.881765392388495,
+   "n_isolates_given_nearest": 1
+  },
+  "idw_p1_3000km_area": {
+   "morans_i": 0.1939928796109803,
+   "p": 0.001,
+   "z": 6.04824001355064
+  },
+  "idw_p2_3000km_area": {
+   "morans_i": 0.34436452645489757,
+   "p": 0.001,
+   "z": 7.5584264629467715
+  },
+  "queen_contiguity_15min_raster": {
+   "morans_i": 0.47145742453883077,
+   "p": 0.001,
+   "z": 7.432835787385144,
+   "n_islands_given_nearest": 6
+  },
+  "gearys_c_knn_k8_area": {
+   "gearys_c": 0.6577730966827215,
+   "p": 0.001,
+   "z": -8.222810103877563
+  },
+  "range_of_morans_i": {
+   "min": 0.0004183538256085298,
+   "max": 0.47145742453883077
+  }
+ },
+ "correlogram": {
+  "rings": [
+   {
+    "lo_km": 0,
+    "hi_km": 500,
+    "n_pairs": 111,
+    "morans_i": 0.3870748108125845,
+    "p": 0.002,
+    "z": 4.1922376249917574,
+    "expected": -0.006666666666666667
+   },
+   {
+    "lo_km": 500,
+    "hi_km": 1000,
+    "n_pairs": 276,
+    "morans_i": 0.3020917728853518,
+    "p": 0.001,
+    "z": 5.507934680433635,
+    "expected": -0.006666666666666667
+   },
+   {
+    "lo_km": 1000,
+    "hi_km": 1500,
+    "n_pairs": 378,
+    "morans_i": 0.14167652001883208,
+    "p": 0.005,
+    "z": 3.0324031747757987,
+    "expected": -0.006666666666666667
+   },
+   {
+    "lo_km": 1500,
+    "hi_km": 2000,
+    "n_pairs": 418,
+    "morans_i": 0.04230171233495361,
+    "p": 0.378,
+    "z": 1.0238261292001314,
+    "expected": -0.006666666666666667
+   },
+   {
+    "lo_km": 2000,
+    "hi_km": 3000,
+    "n_pairs": 889,
+    "morans_i": -0.13371125161036207,
+    "p": 0.001,
+    "z": -4.154299342346859,
+    "expected": -0.006666666666666667
+   },
+   {
+    "lo_km": 3000,
+    "hi_km": 4000,
+    "n_pairs": 947,
+    "morans_i": -0.14352356681873513,
+    "p": 0.001,
+    "z": -4.550780070454224,
+    "expected": -0.006666666666666667
+   },
+   {
+    "lo_km": 4000,
+    "hi_km": 6000,
+    "n_pairs": 2165,
+    "morans_i": -0.04455118786407187,
+    "p": 0.03,
+    "z": -2.0399357376905747,
+    "expected": -0.006666666666666667
+   },
+   {
+    "lo_km": 6000,
+    "hi_km": 9000,
+    "n_pairs": 2578,
+    "morans_i": 0.07639539184487443,
+    "p": 0.003,
+    "z": 4.974980838511335,
+    "expected": -0.006666666666666667
+   }
+  ],
+  "semivariogram": [
+   {
+    "lo_km": 0,
+    "hi_km": 500,
+    "n_pairs": 111,
+    "semivariance": 0.00022565260055892544
+   },
+   {
+    "lo_km": 500,
+    "hi_km": 1000,
+    "n_pairs": 276,
+    "semivariance": 0.00042392702088355595
+   },
+   {
+    "lo_km": 1000,
+    "hi_km": 1500,
+    "n_pairs": 378,
+    "semivariance": 0.0005339067125224195
+   },
+   {
+    "lo_km": 1500,
+    "hi_km": 2000,
+    "n_pairs": 418,
+    "semivariance": 0.0006987282164458053
+   },
+   {
+    "lo_km": 2000,
+    "hi_km": 3000,
+    "n_pairs": 889,
+    "semivariance": 0.000917926166158195
+   },
+   {
+    "lo_km": 3000,
+    "hi_km": 4000,
+    "n_pairs": 947,
+    "semivariance": 0.0009483078515488761
+   },
+   {
+    "lo_km": 4000,
+    "hi_km": 6000,
+    "n_pairs": 2165,
+    "semivariance": 0.0007852553365933891
+   },
+   {
+    "lo_km": 6000,
+    "hi_km": 9000,
+    "n_pairs": 2578,
+    "semivariance": 0.0007139882820897291
+   }
+  ],
+  "residual_variance": 0.0007942759842107393,
+  "practical_range_note": "the first ring whose Moran's I is not significantly positive bounds the residual correlation length"
+ },
+ "local_moran": {
+  "weights": "station-centroid kNN k=8 (V1) with conditional permutation p < 0.05",
+  "clusters": {
+   "HH": [
+    {
+     "country": "Kazakhstan",
+     "residual": 0.0014961793189569028,
+     "subregion": "Central Asia",
+     "p": 0.017
+    },
+    {
+     "country": "Tajikistan",
+     "residual": 0.013418028027385731,
+     "subregion": "Central Asia",
+     "p": 0.005
+    },
+    {
+     "country": "Liberia",
+     "residual": 0.01466992832401634,
+     "subregion": "Western Africa",
+     "p": 0.022
+    },
+    {
+     "country": "Suriname",
+     "residual": 0.01619130395222873,
+     "subregion": "South America",
+     "p": 0.007
+    },
+    {
+     "country": "Sierra Leone",
+     "residual": 0.02474539184123309,
+     "subregion": "Western Africa",
+     "p": 0.01
+    },
+    {
+     "country": "Uzbekistan",
+     "residual": 0.033410168388268824,
+     "subregion": "Central Asia",
+     "p": 0.012
+    },
+    {
+     "country": "Guinea",
+     "residual": 0.03455585260319308,
+     "subregion": "Western Africa",
+     "p": 0.013
+    },
+    {
+     "country": "Guinea Bissau",
+     "residual": 0.035150679310341715,
+     "subregion": "Western Africa",
+     "p": 0.008
+    },
+    {
+     "country": "United Arab Emirates",
+     "residual": 0.03535082668678424,
+     "subregion": "Western Asia",
+     "p": 0.002
+    },
+    {
+     "country": "Qatar",
+     "residual": 0.037253147356408584,
+     "subregion": "Western Asia",
+     "p": 0.044
+    },
+    {
+     "country": "Senegal",
+     "residual": 0.03885892550881537,
+     "subregion": "Western Africa",
+     "p": 0.013
+    },
+    {
+     "country": "Mauritania",
+     "residual": 0.05149929222154942,
+     "subregion": "Western Africa",
+     "p": 0.026
+    },
+    {
+     "country": "Turkmenistan",
+     "residual": 0.06226773931519905,
+     "subregion": "Central Asia",
+     "p": 0.036
+    }
+   ],
+   "LL": [
+    {
+     "country": "Egypt",
+     "residual": -0.07206207616360652,
+     "subregion": "Northern Africa",
+     "p": 0.008
+    },
+    {
+     "country": "Israel",
+     "residual": -0.061029833099056574,
+     "subregion": "Western Asia",
+     "p": 0.007
+    },
+    {
+     "country": "Syria",
+     "residual": -0.05114302966828749,
+     "subregion": "Western Asia",
+     "p": 0.017
+    },
+    {
+     "country": "Burma",
+     "residual": -0.04218543039288224,
+     "subregion": "South-eastern Asia",
+     "p": 0.008
+    },
+    {
+     "country": "Romania",
+     "residual": -0.04041731068411078,
+     "subregion": "Eastern Europe",
+     "p": 0.042
+    },
+    {
+     "country": "Bangladesh",
+     "residual": -0.03371586272853852,
+     "subregion": "Southern Asia",
+     "p": 0.007
+    },
+    {
+     "country": "Thailand",
+     "residual": -0.03287100636415982,
+     "subregion": "South-eastern Asia",
+     "p": 0.024
+    },
+    {
+     "country": "Laos",
+     "residual": -0.03286146912383614,
+     "subregion": "South-eastern Asia",
+     "p": 0.025
+    },
+    {
+     "country": "Moldova",
+     "residual": -0.027335977286291613,
+     "subregion": "Eastern Europe",
+     "p": 0.043
+    },
+    {
+     "country": "Zimbabwe",
+     "residual": -0.02228706677304762,
+     "subregion": "Eastern Africa",
+     "p": 0.044
+    },
+    {
+     "country": "Turkey",
+     "residual": -0.017790072386036165,
+     "subregion": "Western Asia",
+     "p": 0.012
+    },
+    {
+     "country": "Lebanon",
+     "residual": -0.01764902831620252,
+     "subregion": "Western Asia",
+     "p": 0.002
+    },
+    {
+     "country": "Cyprus",
+     "residual": -0.01740781615805162,
+     "subregion": "Western Asia",
+     "p": 0.001
+    },
+    {
+     "country": "Jordan",
+     "residual": -0.014718705896192286,
+     "subregion": "Western Asia",
+     "p": 0.002
+    },
+    {
+     "country": "Lesotho",
+     "residual": -0.010606383967513983,
+     "subregion": "Southern Africa",
+     "p": 0.04
+    },
+    {
+     "country": "Sri Lanka",
+     "residual": -0.0014187523231621313,
+     "subregion": "Southern Asia",
+     "p": 0.005
+    }
+   ],
+   "HL": [],
+   "LH": []
+  },
+  "n_significant": 29,
+  "label_agreement_station_vs_area_weights": 0.8807947019867549
+ },
+ "moran_influence": {
+  "full_sample_knn8_station": 0.26868901614174107,
+  "drop_top_5_abs_residual": 0.2632973435160421,
+  "drop_top_10_abs_residual": 0.2320056542065672,
+  "drop_top_15_abs_residual": 0.2937577545842195,
+  "drop_top_20_abs_residual": 0.28749849111918035,
+  "drop_top_30_abs_residual": 0.2382364218008284,
+  "drop_lisa_HH_cluster": 0.17133710260069063,
+  "drop_lisa_LL_cluster": 0.16121464980923472,
+  "drop_both_lisa_clusters": 0.07170389991644095,
+  "jackknife_max_abs_delta": 0.026257188574668855,
+  "jackknife_top10": [
+   {
+    "country": "Brazil",
+    "delta_i": -0.026257188574668855
+   },
+   {
+    "country": "Turkmenistan",
+    "delta_i": 0.020014732254632822
+   },
+   {
+    "country": "Iran",
+    "delta_i": 0.018645979651697786
+   },
+   {
+    "country": "Israel",
+    "delta_i": 0.017195182021951527
+   },
+   {
+    "country": "Egypt",
+    "delta_i": 0.0161816165811004
+   },
+   {
+    "country": "United Arab Emirates",
+    "delta_i": 0.014155351489957002
+   },
+   {
+    "country": "Bangladesh",
+    "delta_i": 0.013988046240384522
+   },
+   {
+    "country": "Angola",
+    "delta_i": -0.012672946404243157
+   },
+   {
+    "country": "Argentina",
+    "delta_i": -0.011922514998622347
+   },
+   {
+    "country": "Burma",
+    "delta_i": 0.011900493835897752
+   }
+  ]
+ },
+ "product_and_construction": {
+  "era5_minus_berkeley": {
+   "n": 151,
+   "spearman_rho": -0.1422063436737539,
+   "spearman_p": 0.0815429128123354,
+   "pearson_r": -0.13709132705018884,
+   "pearson_p": 0.0932412786359388
+  },
+  "station_minus_area": {
+   "n": 151,
+   "spearman_rho": -0.11488672011153711,
+   "spearman_p": 0.16011770445110388,
+   "pearson_r": -0.14500814271184437,
+   "pearson_p": 0.07565309767733548
+  },
+  "era5_vs_berkeley_outcome_spearman": 0.6374695015684906,
+  "residual_variance_aligned_with_product_gap_r2": 0.01879403195238194,
+  "slope_residual_per_unit_product_gap": -0.06142713945014463,
+  "largest_product_gaps": [
+   {
+    "country": "Iceland",
+    "berkeley": 0.12736783367802937,
+    "era5": 0.38965753303785855,
+    "residual": 2.7755575615628914e-17
+   },
+   {
+    "country": "Saudi Arabia",
+    "berkeley": 0.1912885606557455,
+    "era5": 0.4224977483895629,
+    "residual": -0.007200213091737212
+   },
+   {
+    "country": "Iraq",
+    "berkeley": 0.1763349119758569,
+    "era5": 0.37446828676481425,
+    "residual": 0.007098220466297739
+   },
+   {
+    "country": "Guatemala",
+    "berkeley": 0.0508136158223582,
+    "era5": 0.2291546595438383,
+    "residual": -0.02208614288477416
+   },
+   {
+    "country": "Yemen",
+    "berkeley": 0.20150002766065422,
+    "era5": 0.37432704171532055,
+    "residual": 0.03571676781823632
+   },
+   {
+    "country": "Norway",
+    "berkeley": 0.20191951273050374,
+    "era5": 0.3670705973051459,
+    "residual": -0.008943416758587841
+   },
+   {
+    "country": "Mexico",
+    "berkeley": 0.04065719593311795,
+    "era5": 0.18486208551156053,
+    "residual": -0.061457157366937354
+   },
+   {
+    "country": "Tunisia",
+    "berkeley": 0.23748975158588337,
+    "era5": 0.3788193201294421,
+    "residual": 0.0031171366549856416
+   },
+   {
+    "country": "Bolivia",
+    "berkeley": 0.10781469285053756,
+    "era5": 0.24747959829728672,
+    "residual": -0.0008364579612583911
+   },
+   {
+    "country": "Australia",
+    "berkeley": 0.16302097420962694,
+    "era5": 0.02452905625126842,
+    "residual": 0.015901396655627398
+   }
+  ]
+ },
+ "collapse_information_loss": {
+  "all_fitted_countries": {
+   "n_cells": 16424,
+   "n_countries": 181,
+   "grand_mean": 0.19255481251993833,
+   "total_variance": 0.003811406702733123,
+   "between_country_variance": 0.002695156299644903,
+   "within_country_variance": 0.0011162504030882215,
+   "between_share": 0.7071290234422457,
+   "within_share": 0.2928709765577547
+  },
+  "m0_countries": {
+   "n_cells": 15479,
+   "n_countries": 151,
+   "grand_mean": 0.1925852527839238,
+   "total_variance": 0.0038472238783515598,
+   "between_country_variance": 0.0027422758228861444,
+   "within_country_variance": 0.0011049480554654154,
+   "between_share": 0.7127934088569708,
+   "within_share": 0.28720659114302916
+  },
+  "within_country_cell_sd": {
+   "median": 0.0078645689,
+   "p90": 0.018772029,
+   "max": 0.063409904,
+   "max_country": "Canada"
+  },
+  "residual_sd_for_comparison": 0.028182902338310355,
+  "koppen_modal_vs_area_mismatch_count": 26,
+  "station_vs_centroid_abs_lat_gap": {
+   "median_abs": 0.6900999999999939,
+   "max_abs": 14.18719999999999
+  }
+ }
+}

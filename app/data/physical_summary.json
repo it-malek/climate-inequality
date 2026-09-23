@@ -1,0 +1,69 @@
+{
+  "interpretation": "Descriptive predictive association between the global mean temperature anomaly and effective-radiative-forcing proxies, validated by out-of-sample hindcast skill. The per-driver sensitivities are model coefficients (deg C per W/m^2), NOT formal detection-and-attribution: this layer makes no deterministic causal claim about any individual forcing.",
+  "outcome": "global_temp_anomaly",
+  "n_years": 74,
+  "train_end": 2013,
+  "ar1_rho": -0.03402844231,
+  "lambda_": 0.9726005336,
+  "sigma2_mean": 0.006952458892,
+  "lags": {
+    "co2": 1,
+    "ch4": 1,
+    "n2o": 1,
+    "aerosol": 1,
+    "volcanic": 0,
+    "solar": 0,
+    "oni": 0
+  },
+  "sensitivity": {
+    "co2": {
+      "mean": 0.3720215943,
+      "sd": 0.1564048886,
+      "ci_low": 0.06447252169,
+      "ci_high": 0.679570667
+    },
+    "ch4": {
+      "mean": 0.05699784201,
+      "sd": 0.5384422098,
+      "ci_low": -1.001775984,
+      "ci_high": 1.115771668
+    },
+    "n2o": {
+      "mean": 3.22448634,
+      "sd": 1.695304988,
+      "ci_low": -0.1091017687,
+      "ci_high": 6.558074449
+    },
+    "aerosol": {
+      "mean": 0.07450545967,
+      "sd": 0.1215699065,
+      "ci_low": -0.1645453292,
+      "ci_high": 0.3135562485
+    },
+    "volcanic": {
+      "mean": 0.08136665869,
+      "sd": 0.02897448033,
+      "ci_low": 0.02439225952,
+      "ci_high": 0.1383410579
+    },
+    "solar": {
+      "mean": 0.3960749437,
+      "sd": 0.2281700787,
+      "ci_low": -0.05259067477,
+      "ci_high": 0.8447405622
+    },
+    "oni": {
+      "mean": 0.06444451388,
+      "sd": 0.01830507694,
+      "ci_low": 0.02845005432,
+      "ci_high": 0.1004389734
+    }
+  },
+  "hindcast": {
+    "train_r2": 0.9145397183,
+    "test_rmse": 0.102978233,
+    "test_band_coverage": 0.9090909091,
+    "n_test": 11
+  },
+  "forcings_hash": "9c128c0409fe5558efb6880074fe0d7a20e44fcf2715be69bda3ecdc1f7e7f71"
+}

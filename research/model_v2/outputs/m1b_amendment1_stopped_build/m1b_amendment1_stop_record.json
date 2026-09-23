@@ -1,0 +1,226 @@
+{
+  "build_commit": "f27d0a06793d1d134a6e4ff5a79ed9a93e55ca0f",
+  "builder_sha256": "92ba87657a8d0ef1b72334f9d8cc78219c183b65c42099d65d3f6fdfec3ae300",
+  "hard_stops": [
+    {
+      "iso3": "PER",
+      "rule": "non-structural invalid support cells (Amendment 1 A1.2): review",
+      "cells": 1
+    }
+  ],
+  "determinism": {
+    "files": {
+      "m1b_hydroclimate_features.csv": {
+        "build_a": "cf33ba7cfb87c2184a94df5e5686f0951adf692819af8de27329ea698d72e1f4",
+        "build_b": "cf33ba7cfb87c2184a94df5e5686f0951adf692819af8de27329ea698d72e1f4",
+        "byte_identical": true
+      },
+      "m1b_hydroclimate_qa.csv": {
+        "build_a": "e00cbb619d7ad1e1bac0f732c8d030bc49dd0329c2820c38e83e226c65ff54a7",
+        "build_b": "e00cbb619d7ad1e1bac0f732c8d030bc49dd0329c2820c38e83e226c65ff54a7",
+        "byte_identical": true
+      },
+      "m1b_harmonization_cells.csv": {
+        "build_a": "bd40fa76a48842495ab76f8d3d2d67138e16426098536d4031e6d4d64a23ebfe",
+        "build_b": "bd40fa76a48842495ab76f8d3d2d67138e16426098536d4031e6d4d64a23ebfe",
+        "byte_identical": true
+      },
+      "m1b_support_checkpoint.json": {
+        "build_a": "405e5bdd63e84d1e74f18401f15f898dec64079aa79096e5cc25a585d792307e",
+        "build_b": "405e5bdd63e84d1e74f18401f15f898dec64079aa79096e5cc25a585d792307e",
+        "byte_identical": true
+      },
+      "m1b_measurement_manifest.json": {
+        "build_a": "4a7bdfe57242c76a1d0d933a9619a76bd83545ac91a2d92b0b6ab2e87db69511",
+        "build_b": "4a7bdfe57242c76a1d0d933a9619a76bd83545ac91a2d92b0b6ab2e87db69511",
+        "byte_identical": true
+      }
+    },
+    "runs": {
+      "build_a": {
+        "started_utc": "2026-09-15T20:59:24+00:00",
+        "finished_utc": "2026-09-15T20:59:42+00:00",
+        "wall_seconds": 17.9,
+        "argv": [
+          "/Users/malek/projects/climate-inequality/research/model_v2/m1b_hydroclimate.py"
+        ],
+        "deterministic_output_sha256": {
+          "m1b_hydroclimate_features.csv": "cf33ba7cfb87c2184a94df5e5686f0951adf692819af8de27329ea698d72e1f4",
+          "m1b_hydroclimate_qa.csv": "e00cbb619d7ad1e1bac0f732c8d030bc49dd0329c2820c38e83e226c65ff54a7",
+          "m1b_harmonization_cells.csv": "bd40fa76a48842495ab76f8d3d2d67138e16426098536d4031e6d4d64a23ebfe",
+          "m1b_support_checkpoint.json": "405e5bdd63e84d1e74f18401f15f898dec64079aa79096e5cc25a585d792307e",
+          "m1b_measurement_manifest.json": "4a7bdfe57242c76a1d0d933a9619a76bd83545ac91a2d92b0b6ab2e87db69511"
+        }
+      },
+      "build_b": {
+        "started_utc": "2026-09-15T20:59:45+00:00",
+        "finished_utc": "2026-09-15T21:00:02+00:00",
+        "wall_seconds": 16.8,
+        "argv": [
+          "/Users/malek/projects/climate-inequality/research/model_v2/m1b_hydroclimate.py",
+          "<temporary-directory>/m1b_build_b"
+        ],
+        "deterministic_output_sha256": {
+          "m1b_hydroclimate_features.csv": "cf33ba7cfb87c2184a94df5e5686f0951adf692819af8de27329ea698d72e1f4",
+          "m1b_hydroclimate_qa.csv": "e00cbb619d7ad1e1bac0f732c8d030bc49dd0329c2820c38e83e226c65ff54a7",
+          "m1b_harmonization_cells.csv": "bd40fa76a48842495ab76f8d3d2d67138e16426098536d4031e6d4d64a23ebfe",
+          "m1b_support_checkpoint.json": "405e5bdd63e84d1e74f18401f15f898dec64079aa79096e5cc25a585d792307e",
+          "m1b_measurement_manifest.json": "4a7bdfe57242c76a1d0d933a9619a76bd83545ac91a2d92b0b6ab2e87db69511"
+        }
+      }
+    }
+  },
+  "invariants_against_original_rule_build": {
+    "total_area_equals_original": true,
+    "native_area_equals_original_valid_area": true,
+    "native_fraction_equals_original_coverage": true,
+    "native_only_c2_equals_original_c2": true,
+    "c2_unchanged_where_nothing_harmonized": true,
+    "native_p_bar_and_e_bar_equal_original": true,
+    "station_support_equals_original": true,
+    "support_checkpoint_byte_identical_to_original": true,
+    "non_native_cells_equal_original_invalid_cells": true,
+    "native_valid_cells_global_equals_original": true,
+    "git_code_path_matches_build_commit": true
+  },
+  "coverage": {
+    "min": 0.9887528054237732,
+    "min_iso3": "BHS",
+    "countries_below_0_98": [],
+    "countries_below_0_99": [
+      [
+        "BHS",
+        0.9887528054237732
+      ]
+    ],
+    "originally_failing": {
+      "BHS": {
+        "native_fraction": 0.8864754768578278,
+        "harmonized_fraction": 0.1022773285659454,
+        "unresolved_fraction": 0.0112471945762267,
+        "coverage": 0.9887528054237732
+      },
+      "PAN": {
+        "native_fraction": 0.9728166280827852,
+        "harmonized_fraction": 0.0271833719172149,
+        "unresolved_fraction": 0.0,
+        "coverage": 1.0
+      },
+      "PHL": {
+        "native_fraction": 0.9760707864233066,
+        "harmonized_fraction": 0.0224454424790566,
+        "unresolved_fraction": 0.0014837710976366,
+        "coverage": 0.9985162289023632
+      }
+    },
+    "largest_harmonized_fractions": [
+      [
+        "BHS",
+        0.1022773285659454
+      ],
+      [
+        "PAN",
+        0.0271833719172149
+      ],
+      [
+        "PHL",
+        0.0224454424790566
+      ],
+      [
+        "NLD",
+        0.0174680482179665
+      ],
+      [
+        "GRC",
+        0.0136013025789759
+      ],
+      [
+        "CUB",
+        0.0130261565688318
+      ],
+      [
+        "NZL",
+        0.009796359447634
+      ],
+      [
+        "IDN",
+        0.0083359256724405
+      ],
+      [
+        "KOR",
+        0.0081116542595429
+      ],
+      [
+        "PNG",
+        0.0078724424623644
+      ]
+    ]
+  },
+  "harmonization": {
+    "n_structural_target_cells": 2752,
+    "n_harmonized_cells": 2408,
+    "n_unresolved_structural_cells": 344,
+    "n_non_structural_invalid_cells": 1,
+    "harmonized_area_km2": 122615.2743255615,
+    "unresolved_area_km2": 6598.685827901064,
+    "unresolved_structural_area_km2": 6575.673296194504,
+    "non_structural_invalid_area_km2": 23.01253170656061,
+    "donor_distance_km": {
+      "min": 6.563783735667903,
+      "median": 52.24042278322775,
+      "mean": 45.113420186920195,
+      "p95": 72.45552325729396,
+      "max": 78.45161398316293
+    },
+    "donor_distance_statistics_over": "distinct harmonized target cells; quantiles by numpy linear interpolation",
+    "n_cross_border_country_cells": 56,
+    "cross_border_area_km2": 2188.016585777729,
+    "n_distinct_donor_cells": 2072,
+    "n_donor_cells_outside_all_support": 4
+  },
+  "variable_states_in_support": {
+    "pre": {
+      "complete": 63152,
+      "masked": 2182,
+      "nonpositive_mean": 1
+    },
+    "pet": {
+      "complete": 62582,
+      "masked": 2753
+    }
+  },
+  "non_structural_stop_cells": [
+    {
+      "lat_index": 164,
+      "lon_index": 200,
+      "pre_state": "nonpositive_mean",
+      "pet_state": "masked",
+      "countries": {
+        "PER": {
+          "land_area_km2": 23.01253170656061,
+          "share_of_country_terrestrial_area": 1.7859391181046214e-05,
+          "country_coverage": 0.999982140608819
+        }
+      },
+      "raw": {
+        "lat": -7.75,
+        "lon": -79.75,
+        "pre": {
+          "record_months": 1500,
+          "record_min": 0.0,
+          "record_max": 0.0,
+          "record_months_positive": 0,
+          "window_sum_mm": 0.0,
+          "window_p_bar_mm_yr": 0.0,
+          "window_months_with_station": 240,
+          "window_max_station_count": 5
+        },
+        "pet": {
+          "record_fill_months": 1500,
+          "record_months": 1500
+        }
+      }
+    }
+  ],
+  "warming_outcome_read": false
+}

@@ -1,0 +1,93 @@
+pattern_type,weights,pattern,evidence_absolute,evidence_aligned,class_absolute_arm,class_aligned_arm,classification,note
+global,station_knn8,positive residual spatial autocorrelation (presence),I_B=0.2687 (p=0.0001); I_E=0.0792 (p=0.0261),I_B=0.2687 (p=0.0001); I_E=0.0813 (p=0.0229),product-robust,product-robust,product-robust,
+global,station_knn8,residual spatial autocorrelation magnitude,I_B=0.2687 (p=0.0001); I_E=0.0792 (p=0.0261); ratio=0.295,I_B=0.2687 (p=0.0001); I_E=0.0813 (p=0.0229); ratio=0.303,product-sensitive,product-sensitive,product-sensitive,
+global,area_knn8,positive residual spatial autocorrelation (presence),I_B=0.2899 (p=0.0001); I_E=0.1180 (p=0.0009),I_B=0.2899 (p=0.0001); I_E=0.1118 (p=0.0020),product-robust,product-robust,product-robust,
+global,area_knn8,residual spatial autocorrelation magnitude,I_B=0.2899 (p=0.0001); I_E=0.1180 (p=0.0009); ratio=0.407,I_B=0.2899 (p=0.0001); I_E=0.1118 (p=0.0020); ratio=0.386,product-sensitive,product-sensitive,product-sensitive,
+regional,m49_subregion,Australia and New Zealand,n=2; B=-0.0153; E=-0.0395; signs=50%,n=2; B=-0.0153; E=-0.0278; signs=0%,unresolved,unresolved,unresolved,
+regional,m49_subregion,Caribbean,n=5; B=+0.0181; E=-0.0167; signs=60%,n=5; B=+0.0181; E=-0.0180; signs=60%,product-sensitive,product-sensitive,product-sensitive,
+regional,m49_subregion,Central America,n=7; B=-0.0240; E=-0.0003; signs=43%,n=7; B=-0.0240; E=+0.0032; signs=43%,product-sensitive,product-sensitive,product-sensitive,
+regional,m49_subregion,Central Asia,n=4; B=+0.0276; E=+0.0019; signs=50%,n=4; B=+0.0276; E=+0.0028; signs=50%,product-sensitive,product-sensitive,product-sensitive,
+regional,m49_subregion,Eastern Africa,n=14; B=+0.0044; E=+0.0077; signs=64%,n=14; B=+0.0044; E=-0.0007; signs=64%,unresolved,unresolved,unresolved,
+regional,m49_subregion,Eastern Asia,n=5; B=-0.0011; E=-0.0380; signs=60%,n=5; B=-0.0011; E=-0.0409; signs=60%,product-sensitive,product-sensitive,product-sensitive,
+regional,m49_subregion,Eastern Europe,n=10; B=-0.0198; E=-0.0127; signs=70%,n=10; B=-0.0198; E=-0.0144; signs=80%,product-sensitive,product-sensitive,product-sensitive,
+regional,m49_subregion,Melanesia,n=1; B=+0.0305; E=+0.0790; signs=100%,n=1; B=+0.0305; E=+0.0555; signs=100%,unresolved,unresolved,unresolved,
+regional,m49_subregion,Middle Africa,n=8; B=-0.0131; E=-0.0148; signs=25%,n=8; B=-0.0131; E=-0.0095; signs=38%,unresolved,unresolved,unresolved,
+regional,m49_subregion,Northern Africa,n=6; B=-0.0136; E=+0.0405; signs=67%,n=6; B=-0.0136; E=+0.0367; signs=67%,product-sensitive,product-sensitive,product-sensitive,
+regional,m49_subregion,Northern America,n=2; B=+0.0388; E=+0.0428; signs=50%,n=2; B=+0.0388; E=+0.0337; signs=50%,unresolved,unresolved,unresolved,
+regional,m49_subregion,Northern Europe,n=10; B=+0.0093; E=+0.0252; signs=90%,n=10; B=+0.0093; E=+0.0260; signs=80%,unresolved,product-sensitive,unresolved,
+regional,m49_subregion,South America,n=11; B=-0.0000; E=+0.0000; signs=55%,n=11; B=-0.0000; E=-0.0000; signs=45%,unresolved,unresolved,unresolved,
+regional,m49_subregion,South-eastern Asia,n=8; B=-0.0097; E=+0.0078; signs=50%,n=8; B=-0.0097; E=+0.0156; signs=50%,unresolved,unresolved,unresolved,
+regional,m49_subregion,Southern Africa,n=5; B=-0.0265; E=-0.0612; signs=100%,n=5; B=-0.0265; E=-0.0497; signs=100%,product-robust,product-robust,product-robust,
+regional,m49_subregion,Southern Asia,n=7; B=-0.0024; E=-0.0221; signs=71%,n=7; B=-0.0024; E=-0.0220; signs=57%,unresolved,unresolved,unresolved,
+regional,m49_subregion,Southern Europe,n=11; B=+0.0054; E=-0.0221; signs=64%,n=11; B=+0.0054; E=-0.0198; signs=64%,unresolved,unresolved,unresolved,
+regional,m49_subregion,Western Africa,n=14; B=+0.0183; E=+0.0052; signs=43%,n=14; B=+0.0183; E=+0.0082; signs=50%,product-sensitive,product-sensitive,product-sensitive,
+regional,m49_subregion,Western Asia,n=15; B=-0.0019; E=+0.0181; signs=53%,n=15; B=-0.0019; E=+0.0143; signs=53%,unresolved,unresolved,unresolved,
+regional,m49_subregion,Western Europe,n=6; B=+0.0105; E=+0.0202; signs=67%,n=6; B=+0.0105; E=+0.0185; signs=67%,unresolved,unresolved,unresolved,
+local,station_knn8,ARE HH,B=strong; E=weak,B=strong; E=weak,unresolved,unresolved,unresolved,strong=BH q<=0.05; weak=nominal p<0.05 only
+local,station_knn8,CYP LL,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=BH q<=0.05; weak=nominal p<0.05 only
+local,station_knn8,JOR LL,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=BH q<=0.05; weak=nominal p<0.05 only
+local,station_knn8,LBN LL,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=BH q<=0.05; weak=nominal p<0.05 only
+local,station_knn8,LKA LL,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=BH q<=0.05; weak=nominal p<0.05 only
+local,station_knn8,LSO LL,B=weak; E=weak,B=weak; E=weak,unresolved,unresolved,unresolved,strong=BH q<=0.05; weak=nominal p<0.05 only
+local,area_knn8,ARE HH,B=weak; E=weak,B=weak; E=weak,unresolved,unresolved,unresolved,strong=BH q<=0.05; weak=nominal p<0.05 only
+local,area_knn8,LSO LL,B=weak; E=weak,B=weak; E=weak,unresolved,unresolved,unresolved,strong=BH q<=0.05; weak=nominal p<0.05 only
+tail_list,top15,positive residual top-15 list,overlap=4/15,overlap=4/15,product-sensitive,product-sensitive,product-sensitive,
+tail_list,top15,negative residual top-15 list,overlap=3/15,overlap=4/15,product-sensitive,product-sensitive,product-sensitive,
+tail_list,top15,absolute residual top-15 list,overlap=2/15,overlap=1/15,product-sensitive,product-sensitive,product-sensitive,
+tail_country,top15,AGO positive,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,BOL positive,B=none; E=weak,B=none; E=strong,unresolved,product-sensitive,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,BRA positive,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,CAN positive,B=strong; E=strong,B=strong; E=strong,product-robust,product-robust,product-robust,strong=top 15; weak=rank 16-30
+tail_country,top15,DOM positive,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,DZA positive,B=weak; E=strong,B=weak; E=strong,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,ESP positive,B=none; E=strong,B=none; E=weak,product-sensitive,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,EST positive,B=strong; E=strong,B=strong; E=strong,product-robust,product-robust,product-robust,strong=top 15; weak=rank 16-30
+tail_country,top15,GTM positive,B=none; E=weak,B=none; E=strong,unresolved,product-sensitive,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,HTI positive,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,IDN positive,B=strong; E=strong,B=strong; E=strong,product-robust,product-robust,product-robust,strong=top 15; weak=rank 16-30
+tail_country,top15,IRN positive,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,IRQ positive,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,KEN positive,B=strong; E=strong,B=strong; E=strong,product-robust,product-robust,product-robust,strong=top 15; weak=rank 16-30
+tail_country,top15,LVA positive,B=strong; E=weak,B=strong; E=weak,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,MAR positive,B=strong; E=weak,B=strong; E=weak,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,MLI positive,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,MRT positive,B=strong; E=weak,B=strong; E=weak,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,NOR positive,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,PNG positive,B=weak; E=strong,B=weak; E=weak,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,PRY positive,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,SAU positive,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,SEN positive,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,SVN positive,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,TKM positive,B=strong; E=weak,B=strong; E=weak,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,TUN positive,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,TZA positive,B=strong; E=weak,B=strong; E=none,unresolved,product-sensitive,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,YEM positive,B=weak; E=strong,B=weak; E=strong,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,ARG negative,B=strong; E=strong,B=strong; E=strong,product-robust,product-robust,product-robust,strong=top 15; weak=rank 16-30
+tail_country,top15,AUS negative,B=none; E=strong,B=none; E=weak,product-sensitive,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,BWA negative,B=strong; E=weak,B=strong; E=weak,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,CAF negative,B=strong; E=strong,B=strong; E=strong,product-robust,product-robust,product-robust,strong=top 15; weak=rank 16-30
+tail_country,top15,CMR negative,B=weak; E=strong,B=weak; E=strong,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,COL negative,B=none; E=weak,B=none; E=strong,unresolved,product-sensitive,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,EGY negative,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,GEO negative,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,GRC negative,B=weak; E=strong,B=weak; E=strong,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,HUN negative,B=weak; E=strong,B=weak; E=strong,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,IND negative,B=strong; E=weak,B=strong; E=strong,unresolved,product-robust,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,IRL negative,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,ISR negative,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,KOR negative,B=strong; E=strong,B=strong; E=strong,product-robust,product-robust,product-robust,strong=top 15; weak=rank 16-30
+tail_country,top15,LBR negative,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,LBY negative,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,MEX negative,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,MMR negative,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,MNG negative,B=none; E=weak,B=none; E=strong,unresolved,product-sensitive,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,NZL negative,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,PAK negative,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,ROU negative,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,SDN negative,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,SLE negative,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,SOM negative,B=none; E=strong,B=none; E=strong,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,SVK negative,B=strong; E=none,B=strong; E=none,product-sensitive,product-sensitive,product-sensitive,strong=top 15; weak=rank 16-30
+tail_country,top15,SWZ negative,B=weak; E=strong,B=weak; E=weak,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,SYR negative,B=strong; E=weak,B=strong; E=weak,unresolved,unresolved,unresolved,strong=top 15; weak=rank 16-30
+tail_country,top15,ZAF negative,B=none; E=strong,B=none; E=weak,product-sensitive,unresolved,unresolved,strong=top 15; weak=rank 16-30

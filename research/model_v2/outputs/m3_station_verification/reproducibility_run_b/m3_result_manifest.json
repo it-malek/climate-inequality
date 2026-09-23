@@ -1,0 +1,35 @@
+{
+  "result": "M3 spatial families, station-centroid kNN8",
+  "specification": "research/model_v2/DOWNSTREAM_COMPLETION_SPEC.md",
+  "evaluator_commit": "a6df380445d93f42a1d9b1dac55e284a5ee660ab",
+  "weights": "station",
+  "retained_static_specification": "M0*",
+  "family_status": {
+    "primary_total_co2/sem": "computable",
+    "primary_total_co2/sar": "computable",
+    "per_capita/sem": "computable",
+    "per_capita/sar": "computable"
+  },
+  "final_naming": {
+    "retained_static_specification": "M0*",
+    "qualifying_spatial_extensions": [
+      "M3-SEM(M0*)",
+      "M3-SAR(M0*)"
+    ],
+    "final_primary_predictive_model": null,
+    "reason": "two qualifying spatial extensions; no historical unique-family selection rule",
+    "order_note": "qualifying extensions are listed SEM then SAR; the order is not a ranking"
+  },
+  "integrity_passed": true,
+  "artifact_sha256": {
+    "m3_scorecard.json": "6b1655882d4a9595b0d28a6bad6b20f1075e5ea5479d2a7190a133c37f277da1",
+    "m3_country_predictions.csv": "ae9375503cbbeb520fda43765260c62bba65f6fffdd4791a62034a666380594f",
+    "m3_fits.csv": "4d7478b1eff97442ad37d1944789e50f9db29fe14ca784ee241cd85af7d67b8a",
+    "m3_graphs.csv": "e9dfc40f8098b729c74712b2b64905c1d108399bc611f7bcb1901136e3ee98f3",
+    "m3_full_sample_grid.csv": "c91ab5064729833f258e658c1681435bd839ec35c5509bed64be4456669b0c95",
+    "m3_provenance.json": "c5a172f6db75227e814c94ac40cc2545d89f22d8f30c42fa974e8e2a1c1d30ea"
+  },
+  "non_deterministic_artifacts": [
+    "m3_run_metadata.json"
+  ]
+}

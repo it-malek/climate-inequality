@@ -1,0 +1,60 @@
+{
+  "status": "not executed",
+  "reason": "primary label 'not supported' does not record predictive support (P1 and P2)",
+  "rule": "M2_EVALUATION_CONTRACT.md \u00a710 and M2_PRE_SCORE_RESOLUTIONS.md \u00a78: the M1a-geography and aligned-ERA5 replications run only under predictive support; no arm was constructed or fitted",
+  "primary_result": {
+    "primary_dir": "research/model_v2/outputs/m2_primary",
+    "verdict": {
+      "verdict": "not supported",
+      "predictive_support": false,
+      "promoted": false,
+      "P1_delta_below_zero": true,
+      "P2_interval_upper_below_zero": false,
+      "R1_delta_le_minus_0.002": true,
+      "R2_m49_veto_passed": true,
+      "R3_worst_region_veto_passed": true,
+      "R4_structural_integrity": true,
+      "delta_rmse": -0.002952085787570634,
+      "interval": [
+        -0.005920975094086702,
+        7.786832329886491e-05
+      ],
+      "resamples": 2000,
+      "seed": 0,
+      "interval_method": "paired country resampling interval of the difference in fixed out-of-fold errors; not a spatially corrected confidence interval",
+      "practical_threshold": -0.002,
+      "veto_threshold": 0.001,
+      "m49_rmse_change": 0.0008002126749071178,
+      "worst_region_rmse_change": -0.004389073786166153,
+      "worst_region_comparator": {
+        "region": "Central Asia",
+        "rmse": 0.06936437825894007,
+        "n": 4,
+        "min_region_n": 3
+      },
+      "worst_region_candidate": {
+        "region": "Central Asia",
+        "rmse": 0.06497530447277391,
+        "n": 4,
+        "min_region_n": 3
+      },
+      "worsened_generalization": false
+    },
+    "evaluator_commit": "b13bb04e11b831cf7f9a9f61e63899a4f0e2fe42",
+    "head": "99f600bcc9af7eedaf3c3b636386d5d0eb188aa4",
+    "predictive_support": false,
+    "artifact_sha256": {
+      "m2_scorecard.json": "6208f339bd64af797d357870539f04be1de9898139bd1587b6663bda5795a715",
+      "m2_country_predictions.csv": "8b90ea00dad5f9280724e9cf5b447b7558e82f0f521fcdd8bb10ff8cc573cdbf",
+      "m2_primary_country_comparison.csv": "647977b3199eb4c55f1abe1017f39d2644de910045a4c05284a9304bd8fe0cb3",
+      "m2_cv_folds.csv": "6a9e3976f51e60a66c6b70fd65cc56626df1eec28a41e774c39260d1a2a459f1",
+      "m2_fit_states.csv": "b9074099fde72fcee5b182bc1c4d5297b49f98b45df401094147b760d14f76b5",
+      "m2_coefficients.csv": "43d05261fb3c795a6268708dbe3bae51a1900d8cf4ae456d0f2e4b35bb9d14b1",
+      "m2_coefficient_summary.json": "062aa51d229a187bc30e0c12fef5315adebeb4279ff2db4f470af31a382ae18c",
+      "m2_shapley_coalitions.csv": "39a21abf9e3cd213af0abccf33e21d672f85242abb74b237fa979e430e19d3fa",
+      "m2_design_matrices.csv": "9a59e45573ae2f810f9ce24472a4a090fb4cc83a70c0af4e6d8e3c0a835dd0ac",
+      "m2_provenance.json": "c4818272ad15232d5716a12580459a2b6f73ba0ae55278dedd623103a707ba4e"
+    },
+    "manifest_sha256": "98e8d0af758f4c33a478af3dda190deed90f8f0b8cebf74a2009c6b123bb0626"
+  }
+}

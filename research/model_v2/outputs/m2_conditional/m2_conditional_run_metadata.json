@@ -1,0 +1,9 @@
+{
+  "started_utc": "2026-09-16T19:50:10+00:00",
+  "code_commit": "99f600bcc9af7eedaf3c3b636386d5d0eb188aa4",
+  "live_remote_commit": "99f600bcc9af7eedaf3c3b636386d5d0eb188aa4",
+  "executable": "/Users/malek/projects/climate-inequality/.venv/bin/python3",
+  "argv": [
+    "/Users/malek/projects/climate-inequality/research/model_v2/m2_conditional.py"
+  ]
+}

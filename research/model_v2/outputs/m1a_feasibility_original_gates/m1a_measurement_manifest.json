@@ -1,0 +1,188 @@
+{
+  "spec": {
+    "path": "research/model_v2/M1A_MEASUREMENT_SPEC.md",
+    "sha256": "9139eefdbb0240cd234975538b0346e96fd239094cf28d20c5a425edaa008b3e",
+    "evaluation_contract_commit": "e3e590169549158bbb6cd3460d45af15015ef86a"
+  },
+  "sources": {
+    "gshhg": {
+      "release": "GSHHG 2.3.7 shapefile, full resolution, levels 1-4",
+      "url": "https://www.soest.hawaii.edu/pwessel/gshhg/gshhg-shp-2.3.7.zip",
+      "archive_sha256": "8dbbe7e071e77e9e75f2d639239099ebca8d5c16d6a07df8169729d49f15cf41",
+      "archive_bytes": 149157845,
+      "member_sha256": {
+        "GSHHS_shp/f/GSHHS_f_L1.dbf": "5f23e1e441810feddf95b59b222c5bba466635644f928150496f872c1aaaf742",
+        "GSHHS_shp/f/GSHHS_f_L1.prj": "98aaf3d1c0ecadf1a424a4536de261c3daf4e373697cb86c40c43b989daf52eb",
+        "GSHHS_shp/f/GSHHS_f_L1.shp": "121435427911ea80624802e0f352d777eaf6ba6966ca5f07e687650e95329fd9",
+        "GSHHS_shp/f/GSHHS_f_L1.shx": "9eeb611d9f7a8de8e647e39130791f96059e3b83a29fc4b9c6b19d1b61c24ac3",
+        "GSHHS_shp/f/GSHHS_f_L2.dbf": "7c18d4a32559dbbfbd16476707e04df31e3dd32e407ef6a648f37dad44d7b604",
+        "GSHHS_shp/f/GSHHS_f_L2.prj": "98aaf3d1c0ecadf1a424a4536de261c3daf4e373697cb86c40c43b989daf52eb",
+        "GSHHS_shp/f/GSHHS_f_L2.shp": "c18f0abb01802f27cd669c2c27b9ecbcd40519bb5295693f03bd3cf2cfd3d5c0",
+        "GSHHS_shp/f/GSHHS_f_L2.shx": "e370552d8d44c3e77947b140fcd1ebfffe40c405747d6b3a8a04c89655d880c4",
+        "GSHHS_shp/f/GSHHS_f_L3.dbf": "c5d6d99d7a4233853dbd2d8553de2dc71dfcff9a0abddacc3ec8f30868a6425e",
+        "GSHHS_shp/f/GSHHS_f_L3.prj": "98aaf3d1c0ecadf1a424a4536de261c3daf4e373697cb86c40c43b989daf52eb",
+        "GSHHS_shp/f/GSHHS_f_L3.shp": "7cd17a786f67ec715bc896ee83918fee80ed18adf51acc0908eeeadea799c9e9",
+        "GSHHS_shp/f/GSHHS_f_L3.shx": "3bd99e369ba91e4a71695702bb80341238b7bce66a148cf4a8f7a2564e58b598",
+        "GSHHS_shp/f/GSHHS_f_L4.dbf": "1ae4478e3a42be03b2ab1a9ad511a5279dd7096d268a164b11d550b8edc160e2",
+        "GSHHS_shp/f/GSHHS_f_L4.prj": "98aaf3d1c0ecadf1a424a4536de261c3daf4e373697cb86c40c43b989daf52eb",
+        "GSHHS_shp/f/GSHHS_f_L4.shp": "40b4a8cc3446d3cc57527319591c2ac0170ca48adc5a44a61763a9c54fc5de70",
+        "GSHHS_shp/f/GSHHS_f_L4.shx": "3da352a144c7b34f3a714db3b2c4e08c3748bc49b634491d2c8831a7f0fda286"
+      },
+      "crs": "EPSG:4326 (WGS84 geographic)",
+      "license": "LGPL-3.0 (LICENSE.TXT in archive)",
+      "repaired_invalid_polygons": [
+        {
+          "level": 1,
+          "id": "2380",
+          "reason": "Ring Self-intersection[-69.748512 43.761547]"
+        }
+      ]
+    },
+    "etopo": {
+      "path": "data/raw/etopo/ETOPO_2022_v1_60s_N90W180_surface.nc",
+      "sha256": "74bbc5c23e85188d93f0beba8116babf69e1a8f160e8dc9f053bf8df01b197b6",
+      "variable": "z",
+      "attrs": {
+        "long_name": "z",
+        "grid_mapping": "crs",
+        "units": "meters",
+        "positive": "up",
+        "standard_name": "height",
+        "vert_crs_name": "EGM2008",
+        "vert_crs_epsg": "EPSG:3855"
+      },
+      "registration": "pixel-is-area, 60 arc-second, centres at (k+0.5)/60 deg, ascending latitude"
+    },
+    "koppen": {
+      "path": "data/raw/koppen/koppen_present_0p5.nc",
+      "sha256": "e288c489aa925f0be63d088e2275822b39f13c525b2f7fac641cd7808d0216b0",
+      "variable": "koppen_code",
+      "registration": "0.5 deg pixels, centres at +-0.25, descending latitude",
+      "groups": {
+        "1": "A",
+        "2": "A",
+        "3": "A",
+        "4": "B",
+        "5": "B",
+        "6": "B",
+        "7": "B",
+        "8": "C",
+        "9": "C",
+        "10": "C",
+        "11": "C",
+        "12": "C",
+        "13": "C",
+        "14": "C",
+        "15": "C",
+        "16": "C",
+        "17": "D",
+        "18": "D",
+        "19": "D",
+        "20": "D",
+        "21": "D",
+        "22": "D",
+        "23": "D",
+        "24": "D",
+        "25": "D",
+        "26": "D",
+        "27": "D",
+        "28": "D",
+        "29": "E",
+        "30": "E"
+      },
+      "unclassified": "code 0 or unmapped"
+    },
+    "natural_earth_land": {
+      "path": "data/raw/natural_earth/ne_110m_land.zip",
+      "sha256": "1926c621afd6ac67c3f36639bb1236134a48d82226dc675d3e3df53d02d2a3de",
+      "scale": "1:110 million"
+    },
+    "gpw_national_identifier": {
+      "path": "data/raw/gpw-v4-population-count-adjusted-to-2015-unwpp-country-totals-rev11_totpop_15_min_nc/gpw_v4_population_count_adjusted_rev11_15_min.nc",
+      "sha256": "e15f622851c04d0d3842e9966c30695d3b5d31050608e491d44abc5e48dab85d",
+      "band": 11,
+      "lookup_sha256": "bbe7b1359b48d801a5a602bb63e6315fc8b532ccd00373b1131123785762e089",
+      "registration": "0.25 deg cells, centres at +-0.125, descending latitude"
+    },
+    "territory_snapshot_sha256": "7d25a4683feeeff73e3a85ce8f54b4d4fa229dc684c736d60a35f377b92ed47c",
+    "m0_countries_sha256": "9e99b3798e91f2b7e40250921edd5e5a788e4191df3e9027dceb98fe76b43536"
+  },
+  "mask_hierarchy": "terrestrial = (L1 - L2) U (L3 - L4); L2 includes river-lakes (water); Antarctica levels 5-6 not used (no sample country)",
+  "support": "union of GPW band-11 cells with the country ISO3, intersected with the terrestrial mask; unassigned GPW space excluded",
+  "area_convention": {
+    "radius_km": 6371.0088,
+    "pixel_area": "R^2 dlon (sin lat1 - sin lat0)",
+    "partial_pixel": "exact lon/lat polygon clip fraction times the pixel spherical area"
+  },
+  "quadrature": {
+    "lattice": "ETOPO 60 arc-second pixels for area, latitude, hemisphere, elevation and Koppen",
+    "distance": "one evaluation per land-area centroid of 3x3-pixel (3 arc-minute) blocks; 5x5 (5 arc-minute) blocks globally and exact 60 arc-second pixels for ['BHS', 'JAM', 'NOR', 'CHL', 'GRC', 'PHL', 'IDN', 'MNG', 'KAZ', 'CAN'] as the resolution check",
+    "representative_point": "clipped-piece area centroid if inside the piece, else shapely point_on_surface",
+    "full_pixel_tolerance": 1e-09
+  },
+  "features": {
+    "abs_latitude": "sum(area * |lat of representative point|) / area",
+    "hemisphere": "N if pixel-centre-north area >= south area (pixel edges lie on the equator)",
+    "elevation": "ETOPO surface z weighted by pixel land area; valid only if the pixel centre is on terrestrial support; negatives retained",
+    "continentality": "area mean of min great-circle distance to Natural Earth 110m land boundary; seam edges removed; densified great-circle arcs",
+    "climate_zone": "area-dominant Koppen major group over land area per 0.5 deg pixel; alphabetical tie order",
+    "spatial_block": "OWID continent copied unchanged"
+  },
+  "coast": {
+    "n_segments": 5010,
+    "seam_segments_removed": 5,
+    "candidate_vertex_spacing_km": 50.0,
+    "n_candidate_vertices": 14469,
+    "distance": "exact minimum angular distance to minor great-circle arcs, certified candidate set",
+    "query_stats": {
+      "points": 17249696,
+      "refined_points": 2506766,
+      "max_k": 256
+    }
+  },
+  "gates": {
+    "numeric_min_coverage": 0.98,
+    "climate_min_classified": 0.95,
+    "geometry_min_coverage": 1.0
+  },
+  "distance_quadrature_tolerance": {
+    "absolute_km": 0.1,
+    "relative": 0.001
+  },
+  "walk_stats": {
+    "full_blocks": 32525,
+    "cells": 47549,
+    "water_blocks": 404
+  },
+  "all_features_pass_gates": false,
+  "gate_failures": [
+    {
+      "iso3": "PHL",
+      "missing_reasons": "{\"elevation\": \"coverage 0.9798 < 0.98\"}"
+    },
+    {
+      "iso3": "DNK",
+      "missing_reasons": "{\"elevation\": \"coverage 0.9765 < 0.98\"}"
+    },
+    {
+      "iso3": "NOR",
+      "missing_reasons": "{\"elevation\": \"coverage 0.9792 < 0.98\"}"
+    },
+    {
+      "iso3": "BHS",
+      "missing_reasons": "{\"elevation\": \"coverage 0.8888 < 0.98\", \"climate_zone\": \"classified coverage 0.8433 < 0.95\"}"
+    }
+  ],
+  "quadrature_failures": [],
+  "software": {
+    "python": "3.11.12",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "shapely": "2.1.2",
+    "geos": "3.13.1",
+    "scipy": "1.17.1",
+    "pyogrio": "0.12.1",
+    "xarray": "2026.4.0"
+  },
+  "code_sha256": "920c057750ee3b4fbe97d96cf9b0c16d95e6feeccb59dadc4373653d4c5152b9"
+}
