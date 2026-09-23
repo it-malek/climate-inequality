@@ -1,0 +1,874 @@
+{
+  "primary_total_co2": {
+    "M0star": {
+      "intercept": {
+        "full": 0.2455298986760463,
+        "fold_values_n": 151,
+        "fold_min": 0.1512337775720481,
+        "fold_median": 0.24882716565573468,
+        "fold_max": 0.2848059102577307,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "cum_co2_total": {
+        "full": 0.01577237906570909,
+        "fold_values_n": 151,
+        "fold_min": 0.0007766248690655592,
+        "fold_median": 0.016466264013321852,
+        "fold_max": 0.023139311837726023,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "abs_latitude": {
+        "full": 0.0010642452637554592,
+        "fold_values_n": 151,
+        "fold_min": 0.00032148814207583545,
+        "fold_median": 0.0010396960129137117,
+        "fold_max": 0.0014125316461092374,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "basis/parameterization coefficient: not interpreted and not stability evidence"
+      },
+      "elevation": {
+        "full": -6.296829141558923e-07,
+        "fold_values_n": 151,
+        "fold_min": -5.507939445056077e-06,
+        "fold_median": -9.107881771289931e-07,
+        "fold_max": 4.104294746743923e-06,
+        "negative_n": 109,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "continentality": {
+        "full": 4.107686048068957e-05,
+        "fold_values_n": 151,
+        "fold_min": 1.392896016961089e-05,
+        "fold_median": 4.1452418209848366e-05,
+        "fold_max": 5.363811046867399e-05,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "population": {
+        "full": -0.012868445142368299,
+        "fold_values_n": 151,
+        "fold_min": -0.021661087886956865,
+        "fold_median": -0.013686712832861589,
+        "fold_max": 0.008561150158903894,
+        "negative_n": 150,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "station_density": {
+        "full": -0.001696610277779847,
+        "fold_values_n": 151,
+        "fold_min": -0.002536101547867246,
+        "fold_median": -0.0016390651747509165,
+        "fold_max": -0.0009335962663783921,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=B": {
+        "full": 0.00547545714615678,
+        "fold_values_n": 151,
+        "fold_min": -0.005674109683263955,
+        "fold_median": 0.006283284816500751,
+        "fold_max": 0.017049365832431544,
+        "negative_n": 12,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=C": {
+        "full": -0.023135901183411297,
+        "fold_values_n": 151,
+        "fold_min": -0.03515932978384703,
+        "fold_median": -0.022191387156173414,
+        "fold_max": -0.009167220698283239,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=D": {
+        "full": -0.007129490690160204,
+        "fold_values_n": 151,
+        "fold_min": -0.02151341710094217,
+        "fold_median": -0.006381192954633955,
+        "fold_max": 0.018090279981097024,
+        "negative_n": 123,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=E": {
+        "full": -0.09245680988584233,
+        "fold_values_n": 150,
+        "fold_min": -0.1085951220621411,
+        "fold_median": -0.09109256192299062,
+        "fold_max": -0.054693128435902974,
+        "negative_n": 150,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "hemisphere=S": {
+        "full": -0.026278752495488715,
+        "fold_values_n": 151,
+        "fold_min": -0.04065014396641476,
+        "fold_median": -0.026053955909158627,
+        "fold_max": -0.007506466262592885,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "basis/parameterization coefficient: not interpreted and not stability evidence"
+      },
+      "spatial_block=Asia": {
+        "full": -0.05221873034883109,
+        "fold_values_n": 151,
+        "fold_min": -0.06548428868989603,
+        "fold_median": -0.051739522424202725,
+        "fold_max": -0.027829414470984602,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=Europe": {
+        "full": -0.06076538582413295,
+        "fold_values_n": 151,
+        "fold_min": -0.07450239312626221,
+        "fold_median": -0.06102267055539309,
+        "fold_max": -0.03144532631261858,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=North America": {
+        "full": -0.09000707685422299,
+        "fold_values_n": 151,
+        "fold_min": -0.10499235070988071,
+        "fold_median": -0.08961765373609605,
+        "fold_max": -0.055636889205386016,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=Oceania": {
+        "full": -0.056274603821401745,
+        "fold_values_n": 151,
+        "fold_min": -0.10644388555617801,
+        "fold_median": -0.05595137365847924,
+        "fold_max": -0.0334223354656177,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=South America": {
+        "full": -0.062237922975872884,
+        "fold_values_n": 151,
+        "fold_min": -0.09917106205974613,
+        "fold_median": -0.061722318894067554,
+        "fold_max": -0.03973126250022701,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "income_group=Low-income countries": {
+        "full": 0.0036192603777795394,
+        "fold_values_n": 151,
+        "fold_min": -0.018425822004093147,
+        "fold_median": 0.003947655869293748,
+        "fold_max": 0.025081794803952742,
+        "negative_n": 22,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "income_group=Lower-middle-income countries": {
+        "full": -0.009361469618728897,
+        "fold_values_n": 151,
+        "fold_min": -0.01906662898256226,
+        "fold_median": -0.008631762846759846,
+        "fold_max": 0.006339156892533941,
+        "negative_n": 146,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "income_group=Upper-middle-income countries": {
+        "full": -0.014529819083070385,
+        "fold_values_n": 151,
+        "fold_min": -0.02354423781488281,
+        "fold_median": -0.014156528508067184,
+        "fold_max": -0.007896321227016919,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      }
+    },
+    "M2": {
+      "intercept": {
+        "full": 0.2403566422068708,
+        "fold_values_n": 151,
+        "fold_min": 0.1674692554079405,
+        "fold_median": 0.24403060639601143,
+        "fold_max": 0.29322600927745796,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "cum_co2_total": {
+        "full": 0.011006342473434206,
+        "fold_values_n": 151,
+        "fold_min": 5.852507957679854e-05,
+        "fold_median": 0.0115083701889128,
+        "fold_max": 0.017237229053620837,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "abs_latitude": {
+        "full": 0.0014051294016016317,
+        "fold_values_n": 151,
+        "fold_min": -0.0001640578479060826,
+        "fold_median": 0.0013749331660525951,
+        "fold_max": 0.0032034566732503165,
+        "negative_n": 1,
+        "zero_n": 0,
+        "interpretation": "basis/parameterization coefficient: not interpreted and not stability evidence"
+      },
+      "elevation": {
+        "full": -4.199679268277646e-06,
+        "fold_values_n": 151,
+        "fold_min": -1.2519187269518216e-05,
+        "fold_median": -4.464695704015838e-06,
+        "fold_max": 8.022945865390645e-07,
+        "negative_n": 149,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "continentality": {
+        "full": 3.5735841756517444e-05,
+        "fold_values_n": 151,
+        "fold_min": 1.4793075112120695e-05,
+        "fold_median": 3.57992992895834e-05,
+        "fold_max": 5.3767257653122276e-05,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "population": {
+        "full": -0.01088310562094622,
+        "fold_values_n": 151,
+        "fold_min": -0.019595470655425364,
+        "fold_median": -0.011623972881834598,
+        "fold_max": 0.0046560768989134926,
+        "negative_n": 150,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "station_density": {
+        "full": -0.0018087128531212929,
+        "fold_values_n": 151,
+        "fold_min": -0.0023531009995103897,
+        "fold_median": -0.0017947896110773894,
+        "fold_max": -0.0011339660654545245,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=B": {
+        "full": 0.013404252742310049,
+        "fold_values_n": 151,
+        "fold_min": 0.0003544168703589809,
+        "fold_median": 0.013559015981079857,
+        "fold_max": 0.022731780635631145,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=C": {
+        "full": -0.009619340677664191,
+        "fold_values_n": 151,
+        "fold_min": -0.022717113073932416,
+        "fold_median": -0.009532812274870458,
+        "fold_max": 0.0015828012839375722,
+        "negative_n": 145,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=D": {
+        "full": -0.002058995946883738,
+        "fold_values_n": 151,
+        "fold_min": -0.015121973844793562,
+        "fold_median": -0.0016656230506739333,
+        "fold_max": 0.019600491443264936,
+        "negative_n": 98,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=E": {
+        "full": -0.12440821103835178,
+        "fold_values_n": 150,
+        "fold_min": -0.1536266973845043,
+        "fold_median": -0.12242667392363367,
+        "fold_max": -0.10051781693087737,
+        "negative_n": 150,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "hemisphere=S": {
+        "full": 0.01367873070556625,
+        "fold_values_n": 151,
+        "fold_min": 0.0037045751354914938,
+        "fold_median": 0.013928782274517404,
+        "fold_max": 0.026521173873915244,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "basis/parameterization coefficient: not interpreted and not stability evidence"
+      },
+      "spatial_block=Asia": {
+        "full": -0.05603545786846985,
+        "fold_values_n": 151,
+        "fold_min": -0.07406715846065291,
+        "fold_median": -0.0561054850904596,
+        "fold_max": -0.02938568936249986,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=Europe": {
+        "full": -0.08661725425233116,
+        "fold_values_n": 151,
+        "fold_min": -0.10894262065141888,
+        "fold_median": -0.08633087427448176,
+        "fold_max": -0.05555976275363941,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=North America": {
+        "full": -0.0922717723841855,
+        "fold_values_n": 151,
+        "fold_min": -0.10662599320739408,
+        "fold_median": -0.09300212556909282,
+        "fold_max": -0.05731937952203648,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=Oceania": {
+        "full": -0.03721490786624775,
+        "fold_values_n": 151,
+        "fold_min": -0.06282081824088857,
+        "fold_median": -0.03776747559000585,
+        "fold_max": -0.02597617482918543,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=South America": {
+        "full": -0.05116270040168868,
+        "fold_values_n": 151,
+        "fold_min": -0.06342164191348112,
+        "fold_median": -0.051379050754840526,
+        "fold_max": -0.036552120992821145,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "income_group=Low-income countries": {
+        "full": -0.0004138871384011617,
+        "fold_values_n": 151,
+        "fold_min": -0.02453972397569239,
+        "fold_median": -0.0005475745054505523,
+        "fold_max": 0.028344225217525283,
+        "negative_n": 88,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "income_group=Lower-middle-income countries": {
+        "full": -0.012578446067369388,
+        "fold_values_n": 151,
+        "fold_min": -0.027213685443190947,
+        "fold_median": -0.012268724699421859,
+        "fold_max": 0.011186983602486877,
+        "negative_n": 147,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "income_group=Upper-middle-income countries": {
+        "full": -0.014958458511108323,
+        "fold_values_n": 151,
+        "fold_min": -0.023556093907139614,
+        "fold_median": -0.014820653668697335,
+        "fold_max": -0.006949548077768321,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "abs_latitude_ns1": {
+        "full": -2.3061363343617233e-05,
+        "fold_values_n": 151,
+        "fold_min": -0.0001559750122267977,
+        "fold_median": -1.9321496174799262e-05,
+        "fold_max": 0.0001215464350765559,
+        "negative_n": 96,
+        "zero_n": 0,
+        "interpretation": "basis/parameterization coefficient: not interpreted and not stability evidence"
+      },
+      "abs_latitude_ns2": {
+        "full": 7.045373085464851e-05,
+        "fold_values_n": 151,
+        "fold_min": -0.00015226567856736775,
+        "fold_median": 6.275586156926124e-05,
+        "fold_max": 0.0002723277110479261,
+        "negative_n": 35,
+        "zero_n": 0,
+        "interpretation": "basis/parameterization coefficient: not interpreted and not stability evidence"
+      },
+      "hemisphere=S:abs_latitude": {
+        "full": -0.002554371515259039,
+        "fold_values_n": 151,
+        "fold_min": -0.003407465385812681,
+        "fold_median": -0.00254011777643084,
+        "fold_max": -0.0019438161001170654,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "gamma: southern-minus-northern latitude-slope difference"
+      }
+    }
+  },
+  "per_capita": {
+    "M0star": {
+      "intercept": {
+        "full": 0.1508956242817997,
+        "fold_values_n": 151,
+        "fold_min": 0.12780979375452592,
+        "fold_median": 0.14938140504282055,
+        "fold_max": 0.17893556948843856,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "cum_co2_per_capita": {
+        "full": 0.015772379065709337,
+        "fold_values_n": 151,
+        "fold_min": 0.0007766248690655806,
+        "fold_median": 0.01646626401332283,
+        "fold_max": 0.02313931183772116,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "abs_latitude": {
+        "full": 0.0010642452637554714,
+        "fold_values_n": 151,
+        "fold_min": 0.00032148814207573825,
+        "fold_median": 0.0010396960129137355,
+        "fold_max": 0.0014125316461092048,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "basis/parameterization coefficient: not interpreted and not stability evidence"
+      },
+      "elevation": {
+        "full": -6.296829141648099e-07,
+        "fold_values_n": 151,
+        "fold_min": -5.507939445057821e-06,
+        "fold_median": -9.107881771301101e-07,
+        "fold_max": 4.1042947467407846e-06,
+        "negative_n": 109,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "continentality": {
+        "full": 4.1076860480684364e-05,
+        "fold_values_n": 151,
+        "fold_min": 1.392896016961065e-05,
+        "fold_median": 4.1452418209850704e-05,
+        "fold_max": 5.363811046866979e-05,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "population": {
+        "full": 0.002903933923340423,
+        "fold_values_n": 151,
+        "fold_min": -0.0002595051828382258,
+        "fold_median": 0.00287904016880923,
+        "fold_max": 0.009337775027969519,
+        "negative_n": 1,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "station_density": {
+        "full": -0.0016966102777799393,
+        "fold_values_n": 151,
+        "fold_min": -0.002536101547867294,
+        "fold_median": -0.0016390651747510674,
+        "fold_max": -0.0009335962663784552,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=B": {
+        "full": 0.005475457146156752,
+        "fold_values_n": 151,
+        "fold_min": -0.0056741096832640114,
+        "fold_median": 0.006283284816500858,
+        "fold_max": 0.017049365832431544,
+        "negative_n": 12,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=C": {
+        "full": -0.023135901183411436,
+        "fold_values_n": 151,
+        "fold_min": -0.035159329783847046,
+        "fold_median": -0.022191387156173442,
+        "fold_max": -0.009167220698283261,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=D": {
+        "full": -0.007129490690160304,
+        "fold_values_n": 151,
+        "fold_min": -0.021513417100942185,
+        "fold_median": -0.006381192954633902,
+        "fold_max": 0.018090279981096878,
+        "negative_n": 123,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=E": {
+        "full": -0.09245680988584253,
+        "fold_values_n": 150,
+        "fold_min": -0.10859512206214104,
+        "fold_median": -0.09109256192299059,
+        "fold_max": -0.05469312843590255,
+        "negative_n": 150,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "hemisphere=S": {
+        "full": -0.026278752495488646,
+        "fold_values_n": 151,
+        "fold_min": -0.04065014396641471,
+        "fold_median": -0.026053955909158613,
+        "fold_max": -0.007506466262592875,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "basis/parameterization coefficient: not interpreted and not stability evidence"
+      },
+      "spatial_block=Asia": {
+        "full": -0.052218730348831184,
+        "fold_values_n": 151,
+        "fold_min": -0.06548428868989606,
+        "fold_median": -0.05173952242420285,
+        "fold_max": -0.027829414470984623,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=Europe": {
+        "full": -0.06076538582413299,
+        "fold_values_n": 151,
+        "fold_min": -0.074502393126262,
+        "fold_median": -0.061022670555393115,
+        "fold_max": -0.031445326312618614,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=North America": {
+        "full": -0.09000707685422303,
+        "fold_values_n": 151,
+        "fold_min": -0.10499235070988103,
+        "fold_median": -0.089617653736096,
+        "fold_max": -0.05563688920538598,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=Oceania": {
+        "full": -0.05627460382140189,
+        "fold_values_n": 151,
+        "fold_min": -0.10644388555617795,
+        "fold_median": -0.05595137365847942,
+        "fold_max": -0.033422335465617785,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=South America": {
+        "full": -0.06223792297587294,
+        "fold_values_n": 151,
+        "fold_min": -0.09917106205974612,
+        "fold_median": -0.06172231889406753,
+        "fold_max": -0.039731262500226974,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "income_group=Low-income countries": {
+        "full": 0.003619260377779601,
+        "fold_values_n": 151,
+        "fold_min": -0.018425822004093335,
+        "fold_median": 0.003947655869293492,
+        "fold_max": 0.02508179480395261,
+        "negative_n": 22,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "income_group=Lower-middle-income countries": {
+        "full": -0.00936146961872886,
+        "fold_values_n": 151,
+        "fold_min": -0.01906662898256238,
+        "fold_median": -0.008631762846760108,
+        "fold_max": 0.006339156892533891,
+        "negative_n": 146,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "income_group=Upper-middle-income countries": {
+        "full": -0.01452981908307033,
+        "fold_values_n": 151,
+        "fold_min": -0.023544237814882817,
+        "fold_median": -0.014156528508067227,
+        "fold_max": -0.00789632122701705,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      }
+    },
+    "M2": {
+      "intercept": {
+        "full": 0.17431858736626804,
+        "fold_values_n": 151,
+        "fold_min": 0.14795394070062087,
+        "fold_median": 0.1747376665490564,
+        "fold_max": 0.2068589676419988,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "cum_co2_per_capita": {
+        "full": 0.01100634247343512,
+        "fold_values_n": 151,
+        "fold_min": 5.8525079576302836e-05,
+        "fold_median": 0.011508370188912117,
+        "fold_max": 0.01723722905362025,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "abs_latitude": {
+        "full": 0.001405129401601535,
+        "fold_values_n": 151,
+        "fold_min": -0.00016405784790616502,
+        "fold_median": 0.0013749331660523729,
+        "fold_max": 0.0032034566732502424,
+        "negative_n": 1,
+        "zero_n": 0,
+        "interpretation": "basis/parameterization coefficient: not interpreted and not stability evidence"
+      },
+      "elevation": {
+        "full": -4.1996792682785014e-06,
+        "fold_values_n": 151,
+        "fold_min": -1.2519187269519051e-05,
+        "fold_median": -4.46469570401574e-06,
+        "fold_max": 8.02294586538519e-07,
+        "negative_n": 149,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "continentality": {
+        "full": 3.573584175652138e-05,
+        "fold_values_n": 151,
+        "fold_min": 1.4793075112120886e-05,
+        "fold_median": 3.579929928958244e-05,
+        "fold_max": 5.3767257653120284e-05,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "population": {
+        "full": 0.00012323685248811364,
+        "fold_values_n": 151,
+        "fold_min": -0.0030149050914029985,
+        "fold_median": 3.6372614142941306e-05,
+        "fold_max": 0.00471460197849026,
+        "negative_n": 72,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "station_density": {
+        "full": -0.0018087128531213256,
+        "fold_values_n": 151,
+        "fold_min": -0.002353100999510426,
+        "fold_median": -0.0017947896110774221,
+        "fold_max": -0.0011339660654545722,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=B": {
+        "full": 0.013404252742310151,
+        "fold_values_n": 151,
+        "fold_min": 0.00035441687035931574,
+        "fold_median": 0.013559015981079647,
+        "fold_max": 0.02273178063563162,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=C": {
+        "full": -0.009619340677664609,
+        "fold_values_n": 151,
+        "fold_min": -0.022717113073931986,
+        "fold_median": -0.009532812274870659,
+        "fold_max": 0.0015828012839376705,
+        "negative_n": 145,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=D": {
+        "full": -0.002058995946883976,
+        "fold_values_n": 151,
+        "fold_min": -0.01512197384479291,
+        "fold_median": -0.0016656230506737503,
+        "fold_max": 0.019600491443264905,
+        "negative_n": 98,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "climate_zone=E": {
+        "full": -0.12440821103834923,
+        "fold_values_n": 150,
+        "fold_min": -0.15362669738450288,
+        "fold_median": -0.12242667392363199,
+        "fold_max": -0.10051781693087848,
+        "negative_n": 150,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "hemisphere=S": {
+        "full": 0.013678730705566024,
+        "fold_values_n": 151,
+        "fold_min": 0.003704575135491625,
+        "fold_median": 0.013928782274517723,
+        "fold_max": 0.02652117387391504,
+        "negative_n": 0,
+        "zero_n": 0,
+        "interpretation": "basis/parameterization coefficient: not interpreted and not stability evidence"
+      },
+      "spatial_block=Asia": {
+        "full": -0.056035457868470646,
+        "fold_values_n": 151,
+        "fold_min": -0.07406715846065254,
+        "fold_median": -0.056105485090459796,
+        "fold_max": -0.029385689362500134,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=Europe": {
+        "full": -0.08661725425233131,
+        "fold_values_n": 151,
+        "fold_min": -0.10894262065141792,
+        "fold_median": -0.08633087427448224,
+        "fold_max": -0.05555976275363968,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=North America": {
+        "full": -0.09227177238418621,
+        "fold_values_n": 151,
+        "fold_min": -0.10662599320739395,
+        "fold_median": -0.09300212556909328,
+        "fold_max": -0.057319379522036105,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=Oceania": {
+        "full": -0.03721490786624807,
+        "fold_values_n": 151,
+        "fold_min": -0.06282081824088868,
+        "fold_median": -0.037767475590005775,
+        "fold_max": -0.025976174829185097,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "spatial_block=South America": {
+        "full": -0.05116270040168886,
+        "fold_values_n": 151,
+        "fold_min": -0.06342164191348144,
+        "fold_median": -0.051379050754840415,
+        "fold_max": -0.036552120992821374,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "income_group=Low-income countries": {
+        "full": -0.00041388713840163893,
+        "fold_values_n": 151,
+        "fold_min": -0.02453972397569243,
+        "fold_median": -0.0005475745054513461,
+        "fold_max": 0.02834422521752509,
+        "negative_n": 88,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "income_group=Lower-middle-income countries": {
+        "full": -0.012578446067369823,
+        "fold_values_n": 151,
+        "fold_min": -0.02721368544319097,
+        "fold_median": -0.012268724699421987,
+        "fold_max": 0.01118698360248677,
+        "negative_n": 147,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "income_group=Upper-middle-income countries": {
+        "full": -0.014958458511108734,
+        "fold_values_n": 151,
+        "fold_min": -0.023556093907139468,
+        "fold_median": -0.014820653668697326,
+        "fold_max": -0.006949548077768431,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "coefficient"
+      },
+      "abs_latitude_ns1": {
+        "full": -2.3061363343613563e-05,
+        "fold_values_n": 151,
+        "fold_min": -0.00015597501222679158,
+        "fold_median": -1.9321496174790558e-05,
+        "fold_max": 0.0001215464350765622,
+        "negative_n": 96,
+        "zero_n": 0,
+        "interpretation": "basis/parameterization coefficient: not interpreted and not stability evidence"
+      },
+      "abs_latitude_ns2": {
+        "full": 7.045373085464159e-05,
+        "fold_values_n": 151,
+        "fold_min": -0.0001522656785673793,
+        "fold_median": 6.27558615692412e-05,
+        "fold_max": 0.000272327711047908,
+        "negative_n": 35,
+        "zero_n": 0,
+        "interpretation": "basis/parameterization coefficient: not interpreted and not stability evidence"
+      },
+      "hemisphere=S:abs_latitude": {
+        "full": -0.002554371515259031,
+        "fold_values_n": 151,
+        "fold_min": -0.0034074653858126563,
+        "fold_median": -0.0025401177764308434,
+        "fold_max": -0.0019438161001170745,
+        "negative_n": 151,
+        "zero_n": 0,
+        "interpretation": "gamma: southern-minus-northern latitude-slope difference"
+      }
+    }
+  }
+}

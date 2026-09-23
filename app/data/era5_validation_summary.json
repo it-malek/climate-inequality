@@ -1,0 +1,73 @@
+{
+  "reference": {
+    "berkeley_global_land_trend_c_per_decade": 0.19
+  },
+  "coverage": {
+    "n_inequality_countries": 157,
+    "n_era5_countries": 207,
+    "n_era5_joined": 154,
+    "n_common_all_lenses": 153
+  },
+  "rank_agreement": {
+    "era5_area_vs_berkeley_area": {
+      "rho": 0.6180524842,
+      "p": 1.7236493e-17,
+      "n": 153
+    },
+    "era5_area_vs_station": {
+      "rho": 0.6385902713,
+      "p": 5.11462034e-19,
+      "n": 154
+    }
+  },
+  "coupling_full": {
+    "station_vs_responsibility": {
+      "rho": 0.3591674154,
+      "p": 3.846959998e-06,
+      "n": 157
+    },
+    "berkeley_area_vs_responsibility": {
+      "rho": 0.01066725811,
+      "p": 0.8955360933,
+      "n": 154
+    },
+    "era5_area_vs_responsibility": {
+      "rho": 0.1119971742,
+      "p": 0.1667017878,
+      "n": 154
+    }
+  },
+  "coupling_common": {
+    "n": 153,
+    "station": {
+      "spearman_vs_responsibility": {
+        "rho": 0.3639130948,
+        "p": 3.764197862e-06,
+        "n": 153
+      },
+      "gini": 0.5712216163
+    },
+    "berkeley_area": {
+      "spearman_vs_responsibility": {
+        "rho": 0.01104030129,
+        "p": 0.8922598897,
+        "n": 153
+      },
+      "gini": 0.6062450426
+    },
+    "era5_area": {
+      "spearman_vs_responsibility": {
+        "rho": 0.1175230858,
+        "p": 0.1479592409,
+        "n": 153
+      },
+      "gini": 0.6026355888
+    }
+  },
+  "world_land_mean": {
+    "era5_area": 0.2220411718,
+    "berkeley_area": 0.1925548125,
+    "berkeley_reference": 0.19
+  },
+  "available": true
+}

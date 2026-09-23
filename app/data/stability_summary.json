@@ -1,0 +1,351 @@
+{
+  "interpretation": "Descriptive structural decomposition of observed warming trends across countries. Shapley/LMG group shares are a variance attribution only -- they are NOT physical or causal climate attribution, and a country's emissions share does not mean its emissions caused its warming.",
+  "schema_version": "v1",
+  "n_countries": 151,
+  "n_boot": 2000,
+  "seed": 0,
+  "share_stability": {
+    "method": "country_bootstrap",
+    "n_boot": 2000,
+    "n_failed": 0,
+    "groups": {
+      "emissions": {
+        "point": 0.02139283879,
+        "mean": 0.02714877735,
+        "std": 0.01174213618,
+        "ci_low": 0.00879491608,
+        "ci_high": 0.05411249989
+      },
+      "geography": {
+        "point": 0.5130328657,
+        "mean": 0.5365185533,
+        "std": 0.04518558458,
+        "ci_low": 0.4470538421,
+        "ci_high": 0.6225624135,
+        "p_largest": 1.0
+      },
+      "socioeconomic": {
+        "point": 0.06932302426,
+        "mean": 0.07954348894,
+        "std": 0.02430121607,
+        "ci_low": 0.03992385108,
+        "ci_high": 0.1339832772
+      },
+      "population": {
+        "point": 0.032697274,
+        "mean": 0.03847635239,
+        "std": 0.01577914533,
+        "ci_low": 0.01288818559,
+        "ci_high": 0.07373468604
+      },
+      "residual": {
+        "point": 0.3635539972,
+        "mean": 0.3183128281,
+        "std": 0.04355768315,
+        "ci_low": 0.2346518423,
+        "ci_high": 0.4070582107
+      }
+    },
+    "p_geography_largest": 1.0,
+    "p_emissions_positive": 1.0,
+    "block_bootstrap": {
+      "by": "spatial_block",
+      "n_boot": 2000,
+      "n_failed": 0,
+      "groups": {
+        "emissions": {
+          "ci_low": 0.01057462905,
+          "ci_high": 0.1973550922
+        },
+        "geography": {
+          "ci_low": 0.3837879759,
+          "ci_high": 0.5768725675
+        },
+        "socioeconomic": {
+          "ci_low": 0.04010593157,
+          "ci_high": 0.1451948003
+        },
+        "population": {
+          "ci_low": 0.003893609707,
+          "ci_high": 0.1092459848
+        },
+        "residual": {
+          "ci_low": 0.1885322675,
+          "ci_high": 0.5039496383
+        }
+      }
+    }
+  },
+  "influence": {
+    "method": "leave_one_country_out",
+    "by_group": {
+      "emissions": [
+        [
+          "Syria",
+          -0.00659489647
+        ],
+        [
+          "Uzbekistan",
+          0.003813127759
+        ],
+        [
+          "Guatemala",
+          0.002970490702
+        ],
+        [
+          "Tanzania",
+          -0.002333095572
+        ],
+        [
+          "Nepal",
+          0.002304456226
+        ],
+        [
+          "Bangladesh",
+          0.002237207483
+        ],
+        [
+          "Costa Rica",
+          0.002212247496
+        ],
+        [
+          "Kazakhstan",
+          0.002032794598
+        ],
+        [
+          "Turkmenistan",
+          0.002014311938
+        ],
+        [
+          "Lebanon",
+          -0.001947727133
+        ]
+      ],
+      "geography": [
+        [
+          "Egypt",
+          -0.01810938576
+        ],
+        [
+          "Brazil",
+          -0.01530221294
+        ],
+        [
+          "Canada",
+          -0.01484715876
+        ],
+        [
+          "Mongolia",
+          0.01445731297
+        ],
+        [
+          "Botswana",
+          -0.01271724417
+        ],
+        [
+          "Nicaragua",
+          0.01012269276
+        ],
+        [
+          "Honduras",
+          0.009820777204
+        ],
+        [
+          "Bolivia",
+          0.009324482274
+        ],
+        [
+          "Israel",
+          -0.008881862888
+        ],
+        [
+          "Kazakhstan",
+          0.008543937874
+        ]
+      ],
+      "socioeconomic": [
+        [
+          "Syria",
+          -0.01125346694
+        ],
+        [
+          "Mongolia",
+          -0.007553785204
+        ],
+        [
+          "Turkmenistan",
+          -0.007165430253
+        ],
+        [
+          "Iran",
+          -0.006203353339
+        ],
+        [
+          "Algeria",
+          -0.005499321471
+        ],
+        [
+          "Guatemala",
+          0.004765276934
+        ],
+        [
+          "Mauritania",
+          -0.004725095734
+        ],
+        [
+          "El Salvador",
+          0.004422406185
+        ],
+        [
+          "Afghanistan",
+          0.004316379907
+        ],
+        [
+          "Kazakhstan",
+          -0.003828341456
+        ]
+      ],
+      "population": [
+        [
+          "Netherlands",
+          -0.007674986016
+        ],
+        [
+          "Guatemala",
+          0.005407484138
+        ],
+        [
+          "Argentina",
+          -0.002993231506
+        ],
+        [
+          "Chile",
+          -0.002860207941
+        ],
+        [
+          "South Korea",
+          -0.002671206949
+        ],
+        [
+          "Burma",
+          -0.002489852453
+        ],
+        [
+          "Peru",
+          -0.002455782231
+        ],
+        [
+          "Bangladesh",
+          0.00242698072
+        ],
+        [
+          "Algeria",
+          0.002365875969
+        ],
+        [
+          "Jordan",
+          0.002364890216
+        ]
+      ]
+    }
+  },
+  "residual_spatial": {
+    "morans_i": 0.2686890161,
+    "p_value": 0.005,
+    "n_permutations": 199,
+    "k_neighbors": 8,
+    "method": "centroid kNN",
+    "n": 151
+  },
+  "outcome_definition": "area_weighted",
+  "sensitivity": {
+    "station_weighted": {
+      "interpretation": "Descriptive structural decomposition of observed warming trends across countries. Shapley/LMG group shares are a variance attribution only -- they are NOT physical or causal climate attribution, and a country's emissions share does not mean its emissions caused its warming.",
+      "schema_version": "v1",
+      "n_countries": 151,
+      "n_boot": 2000,
+      "seed": 0,
+      "share_stability": {
+        "method": "country_bootstrap",
+        "n_boot": 2000,
+        "n_failed": 0,
+        "groups": {
+          "emissions": {
+            "point": 0.0853851894,
+            "mean": 0.08946022307,
+            "std": 0.02113497575,
+            "ci_low": 0.05174671296,
+            "ci_high": 0.1331028779
+          },
+          "geography": {
+            "point": 0.4578041275,
+            "mean": 0.4831634358,
+            "std": 0.04425650979,
+            "ci_low": 0.3963289575,
+            "ci_high": 0.5717929399,
+            "p_largest": 1.0
+          },
+          "socioeconomic": {
+            "point": 0.06183045898,
+            "mean": 0.07263760996,
+            "std": 0.02119934594,
+            "ci_low": 0.03867050427,
+            "ci_high": 0.1183031788
+          },
+          "population": {
+            "point": 0.02949359512,
+            "mean": 0.03398064978,
+            "std": 0.01470829261,
+            "ci_low": 0.009803958963,
+            "ci_high": 0.0662965259
+          },
+          "residual": {
+            "point": 0.365486629,
+            "mean": 0.3207580814,
+            "std": 0.03764055714,
+            "ci_low": 0.2492655316,
+            "ci_high": 0.3938386718
+          }
+        },
+        "p_geography_largest": 1.0,
+        "p_emissions_positive": 1.0,
+        "block_bootstrap": {
+          "by": "spatial_block",
+          "n_boot": 2000,
+          "n_failed": 0,
+          "groups": {
+            "emissions": {
+              "ci_low": 0.02824339043,
+              "ci_high": 0.1888594142
+            },
+            "geography": {
+              "ci_low": 0.4166723802,
+              "ci_high": 0.5772770337
+            },
+            "socioeconomic": {
+              "ci_low": 0.03103027406,
+              "ci_high": 0.1231659926
+            },
+            "population": {
+              "ci_low": 0.003189097713,
+              "ci_high": 0.07984345016
+            },
+            "residual": {
+              "ci_low": 0.175846083,
+              "ci_high": 0.4319465141
+            }
+          }
+        }
+      },
+      "residual_spatial": {
+        "morans_i": 0.3142300978,
+        "p_value": 0.005,
+        "n_permutations": 199,
+        "k_neighbors": 8,
+        "method": "centroid kNN",
+        "n": 151
+      },
+      "outcome_definition": "station_weighted"
+    }
+  }
+}

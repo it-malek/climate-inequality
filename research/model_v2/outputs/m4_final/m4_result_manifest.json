@@ -1,0 +1,30 @@
+{
+  "result": "M4 final assessment",
+  "evaluator_commit": "0366281c370909fadeb02d9985ce7002cf5a0f50",
+  "inventory_complete": true,
+  "final": {
+    "retained_static_specification": "M0*",
+    "qualifying_spatial_extensions": [
+      "M3-SEM(M0*)",
+      "M3-SAR(M0*)"
+    ],
+    "final_primary_predictive_model": null
+  },
+  "integrity_passed": true,
+  "artifact_sha256": {
+    "m4_bootstrap_draws.csv": "4dc83abad1782c3f6e427d7f66a822b46d85fb67f339dbbc7ac90a01a746aa10",
+    "m4_bootstrap_summary.json": "c1e54795e68b95d77643f3bb57722c07f5f26137573b470188b5ccd5987bf2d7",
+    "m4_sensitivities.json": "f31760210d75c0f56df19036182f14cde265d5557741ff68079ac3b2fee83358",
+    "m4_sensitivity_predictions.csv": "c9642bdd7e53530fa3d93b5ac4d8f3ff0f4e615a722d94e2eefa06278fc2e7ce",
+    "m4_products.json": "46b4e64519a5b8d58a8f39c8ab48ff7432283e35a949f1ab6a3fe4c8ad0219f7",
+    "m4_product_predictions.csv": "85d3583acedbcc04eb30e1f29a2c6aee39ea3974ca14f5065618600c417dd39c",
+    "m4_consolidated_table.json": "8b899c0e8e55a66b5539ee9d53aa9bd1c9484d88232631074d08394c9a112e10",
+    "m4_consolidated_table.csv": "de3cfd6e1f7c84ddd509079bbd693f7a8a05343c91f129ae5625301bc1cb4a0d",
+    "m4_inventory_status.json": "eb95157b6089710b3cfdf04f5db555e86b0b1e03f62f702e3f3891f5239b2fce",
+    "m4_final_specification.json": "b9312767bfb9c1a4a1ddbe7e4246c3ecd77940c4cd3ede1dc5e459a77350fe3d",
+    "m4_provenance.json": "45b49426aeb3719ca02106432a724b502db706288b0e619049b73be61d555c40"
+  },
+  "non_deterministic_artifacts": [
+    "m4_run_metadata.json"
+  ]
+}

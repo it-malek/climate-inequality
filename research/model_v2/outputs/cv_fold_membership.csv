@@ -1,0 +1,152 @@
+Country,iso3,m49_subregion,spatial_block,random_10fold,continent_lo,m49_subregion_lo,latitude_bands,kmeans_6,kmeans_8,kmeans_10,kmeans_12,kmeans_15,m49_subregion_lo_buffer500km,kmeans_10_buffer500km,m49_subregion_lo_buffer1000km,kmeans_10_buffer1000km
+Algeria,DZA,Northern Africa,Africa,2,0,9,2,1,2,2,3,4,9,2,9,2
+Angola,AGO,Middle Africa,Africa,7,0,8,1,3,4,4,6,7,8,4,8,4
+Benin,BEN,Western Africa,Africa,3,0,17,0,1,2,2,3,4,17,2,17,2
+Botswana,BWA,Southern Africa,Africa,8,0,14,1,3,4,4,6,7,14,4,14,4
+Burkina Faso,BFA,Western Africa,Africa,9,0,17,1,1,2,2,3,4,17,2,17,2
+Burundi,BDI,Eastern Africa,Africa,8,0,4,0,3,4,5,7,6,4,5,4,5
+Cameroon,CMR,Middle Africa,Africa,0,0,8,0,1,2,5,4,6,8,5,8,5
+Central African Republic,CAF,Middle Africa,Africa,3,0,8,0,1,4,5,4,6,8,5,8,5
+Chad,TCD,Middle Africa,Africa,7,0,8,1,1,2,5,4,6,8,5,8,5
+Congo,COG,Middle Africa,Africa,4,0,8,0,1,4,5,4,6,8,5,8,5
+Congo (Democratic Republic Of The),COD,Middle Africa,Africa,4,0,8,0,3,4,5,7,6,8,5,8,5
+Côte D'Ivoire,CIV,Western Africa,Africa,3,0,17,0,1,2,2,3,4,17,2,17,2
+Djibouti,DJI,Eastern Africa,Africa,9,0,4,0,4,5,5,7,9,4,5,4,5
+Egypt,EGY,Northern Africa,Africa,1,0,9,2,4,5,6,8,8,9,6,9,6
+Equatorial Guinea,GNQ,Middle Africa,Africa,2,0,8,0,1,2,2,4,6,8,2,8,2
+Eritrea,ERI,Eastern Africa,Africa,5,0,4,1,4,5,5,7,9,4,5,4,5
+Ethiopia,ETH,Eastern Africa,Africa,5,0,4,0,4,4,5,7,9,4,5,4,5
+Gabon,GAB,Middle Africa,Africa,5,0,8,0,1,2,5,4,6,8,5,8,5
+Ghana,GHA,Western Africa,Africa,6,0,17,0,1,2,2,3,4,17,2,17,2
+Guinea,GIN,Western Africa,Africa,7,0,17,0,1,2,2,3,4,17,2,17,2
+Guinea Bissau,GNB,Western Africa,Africa,1,0,17,0,1,2,2,3,4,17,2,17,2
+Kenya,KEN,Eastern Africa,Africa,4,0,4,0,3,4,5,7,6,4,5,4,5
+Lesotho,LSO,Southern Africa,Africa,9,0,14,2,3,4,4,6,7,14,4,14,4
+Liberia,LBR,Western Africa,Africa,4,0,17,0,1,2,2,3,4,17,2,17,2
+Libya,LBY,Northern Africa,Africa,8,0,9,2,1,2,3,4,8,9,3,9,3
+Madagascar,MDG,Eastern Africa,Africa,3,0,4,1,3,4,4,6,7,4,4,4,4
+Malawi,MWI,Eastern Africa,Africa,3,0,4,1,3,4,4,6,7,4,4,4,4
+Mali,MLI,Western Africa,Africa,0,0,17,1,1,2,2,3,4,17,2,17,2
+Mauritania,MRT,Western Africa,Africa,5,0,17,1,1,2,2,3,4,17,2,17,2
+Morocco,MAR,Northern Africa,Africa,5,0,9,2,1,2,2,3,4,9,2,9,2
+Mozambique,MOZ,Eastern Africa,Africa,2,0,4,1,3,4,4,6,7,4,4,4,4
+Namibia,NAM,Southern Africa,Africa,8,0,14,1,3,4,4,6,7,14,4,14,4
+Niger,NER,Western Africa,Africa,2,0,17,1,1,2,2,4,4,17,2,17,2
+Nigeria,NGA,Western Africa,Africa,8,0,17,0,1,2,2,4,4,17,2,17,2
+Rwanda,RWA,Eastern Africa,Africa,1,0,4,0,3,4,5,7,6,4,5,4,5
+Senegal,SEN,Western Africa,Africa,7,0,17,1,1,2,2,3,4,17,2,17,2
+Sierra Leone,SLE,Western Africa,Africa,2,0,17,0,1,2,2,3,4,17,2,17,2
+Somalia,SOM,Eastern Africa,Africa,2,0,4,0,4,4,5,7,9,4,5,4,5
+South Africa,ZAF,Southern Africa,Africa,1,0,14,2,3,4,4,6,7,14,4,14,4
+Sudan,SDN,Northern Africa,Africa,7,0,9,1,4,5,5,7,6,9,5,9,5
+Swaziland,SWZ,Southern Africa,Africa,0,0,14,2,3,4,4,6,7,14,4,14,4
+Tanzania,TZA,Eastern Africa,Africa,4,0,4,0,3,4,5,7,7,4,5,4,5
+Togo,TGO,Western Africa,Africa,2,0,17,0,1,2,2,3,4,17,2,17,2
+Tunisia,TUN,Northern Africa,Africa,3,0,9,2,2,3,3,5,5,9,3,9,3
+Uganda,UGA,Eastern Africa,Africa,9,0,4,0,3,4,5,7,6,4,5,4,5
+Zambia,ZMB,Eastern Africa,Africa,3,0,4,1,3,4,4,6,7,4,4,4,4
+Zimbabwe,ZWE,Eastern Africa,Africa,1,0,4,1,3,4,4,6,7,4,4,4,4
+Afghanistan,AFG,Southern Asia,Asia,8,1,15,2,4,5,6,8,10,15,6,15,6
+Armenia,ARM,Western Asia,Asia,6,1,18,3,4,5,6,8,8,18,6,18,6
+Azerbaijan,AZE,Western Asia,Asia,1,1,18,3,4,5,6,8,8,18,6,18,6
+Bangladesh,BGD,Southern Asia,Asia,0,1,15,1,5,6,7,9,11,15,7,15,7
+Burma,MMR,South-eastern Asia,Asia,9,1,13,1,5,6,7,9,11,13,7,13,7
+Cambodia,KHM,South-eastern Asia,Asia,4,1,13,1,5,6,7,9,11,13,7,13,7
+China,CHN,Eastern Asia,Asia,0,1,5,3,5,6,8,10,12,5,8,5,8
+Georgia,GEO,Western Asia,Asia,7,1,18,3,4,5,6,8,8,18,6,18,6
+India,IND,Southern Asia,Asia,0,1,15,1,4,6,7,9,11,15,7,15,7
+Indonesia,IDN,South-eastern Asia,Asia,5,1,13,0,5,6,7,9,13,13,7,13,7
+Iran,IRN,Southern Asia,Asia,5,1,15,2,4,5,6,8,10,15,6,15,6
+Iraq,IRQ,Western Asia,Asia,3,1,18,2,4,5,6,8,8,18,6,18,6
+Israel,ISR,Western Asia,Asia,3,1,18,2,4,5,6,8,8,18,6,18,6
+Japan,JPN,Eastern Asia,Asia,8,1,5,3,5,6,8,10,12,5,8,5,8
+Jordan,JOR,Western Asia,Asia,8,1,18,2,4,5,6,8,8,18,6,18,6
+Kazakhstan,KAZ,Central Asia,Asia,4,1,3,4,4,5,6,8,10,3,6,3,6
+Laos,LAO,South-eastern Asia,Asia,9,1,13,1,5,6,7,9,11,13,7,13,7
+Lebanon,LBN,Western Asia,Asia,2,1,18,2,4,5,6,8,8,18,6,18,6
+Malaysia,MYS,South-eastern Asia,Asia,2,1,13,0,5,6,7,9,13,13,7,13,7
+Mongolia,MNG,Eastern Asia,Asia,9,1,5,3,5,6,8,10,12,5,8,5,8
+Nepal,NPL,Southern Asia,Asia,6,1,15,2,5,6,7,9,11,15,7,15,7
+Oman,OMN,Western Asia,Asia,1,1,18,1,4,5,6,8,9,18,6,18,6
+Pakistan,PAK,Southern Asia,Asia,8,1,15,2,4,5,6,8,10,15,6,15,6
+Philippines,PHL,South-eastern Asia,Asia,0,1,13,0,5,6,7,9,13,13,7,13,7
+Qatar,QAT,Western Asia,Asia,3,1,18,2,4,5,6,8,9,18,6,18,6
+Saudi Arabia,SAU,Western Asia,Asia,4,1,18,1,4,5,6,8,9,18,6,18,6
+South Korea,KOR,Eastern Asia,Asia,5,1,5,2,5,6,8,10,12,5,8,5,8
+Sri Lanka,LKA,Southern Asia,Asia,5,1,15,0,5,6,7,9,11,15,7,15,7
+Syria,SYR,Western Asia,Asia,7,1,18,2,4,5,6,8,8,18,6,18,6
+Taiwan,TWN,Eastern Asia,Asia,8,1,5,1,5,6,7,9,12,5,7,5,7
+Tajikistan,TJK,Central Asia,Asia,3,1,3,3,4,5,6,8,10,3,6,3,6
+Thailand,THA,South-eastern Asia,Asia,4,1,13,1,5,6,7,9,11,13,7,13,7
+Turkey,TUR,Western Asia,Asia,0,1,18,3,4,5,6,8,8,18,6,18,6
+Turkmenistan,TKM,Central Asia,Asia,5,1,3,3,4,5,6,8,10,3,6,3,6
+United Arab Emirates,ARE,Western Asia,Asia,4,1,18,2,4,5,6,8,9,18,6,18,6
+Uzbekistan,UZB,Central Asia,Asia,0,1,3,3,4,5,6,8,10,3,6,3,6
+Vietnam,VNM,South-eastern Asia,Asia,6,1,13,1,5,6,7,9,11,13,7,13,7
+Yemen,YEM,Western Asia,Asia,5,1,18,1,4,5,6,7,9,18,6,18,6
+Albania,ALB,Southern Europe,Europe,7,2,16,3,2,3,3,5,5,16,3,16,3
+Austria,AUT,Western Europe,Europe,1,2,19,3,2,3,3,5,5,19,3,19,3
+Belarus,BLR,Eastern Europe,Europe,8,2,6,4,2,3,3,5,5,6,3,6,3
+Belgium,BEL,Western Europe,Europe,8,2,19,4,2,3,3,5,5,19,3,19,3
+Bosnia And Herzegovina,BIH,Southern Europe,Europe,2,2,16,3,2,3,3,5,5,16,3,16,3
+Bulgaria,BGR,Eastern Europe,Europe,8,2,6,3,2,3,3,5,5,6,3,6,3
+Croatia,HRV,Southern Europe,Europe,6,2,16,3,2,3,3,5,5,16,3,16,3
+Cyprus,CYP,Western Asia,Europe,7,2,18,2,4,5,6,8,8,18,6,18,6
+Czech Republic,CZE,Eastern Europe,Europe,5,2,6,4,2,3,3,5,5,6,3,6,3
+Denmark,DNK,Northern Europe,Europe,0,2,11,4,2,3,3,5,5,11,3,11,3
+Estonia,EST,Northern Europe,Europe,4,2,11,4,2,3,3,5,5,11,3,11,3
+Finland,FIN,Northern Europe,Europe,6,2,11,4,2,3,3,5,5,11,3,11,3
+France,FRA,Western Europe,Europe,7,2,19,3,2,3,3,5,5,19,3,19,3
+Germany,DEU,Western Europe,Europe,1,2,19,4,2,3,3,5,5,19,3,19,3
+Greece,GRC,Southern Europe,Europe,6,2,16,3,2,3,3,5,8,16,3,16,3
+Hungary,HUN,Eastern Europe,Europe,4,2,6,3,2,3,3,5,5,6,3,6,3
+Iceland,ISL,Northern Europe,Europe,6,2,11,4,2,3,3,5,5,11,3,11,3
+Ireland,IRL,Northern Europe,Europe,7,2,11,4,2,3,3,5,5,11,3,11,3
+Italy,ITA,Southern Europe,Europe,0,2,16,3,2,3,3,5,5,16,3,16,3
+Latvia,LVA,Northern Europe,Europe,0,2,11,4,2,3,3,5,5,11,3,11,3
+Lithuania,LTU,Northern Europe,Europe,0,2,11,4,2,3,3,5,5,11,3,11,3
+Macedonia,MKD,Southern Europe,Europe,2,2,16,3,2,3,3,5,5,16,3,16,3
+Moldova,MDA,Eastern Europe,Europe,5,2,6,3,2,3,3,5,5,6,3,6,3
+Montenegro,MNE,Southern Europe,Europe,6,2,16,3,2,3,3,5,5,16,3,16,3
+Netherlands,NLD,Western Europe,Europe,3,2,19,4,2,3,3,5,5,19,3,19,3
+Norway,NOR,Northern Europe,Europe,6,2,11,4,2,3,3,5,5,11,3,11,3
+Poland,POL,Eastern Europe,Europe,1,2,6,4,2,3,3,5,5,6,3,6,3
+Portugal,PRT,Southern Europe,Europe,1,2,16,3,2,3,3,5,5,16,3,16,3
+Romania,ROU,Eastern Europe,Europe,2,2,6,3,2,3,3,5,5,6,3,6,3
+Russia,RUS,Eastern Europe,Europe,9,2,6,4,2,3,8,10,10,6,8,6,8
+Serbia,SRB,Southern Europe,Europe,9,2,16,3,2,3,3,5,5,16,3,16,3
+Slovakia,SVK,Eastern Europe,Europe,7,2,6,4,2,3,3,5,5,6,3,6,3
+Slovenia,SVN,Southern Europe,Europe,1,2,16,3,2,3,3,5,5,16,3,16,3
+Spain,ESP,Southern Europe,Europe,0,2,16,3,2,3,3,5,5,16,3,16,3
+Sweden,SWE,Northern Europe,Europe,6,2,11,4,2,3,3,5,5,11,3,11,3
+Switzerland,CHE,Western Europe,Europe,6,2,19,3,2,3,3,5,5,19,3,19,3
+Ukraine,UKR,Eastern Europe,Europe,1,2,6,4,2,3,3,5,5,6,3,6,3
+United Kingdom,GBR,Northern Europe,Europe,2,2,11,4,2,3,3,5,5,11,3,11,3
+Bahamas,BHS,Caribbean,North America,9,3,1,2,0,0,0,1,1,1,0,1,0
+Canada,CAN,Northern America,North America,2,3,10,4,0,0,0,0,0,10,0,10,0
+Costa Rica,CRI,Central America,North America,2,3,2,0,0,0,0,1,1,2,0,2,0
+Cuba,CUB,Caribbean,North America,6,3,1,1,0,0,0,1,1,1,0,1,0
+Dominican Republic,DOM,Caribbean,North America,9,3,1,1,0,0,0,1,1,1,0,1,0
+El Salvador,SLV,Central America,North America,6,3,2,1,0,0,0,1,1,2,0,2,0
+Guatemala,GTM,Central America,North America,8,3,2,1,0,0,0,1,1,2,0,2,0
+Haiti,HTI,Caribbean,North America,4,3,1,1,0,0,0,1,1,1,0,1,0
+Honduras,HND,Central America,North America,3,3,2,1,0,0,0,1,1,2,0,2,0
+Jamaica,JAM,Caribbean,North America,9,3,1,1,0,0,0,1,1,1,0,1,0
+Mexico,MEX,Central America,North America,4,3,2,1,0,0,0,1,1,2,0,2,0
+Nicaragua,NIC,Central America,North America,5,3,2,1,0,0,0,1,1,2,0,2,0
+Panama,PAN,Central America,North America,1,3,2,0,0,0,0,1,1,2,0,2,0
+United States,USA,Northern America,North America,4,3,10,3,0,0,0,0,0,10,0,10,0
+Australia,AUS,Australia and New Zealand,Oceania,7,4,0,2,5,7,9,11,13,0,9,0,9
+New Zealand,NZL,Australia and New Zealand,Oceania,6,4,0,3,5,7,9,11,14,0,9,0,9
+Papua New Guinea,PNG,Melanesia,Oceania,7,4,7,0,5,7,9,11,13,7,9,7,9
+Argentina,ARG,South America,South America,0,5,12,2,0,1,1,2,3,12,1,12,1
+Bolivia,BOL,South America,South America,9,5,12,1,0,1,1,2,3,12,1,12,1
+Brazil,BRA,South America,South America,3,5,12,0,0,1,1,2,3,12,1,12,1
+Chile,CHL,South America,South America,7,5,12,3,0,1,1,2,3,12,1,12,1
+Colombia,COL,South America,South America,1,5,12,0,0,0,0,1,2,12,0,12,0
+Ecuador,ECU,South America,South America,8,5,12,0,0,0,0,1,2,12,0,12,0
+Paraguay,PRY,South America,South America,0,5,12,1,0,1,1,2,3,12,1,12,1
+Peru,PER,South America,South America,9,5,12,0,0,1,1,2,2,12,1,12,1
+Suriname,SUR,South America,South America,9,5,12,0,0,0,0,1,2,12,0,12,0
+Uruguay,URY,South America,South America,3,5,12,2,0,1,1,2,3,12,1,12,1
+Venezuela,VEN,South America,South America,5,5,12,0,0,0,0,1,2,12,0,12,0

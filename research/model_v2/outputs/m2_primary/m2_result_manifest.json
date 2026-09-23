@@ -1,0 +1,26 @@
+{
+  "result": "M2 primary and unconditional per-capita evaluation",
+  "contract": "research/model_v2/M2_EVALUATION_CONTRACT.md",
+  "specification": "research/model_v2/M2_EVALUATOR_SPEC.md",
+  "evaluator_commit": "b13bb04e11b831cf7f9a9f61e63899a4f0e2fe42",
+  "verdict": "not supported",
+  "predictive_support": false,
+  "retained_static_specification": "M0*",
+  "static_stopping_indicator_fires": false,
+  "integrity_passed": true,
+  "artifact_sha256": {
+    "m2_scorecard.json": "6208f339bd64af797d357870539f04be1de9898139bd1587b6663bda5795a715",
+    "m2_country_predictions.csv": "8b90ea00dad5f9280724e9cf5b447b7558e82f0f521fcdd8bb10ff8cc573cdbf",
+    "m2_primary_country_comparison.csv": "647977b3199eb4c55f1abe1017f39d2644de910045a4c05284a9304bd8fe0cb3",
+    "m2_cv_folds.csv": "6a9e3976f51e60a66c6b70fd65cc56626df1eec28a41e774c39260d1a2a459f1",
+    "m2_fit_states.csv": "b9074099fde72fcee5b182bc1c4d5297b49f98b45df401094147b760d14f76b5",
+    "m2_coefficients.csv": "43d05261fb3c795a6268708dbe3bae51a1900d8cf4ae456d0f2e4b35bb9d14b1",
+    "m2_coefficient_summary.json": "062aa51d229a187bc30e0c12fef5315adebeb4279ff2db4f470af31a382ae18c",
+    "m2_shapley_coalitions.csv": "39a21abf9e3cd213af0abccf33e21d672f85242abb74b237fa979e430e19d3fa",
+    "m2_design_matrices.csv": "9a59e45573ae2f810f9ce24472a4a090fb4cc83a70c0af4e6d8e3c0a835dd0ac",
+    "m2_provenance.json": "c4818272ad15232d5716a12580459a2b6f73ba0ae55278dedd623103a707ba4e"
+  },
+  "non_deterministic_artifacts": [
+    "m2_run_metadata.json"
+  ]
+}

@@ -1,0 +1,655 @@
+"""Country table: warming rates joined to emissions responsibility.
+
+1. Aggregate per-city-location Theil-Sen trends to country level.
+   The mean is deliberately **unweighted**: no city-population data exists
+   in the project datasets, so population weighting would need a third
+   dataset with fragile city-name matching (documented limitation; see
+   :func:`aggregate_trends_by_country`).
+2. Compute cumulative per-capita CO2 per country: annual production-based
+   emissions summed through the analysis cutoff year, divided by
+   cutoff-year population (tonnes per person). Emissions come fresh from
+   github.com/owid/co2-data -- the project's Kaggle snapshot is annual
+   emissions only, with no population column, so per-capita responsibility
+   cannot be computed from it.
+3. Join on country (explicit Berkeley Earth -> OWID name overrides) and
+   attach OWID's continent classification.
+4. Quantify: Spearman rank correlation, plus OLS of warming trend on log10
+   cumulative per-capita CO2 with and without continent fixed effects (HC1
+   robust SEs). Effect sizes read as deg C/decade per 10x emissions.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import logging
+from collections.abc import Mapping
+from dataclasses import dataclass
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import statsmodels.formula.api as smf
+from scipy import stats
+from statsmodels.regression.linear_model import RegressionResultsWrapper
+
+from src.area_weighting import (
+    AREA_COVERAGE_COL,
+    AREA_WEIGHTED_COL,
+    BERKELEY_GRID_PATH,
+    GPW_NATID_LOOKUP_PATH,
+    ISO3_COL,
+    area_weighted_country_trends,
+)
+from src.cleaning import parse_window
+from src.data_io import (
+    OUTPUTS_DIR,
+    PROCESSED_DIR,
+    RAW_DIR,
+    download_file,
+    write_typed_parquet,
+)
+from src.figures import render_inequality_scatter
+from src.population import (
+    GPW_DEFAULT_YEAR,
+    GPW_PATH,
+    population_weighted_country_mean,
+)
+from src.trends import DEFAULT_TRENDS_PATH
+
+logger = logging.getLogger(__name__)
+
+# OWID revises its CO2 series with every Global Carbon Budget release, which
+# moves the cumulative-emissions and population columns for many countries.
+# The URL is therefore pinned to the commit of github.com/owid/co2-data that the
+# committed bundle was built from, and the download is verified against the
+# SHA-256 of that file so a different vintage cannot enter silently. To move to
+# a newer release: change the commit in the URL, update the hash and date, and
+# rebuild the bundle (expect the numbers to change).
+OWID_CO2_COMMIT = "382ee6c662b0ece26e111f263b44c029afad7787"  # 2026-06-02 release
+OWID_CO2_URL = (
+    f"https://raw.githubusercontent.com/owid/co2-data/{OWID_CO2_COMMIT}/owid-co2-data.csv"
+)
+OWID_CO2_SHA256 = "7f78e2b218ce4bb8c538bbec04fdc9a7982e8d40bff972e650df603899edd5f6"
+OWID_CO2_RETRIEVED = "2026-06-11"
+OWID_CO2_PATH = RAW_DIR / "owid" / "owid-co2-data.csv"
+CONTINENTS_URL = (
+    "https://ourworldindata.org/grapher/continents-according-to-our-world-in-data.csv"
+)
+CONTINENTS_PATH = RAW_DIR / "owid" / "continents.csv"
+CONTINENT_COL = "World region according to OWID"  # column name in that CSV
+
+DEFAULT_INEQUALITY_PATH = PROCESSED_DIR / "country_inequality.parquet"
+
+# Berkeley Earth country names whose OWID entity name differs. Berkeley's
+# Puerto Rico and Reunion have no OWID emissions series at all and are
+# dropped (logged) at join time.
+BERKELEY_TO_OWID = {
+    "Bosnia And Herzegovina": "Bosnia and Herzegovina",
+    "Burma": "Myanmar",
+    "Congo (Democratic Republic Of The)": "Democratic Republic of Congo",
+    "Czech Republic": "Czechia",
+    "Côte D'Ivoire": "Cote d'Ivoire",
+    "Guinea Bissau": "Guinea-Bissau",
+    "Macedonia": "North Macedonia",
+    "Swaziland": "Eswatini",
+}
+
+# On-disk schema of country_inequality.parquet (DuckDB types), in order. The
+# lens columns after ``cum_co2_t_per_capita`` are nullable: a country with no
+# OWID consumption series, population weighting or grid cells carries NULLs
+# there and is dropped only by the lens that needs the column.
+INEQUALITY_SCHEMA = {
+    "Country": "VARCHAR",
+    "owid_country": "VARCHAR",
+    "continent": "VARCHAR",
+    "n_cities": "BIGINT",
+    "trend_c_per_decade": "DOUBLE",
+    "cumulative_co2_mt": "DOUBLE",
+    "population": "BIGINT",
+    "cum_co2_t_per_capita": "DOUBLE",
+    "consumption_start_year": "BIGINT",
+    "cum_consumption_t_per_capita": "DOUBLE",
+    "cum_co2_window_t_per_capita": "DOUBLE",
+    "trend_c_per_decade_pop_weighted": "DOUBLE",
+    "pop_weight_coverage": "DOUBLE",
+    "trend_c_per_decade_area_weighted": "DOUBLE",
+    "area_cell_coverage": "DOUBLE",
+}
+INEQUALITY_COLUMNS = list(INEQUALITY_SCHEMA)
+
+# Columns emitted by cumulative_consumption_per_capita (merged into the country
+# table on `country`); these populate the trailing INEQUALITY_SCHEMA columns.
+CONSUMPTION_COLUMNS = (
+    "consumption_start_year",
+    "cum_consumption_t_per_capita",
+    "cum_co2_window_t_per_capita",
+)
+
+
+def sha256_file(path: Path) -> str:
+    """SHA-256 hex digest of a file, streamed."""
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def verify_owid_co2(csv_path: Path = OWID_CO2_PATH, expected: str | None = OWID_CO2_SHA256) -> str:
+    """Return the SHA-256 of the OWID CO2 file, raising if it is not the pinned vintage.
+
+    Args:
+        csv_path: the downloaded ``owid-co2-data.csv``.
+        expected: the pinned digest; ``None`` skips the check (accepting a new
+            vintage deliberately).
+
+    Raises:
+        RuntimeError: if the file's digest differs from `expected`.
+    """
+    actual = sha256_file(csv_path)
+    if expected is not None and actual != expected:
+        raise RuntimeError(
+            f"{csv_path} has SHA-256 {actual[:12]}..., not the pinned OWID vintage "
+            f"{expected[:12]}... (commit {OWID_CO2_COMMIT[:12]}, retrieved "
+            f"{OWID_CO2_RETRIEVED}). A different release changes the cumulative "
+            "emissions; delete the file to re-download the pinned vintage, or pass "
+            "expected_sha256=None and update OWID_CO2_COMMIT / OWID_CO2_SHA256 to "
+            "adopt the new one."
+        )
+    return actual
+
+
+def load_owid_co2(csv_path: Path = OWID_CO2_PATH) -> pd.DataFrame:
+    """Load the OWID CO2 columns needed for cumulative per-capita emissions.
+
+    Args:
+        csv_path: Path to owid-co2-data.csv.
+
+    Returns:
+        Frame with country, iso_code, year, co2 (Mt/yr), population.
+
+    Raises:
+        FileNotFoundError: if `csv_path` is missing -- the pipeline
+            downloads it via :func:`src.data_io.download_file`.
+    """
+    if not csv_path.exists():
+        raise FileNotFoundError(f"no such file: {csv_path}; download it first")
+    return pd.read_csv(
+        csv_path,
+        usecols=[
+            "country", "iso_code", "year", "co2", "consumption_co2", "population"
+        ],
+    )
+
+
+def load_continents(csv_path: Path = CONTINENTS_PATH) -> pd.DataFrame:
+    """Load OWID's country -> continent classification.
+
+    Args:
+        csv_path: Path to the "continents according to OWID" grapher CSV.
+
+    Returns:
+        Frame with columns `country` and `continent`, one row per entity.
+    """
+    if not csv_path.exists():
+        raise FileNotFoundError(f"no such file: {csv_path}; download it first")
+    raw = pd.read_csv(csv_path)
+    renamed = raw.rename(columns={"Entity": "country", CONTINENT_COL: "continent"})
+    return renamed[["country", "continent"]]
+
+
+def aggregate_trends_by_country(
+    trends: pd.DataFrame, value_col: str = "slope_c_per_decade"
+) -> pd.DataFrame:
+    """Mean warming trend per country across its city-locations.
+
+    The mean is unweighted: the project datasets carry no city populations,
+    so population weighting would require a third dataset and fragile
+    city-name matching (documented limitation). The result is therefore
+    station-weighted, not area-weighted -- dense urban station clusters
+    count more than their land area would.
+
+    Args:
+        trends: one row per city-location (``city_trends.parquet``).
+        value_col: Trend column to average.
+
+    Returns:
+        One row per Country with `n_cities` and `trend_c_per_decade`.
+    """
+    return (
+        trends.groupby("Country", observed=True)[value_col]
+        .agg(n_cities="size", trend_c_per_decade="mean")
+        .reset_index()
+    )
+
+
+def _attach_area_weighted(
+    country_trends: pd.DataFrame,
+    area: pd.DataFrame,
+    overrides: Mapping[str, str],
+    iso_by_owid: pd.Series,
+) -> pd.DataFrame:
+    """Merge ISO3-keyed area-weighted trends onto the station country table.
+
+    Bridges each Berkeley ``Country`` to ISO3 via the OWID name `overrides` and
+    the OWID ``iso_code`` map `iso_by_owid` -- the same identity
+    :func:`join_country_data` uses -- so the merge is on ISO3 with no fuzzy name
+    matching. Countries with no grid cells keep NaN in the two area columns.
+    """
+    owid_name = country_trends["Country"].map(lambda c: overrides.get(c, c))
+    iso3 = owid_name.map(iso_by_owid)
+    return (
+        country_trends.assign(_iso3=iso3.to_numpy())
+        .merge(area, left_on="_iso3", right_on=ISO3_COL, how="left")
+        .drop(columns=["_iso3", ISO3_COL])
+    )
+
+
+def cumulative_emissions_per_capita(
+    owid: pd.DataFrame, cutoff_year: int
+) -> pd.DataFrame:
+    """Cumulative CO2 through `cutoff_year`, per cutoff-year resident.
+
+    Annual production-based emissions (Mt) are summed from the start of
+    each country's record through `cutoff_year` and divided by that year's
+    population: tonnes per person, the standard "historical responsibility"
+    framing. OWID aggregate rows (World, continents, income groups) are
+    excluded via their missing or OWID_* iso codes.
+
+    Args:
+        owid: Frame from :func:`load_owid_co2`.
+        cutoff_year: Last year included (the analysis-window end).
+
+    Returns:
+        One row per country: country, cumulative_co2_mt, population,
+        cum_co2_t_per_capita. Countries with no emissions record or no
+        cutoff-year population are dropped and logged.
+    """
+    iso = owid["iso_code"].fillna("")
+    countries = owid[(iso != "") & ~iso.str.startswith("OWID_")]
+
+    cumulative = (
+        countries.loc[countries["year"] <= cutoff_year]
+        .groupby("country")["co2"]
+        .sum(min_count=1)
+        .rename("cumulative_co2_mt")
+    )
+    population = (
+        countries.loc[countries["year"] == cutoff_year]
+        .set_index("country")["population"]
+    )
+    out = pd.concat([cumulative, population], axis=1).reset_index(names="country")
+
+    incomplete = out["cumulative_co2_mt"].isna() | out["population"].isna()
+    if incomplete.any():
+        logger.info(
+            "dropping %d countries without emissions or %d population: %s",
+            int(incomplete.sum()),
+            cutoff_year,
+            sorted(out.loc[incomplete, "country"]),
+        )
+        out = out.loc[~incomplete]
+
+    out = out.assign(
+        cum_co2_t_per_capita=out["cumulative_co2_mt"] * 1e6 / out["population"]
+    )
+    return out.reset_index(drop=True)
+
+
+def cumulative_consumption_per_capita(
+    owid: pd.DataFrame, cutoff_year: int
+) -> pd.DataFrame:
+    """Consumption- and window-matched production cumulatives, per capita.
+
+    OWID's ``consumption_co2`` (emissions counted where goods are *consumed*)
+    starts only ~1990 and is missing for many countries, while production
+    ``co2`` runs from 1750 -- so a naive production-vs-consumption comparison is
+    window-confounded. This function fixes the confounder by computing *both*
+    cumulatives over each country's **consumption-available window**
+    ``[first year consumption_co2 is present .. cutoff_year]``:
+
+    - ``cum_consumption_t_per_capita`` -- cumulative consumption CO2 over the
+      window, per cutoff-year resident (tonnes/person);
+    - ``cum_co2_window_t_per_capita`` -- cumulative *production* CO2 over the
+      **same** window, per cutoff-year resident (the apples-to-apples baseline).
+
+    The cutoff-year population basis matches :func:`cumulative_emissions_per_capita`.
+    OWID aggregate rows (World, continents, income groups) are excluded via their
+    missing or ``OWID_*`` iso codes. Countries with no consumption record in the
+    window, or no cutoff-year population, are dropped and logged.
+
+    Args:
+        owid: Frame from :func:`load_owid_co2` (must carry ``consumption_co2``).
+        cutoff_year: Last year included (the analysis-window end).
+
+    Returns:
+        One row per country: ``country``, ``consumption_start_year``,
+        ``cum_consumption_t_per_capita``, ``cum_co2_window_t_per_capita``.
+    """
+    iso = owid["iso_code"].fillna("")
+    countries = owid[(iso != "") & ~iso.str.startswith("OWID_")]
+    within = countries.loc[countries["year"] <= cutoff_year]
+
+    present = within.loc[within["consumption_co2"].notna()]
+    start = present.groupby("country")["year"].min().rename("consumption_start_year")
+    cum_consumption = (
+        present.groupby("country")["consumption_co2"].sum(min_count=1)
+        .mul(1e6).rename("cum_consumption_mt_e6")
+    )
+
+    # Window-matched production: sum co2 only from each country's consumption
+    # start year through the cutoff (the same window the consumption sum spans).
+    windowed = within.merge(start, on="country", how="inner")
+    in_window = windowed.loc[windowed["year"] >= windowed["consumption_start_year"]]
+    cum_production = (
+        in_window.groupby("country")["co2"].sum(min_count=1)
+        .mul(1e6).rename("cum_co2_window_mt_e6")
+    )
+
+    population = (
+        countries.loc[countries["year"] == cutoff_year]
+        .set_index("country")["population"]
+    )
+    out = pd.concat([start, cum_consumption, cum_production, population], axis=1)
+
+    incomplete = out["cum_consumption_mt_e6"].isna() | out["population"].isna()
+    if incomplete.any():
+        logger.info(
+            "consumption lens: dropping %d countries without consumption record "
+            "or %d population: %s",
+            int(incomplete.sum()),
+            cutoff_year,
+            sorted(out.index[incomplete]),
+        )
+        out = out.loc[~incomplete]
+
+    out = out.assign(
+        consumption_start_year=out["consumption_start_year"].astype("int64"),
+        cum_consumption_t_per_capita=out["cum_consumption_mt_e6"] / out["population"],
+        cum_co2_window_t_per_capita=out["cum_co2_window_mt_e6"] / out["population"],
+    )
+    return out.reset_index(names="country")[["country", *CONSUMPTION_COLUMNS]]
+
+
+def join_country_data(
+    country_trends: pd.DataFrame,
+    emissions: pd.DataFrame,
+    continents: pd.DataFrame,
+    overrides: Mapping[str, str] = BERKELEY_TO_OWID,
+) -> pd.DataFrame:
+    """Join country trends with emissions and continents on OWID names.
+
+    Berkeley Earth names map to OWID entity names by exact match plus the
+    explicit `overrides`; countries that still have no OWID emissions match
+    are dropped and logged (Puerto Rico and Reunion, in the real data).
+
+    Args:
+        country_trends: From :func:`aggregate_trends_by_country`.
+        emissions: From :func:`cumulative_emissions_per_capita`.
+        continents: From :func:`load_continents`.
+        overrides: Berkeley Earth -> OWID name mapping.
+
+    Returns:
+        One row per matched country, columns `INEQUALITY_COLUMNS`.
+    """
+    mapped = country_trends.assign(
+        owid_country=country_trends["Country"].map(lambda c: overrides.get(c, c))
+    )
+    unmatched = sorted(set(mapped["owid_country"]) - set(emissions["country"]))
+    if unmatched:
+        logger.warning(
+            "dropping %d countries with no OWID emissions match: %s",
+            len(unmatched),
+            unmatched,
+        )
+
+    joined = mapped.merge(
+        emissions, left_on="owid_country", right_on="country", how="inner"
+    ).drop(columns="country")
+    joined = joined.merge(
+        continents, left_on="owid_country", right_on="country", how="left"
+    ).drop(columns="country")
+
+    missing_continent = joined["continent"].isna()
+    if missing_continent.any():
+        logger.warning(
+            "no continent for: %s",
+            sorted(joined.loc[missing_continent, "owid_country"]),
+        )
+    return joined[INEQUALITY_COLUMNS]
+
+
+@dataclass(frozen=True)
+class OLSFit:
+    """Emissions effect from one OLS fit, with HC1-robust uncertainty.
+
+    `coef` reads as deg C/decade of additional warming per tenfold increase
+    in cumulative per-capita CO2.
+    """
+
+    coef: float
+    se: float
+    ci_low: float
+    ci_high: float
+    p_value: float
+    r2: float
+
+
+@dataclass(frozen=True)
+class InequalityResult:
+    """Headline statistics for the warming-vs-emissions relationship."""
+
+    n_countries: int
+    n_continents: int
+    spearman_rho: float
+    spearman_p: float
+    ols_pooled: OLSFit
+    ols_fe: OLSFit
+
+
+def _extract_fit(
+    fit: RegressionResultsWrapper, term: str = "log10_emissions"
+) -> OLSFit:
+    """Pull `term`'s effect size and uncertainty out of a statsmodels fit."""
+    ci_low, ci_high = fit.conf_int().loc[term]
+    return OLSFit(
+        coef=float(fit.params[term]),
+        se=float(fit.bse[term]),
+        ci_low=float(ci_low),
+        ci_high=float(ci_high),
+        p_value=float(fit.pvalues[term]),
+        r2=float(fit.rsquared),
+    )
+
+
+def quantify_inequality(
+    df: pd.DataFrame,
+    x_col: str = "cum_co2_t_per_capita",
+    y_col: str = "trend_c_per_decade",
+    continent_col: str = "continent",
+) -> InequalityResult:
+    """Spearman correlation and OLS effect of emissions on warming rate.
+
+    The OLS predictor is log10 of cumulative per-capita emissions (the
+    variable spans orders of magnitude), so coefficients read as deg C/decade
+    per tenfold increase in emissions responsibility. Fit twice -- pooled,
+    and with continent fixed effects (a within-continent comparison that
+    absorbs continent-level confounders like latitude) -- both with HC1
+    robust standard errors. Spearman is rank-based and indifferent to the
+    log transform.
+
+    Args:
+        df: One row per country (see :func:`join_country_data`).
+        x_col: Cumulative per-capita emissions column (tonnes/person).
+        y_col: Warming-trend column (deg C/decade).
+        continent_col: Continent label column for the fixed effects.
+
+    Returns:
+        InequalityResult with the Spearman test and both OLS fits.
+    """
+    work = df[[x_col, y_col, continent_col]].dropna()
+    nonpositive = work[x_col] <= 0
+    if nonpositive.any():
+        logger.warning(
+            "dropping %d countries with non-positive emissions before log10",
+            int(nonpositive.sum()),
+        )
+        work = work.loc[~nonpositive]
+
+    rho, rho_p = stats.spearmanr(work[x_col], work[y_col])
+    work = work.assign(log10_emissions=np.log10(work[x_col]))
+
+    pooled = smf.ols(f"{y_col} ~ log10_emissions", data=work).fit(cov_type="HC1")
+    fe = smf.ols(f"{y_col} ~ log10_emissions + C({continent_col})", data=work).fit(
+        cov_type="HC1"
+    )
+
+    return InequalityResult(
+        n_countries=len(work),
+        n_continents=int(work[continent_col].nunique()),
+        spearman_rho=float(rho),
+        spearman_p=float(rho_p),
+        ols_pooled=_extract_fit(pooled),
+        ols_fe=_extract_fit(fe),
+    )
+
+
+def build_inequality_analysis(
+    trends_path: Path = DEFAULT_TRENDS_PATH,
+    co2_path: Path = OWID_CO2_PATH,
+    continents_path: Path = CONTINENTS_PATH,
+    out_dir: Path = OUTPUTS_DIR,
+    table_path: Path = DEFAULT_INEQUALITY_PATH,
+    cutoff_year: int | None = None,
+    pop_grid_path: Path = GPW_PATH,
+    pop_year: int = GPW_DEFAULT_YEAR,
+    berkeley_grid_path: Path = BERKELEY_GRID_PATH,
+    natid_lookup_path: Path = GPW_NATID_LOOKUP_PATH,
+    expected_sha256: str | None = OWID_CO2_SHA256,
+) -> dict:
+    """Build the country table end to end.
+
+    Downloads the OWID inputs if missing, aggregates the city trends to
+    country level, joins against cumulative per-capita emissions and
+    continents, quantifies the relationship, and writes the country table
+    plus the scatter figure.
+
+    Args:
+        trends_path: Parquet from :func:`src.trends.build_city_trends`.
+        co2_path: OWID CO2 csv (downloaded if absent).
+        continents_path: OWID continents csv (downloaded if absent).
+        out_dir: Destination directory for inequality_scatter.html.
+        table_path: Destination parquet for the joined country table.
+        cutoff_year: Last year of cumulative emissions; None derives the
+            analysis-window end year from the trends file.
+        expected_sha256: pinned digest of the OWID CO2 file (see
+            :func:`verify_owid_co2`); ``None`` accepts any vintage.
+
+    Returns:
+        Dict with keys `table` (DataFrame), `result` (InequalityResult),
+        `figure_path` and `table_path` (Paths).
+    """
+    download_file(OWID_CO2_URL, co2_path)
+    verify_owid_co2(co2_path, expected_sha256)
+    download_file(CONTINENTS_URL, continents_path)
+
+    trends = pd.read_parquet(trends_path)
+    window_start, window_end = parse_window(trends["analysis_window"].iloc[0])
+    if cutoff_year is None:
+        cutoff_year = int(window_end[:4])
+        logger.info("cutoff year %d derived from analysis_window", cutoff_year)
+
+    country_trends = aggregate_trends_by_country(trends)
+    # People-weighted exposure, best-effort: when the (gitignored) population
+    # grid is absent the columns are NULL and only the exposure lens degrades.
+    if pop_grid_path.exists():
+        pop_weighted = population_weighted_country_mean(trends, pop_grid_path, pop_year)
+        country_trends = country_trends.merge(pop_weighted, on="Country", how="left")
+    else:
+        logger.warning(
+            "population grid absent (%s); people-weighted exposure columns will "
+            "be NULL -- commit the grid to enable the people-weighted lens",
+            pop_grid_path,
+        )
+        country_trends = country_trends.assign(
+            trend_c_per_decade_pop_weighted=np.nan, pop_weight_coverage=np.nan
+        )
+
+    owid = load_owid_co2(co2_path)
+
+    # Area-weighted exposure, best-effort: a per-cell Theil-Sen trend on the
+    # Berkeley gridded field, reduced to a cos(lat)-weighted country mean, with
+    # cells assigned to countries via the GPW national-id band and joined on
+    # ISO3 <-> OWID iso_code (no name matching). NULL when the ~199 MB grid is
+    # absent, so a no-grid build still succeeds.
+    if berkeley_grid_path.exists() and pop_grid_path.exists():
+        area = area_weighted_country_trends(
+            berkeley_grid_path, pop_grid_path,
+            start=window_start, end=window_end, lookup_path=natid_lookup_path,
+        )
+        iso_by_owid = (
+            owid.dropna(subset=["iso_code"])
+            .drop_duplicates("country")
+            .set_index("country")["iso_code"]
+        )
+        country_trends = _attach_area_weighted(
+            country_trends, area, BERKELEY_TO_OWID, iso_by_owid
+        )
+    else:
+        logger.warning(
+            "Berkeley grid absent (%s) or population grid absent (%s); "
+            "area-weighted exposure columns will be NULL -- commit the grid to "
+            "enable the area-weighted lens",
+            berkeley_grid_path, pop_grid_path,
+        )
+        country_trends = country_trends.assign(
+            **{AREA_WEIGHTED_COL: np.nan, AREA_COVERAGE_COL: np.nan}
+        )
+
+    emissions = cumulative_emissions_per_capita(owid, cutoff_year)
+    consumption = cumulative_consumption_per_capita(owid, cutoff_year)
+    # Left merge: countries without an OWID consumption series keep NULLs in the
+    # trailing consumption columns (only the v2 consumption lens drops them).
+    emissions = emissions.merge(consumption, on="country", how="left")
+    table = join_country_data(
+        country_trends, emissions, load_continents(continents_path)
+    )
+    result = quantify_inequality(table)
+
+    fig = render_inequality_scatter(table)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    figure_path = out_dir / "inequality_scatter.html"
+    fig.write_html(figure_path)
+    write_typed_parquet(
+        table, table_path, INEQUALITY_SCHEMA, order_by=("continent", "Country")
+    )
+    logger.info("wrote %s and %s", table_path, figure_path)
+
+    return {
+        "table": table,
+        "result": result,
+        "figure_path": figure_path,
+        "table_path": table_path,
+    }
+
+
+def main() -> None:
+    """Build the country table and print effect sizes with uncertainty."""
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+    out = build_inequality_analysis()
+    r = out["result"]
+    print(f"countries: {r.n_countries} across {r.n_continents} continents")
+    print(f"Spearman rho: {r.spearman_rho:+.3f} (p={r.spearman_p:.2g})")
+    print("OLS, °C/decade per 10x cumulative per-capita CO2 (HC1 robust):")
+    for label, fit in (("pooled", r.ols_pooled), ("continent FE", r.ols_fe)):
+        print(
+            f"  {label:>12}: {fit.coef:+.4f} "
+            f"[95% CI {fit.ci_low:+.4f}, {fit.ci_high:+.4f}], "
+            f"p={fit.p_value:.2g}, R²={fit.r2:.3f}"
+        )
+    print(f"table:  {out['table_path']}")
+    print(f"figure: {out['figure_path']}")
+
+
+if __name__ == "__main__":
+    main()

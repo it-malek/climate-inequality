@@ -1,0 +1,202 @@
+{
+ "PHL": {
+  "total_pixels": 98253,
+  "total_area": 296328.0139071996,
+  "valid_pixels": 88297,
+  "valid_area": 290341.4140850713,
+  "missing_pixels": 9956,
+  "missing_area": 5986.599822128269,
+  "missing_pixel_mean_land_fraction": 0.17869272106388015,
+  "valid_partial_pixels": 7866,
+  "valid_full_pixels": 80431,
+  "one_degree_cells_with_land": 94,
+  "one_degree_cells_with_missing": 93,
+  "missing_share_top5_1deg_cells": 0.1692001139141546,
+  "missing_share_top10pct_1deg_cells": 0.28108509652526936,
+  "missing_fraction_by_1deg_cell_p50_p90_max": [
+   0.03900697652214487,
+   0.25691308625780634,
+   1.0
+  ],
+  "missing_lat_range": [
+   4.591666666666669,
+   21.125
+  ],
+  "elev_mean_valid": 324.15429060932354,
+  "elev_mean_valid_coastal_partial_pixels": 38.87257495782332,
+  "elev_mean_valid_full_pixels": 345.84638766808985,
+  "etopo_z_at_missing_pixel_centres_median": -11.802696228027344,
+  "etopo_z_at_missing_share_below_0": 0.7808356769787063,
+  "elev_if_missing_equal_coastal_valid": 318.39085486237263,
+  "elev_if_missing_at_0m": 317.60552732192264,
+  "koppen_area_by_group": {
+   "A": 293577.3063216093,
+   "B": 0.0,
+   "C": 0.0,
+   "D": 0.0,
+   "E": 0.0,
+   "U": 2750.707585590343
+  },
+  "koppen_05deg_pixels_total": 269,
+  "koppen_05deg_pixels_unclassified": 63,
+  "unclassified_area_by_neighbour_majority_group": {
+   "A": 2445.200900303647,
+   "B": 0.0,
+   "C": 0.0,
+   "D": 0.0,
+   "E": 0.0,
+   "no classified neighbour": 305.50668528669604
+  },
+  "unclassified_share_top5_05deg_pixels": 0.25293522837578325
+ },
+ "DNK": {
+  "total_pixels": 24975,
+  "total_area": 43336.56120797192,
+  "valid_pixels": 22491,
+  "valid_area": 42317.74163388337,
+  "missing_pixels": 2484,
+  "missing_area": 1018.8195740885561,
+  "missing_pixel_mean_land_fraction": 0.21228050084275613,
+  "valid_partial_pixels": 2279,
+  "valid_full_pixels": 20212,
+  "one_degree_cells_with_land": 22,
+  "one_degree_cells_with_missing": 22,
+  "missing_share_top5_1deg_cells": 0.531192660685693,
+  "missing_share_top10pct_1deg_cells": 0.254743492768718,
+  "missing_fraction_by_1deg_cell_p50_p90_max": [
+   0.028257184304575564,
+   0.2143586889926802,
+   1.0
+  ],
+  "missing_lat_range": [
+   54.55833333333334,
+   57.741666666666674
+  ],
+  "elev_mean_valid": 31.30322318236202,
+  "elev_mean_valid_coastal_partial_pixels": 8.049326121736792,
+  "elev_mean_valid_full_pixels": 33.37884480550859,
+  "etopo_z_at_missing_pixel_centres_median": -1.6369687914848328,
+  "etopo_z_at_missing_share_below_0": 0.6984702093397746,
+  "elev_if_missing_equal_coastal_valid": 30.756536393220863,
+  "elev_if_missing_at_0m": 30.567301004383893,
+  "koppen_area_by_group": {
+   "A": 0.0,
+   "B": 0.0,
+   "C": 19860.159617631805,
+   "D": 23171.104578004444,
+   "E": 0.0,
+   "U": 305.2970123356755
+  },
+  "koppen_05deg_pixels_total": 58,
+  "koppen_05deg_pixels_unclassified": 12,
+  "unclassified_area_by_neighbour_majority_group": {
+   "A": 0.0,
+   "B": 0.0,
+   "C": 86.30301187237615,
+   "D": 218.99400046329933,
+   "E": 0.0,
+   "no classified neighbour": 0.0
+  },
+  "unclassified_share_top5_05deg_pixels": 0.8301677954849487
+ },
+ "NOR": {
+  "total_pixels": 237947,
+  "total_area": 320144.76244751766,
+  "valid_pixels": 217028,
+  "valid_area": 313471.4329916334,
+  "missing_pixels": 20919,
+  "missing_area": 6673.329455884228,
+  "missing_pixel_mean_land_fraction": 0.22177917770575412,
+  "valid_partial_pixels": 19739,
+  "valid_full_pixels": 197289,
+  "one_degree_cells_with_land": 117,
+  "one_degree_cells_with_missing": 105,
+  "missing_share_top5_1deg_cells": 0.18883120698965192,
+  "missing_share_top10pct_1deg_cells": 0.33754551780076403,
+  "missing_fraction_by_1deg_cell_p50_p90_max": [
+   0.03345863904642385,
+   0.24577160033514692,
+   1.0
+  ],
+  "missing_lat_range": [
+   57.95833333333334,
+   71.17500000000001
+  ],
+  "elev_mean_valid": 561.6645327450058,
+  "elev_mean_valid_coastal_partial_pixels": 129.43160652881562,
+  "elev_mean_valid_full_pixels": 593.7749909731062,
+  "etopo_z_at_missing_pixel_centres_median": -25.58873176574707,
+  "etopo_z_at_missing_share_below_0": 0.7724556623165544,
+  "elev_if_missing_equal_coastal_valid": 552.6547563667513,
+  "elev_if_missing_at_0m": 549.9567901536924,
+  "koppen_area_by_group": {
+   "A": 0.0,
+   "B": 0.0,
+   "C": 9648.522122017672,
+   "D": 245322.5679678499,
+   "E": 64419.67697551147,
+   "U": 753.9953821385799
+  },
+  "koppen_05deg_pixels_total": 361,
+  "koppen_05deg_pixels_unclassified": 33,
+  "unclassified_area_by_neighbour_majority_group": {
+   "A": 0.0,
+   "B": 0.0,
+   "C": 116.80966089290037,
+   "D": 611.3453929221475,
+   "E": 21.705933852748135,
+   "no classified neighbour": 4.134394470783829
+  },
+  "unclassified_share_top5_05deg_pixels": 0.457648717048124
+ },
+ "BHS": {
+  "total_pixels": 7107,
+  "total_area": 13425.89078277679,
+  "valid_pixels": 4288,
+  "valid_area": 11932.924964743346,
+  "missing_pixels": 2819,
+  "missing_area": 1492.965818033445,
+  "missing_pixel_mean_land_fraction": 0.16971331384912886,
+  "valid_partial_pixels": 1784,
+  "valid_full_pixels": 2504,
+  "one_degree_cells_with_land": 32,
+  "one_degree_cells_with_missing": 32,
+  "missing_share_top5_1deg_cells": 0.5038590307864196,
+  "missing_share_top10pct_1deg_cells": 0.3573216085791215,
+  "missing_fraction_by_1deg_cell_p50_p90_max": [
+   0.17059098310791215,
+   0.8829513993328015,
+   1.0
+  ],
+  "missing_lat_range": [
+   20.90833333333333,
+   27.275000000000006
+  ],
+  "elev_mean_valid": 0.8144261991394776,
+  "elev_mean_valid_coastal_partial_pixels": -2.2067023759974465,
+  "elev_mean_valid_full_pixels": 2.388394203832137,
+  "etopo_z_at_missing_pixel_centres_median": -4.949462413787842,
+  "etopo_z_at_missing_share_below_0": 0.6974104292302234,
+  "elev_if_missing_equal_coastal_valid": 0.47847517975909737,
+  "elev_if_missing_at_0m": 0.7238615955463996,
+  "koppen_area_by_group": {
+   "A": 9700.578190446839,
+   "B": 1622.0567172795973,
+   "C": 0.0,
+   "D": 0.0,
+   "E": 0.0,
+   "U": 2103.255875050354
+  },
+  "koppen_05deg_pixels_total": 79,
+  "koppen_05deg_pixels_unclassified": 56,
+  "unclassified_area_by_neighbour_majority_group": {
+   "A": 1633.3379408146648,
+   "B": 223.05994659268498,
+   "C": 0.0,
+   "D": 0.0,
+   "E": 0.0,
+   "no classified neighbour": 246.8579876430038
+  },
+  "unclassified_share_top5_05deg_pixels": 0.3061498095269012
+ }
+}

@@ -1,0 +1,280 @@
+{
+  "schema_version": 2,
+  "rebuild_command": "python -m src.research_audit --write",
+  "analysis_window": "1950-01..2013-09 unless the source explicitly names a hindcast",
+  "units": "RMSE and trends: degC/decade; temperature residuals: degC; R2/shares: unitless",
+  "authority": "Index only. Values remain in the cited artifacts; no estimates are duplicated here.",
+  "source_sha256": {
+    "research/model_v2/outputs/m4_final/m4_consolidated_table.json": "8b899c0e8e55a66b5539ee9d53aa9bd1c9484d88232631074d08394c9a112e10",
+    "app/data/residual_structure_summary.json": "7b726ffe8b8974a7ce2776c02e94d2dc63e98799a62bfbdfa61a3095d7f1fca8",
+    "app/data/stats.json": "68d3f477483ac199b951c372c367514109e306abe48e5d964e5ba6252a6964a3",
+    "app/data/physical_summary.json": "77e72371302238ae977692952d559a146d4dbdc97b0f00874c4f32b558ecc653"
+  },
+  "status_definitions": {
+    "FINAL": "Retained result, including negative findings and sensitivities",
+    "SUPERSEDED": "Invalid for current headline use",
+    "HISTORICAL": "Earlier representation, not the headline allocation"
+  },
+  "results": [
+    {
+      "stage": "M4 consolidation",
+      "model": "M0 (V1 frozen, corrected 500 km primary)",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Corrected 500 km LOCO; M49/random metrics separately named",
+      "source_artifact": "research/model_v2/outputs/m4_final/m4_consolidated_table.json",
+      "json_pointer": "/rows/0",
+      "status": "HISTORICAL",
+      "interpretation": "frozen baseline"
+    },
+    {
+      "stage": "M4 consolidation",
+      "model": "M0* primary total CO2",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Corrected 500 km LOCO; M49/random metrics separately named",
+      "source_artifact": "research/model_v2/outputs/m4_final/m4_consolidated_table.json",
+      "json_pointer": "/rows/1",
+      "status": "FINAL",
+      "interpretation": "approved full-rank development baseline"
+    },
+    {
+      "stage": "M4 consolidation",
+      "model": "M0* per-capita",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Corrected 500 km LOCO; M49/random metrics separately named",
+      "source_artifact": "research/model_v2/outputs/m4_final/m4_consolidated_table.json",
+      "json_pointer": "/rows/2",
+      "status": "FINAL",
+      "interpretation": "registered representation sensitivity"
+    },
+    {
+      "stage": "M4 consolidation",
+      "model": "M1a (area geography)",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Corrected 500 km LOCO; M49/random metrics separately named",
+      "source_artifact": "research/model_v2/outputs/m4_final/m4_consolidated_table.json",
+      "json_pointer": "/rows/3",
+      "status": "FINAL",
+      "interpretation": "not promoted; measurement sensitivity"
+    },
+    {
+      "stage": "M4 consolidation",
+      "model": "M1b (M0* + C2 dryness)",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Corrected 500 km LOCO; M49/random metrics separately named",
+      "source_artifact": "research/model_v2/outputs/m4_final/m4_consolidated_table.json",
+      "json_pointer": "/rows/4",
+      "status": "FINAL",
+      "interpretation": "not supported"
+    },
+    {
+      "stage": "M4 consolidation",
+      "model": "M2 (M0* + latitude functional form)",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Corrected 500 km LOCO; M49/random metrics separately named",
+      "source_artifact": "research/model_v2/outputs/m4_final/m4_consolidated_table.json",
+      "json_pointer": "/rows/5",
+      "status": "FINAL",
+      "interpretation": "not supported"
+    },
+    {
+      "stage": "M4 consolidation",
+      "model": "M3-SEM(M0*)",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Corrected 500 km LOCO; M49/random metrics separately named",
+      "source_artifact": "research/model_v2/outputs/m4_final/m4_consolidated_table.json",
+      "json_pointer": "/rows/6",
+      "status": "FINAL",
+      "interpretation": "qualifying"
+    },
+    {
+      "stage": "M4 consolidation",
+      "model": "M3-SAR(M0*)",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Corrected 500 km LOCO; M49/random metrics separately named",
+      "source_artifact": "research/model_v2/outputs/m4_final/m4_consolidated_table.json",
+      "json_pointer": "/rows/7",
+      "status": "FINAL",
+      "interpretation": "qualifying"
+    },
+    {
+      "stage": "M4 consolidation",
+      "model": "M3-SEM(M0*) [land-centroid kNN8 sensitivity]",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Corrected 500 km LOCO; M49/random metrics separately named",
+      "source_artifact": "research/model_v2/outputs/m4_final/m4_consolidated_table.json",
+      "json_pointer": "/rows/8",
+      "status": "FINAL",
+      "interpretation": "weight sensitivity (descriptive)"
+    },
+    {
+      "stage": "M4 consolidation",
+      "model": "M3-SAR(M0*) [land-centroid kNN8 sensitivity]",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Corrected 500 km LOCO; M49/random metrics separately named",
+      "source_artifact": "research/model_v2/outputs/m4_final/m4_consolidated_table.json",
+      "json_pointer": "/rows/9",
+      "status": "FINAL",
+      "interpretation": "weight sensitivity (descriptive)"
+    },
+    {
+      "stage": "M0",
+      "model": "Legacy 1-degree centres",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Approximate territorial buffer",
+      "source_artifact": "research/model_v2/outputs/m4_final/m4_consolidated_table.json",
+      "json_pointer": "/legacy_block/M0 legacy 1° primary (defective approximation; superseded)",
+      "status": "SUPERSEDED",
+      "interpretation": "Does not certify 500 km footprint clearance; not a current headline result"
+    },
+    {
+      "stage": "M4 static assessment",
+      "model": "M0*",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "In-sample, corrected LOCO, M49, random and bootstrap, as named",
+      "source_artifact": "app/data/residual_structure_summary.json",
+      "json_pointer": "/static",
+      "status": "FINAL",
+      "interpretation": "Full-rank descriptive allocation; country and continent-block intervals are distinct"
+    },
+    {
+      "stage": "M4 robustness",
+      "model": "SEM and SAR",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Berkeley Earth, station-centroid graph, 500 km (primary)",
+      "source_artifact": "app/data/residual_structure_summary.json",
+      "json_pointer": "/robustness/0",
+      "status": "FINAL",
+      "interpretation": "Paired country-resampling intervals; not spatially corrected"
+    },
+    {
+      "stage": "M4 robustness",
+      "model": "SEM and SAR",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Berkeley Earth, land-centroid graph, 500 km",
+      "source_artifact": "app/data/residual_structure_summary.json",
+      "json_pointer": "/robustness/1",
+      "status": "FINAL",
+      "interpretation": "Paired country-resampling intervals; not spatially corrected"
+    },
+    {
+      "stage": "M4 robustness",
+      "model": "SEM and SAR",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Berkeley Earth, 1000 km territorial exclusion",
+      "source_artifact": "app/data/residual_structure_summary.json",
+      "json_pointer": "/robustness/2",
+      "status": "FINAL",
+      "interpretation": "Paired country-resampling intervals; not spatially corrected"
+    },
+    {
+      "stage": "M4 robustness",
+      "model": "SEM and SAR",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "Berkeley Earth, 1500 km centroid exclusion",
+      "source_artifact": "app/data/residual_structure_summary.json",
+      "json_pointer": "/robustness/3",
+      "status": "FINAL",
+      "interpretation": "Paired country-resampling intervals; not spatially corrected"
+    },
+    {
+      "stage": "M4 robustness",
+      "model": "SEM and SAR",
+      "dataset": "ERA5",
+      "validation_regime": "ERA5, anomaly-aligned construction",
+      "source_artifact": "app/data/residual_structure_summary.json",
+      "json_pointer": "/robustness/4",
+      "status": "FINAL",
+      "interpretation": "Paired country-resampling intervals; not spatially corrected"
+    },
+    {
+      "stage": "M4 robustness",
+      "model": "SEM and SAR",
+      "dataset": "ERA5",
+      "validation_regime": "ERA5, absolute-temperature construction",
+      "source_artifact": "app/data/residual_structure_summary.json",
+      "json_pointer": "/robustness/5",
+      "status": "FINAL",
+      "interpretation": "Paired country-resampling intervals; not spatially corrected"
+    },
+    {
+      "stage": "M4 product check",
+      "model": "M0*",
+      "dataset": "era5_aligned",
+      "validation_regime": "Corrected 500 km LOCO and in-sample allocation",
+      "source_artifact": "app/data/residual_structure_summary.json",
+      "json_pointer": "/product_static/era5_aligned",
+      "status": "FINAL",
+      "interpretation": "Static result survives; spatial predictive gain does not replicate"
+    },
+    {
+      "stage": "M4 product check",
+      "model": "M0*",
+      "dataset": "era5_absolute",
+      "validation_regime": "Corrected 500 km LOCO and in-sample allocation",
+      "source_artifact": "app/data/residual_structure_summary.json",
+      "json_pointer": "/product_static/era5_absolute",
+      "status": "FINAL",
+      "interpretation": "Static result survives; spatial predictive gain does not replicate"
+    },
+    {
+      "stage": "Responsibility comparison",
+      "model": "Spearman",
+      "dataset": "Berkeley Earth and ERA5, as named",
+      "validation_regime": "Cross-sectional association",
+      "source_artifact": "app/data/residual_structure_summary.json",
+      "json_pointer": "/responsibility_comparison",
+      "status": "FINAL",
+      "interpretation": "Different representations and country sets; not causal"
+    },
+    {
+      "stage": "Main pipeline",
+      "model": "stats",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "City trends / post-2013 check / leave-location-out as named",
+      "source_artifact": "app/data/stats.json",
+      "json_pointer": "/trends",
+      "status": "FINAL",
+      "interpretation": "Separate estimand from country decomposition"
+    },
+    {
+      "stage": "Main pipeline",
+      "model": "stats",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "City trends / post-2013 check / leave-location-out as named",
+      "source_artifact": "app/data/stats.json",
+      "json_pointer": "/validation",
+      "status": "FINAL",
+      "interpretation": "Separate estimand from country decomposition"
+    },
+    {
+      "stage": "Main pipeline",
+      "model": "stats",
+      "dataset": "Berkeley Earth",
+      "validation_regime": "City trends / post-2013 check / leave-location-out as named",
+      "source_artifact": "app/data/stats.json",
+      "json_pointer": "/interpolation",
+      "status": "FINAL",
+      "interpretation": "Separate estimand from country decomposition"
+    },
+    {
+      "stage": "Main pipeline",
+      "model": "physical_summary",
+      "dataset": "GISTEMP and forcings",
+      "validation_regime": "Train through 2013; 2014-2024 hindcast",
+      "source_artifact": "app/data/physical_summary.json",
+      "json_pointer": "/hindcast",
+      "status": "FINAL",
+      "interpretation": "Separate estimand from country decomposition"
+    },
+    {
+      "stage": "Main pipeline",
+      "model": "physical_summary",
+      "dataset": "GISTEMP and forcings",
+      "validation_regime": "Train through 2013; 2014-2024 hindcast",
+      "source_artifact": "app/data/physical_summary.json",
+      "json_pointer": "/sensitivity",
+      "status": "FINAL",
+      "interpretation": "Separate estimand from country decomposition"
+    }
+  ]
+}

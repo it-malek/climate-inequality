@@ -1,0 +1,2182 @@
+{
+  "manifest_code_sha256": "5943fe3cd3c3edae540fc60c80592998359e571dba221cdfd3573a6baa06f6c7",
+  "primary": {
+    "C0": {
+      "n": 151,
+      "in_sample_r2": 0.6364460027547281,
+      "cv_r2": 0.15307991296259638,
+      "cv_rmse": 0.04287258067948669,
+      "cv_mae": 0.0344645874976315,
+      "in_sample_rmse": 0.028089426451158434,
+      "outcome_sd": 0.046741350214455094,
+      "n_folds": 151,
+      "fold_rmse_median": 0.030212678366271478,
+      "fold_rmse_min": 5.205518452473801e-05,
+      "fold_rmse_max": 0.11473455103959602,
+      "worst_fold": 142,
+      "worst_fold_n": 1,
+      "calibration_slope": 0.60941149703364,
+      "calibration_intercept": 0.0689358526721211,
+      "residual_morans_i_in_sample": 0.26868901614174023,
+      "residual_morans_i_cv": 0.3215471676927579,
+      "mean_n_train": 141.27152317880794,
+      "rows_with_unseen_level": 1,
+      "nearest_train_km_median": 587.3811357085859,
+      "nearest_train_km_min": 500.6829492326859,
+      "share_emissions": 0.013133720535194949,
+      "share_geography": 0.5188374533606565,
+      "share_socioeconomic": 0.06282146968655963,
+      "share_population": 0.041653359172317245,
+      "residual_share": 0.36355399724527193,
+      "fold_error_iqr": 0.04303064328289877,
+      "effective_degrees_of_freedom": 20,
+      "residual_moran_in_sample": {
+        "statistic": 0.26868901614174023,
+        "expected": -0.006666666666666667,
+        "p_value": 0.001,
+        "z_score": 7.637522179334783,
+        "n_permutations": 999
+      },
+      "residual_moran_cv": {
+        "statistic": 0.3215471676927579,
+        "expected": -0.006666666666666667,
+        "p_value": 0.001,
+        "z_score": 8.986778594179745,
+        "n_permutations": 999
+      },
+      "worst_region": {
+        "region": "Central Asia",
+        "rmse": 0.06936437825894065,
+        "n": 4,
+        "min_region_n": 3
+      },
+      "region_rmse": {
+        "Melanesia": 0.08515122825110222,
+        "Central Asia": 0.06936437825894065,
+        "Australia and New Zealand": 0.06853863230284858,
+        "Northern America": 0.06381277300877572,
+        "Northern Africa": 0.057290496923058216,
+        "Central America": 0.0572209379740803,
+        "Southern Asia": 0.052719094839544046,
+        "Southern Africa": 0.04927248984081756,
+        "South America": 0.04847874879208317,
+        "South-eastern Asia": 0.04370407549342183,
+        "Eastern Europe": 0.04317961477832486,
+        "Western Asia": 0.04153458346526808,
+        "Northern Europe": 0.04050644156002207,
+        "Caribbean": 0.04015276640655823,
+        "Middle Africa": 0.037777209109997954,
+        "Western Africa": 0.0342854409360044,
+        "Eastern Asia": 0.03079216507325142,
+        "Eastern Africa": 0.026612366088369192,
+        "Western Europe": 0.020947467251509814,
+        "Southern Europe": 0.019114114001651725
+      },
+      "region_bias": {
+        "Melanesia": 0.08515122825110222,
+        "Central Asia": 0.06586201981049075,
+        "Australia and New Zealand": -0.003928314400949387,
+        "Northern America": 0.05629321485838294,
+        "Northern Africa": -0.01829781348271861,
+        "Central America": -0.04975657921005592,
+        "Southern Asia": 0.0018980034481435196,
+        "Southern Africa": -0.04463338524677874,
+        "South America": 0.004645436965705982,
+        "South-eastern Asia": -0.016337915172650593,
+        "Eastern Europe": -0.03254235375782009,
+        "Western Asia": 0.0034424599344626975,
+        "Northern Europe": 0.008010048251251262,
+        "Caribbean": 0.03230450250945147,
+        "Middle Africa": -0.021635847595544575,
+        "Western Africa": 0.02598956807737756,
+        "Eastern Asia": -0.002837707410130047,
+        "Eastern Africa": 0.006636280243174199,
+        "Western Europe": 0.01510462987311563,
+        "Southern Europe": -0.00010579330346326006
+      },
+      "region_mae": {
+        "Melanesia": 0.08515122825110222,
+        "Central Asia": 0.06586201981049075,
+        "Australia and New Zealand": 0.06842596337584421,
+        "Northern America": 0.05629321485838294,
+        "Northern Africa": 0.050329533282314855,
+        "Central America": 0.04977145211992012,
+        "Southern Asia": 0.042615238978476834,
+        "Southern Africa": 0.04463338524677874,
+        "South America": 0.03644601911500087,
+        "South-eastern Asia": 0.04018760356014589,
+        "Eastern Europe": 0.03914865692112651,
+        "Western Asia": 0.03429987201151401,
+        "Northern Europe": 0.032457494937670604,
+        "Caribbean": 0.03230450250945147,
+        "Middle Africa": 0.03318238237258375,
+        "Western Africa": 0.02752853918469029,
+        "Eastern Asia": 0.022307567885805252,
+        "Eastern Africa": 0.018754143139418516,
+        "Western Europe": 0.017782792059709753,
+        "Southern Europe": 0.0171021573822438
+      },
+      "worst_fold_country": "Brazil",
+      "paired_delta_vs_m0": {
+        "delta_rmse": 0.0,
+        "country_bootstrap_95_interval": [
+          0.0,
+          0.0
+        ],
+        "resamples": 2000,
+        "seed": 0
+      },
+      "secondary": {
+        "n": 151,
+        "in_sample_r2": 0.6364460027547281,
+        "cv_r2": 0.3029700197902634,
+        "cv_rmse": 0.03889413690932386,
+        "cv_mae": 0.03182205865244928,
+        "in_sample_rmse": 0.028089426451158434,
+        "outcome_sd": 0.046741350214455094,
+        "n_folds": 20,
+        "fold_rmse_median": 0.03980569336539086,
+        "fold_rmse_min": 0.016991623684599645,
+        "fold_rmse_max": 0.0654284447412529,
+        "worst_fold": 10,
+        "worst_fold_n": 2,
+        "calibration_slope": 0.7668127056783531,
+        "calibration_intercept": 0.03987679807259966,
+        "residual_morans_i_in_sample": 0.26868901614174023,
+        "residual_morans_i_cv": 0.3002570410230616,
+        "mean_n_train": 141.35099337748343,
+        "rows_with_unseen_level": 12,
+        "nearest_train_km_median": 0.0,
+        "nearest_train_km_min": 0.0,
+        "share_emissions": 0.013133720535194949,
+        "share_geography": 0.5188374533606565,
+        "share_socioeconomic": 0.06282146968655963,
+        "share_population": 0.041653359172317245,
+        "residual_share": 0.36355399724527193,
+        "fold_error_iqr": 0.035795678403344244,
+        "effective_degrees_of_freedom": 20,
+        "residual_moran_in_sample": {
+          "statistic": 0.26868901614174023,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 7.637522179334783,
+          "n_permutations": 999
+        },
+        "residual_moran_cv": {
+          "statistic": 0.3002570410230616,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 8.454142550379848,
+          "n_permutations": 999
+        },
+        "worst_region": {
+          "region": "Central America",
+          "rmse": 0.06208172675028285,
+          "n": 7,
+          "min_region_n": 3
+        },
+        "region_rmse": {
+          "Northern America": 0.0654284447412529,
+          "Central America": 0.06208172675028285,
+          "Australia and New Zealand": 0.05954835143685055,
+          "Central Asia": 0.05145922690706901,
+          "Northern Africa": 0.05096662534819742,
+          "Melanesia": 0.05038955509990892,
+          "Southern Africa": 0.04882654797916357,
+          "Southern Asia": 0.04227173757862437,
+          "Caribbean": 0.040840835316999745,
+          "Eastern Europe": 0.04028671215538282,
+          "Western Africa": 0.0393246745753989,
+          "Middle Africa": 0.03809253465145528,
+          "South-eastern Asia": 0.037937620134961735,
+          "Northern Europe": 0.03743061225195801,
+          "South America": 0.03602711293916905,
+          "Eastern Asia": 0.03481292016570267,
+          "Western Asia": 0.031939443719837105,
+          "Eastern Africa": 0.023772511132442276,
+          "Western Europe": 0.020687676676257365,
+          "Southern Europe": 0.016991623684599645
+        },
+        "region_bias": {
+          "Northern America": 0.059802618599081314,
+          "Central America": -0.05790800377481944,
+          "Australia and New Zealand": -0.050351099005265146,
+          "Central Asia": 0.04686958839446864,
+          "Northern Africa": -0.021615443481748695,
+          "Melanesia": 0.05038955509990892,
+          "Southern Africa": -0.04529813199458485,
+          "Southern Asia": -0.006721629456278748,
+          "Caribbean": 0.033828010832650274,
+          "Eastern Europe": -0.03529460662925058,
+          "Western Africa": 0.0344591523651591,
+          "Middle Africa": -0.020685596346191257,
+          "South-eastern Asia": -0.01516935274274658,
+          "Northern Europe": 0.007839849318171388,
+          "South America": -0.00960139105002427,
+          "Eastern Asia": -0.003197101635745286,
+          "Western Asia": -0.00028628762056677194,
+          "Eastern Africa": 0.010910800387174374,
+          "Western Europe": 0.01635223694578222,
+          "Southern Europe": 0.009114686596164824
+        },
+        "region_mae": {
+          "Northern America": 0.059802618599081314,
+          "Central America": 0.05790800377481943,
+          "Australia and New Zealand": 0.050351099005265146,
+          "Central Asia": 0.04686958839446864,
+          "Northern Africa": 0.04507288790892999,
+          "Melanesia": 0.05038955509990892,
+          "Southern Africa": 0.04529813199458485,
+          "Southern Asia": 0.03768548581823478,
+          "Caribbean": 0.033828010832650274,
+          "Eastern Europe": 0.036686312739681426,
+          "Western Africa": 0.034567004921841164,
+          "Middle Africa": 0.03416440113964319,
+          "South-eastern Asia": 0.03462991989709828,
+          "Northern Europe": 0.0294423852458106,
+          "South America": 0.027393962989417556,
+          "Eastern Asia": 0.027723260871163273,
+          "Western Asia": 0.026927684932425953,
+          "Eastern Africa": 0.015636899240483202,
+          "Western Europe": 0.01635223694578222,
+          "Southern Europe": 0.01411438587003138
+        },
+        "worst_fold_country": null,
+        "paired_delta_vs_m0": {
+          "delta_rmse": 0.0,
+          "country_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ],
+          "resamples": 2000,
+          "seed": 0
+        }
+      },
+      "random_reference_only": {
+        "n": 151,
+        "in_sample_r2": 0.6364460027547281,
+        "cv_r2": 0.4283529968790264,
+        "cv_rmse": 0.035222678205283596,
+        "cv_mae": 0.027450020769845672,
+        "in_sample_rmse": 0.028089426451158434,
+        "outcome_sd": 0.046741350214455094,
+        "n_folds": 10,
+        "fold_rmse_median": 0.034369186491692266,
+        "fold_rmse_min": 0.026802454802742983,
+        "fold_rmse_max": 0.04624035090823964,
+        "worst_fold": 7,
+        "worst_fold_n": 15,
+        "calibration_slope": 0.8017987065421271,
+        "calibration_intercept": 0.03481982672626646,
+        "residual_morans_i_in_sample": 0.26868901614174023,
+        "residual_morans_i_cv": 0.218935755072039,
+        "mean_n_train": 135.89403973509934,
+        "rows_with_unseen_level": 1,
+        "nearest_train_km_median": 0.0,
+        "nearest_train_km_min": 0.0,
+        "share_emissions": 0.013133720535194949,
+        "share_geography": 0.5188374533606565,
+        "share_socioeconomic": 0.06282146968655963,
+        "share_population": 0.041653359172317245,
+        "residual_share": 0.36355399724527193,
+        "fold_error_iqr": 0.028639939237938443,
+        "effective_degrees_of_freedom": 20,
+        "residual_moran_in_sample": {
+          "statistic": 0.26868901614174023,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 7.637522179334783,
+          "n_permutations": 999
+        },
+        "residual_moran_cv": {
+          "statistic": 0.218935755072039,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 6.272674047857851,
+          "n_permutations": 999
+        },
+        "worst_region": {
+          "region": "Northern Africa",
+          "rmse": 0.051958407225040686,
+          "n": 6,
+          "min_region_n": 3
+        },
+        "region_rmse": {
+          "Melanesia": 0.08821455011679882,
+          "Australia and New Zealand": 0.06725666462528151,
+          "Northern America": 0.056596036893414504,
+          "Northern Africa": 0.051958407225040686,
+          "Southern Asia": 0.04426441310140596,
+          "South America": 0.04146549402997341,
+          "Southern Africa": 0.04131845583590684,
+          "Central Asia": 0.04060168306842015,
+          "Northern Europe": 0.03741122081819388,
+          "Central America": 0.0356424786473949,
+          "South-eastern Asia": 0.03417039128118886,
+          "Caribbean": 0.03353636988984152,
+          "Western Asia": 0.0335173329789794,
+          "Middle Africa": 0.032655123839180344,
+          "Eastern Asia": 0.03074859914501085,
+          "Eastern Europe": 0.030278172278302228,
+          "Western Africa": 0.02843056157310328,
+          "Eastern Africa": 0.021843500455686435,
+          "Southern Europe": 0.017973603798053916,
+          "Western Europe": 0.01562423752701653
+        },
+        "region_bias": {
+          "Melanesia": 0.08821455011679882,
+          "Australia and New Zealand": -0.003852040293610165,
+          "Northern America": 0.04395756595911052,
+          "Northern Africa": -0.018479803736910428,
+          "Southern Asia": -0.0021615636140656447,
+          "South America": -0.0022972238472818377,
+          "Southern Africa": -0.036881952589845404,
+          "Central Asia": 0.02927441505486214,
+          "Northern Europe": 0.0013780397517500875,
+          "Central America": -0.026166563508443878,
+          "South-eastern Asia": -0.011236780335512946,
+          "Caribbean": 0.024791484562583684,
+          "Western Asia": -0.0017230591474726386,
+          "Middle Africa": -0.012511358330842291,
+          "Eastern Asia": -0.003263160556096728,
+          "Eastern Europe": -0.02162249786610354,
+          "Western Africa": 0.020650422292651953,
+          "Eastern Africa": 0.00697835421632973,
+          "Southern Europe": 0.006758183051944586,
+          "Western Europe": 0.010837281250429135
+        },
+        "region_mae": {
+          "Melanesia": 0.08821455011679882,
+          "Australia and New Zealand": 0.06714626364954343,
+          "Northern America": 0.04395756595911052,
+          "Northern Africa": 0.045193358451741224,
+          "Southern Asia": 0.036740690371633855,
+          "South America": 0.031401744414146886,
+          "Southern Africa": 0.036881952589845404,
+          "Central Asia": 0.029552930080754436,
+          "Northern Europe": 0.028675045658809368,
+          "Central America": 0.030018492913254646,
+          "South-eastern Asia": 0.03010096715356425,
+          "Caribbean": 0.024796172325228672,
+          "Western Asia": 0.027390702234310844,
+          "Middle Africa": 0.02789641752677076,
+          "Eastern Asia": 0.024669264923927653,
+          "Eastern Europe": 0.028455416883952877,
+          "Western Africa": 0.022809601277068308,
+          "Eastern Africa": 0.014615028495865118,
+          "Southern Europe": 0.015052354038697573,
+          "Western Europe": 0.010837281250429135
+        },
+        "worst_fold_country": null,
+        "paired_delta_vs_m0": {
+          "delta_rmse": 0.0,
+          "country_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ],
+          "resamples": 2000,
+          "seed": 0
+        }
+      },
+      "recorded_area_centroid_moran_in_sample": 0.28991917654890587,
+      "recorded_area_centroid_moran_cv": 0.35015287498112196,
+      "encoded_columns": [
+        "intercept",
+        "cum_co2_total",
+        "abs_latitude",
+        "elevation",
+        "continentality",
+        "climate_zone=B",
+        "climate_zone=C",
+        "climate_zone=D",
+        "climate_zone=E",
+        "hemisphere=S",
+        "spatial_block=Asia",
+        "spatial_block=Europe",
+        "spatial_block=North America",
+        "spatial_block=Oceania",
+        "spatial_block=South America",
+        "income_group=Low-income countries",
+        "income_group=Lower-middle-income countries",
+        "income_group=Upper-middle-income countries",
+        "population",
+        "station_density"
+      ],
+      "matrix_columns": 20,
+      "matrix_rank": 20,
+      "levels_present": {
+        "climate_zone": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "hemisphere": [
+          "N",
+          "S"
+        ],
+        "income_group": [
+          "High-income countries",
+          "Low-income countries",
+          "Lower-middle-income countries",
+          "Upper-middle-income countries"
+        ],
+        "spatial_block": [
+          "Africa",
+          "Asia",
+          "Europe",
+          "North America",
+          "Oceania",
+          "South America"
+        ]
+      },
+      "unseen_rows_by_categorical": {
+        "primary": {
+          "climate_zone": 1,
+          "hemisphere": 0,
+          "income_group": 0,
+          "spatial_block": 0
+        },
+        "secondary": {
+          "climate_zone": 1,
+          "hemisphere": 0,
+          "income_group": 0,
+          "spatial_block": 11
+        }
+      },
+      "coefficient_sign_stability_recorded": {
+        "intercept": {
+          "full": 0.24552989867604766,
+          "same_sign_fraction": 1.0
+        },
+        "cum_co2_total": {
+          "full": 0.01577237906570938,
+          "same_sign_fraction": 1.0
+        },
+        "abs_latitude": {
+          "full": 0.0010642452637554718,
+          "same_sign_fraction": 1.0
+        },
+        "elevation": {
+          "full": -6.296829141534788e-07,
+          "same_sign_fraction": 0.7218543046357616
+        },
+        "continentality": {
+          "full": 4.107686048068741e-05,
+          "same_sign_fraction": 1.0
+        },
+        "population": {
+          "full": -0.012868445142368274,
+          "same_sign_fraction": 0.9933774834437086
+        },
+        "station_density": {
+          "full": -0.0016966102777798593,
+          "same_sign_fraction": 1.0
+        },
+        "climate_zone=B": {
+          "full": 0.005475457146156781,
+          "same_sign_fraction": 0.9205298013245033
+        },
+        "climate_zone=C": {
+          "full": -0.023135901183411384,
+          "same_sign_fraction": 1.0
+        },
+        "climate_zone=D": {
+          "full": -0.0071294906901603295,
+          "same_sign_fraction": 0.8145695364238411
+        },
+        "climate_zone=E": {
+          "full": -0.09245680988584253,
+          "same_sign_fraction": 1.0
+        },
+        "hemisphere=S": {
+          "full": -0.02627875249548877,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=Asia": {
+          "full": -0.052218730348831205,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=Europe": {
+          "full": -0.06076538582413299,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=North America": {
+          "full": -0.09000707685422299,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=Oceania": {
+          "full": -0.0562746038214019,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=South America": {
+          "full": -0.06223792297587291,
+          "same_sign_fraction": 1.0
+        },
+        "income_group=Low-income countries": {
+          "full": 0.003619260377779571,
+          "same_sign_fraction": 0.8543046357615894
+        },
+        "income_group=Lower-middle-income countries": {
+          "full": -0.009361469618728831,
+          "same_sign_fraction": 0.9668874172185431
+        },
+        "income_group=Upper-middle-income countries": {
+          "full": -0.014529819083070257,
+          "same_sign_fraction": 1.0
+        }
+      }
+    },
+    "M1a": {
+      "n": 151,
+      "in_sample_r2": 0.6121710173802325,
+      "cv_r2": 0.057988282529487734,
+      "cv_rmse": 0.045215419241578535,
+      "cv_mae": 0.03592921366239346,
+      "in_sample_rmse": 0.029012058201622584,
+      "outcome_sd": 0.046741350214455094,
+      "n_folds": 151,
+      "fold_rmse_median": 0.030305760326068465,
+      "fold_rmse_min": 0.00013626801985155979,
+      "fold_rmse_max": 0.12723305300403145,
+      "worst_fold": 77,
+      "worst_fold_n": 1,
+      "calibration_slope": 0.5400206914724591,
+      "calibration_intercept": 0.08136804699426538,
+      "residual_morans_i_in_sample": 0.31530330186096844,
+      "residual_morans_i_cv": 0.3408043791612641,
+      "mean_n_train": 141.27152317880794,
+      "rows_with_unseen_level": 0,
+      "nearest_train_km_median": 587.3811357085859,
+      "nearest_train_km_min": 500.6829492326859,
+      "share_emissions": 0.013850889827095165,
+      "share_geography": 0.4876673892471702,
+      "share_socioeconomic": 0.0626478905665906,
+      "share_population": 0.04800484773937671,
+      "residual_share": 0.3878289826197675,
+      "fold_error_iqr": 0.039751467709852405,
+      "effective_degrees_of_freedom": 20,
+      "residual_moran_in_sample": {
+        "statistic": 0.31530330186096844,
+        "expected": -0.006666666666666667,
+        "p_value": 0.001,
+        "z_score": 8.838693508084843,
+        "n_permutations": 999
+      },
+      "residual_moran_cv": {
+        "statistic": 0.3408043791612641,
+        "expected": -0.006666666666666667,
+        "p_value": 0.001,
+        "z_score": 9.34602643206088,
+        "n_permutations": 999
+      },
+      "worst_region": {
+        "region": "Central Asia",
+        "rmse": 0.09800941418340528,
+        "n": 4,
+        "min_region_n": 3
+      },
+      "region_rmse": {
+        "Central Asia": 0.09800941418340528,
+        "Melanesia": 0.0876607299472969,
+        "Northern America": 0.06985176810454816,
+        "Central America": 0.05933888558822771,
+        "Australia and New Zealand": 0.05771549744526003,
+        "Southern Asia": 0.05621657818263974,
+        "South-eastern Asia": 0.052717621452516454,
+        "South America": 0.05168668243588934,
+        "Northern Europe": 0.04716300274477987,
+        "Northern Africa": 0.04426722171991414,
+        "Western Asia": 0.043591523332435406,
+        "Middle Africa": 0.04217448999864842,
+        "Caribbean": 0.041645530528327125,
+        "Southern Africa": 0.04090198229486729,
+        "Eastern Europe": 0.03894540599801843,
+        "Western Africa": 0.0315419855201434,
+        "Eastern Africa": 0.028819975604559872,
+        "Western Europe": 0.027471842973795298,
+        "Eastern Asia": 0.0272239488186555,
+        "Southern Europe": 0.021453452789422855
+      },
+      "region_bias": {
+        "Central Asia": 0.09618676876347262,
+        "Melanesia": 0.0876607299472969,
+        "Northern America": 0.05862967873147153,
+        "Central America": -0.049040438424172474,
+        "Australia and New Zealand": -0.007195725143438761,
+        "Southern Asia": 0.0077556606840137165,
+        "South-eastern Asia": -0.021761130788330734,
+        "South America": 0.0034019321708155313,
+        "Northern Europe": 0.0037316954306479883,
+        "Northern Africa": -0.020184496151841095,
+        "Western Asia": -0.003217733113857877,
+        "Middle Africa": -0.031989426097955215,
+        "Caribbean": 0.03121449240311235,
+        "Southern Africa": -0.03415980640392434,
+        "Eastern Europe": -0.025790224107482884,
+        "Western Africa": 0.021651238581599862,
+        "Eastern Africa": 0.011172130142828949,
+        "Western Europe": 0.02269629864391631,
+        "Eastern Asia": -0.005064990353824744,
+        "Southern Europe": 0.003242069363442515
+      },
+      "region_mae": {
+        "Central Asia": 0.09618676876347262,
+        "Melanesia": 0.0876607299472969,
+        "Northern America": 0.05862967873147153,
+        "Central America": 0.050868704059228685,
+        "Australia and New Zealand": 0.05726517427733806,
+        "Southern Asia": 0.04856267519667893,
+        "South-eastern Asia": 0.04795326049241372,
+        "South America": 0.04171974450878517,
+        "Northern Europe": 0.03373983757980078,
+        "Northern Africa": 0.03753581153382703,
+        "Western Asia": 0.03676187135184002,
+        "Middle Africa": 0.03369072935774996,
+        "Caribbean": 0.03189710179078957,
+        "Southern Africa": 0.03415980640392434,
+        "Eastern Europe": 0.0351881642013356,
+        "Western Africa": 0.02578781632872817,
+        "Eastern Africa": 0.02301764840385465,
+        "Western Europe": 0.02269629864391631,
+        "Eastern Asia": 0.01865018565230155,
+        "Southern Europe": 0.018555660378785952
+      },
+      "worst_fold_country": "Tajikistan",
+      "paired_delta_vs_m0": {
+        "delta_rmse": 0.002342838562091845,
+        "country_bootstrap_95_interval": [
+          -0.0003498522577407903,
+          0.005264254669835553
+        ],
+        "resamples": 2000,
+        "seed": 0
+      },
+      "secondary": {
+        "n": 151,
+        "in_sample_r2": 0.6121710173802325,
+        "cv_r2": 0.24113584650503894,
+        "cv_rmse": 0.04058265245449717,
+        "cv_mae": 0.03243976584968061,
+        "in_sample_rmse": 0.029012058201622584,
+        "outcome_sd": 0.046741350214455094,
+        "n_folds": 20,
+        "fold_rmse_median": 0.03906201496789777,
+        "fold_rmse_min": 0.019119700794788305,
+        "fold_rmse_max": 0.08595122766175538,
+        "worst_fold": 3,
+        "worst_fold_n": 4,
+        "calibration_slope": 0.7131353448659427,
+        "calibration_intercept": 0.04950831542791795,
+        "residual_morans_i_in_sample": 0.31530330186096844,
+        "residual_morans_i_cv": 0.3248519802000613,
+        "mean_n_train": 141.35099337748343,
+        "rows_with_unseen_level": 11,
+        "nearest_train_km_median": 0.0,
+        "nearest_train_km_min": 0.0,
+        "share_emissions": 0.013850889827095165,
+        "share_geography": 0.4876673892471702,
+        "share_socioeconomic": 0.0626478905665906,
+        "share_population": 0.04800484773937671,
+        "residual_share": 0.3878289826197675,
+        "fold_error_iqr": 0.03304581434851732,
+        "effective_degrees_of_freedom": 20,
+        "residual_moran_in_sample": {
+          "statistic": 0.31530330186096844,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 8.838693508084843,
+          "n_permutations": 999
+        },
+        "residual_moran_cv": {
+          "statistic": 0.3248519802000613,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 9.135456346853118,
+          "n_permutations": 999
+        },
+        "worst_region": {
+          "region": "Central Asia",
+          "rmse": 0.08595122766175538,
+          "n": 4,
+          "min_region_n": 3
+        },
+        "region_rmse": {
+          "Central Asia": 0.08595122766175538,
+          "Northern America": 0.0706295326886761,
+          "Australia and New Zealand": 0.06469727511899959,
+          "Central America": 0.062070277395812515,
+          "Melanesia": 0.05941185505350427,
+          "South-eastern Asia": 0.0454554917848525,
+          "Southern Asia": 0.0446115388424546,
+          "Northern Europe": 0.0427069587556113,
+          "Caribbean": 0.042644303155098436,
+          "Northern Africa": 0.039460890923769275,
+          "Middle Africa": 0.03866313901202627,
+          "Western Africa": 0.036367545418299035,
+          "Southern Africa": 0.035530636450820184,
+          "Eastern Europe": 0.03506085329362925,
+          "South America": 0.034849585985369365,
+          "Western Asia": 0.03454530526757878,
+          "Eastern Asia": 0.029937307099285475,
+          "Eastern Africa": 0.027736037874537066,
+          "Western Europe": 0.02430393626148142,
+          "Southern Europe": 0.019119700794788305
+        },
+        "region_bias": {
+          "Central Asia": 0.08060938126928721,
+          "Northern America": 0.061001795441422355,
+          "Australia and New Zealand": -0.06042714931605271,
+          "Central America": -0.056386475459244426,
+          "Melanesia": 0.05941185505350427,
+          "South-eastern Asia": -0.020225020907642683,
+          "Southern Asia": 0.0031624962384326654,
+          "Northern Europe": -0.003060938531000029,
+          "Caribbean": 0.03384000897866961,
+          "Northern Africa": -0.021520190348358222,
+          "Middle Africa": -0.028216177236549903,
+          "Western Africa": 0.030865231021866807,
+          "Southern Africa": -0.029562150002976594,
+          "Eastern Europe": -0.02733952210490524,
+          "South America": -0.014106726999361234,
+          "Western Asia": -0.009376053019085341,
+          "Eastern Asia": -0.010708849681576288,
+          "Eastern Africa": 0.017072658417621105,
+          "Western Europe": 0.020349056285227683,
+          "Southern Europe": 0.011638104752406826
+        },
+        "region_mae": {
+          "Central Asia": 0.08060938126928721,
+          "Northern America": 0.061001795441422355,
+          "Australia and New Zealand": 0.06042714931605271,
+          "Central America": 0.056386475459244426,
+          "Melanesia": 0.05941185505350427,
+          "South-eastern Asia": 0.04128033979760877,
+          "Southern Asia": 0.037611407990294256,
+          "Northern Europe": 0.030641441717816697,
+          "Caribbean": 0.03480606701300813,
+          "Northern Africa": 0.03233049409273607,
+          "Middle Africa": 0.03240635529475561,
+          "Western Africa": 0.031581107334611655,
+          "Southern Africa": 0.029562150002976594,
+          "Eastern Europe": 0.03195966696598092,
+          "South America": 0.02656409626090889,
+          "Western Asia": 0.027907516842021123,
+          "Eastern Asia": 0.023884574511823416,
+          "Eastern Africa": 0.022838511778496086,
+          "Western Europe": 0.020349056285227683,
+          "Southern Europe": 0.015470345721987274
+        },
+        "worst_fold_country": null,
+        "paired_delta_vs_m0": {
+          "delta_rmse": 0.0,
+          "country_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ],
+          "resamples": 2000,
+          "seed": 0
+        }
+      },
+      "random_reference_only": {
+        "n": 151,
+        "in_sample_r2": 0.6121710173802325,
+        "cv_r2": 0.3661484744999528,
+        "cv_rmse": 0.037089602551800605,
+        "cv_mae": 0.028695728834158687,
+        "in_sample_rmse": 0.029012058201622584,
+        "outcome_sd": 0.046741350214455094,
+        "n_folds": 10,
+        "fold_rmse_median": 0.034638135402886974,
+        "fold_rmse_min": 0.028487459374980092,
+        "fold_rmse_max": 0.04602090733184967,
+        "worst_fold": 7,
+        "worst_fold_n": 15,
+        "calibration_slope": 0.7596896983464771,
+        "calibration_intercept": 0.04230998455794873,
+        "residual_morans_i_in_sample": 0.31530330186096844,
+        "residual_morans_i_cv": 0.26697652201361083,
+        "mean_n_train": 135.89403973509934,
+        "rows_with_unseen_level": 0,
+        "nearest_train_km_median": 0.0,
+        "nearest_train_km_min": 0.0,
+        "share_emissions": 0.013850889827095165,
+        "share_geography": 0.4876673892471702,
+        "share_socioeconomic": 0.0626478905665906,
+        "share_population": 0.04800484773937671,
+        "residual_share": 0.3878289826197675,
+        "fold_error_iqr": 0.03260215562736771,
+        "effective_degrees_of_freedom": 20,
+        "residual_moran_in_sample": {
+          "statistic": 0.31530330186096844,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 8.838693508084843,
+          "n_permutations": 999
+        },
+        "residual_moran_cv": {
+          "statistic": 0.26697652201361083,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 7.486921246924012,
+          "n_permutations": 999
+        },
+        "worst_region": {
+          "region": "Central Asia",
+          "rmse": 0.07591871621801109,
+          "n": 4,
+          "min_region_n": 3
+        },
+        "region_rmse": {
+          "Melanesia": 0.08792849830547633,
+          "Central Asia": 0.07591871621801109,
+          "Northern America": 0.06381702498622643,
+          "Australia and New Zealand": 0.0557867661478328,
+          "Southern Asia": 0.046430508042066235,
+          "Northern Europe": 0.044511271013359215,
+          "Northern Africa": 0.04420154217962469,
+          "South-eastern Asia": 0.041503609820727566,
+          "Central America": 0.03891079850686989,
+          "Western Asia": 0.03665865264801224,
+          "South America": 0.03506181530912613,
+          "Caribbean": 0.034700869230599875,
+          "Southern Africa": 0.034317398274024004,
+          "Middle Africa": 0.032504306838551544,
+          "Eastern Europe": 0.028391279496593074,
+          "Eastern Asia": 0.027224886208552096,
+          "Eastern Africa": 0.02693253608885913,
+          "Western Africa": 0.02660464308657044,
+          "Southern Europe": 0.018564932243095973,
+          "Western Europe": 0.01778231094971061
+        },
+        "region_bias": {
+          "Melanesia": 0.08792849830547633,
+          "Central Asia": 0.06625853162729445,
+          "Northern America": 0.04159302808586535,
+          "Australia and New Zealand": -0.012822967342216343,
+          "Southern Asia": 0.005963408165228791,
+          "Northern Europe": -0.0047403261160371465,
+          "Northern Africa": -0.019469206412787498,
+          "South-eastern Asia": -0.013995706980818978,
+          "Central America": -0.026786288720296102,
+          "Western Asia": -0.008329920459879875,
+          "South America": -0.0009100200650086639,
+          "Caribbean": 0.023269008505067627,
+          "Southern Africa": -0.02559579317658341,
+          "Middle Africa": -0.019779446271997337,
+          "Eastern Europe": -0.01789310798653227,
+          "Eastern Asia": -0.014466687622744829,
+          "Eastern Africa": 0.011287737966238434,
+          "Western Africa": 0.017566025169073164,
+          "Southern Europe": 0.007220056958424029,
+          "Western Europe": 0.013294550363663171
+        },
+        "region_mae": {
+          "Melanesia": 0.08792849830547633,
+          "Central Asia": 0.06625853162729445,
+          "Northern America": 0.04840075095224314,
+          "Australia and New Zealand": 0.05429304546416085,
+          "Southern Asia": 0.03731937492027177,
+          "Northern Europe": 0.03079216296453996,
+          "Northern Africa": 0.037669205878300915,
+          "South-eastern Asia": 0.037020061790097744,
+          "Central America": 0.03202829135216447,
+          "Western Asia": 0.03024993415613871,
+          "South America": 0.02874974461791382,
+          "Caribbean": 0.026685553473321043,
+          "Southern Africa": 0.025697464107539442,
+          "Middle Africa": 0.02598531150818779,
+          "Eastern Europe": 0.02630261248480007,
+          "Eastern Asia": 0.02391725009181738,
+          "Eastern Africa": 0.021580748289271943,
+          "Western Africa": 0.020206263939356133,
+          "Southern Europe": 0.015153105387852838,
+          "Western Europe": 0.014177554047376417
+        },
+        "worst_fold_country": null,
+        "paired_delta_vs_m0": {
+          "delta_rmse": 0.0,
+          "country_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ],
+          "resamples": 2000,
+          "seed": 0
+        }
+      },
+      "recorded_area_centroid_moran_in_sample": 0.340722133048432,
+      "recorded_area_centroid_moran_cv": 0.3601980381681383,
+      "encoded_columns": [
+        "intercept",
+        "cum_co2_total",
+        "abs_latitude",
+        "elevation",
+        "continentality",
+        "climate_zone=B",
+        "climate_zone=C",
+        "climate_zone=D",
+        "climate_zone=E",
+        "hemisphere=S",
+        "spatial_block=Asia",
+        "spatial_block=Europe",
+        "spatial_block=North America",
+        "spatial_block=Oceania",
+        "spatial_block=South America",
+        "income_group=Low-income countries",
+        "income_group=Lower-middle-income countries",
+        "income_group=Upper-middle-income countries",
+        "population",
+        "station_density"
+      ],
+      "matrix_columns": 20,
+      "matrix_rank": 20,
+      "levels_present": {
+        "climate_zone": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "hemisphere": [
+          "N",
+          "S"
+        ],
+        "income_group": [
+          "High-income countries",
+          "Low-income countries",
+          "Lower-middle-income countries",
+          "Upper-middle-income countries"
+        ],
+        "spatial_block": [
+          "Africa",
+          "Asia",
+          "Europe",
+          "North America",
+          "Oceania",
+          "South America"
+        ]
+      },
+      "unseen_rows_by_categorical": {
+        "primary": {
+          "climate_zone": 0,
+          "hemisphere": 0,
+          "income_group": 0,
+          "spatial_block": 0
+        },
+        "secondary": {
+          "climate_zone": 0,
+          "hemisphere": 0,
+          "income_group": 0,
+          "spatial_block": 11
+        }
+      },
+      "coefficient_sign_stability_recorded": {
+        "intercept": {
+          "full": 0.2982412797462406,
+          "same_sign_fraction": 1.0
+        },
+        "cum_co2_total": {
+          "full": 0.01971662118875395,
+          "same_sign_fraction": 0.9933774834437086
+        },
+        "abs_latitude": {
+          "full": 0.0009630243632450483,
+          "same_sign_fraction": 1.0
+        },
+        "elevation": {
+          "full": -2.299276737196296e-06,
+          "same_sign_fraction": 0.9006622516556292
+        },
+        "continentality": {
+          "full": 4.4261983838017e-05,
+          "same_sign_fraction": 1.0
+        },
+        "population": {
+          "full": -0.022913931761266746,
+          "same_sign_fraction": 0.9933774834437086
+        },
+        "station_density": {
+          "full": -0.0018407399682649837,
+          "same_sign_fraction": 1.0
+        },
+        "climate_zone=B": {
+          "full": -0.00443968077545988,
+          "same_sign_fraction": 0.8211920529801324
+        },
+        "climate_zone=C": {
+          "full": -0.024409041115377266,
+          "same_sign_fraction": 1.0
+        },
+        "climate_zone=D": {
+          "full": -0.011095733065947085,
+          "same_sign_fraction": 0.8874172185430463
+        },
+        "climate_zone=E": {
+          "full": -0.05057398061919441,
+          "same_sign_fraction": 0.9933774834437086
+        },
+        "hemisphere=S": {
+          "full": -0.026817989994180644,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=Asia": {
+          "full": -0.04196371122390928,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=Europe": {
+          "full": -0.052150430194320696,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=North America": {
+          "full": -0.08814568363793251,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=Oceania": {
+          "full": -0.05864463282432238,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=South America": {
+          "full": -0.06435003800988498,
+          "same_sign_fraction": 1.0
+        },
+        "income_group=Low-income countries": {
+          "full": 0.015823752269508325,
+          "same_sign_fraction": 0.9668874172185431
+        },
+        "income_group=Lower-middle-income countries": {
+          "full": -0.0023121481354880314,
+          "same_sign_fraction": 0.7284768211920529
+        },
+        "income_group=Upper-middle-income countries": {
+          "full": -0.013020930083333847,
+          "same_sign_fraction": 1.0
+        }
+      }
+    },
+    "classification": {
+      "transfer": "no detectable change in transfer",
+      "secondary_veto_passed": false,
+      "worst_region_veto_passed": false,
+      "spatial_structure": "residual spatial autocorrelation essentially unchanged",
+      "delta_moran_in_sample": 0.04661428571922821,
+      "delta_moran_cv": 0.01925721146850623,
+      "material_change_to_conclusion": false,
+      "scientific_stability": "stable",
+      "overfitting_signal": true,
+      "in_sample_r2_gain": -0.024274985374495572,
+      "cv_r2_gain": -0.09509163043310864,
+      "summary": "neither",
+      "gate_m1a_to_m1": {
+        "genuine_improvement": false,
+        "not_worse": true,
+        "large_country_abs_errors_before": {
+          "CAN": 0.08634556850959418,
+          "BRA": 0.11473455103959602,
+          "RUS": 0.03175910306296173,
+          "DZA": 0.041881113889107174
+        },
+        "large_country_abs_errors_after": {
+          "CAN": 0.09660111904094631,
+          "BRA": 0.11475284513551726,
+          "RUS": 0.03965907889990622,
+          "DZA": 0.004096142034081429
+        },
+        "large_country_errors_all_reduced": false
+      },
+      "countries_improved": 72,
+      "countries_worsened": 79
+    }
+  },
+  "percapita_sensitivity": {
+    "C0": {
+      "n": 151,
+      "in_sample_r2": 0.6364460027547281,
+      "cv_r2": 0.15307991296261803,
+      "cv_rmse": 0.04287258067948614,
+      "cv_mae": 0.03446458749763083,
+      "in_sample_rmse": 0.02808942645115843,
+      "outcome_sd": 0.046741350214455094,
+      "n_folds": 151,
+      "fold_rmse_median": 0.030212678366259654,
+      "fold_rmse_min": 5.2055184522989406e-05,
+      "fold_rmse_max": 0.11473455103959766,
+      "worst_fold": 142,
+      "worst_fold_n": 1,
+      "calibration_slope": 0.6094114970336537,
+      "calibration_intercept": 0.0689358526721177,
+      "residual_morans_i_in_sample": 0.2686890161417413,
+      "residual_morans_i_cv": 0.32154716769274727,
+      "mean_n_train": 141.27152317880794,
+      "rows_with_unseen_level": 1,
+      "nearest_train_km_median": 587.3811357085859,
+      "nearest_train_km_min": 500.6829492326859,
+      "share_emissions": 0.020435358891495586,
+      "share_geography": 0.513519756654464,
+      "share_socioeconomic": 0.06928246597399394,
+      "share_population": 0.03320842123477475,
+      "residual_share": 0.36355399724527193,
+      "fold_error_iqr": 0.043030643282895936,
+      "effective_degrees_of_freedom": 20,
+      "residual_moran_in_sample": {
+        "statistic": 0.2686890161417413,
+        "expected": -0.006666666666666667,
+        "p_value": 0.001,
+        "z_score": 7.63752217933476,
+        "n_permutations": 999
+      },
+      "residual_moran_cv": {
+        "statistic": 0.32154716769274727,
+        "expected": -0.006666666666666667,
+        "p_value": 0.001,
+        "z_score": 8.986778594179501,
+        "n_permutations": 999
+      },
+      "worst_region": {
+        "region": "Central Asia",
+        "rmse": 0.06936437825893833,
+        "n": 4,
+        "min_region_n": 3
+      },
+      "region_rmse": {
+        "Melanesia": 0.08515122825110064,
+        "Central Asia": 0.06936437825893833,
+        "Australia and New Zealand": 0.06853863230284951,
+        "Northern America": 0.06381277300877583,
+        "Northern Africa": 0.05729049692305709,
+        "Central America": 0.05722093797408006,
+        "Southern Asia": 0.052719094839543706,
+        "Southern Africa": 0.04927248984082009,
+        "South America": 0.0484787487920841,
+        "South-eastern Asia": 0.043704075493422326,
+        "Eastern Europe": 0.04317961477832449,
+        "Western Asia": 0.04153458346526642,
+        "Northern Europe": 0.04050644156002157,
+        "Caribbean": 0.04015276640655505,
+        "Middle Africa": 0.03777720910999883,
+        "Western Africa": 0.0342854409360028,
+        "Eastern Asia": 0.030792165073248296,
+        "Eastern Africa": 0.026612366088367357,
+        "Western Europe": 0.02094746725151196,
+        "Southern Europe": 0.019114114001650945
+      },
+      "region_bias": {
+        "Melanesia": 0.08515122825110064,
+        "Central Asia": 0.06586201981048703,
+        "Australia and New Zealand": -0.003928314400953557,
+        "Northern America": 0.05629321485838408,
+        "Northern Africa": -0.01829781348271926,
+        "Central America": -0.04975657921005627,
+        "Southern Asia": 0.0018980034481432023,
+        "Southern Africa": -0.04463338524678203,
+        "South America": 0.00464543696570506,
+        "South-eastern Asia": -0.01633791517265156,
+        "Eastern Europe": -0.032542353757819206,
+        "Western Asia": 0.0034424599344616224,
+        "Northern Europe": 0.00801004825124913,
+        "Caribbean": 0.03230450250944602,
+        "Middle Africa": -0.021635847595547576,
+        "Western Africa": 0.025989568077375427,
+        "Eastern Asia": -0.002837707410131862,
+        "Eastern Africa": 0.00663628024317268,
+        "Western Europe": 0.015104629873114839,
+        "Southern Europe": -0.0001057933034646428
+      },
+      "region_mae": {
+        "Melanesia": 0.08515122825110064,
+        "Central Asia": 0.06586201981048703,
+        "Australia and New Zealand": 0.06842596337584489,
+        "Northern America": 0.05629321485838408,
+        "Northern Africa": 0.05032953328231347,
+        "Central America": 0.04977145211991998,
+        "Southern Asia": 0.04261523897847556,
+        "Southern Africa": 0.04463338524678203,
+        "South America": 0.0364460191150015,
+        "South-eastern Asia": 0.040187603560146605,
+        "Eastern Europe": 0.03914865692112647,
+        "Western Asia": 0.03429987201151121,
+        "Northern Europe": 0.03245749493766966,
+        "Caribbean": 0.03230450250944602,
+        "Middle Africa": 0.0331823823725859,
+        "Western Africa": 0.027528539184688647,
+        "Eastern Asia": 0.022307567885804923,
+        "Eastern Africa": 0.01875414313941728,
+        "Western Europe": 0.01778279205971196,
+        "Southern Europe": 0.01710215738224302
+      },
+      "worst_fold_country": "Brazil",
+      "paired_delta_vs_m0": {
+        "delta_rmse": 0.0,
+        "country_bootstrap_95_interval": [
+          0.0,
+          0.0
+        ],
+        "resamples": 2000,
+        "seed": 0
+      },
+      "secondary": {
+        "n": 151,
+        "in_sample_r2": 0.6364460027547281,
+        "cv_r2": 0.30297001979026006,
+        "cv_rmse": 0.03889413690932395,
+        "cv_mae": 0.03182205865244929,
+        "in_sample_rmse": 0.02808942645115843,
+        "outcome_sd": 0.046741350214455094,
+        "n_folds": 20,
+        "fold_rmse_median": 0.03980569336538983,
+        "fold_rmse_min": 0.01699162368460186,
+        "fold_rmse_max": 0.06542844474125194,
+        "worst_fold": 10,
+        "worst_fold_n": 2,
+        "calibration_slope": 0.7668127056783488,
+        "calibration_intercept": 0.03987679807259998,
+        "residual_morans_i_in_sample": 0.2686890161417413,
+        "residual_morans_i_cv": 0.30025704102304956,
+        "mean_n_train": 141.35099337748343,
+        "rows_with_unseen_level": 12,
+        "nearest_train_km_median": 0.0,
+        "nearest_train_km_min": 0.0,
+        "share_emissions": 0.020435358891495586,
+        "share_geography": 0.513519756654464,
+        "share_socioeconomic": 0.06928246597399394,
+        "share_population": 0.03320842123477475,
+        "residual_share": 0.36355399724527193,
+        "fold_error_iqr": 0.03579567840334552,
+        "effective_degrees_of_freedom": 20,
+        "residual_moran_in_sample": {
+          "statistic": 0.2686890161417413,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 7.63752217933476,
+          "n_permutations": 999
+        },
+        "residual_moran_cv": {
+          "statistic": 0.30025704102304956,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 8.454142550379489,
+          "n_permutations": 999
+        },
+        "worst_region": {
+          "region": "Central America",
+          "rmse": 0.062081726750289064,
+          "n": 7,
+          "min_region_n": 3
+        },
+        "region_rmse": {
+          "Northern America": 0.06542844474125194,
+          "Central America": 0.062081726750289064,
+          "Australia and New Zealand": 0.05954835143685257,
+          "Central Asia": 0.051459226907064934,
+          "Northern Africa": 0.05096662534819685,
+          "Melanesia": 0.050389555099902866,
+          "Southern Africa": 0.04882654797916476,
+          "Southern Asia": 0.04227173757862403,
+          "Caribbean": 0.04084083531699828,
+          "Eastern Europe": 0.04028671215538261,
+          "Western Africa": 0.03932467457539705,
+          "Middle Africa": 0.03809253465145603,
+          "South-eastern Asia": 0.03793762013496337,
+          "Northern Europe": 0.037430612251957075,
+          "South America": 0.03602711293916863,
+          "Eastern Asia": 0.034812920165704496,
+          "Western Asia": 0.03193944371983713,
+          "Eastern Africa": 0.02377251113244014,
+          "Western Europe": 0.02068767667625736,
+          "Southern Europe": 0.01699162368460186
+        },
+        "region_bias": {
+          "Northern America": 0.05980261859908008,
+          "Central America": -0.057908003774825155,
+          "Australia and New Zealand": -0.050351099005266964,
+          "Central Asia": 0.046869588394463355,
+          "Northern Africa": -0.021615443481748094,
+          "Melanesia": 0.050389555099902866,
+          "Southern Africa": -0.04529813199458656,
+          "Southern Asia": -0.006721629456279283,
+          "Caribbean": 0.03382801083264928,
+          "Eastern Europe": -0.03529460662925049,
+          "Western Africa": 0.03445915236515739,
+          "Middle Africa": -0.020685596346193626,
+          "South-eastern Asia": -0.01516935274274858,
+          "Northern Europe": 0.007839849318167396,
+          "South America": -0.009601391050022508,
+          "Eastern Asia": -0.0031971016357421667,
+          "Western Asia": -0.00028628762056319884,
+          "Eastern Africa": 0.01091080038717131,
+          "Western Europe": 0.016352236945781338,
+          "Southern Europe": 0.009114686596168348
+        },
+        "region_mae": {
+          "Northern America": 0.05980261859908008,
+          "Central America": 0.05790800377482515,
+          "Australia and New Zealand": 0.050351099005266964,
+          "Central Asia": 0.046869588394463355,
+          "Northern Africa": 0.04507288790892961,
+          "Melanesia": 0.050389555099902866,
+          "Southern Africa": 0.04529813199458656,
+          "Southern Asia": 0.03768548581823449,
+          "Caribbean": 0.033828010832649275,
+          "Eastern Europe": 0.03668631273968108,
+          "Western Africa": 0.03456700492183977,
+          "Middle Africa": 0.03416440113964474,
+          "South-eastern Asia": 0.03462991989709961,
+          "Northern Europe": 0.029442385245808944,
+          "South America": 0.027393962989416952,
+          "Eastern Asia": 0.027723260871166205,
+          "Western Asia": 0.026927684932426293,
+          "Eastern Africa": 0.015636899240481762,
+          "Western Europe": 0.016352236945781338,
+          "Southern Europe": 0.014114385870032943
+        },
+        "worst_fold_country": null,
+        "paired_delta_vs_m0": {
+          "delta_rmse": 0.0,
+          "country_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ],
+          "resamples": 2000,
+          "seed": 0
+        }
+      },
+      "random_reference_only": {
+        "n": 151,
+        "in_sample_r2": 0.6364460027547281,
+        "cv_r2": 0.42835299687902684,
+        "cv_rmse": 0.03522267820528358,
+        "cv_mae": 0.02745002076984565,
+        "in_sample_rmse": 0.02808942645115843,
+        "outcome_sd": 0.046741350214455094,
+        "n_folds": 10,
+        "fold_rmse_median": 0.034369186491691926,
+        "fold_rmse_min": 0.026802454802740378,
+        "fold_rmse_max": 0.046240350908240836,
+        "worst_fold": 7,
+        "worst_fold_n": 15,
+        "calibration_slope": 0.8017987065421298,
+        "calibration_intercept": 0.03481982672626683,
+        "residual_morans_i_in_sample": 0.2686890161417413,
+        "residual_morans_i_cv": 0.21893575507203994,
+        "mean_n_train": 135.89403973509934,
+        "rows_with_unseen_level": 1,
+        "nearest_train_km_median": 0.0,
+        "nearest_train_km_min": 0.0,
+        "share_emissions": 0.020435358891495586,
+        "share_geography": 0.513519756654464,
+        "share_socioeconomic": 0.06928246597399394,
+        "share_population": 0.03320842123477475,
+        "residual_share": 0.36355399724527193,
+        "fold_error_iqr": 0.028639939237935293,
+        "effective_degrees_of_freedom": 20,
+        "residual_moran_in_sample": {
+          "statistic": 0.2686890161417413,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 7.63752217933476,
+          "n_permutations": 999
+        },
+        "residual_moran_cv": {
+          "statistic": 0.21893575507203994,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 6.272674047857891,
+          "n_permutations": 999
+        },
+        "worst_region": {
+          "region": "Northern Africa",
+          "rmse": 0.051958407225040026,
+          "n": 6,
+          "min_region_n": 3
+        },
+        "region_rmse": {
+          "Melanesia": 0.08821455011680107,
+          "Australia and New Zealand": 0.0672566646252815,
+          "Northern America": 0.05659603689341239,
+          "Northern Africa": 0.051958407225040026,
+          "Southern Asia": 0.044264413101405976,
+          "South America": 0.041465494029973564,
+          "Southern Africa": 0.041318455835907895,
+          "Central Asia": 0.040601683068420956,
+          "Northern Europe": 0.03741122081819434,
+          "Central America": 0.03564247864739294,
+          "South-eastern Asia": 0.034170391281188685,
+          "Caribbean": 0.033536369889837936,
+          "Western Asia": 0.03351733297897996,
+          "Middle Africa": 0.03265512383918001,
+          "Eastern Asia": 0.03074859914501134,
+          "Eastern Europe": 0.03027817227830064,
+          "Western Africa": 0.02843056157310471,
+          "Eastern Africa": 0.02184350045568647,
+          "Southern Europe": 0.017973603798054943,
+          "Western Europe": 0.015624237527018026
+        },
+        "region_bias": {
+          "Melanesia": 0.08821455011680107,
+          "Australia and New Zealand": -0.003852040293607674,
+          "Northern America": 0.04395756595911224,
+          "Northern Africa": -0.018479803736910466,
+          "Southern Asia": -0.0021615636140664063,
+          "South America": -0.002297223847280189,
+          "Southern Africa": -0.03688195258984518,
+          "Central Asia": 0.029274415054864604,
+          "Northern Europe": 0.0013780397517519666,
+          "Central America": -0.026166563508442646,
+          "South-eastern Asia": -0.011236780335512338,
+          "Caribbean": 0.024791484562580714,
+          "Western Asia": -0.0017230591474712953,
+          "Middle Africa": -0.012511358330841365,
+          "Eastern Asia": -0.0032631605560960175,
+          "Eastern Europe": -0.02162249786610233,
+          "Western Africa": 0.020650422292653566,
+          "Eastern Africa": 0.0069783542163311535,
+          "Southern Europe": 0.00675818305194583,
+          "Western Europe": 0.010837281250431994
+        },
+        "region_mae": {
+          "Melanesia": 0.08821455011680107,
+          "Australia and New Zealand": 0.06714626364954357,
+          "Northern America": 0.04395756595911224,
+          "Northern Africa": 0.04519335845174107,
+          "Southern Asia": 0.03674069037163339,
+          "South America": 0.0314017444141456,
+          "Southern Africa": 0.03688195258984518,
+          "Central Asia": 0.02955293008075282,
+          "Northern Europe": 0.028675045658810395,
+          "Central America": 0.030018492913253186,
+          "South-eastern Asia": 0.030100967153563914,
+          "Caribbean": 0.02479617232522423,
+          "Western Asia": 0.02739070223431155,
+          "Middle Africa": 0.027896417526770693,
+          "Eastern Asia": 0.024669264923927754,
+          "Eastern Europe": 0.028455416883950625,
+          "Western Africa": 0.022809601277069803,
+          "Eastern Africa": 0.014615028495865353,
+          "Southern Europe": 0.015052354038698656,
+          "Western Europe": 0.010837281250431994
+        },
+        "worst_fold_country": null,
+        "paired_delta_vs_m0": {
+          "delta_rmse": 0.0,
+          "country_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ],
+          "resamples": 2000,
+          "seed": 0
+        }
+      },
+      "recorded_area_centroid_moran_in_sample": 0.2899191765489163,
+      "recorded_area_centroid_moran_cv": 0.350152874981111,
+      "encoded_columns": [
+        "intercept",
+        "cum_co2_per_capita",
+        "abs_latitude",
+        "elevation",
+        "continentality",
+        "climate_zone=B",
+        "climate_zone=C",
+        "climate_zone=D",
+        "climate_zone=E",
+        "hemisphere=S",
+        "spatial_block=Asia",
+        "spatial_block=Europe",
+        "spatial_block=North America",
+        "spatial_block=Oceania",
+        "spatial_block=South America",
+        "income_group=Low-income countries",
+        "income_group=Lower-middle-income countries",
+        "income_group=Upper-middle-income countries",
+        "population",
+        "station_density"
+      ],
+      "matrix_columns": 20,
+      "matrix_rank": 20,
+      "levels_present": {
+        "climate_zone": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "hemisphere": [
+          "N",
+          "S"
+        ],
+        "income_group": [
+          "High-income countries",
+          "Low-income countries",
+          "Lower-middle-income countries",
+          "Upper-middle-income countries"
+        ],
+        "spatial_block": [
+          "Africa",
+          "Asia",
+          "Europe",
+          "North America",
+          "Oceania",
+          "South America"
+        ]
+      },
+      "unseen_rows_by_categorical": {
+        "primary": {
+          "climate_zone": 1,
+          "hemisphere": 0,
+          "income_group": 0,
+          "spatial_block": 0
+        },
+        "secondary": {
+          "climate_zone": 1,
+          "hemisphere": 0,
+          "income_group": 0,
+          "spatial_block": 11
+        }
+      },
+      "coefficient_sign_stability_recorded": {
+        "intercept": {
+          "full": 0.1508956242818053,
+          "same_sign_fraction": 1.0
+        },
+        "cum_co2_per_capita": {
+          "full": 0.01577237906570881,
+          "same_sign_fraction": 1.0
+        },
+        "abs_latitude": {
+          "full": 0.0010642452637554855,
+          "same_sign_fraction": 1.0
+        },
+        "elevation": {
+          "full": -6.29682914168939e-07,
+          "same_sign_fraction": 0.7218543046357616
+        },
+        "continentality": {
+          "full": 4.107686048068471e-05,
+          "same_sign_fraction": 1.0
+        },
+        "population": {
+          "full": 0.0029039339233404107,
+          "same_sign_fraction": 0.9933774834437086
+        },
+        "station_density": {
+          "full": -0.001696610277779933,
+          "same_sign_fraction": 1.0
+        },
+        "climate_zone=B": {
+          "full": 0.00547545714615677,
+          "same_sign_fraction": 0.9205298013245033
+        },
+        "climate_zone=C": {
+          "full": -0.02313590118341131,
+          "same_sign_fraction": 1.0
+        },
+        "climate_zone=D": {
+          "full": -0.007129490690160194,
+          "same_sign_fraction": 0.8145695364238411
+        },
+        "climate_zone=E": {
+          "full": -0.09245680988584225,
+          "same_sign_fraction": 1.0
+        },
+        "hemisphere=S": {
+          "full": -0.026278752495488687,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=Asia": {
+          "full": -0.05221873034883121,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=Europe": {
+          "full": -0.060765385824133065,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=North America": {
+          "full": -0.09000707685422311,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=Oceania": {
+          "full": -0.056274603821401904,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=South America": {
+          "full": -0.06223792297587291,
+          "same_sign_fraction": 1.0
+        },
+        "income_group=Low-income countries": {
+          "full": 0.0036192603777797363,
+          "same_sign_fraction": 0.8543046357615894
+        },
+        "income_group=Lower-middle-income countries": {
+          "full": -0.009361469618728793,
+          "same_sign_fraction": 0.9668874172185431
+        },
+        "income_group=Upper-middle-income countries": {
+          "full": -0.01452981908307029,
+          "same_sign_fraction": 1.0
+        }
+      }
+    },
+    "M1a": {
+      "n": 151,
+      "in_sample_r2": 0.6121710173802326,
+      "cv_r2": 0.05798828252950372,
+      "cv_rmse": 0.04521541924157815,
+      "cv_mae": 0.03592921366239301,
+      "in_sample_rmse": 0.029012058201622577,
+      "outcome_sd": 0.046741350214455094,
+      "n_folds": 151,
+      "fold_rmse_median": 0.030305760326064662,
+      "fold_rmse_min": 0.0001362680198556121,
+      "fold_rmse_max": 0.1272330530040273,
+      "worst_fold": 77,
+      "worst_fold_n": 1,
+      "calibration_slope": 0.5400206914724702,
+      "calibration_intercept": 0.08136804699426317,
+      "residual_morans_i_in_sample": 0.3153033018609842,
+      "residual_morans_i_cv": 0.3408043791612676,
+      "mean_n_train": 141.27152317880794,
+      "rows_with_unseen_level": 0,
+      "nearest_train_km_median": 587.3811357085859,
+      "nearest_train_km_min": 500.6829492326859,
+      "share_emissions": 0.021248601177762217,
+      "share_geography": 0.48244576553534424,
+      "share_socioeconomic": 0.06950502515757546,
+      "share_population": 0.03897162550955096,
+      "residual_share": 0.3878289826197674,
+      "fold_error_iqr": 0.0397514677098599,
+      "effective_degrees_of_freedom": 20,
+      "residual_moran_in_sample": {
+        "statistic": 0.3153033018609842,
+        "expected": -0.006666666666666667,
+        "p_value": 0.001,
+        "z_score": 8.83869350808513,
+        "n_permutations": 999
+      },
+      "residual_moran_cv": {
+        "statistic": 0.3408043791612676,
+        "expected": -0.006666666666666667,
+        "p_value": 0.001,
+        "z_score": 9.346026432060956,
+        "n_permutations": 999
+      },
+      "worst_region": {
+        "region": "Central Asia",
+        "rmse": 0.09800941418340209,
+        "n": 4,
+        "min_region_n": 3
+      },
+      "region_rmse": {
+        "Central Asia": 0.09800941418340209,
+        "Melanesia": 0.08766072994730242,
+        "Northern America": 0.0698517681045464,
+        "Central America": 0.059338885588228786,
+        "Australia and New Zealand": 0.057715497445264316,
+        "Southern Asia": 0.05621657818263929,
+        "South-eastern Asia": 0.05271762145251734,
+        "South America": 0.0516866824358879,
+        "Northern Europe": 0.04716300274477788,
+        "Northern Africa": 0.04426722171991043,
+        "Western Asia": 0.043591523332436016,
+        "Middle Africa": 0.04217448999864963,
+        "Caribbean": 0.04164553052832915,
+        "Southern Africa": 0.040901982294869695,
+        "Eastern Europe": 0.03894540599801554,
+        "Western Africa": 0.03154198552014287,
+        "Eastern Africa": 0.028819975604560663,
+        "Western Europe": 0.027471842973795714,
+        "Eastern Asia": 0.027223948818655506,
+        "Southern Europe": 0.021453452789419743
+      },
+      "region_bias": {
+        "Central Asia": 0.0961867687634694,
+        "Melanesia": 0.08766072994730242,
+        "Northern America": 0.058629678731467155,
+        "Central America": -0.04904043842417382,
+        "Australia and New Zealand": -0.007195725143436235,
+        "Southern Asia": 0.007755660684011337,
+        "South-eastern Asia": -0.021761130788331133,
+        "South America": 0.003401932170817001,
+        "Northern Europe": 0.0037316954306474553,
+        "Northern Africa": -0.02018449615183952,
+        "Western Asia": -0.0032177331138622573,
+        "Middle Africa": -0.031989426097954576,
+        "Caribbean": 0.031214492403113435,
+        "Southern Africa": -0.034159806403928086,
+        "Eastern Europe": -0.02579022410747936,
+        "Western Africa": 0.021651238581601593,
+        "Eastern Africa": 0.011172130142827573,
+        "Western Europe": 0.022696298643917007,
+        "Eastern Asia": -0.005064990353824172,
+        "Southern Europe": 0.003242069363440711
+      },
+      "region_mae": {
+        "Central Asia": 0.0961867687634694,
+        "Melanesia": 0.08766072994730242,
+        "Northern America": 0.058629678731467155,
+        "Central America": 0.05086870405922944,
+        "Australia and New Zealand": 0.05726517427734269,
+        "Southern Asia": 0.048562675196679624,
+        "South-eastern Asia": 0.047953260492414385,
+        "South America": 0.04171974450878198,
+        "Northern Europe": 0.03373983757980108,
+        "Northern Africa": 0.037535811533823155,
+        "Western Asia": 0.03676187135184002,
+        "Middle Africa": 0.03369072935775101,
+        "Caribbean": 0.03189710179079241,
+        "Southern Africa": 0.034159806403928086,
+        "Eastern Europe": 0.03518816420133353,
+        "Western Africa": 0.025787816328729254,
+        "Eastern Africa": 0.023017648403852897,
+        "Western Europe": 0.022696298643917007,
+        "Eastern Asia": 0.018650185652301143,
+        "Southern Europe": 0.018555660378782878
+      },
+      "worst_fold_country": "Tajikistan",
+      "paired_delta_vs_m0": {
+        "delta_rmse": 0.0023428385620920117,
+        "country_bootstrap_95_interval": [
+          -0.00034985225774061113,
+          0.005264254669835282
+        ],
+        "resamples": 2000,
+        "seed": 0
+      },
+      "secondary": {
+        "n": 151,
+        "in_sample_r2": 0.6121710173802326,
+        "cv_r2": 0.24113584650503328,
+        "cv_rmse": 0.040582652454497326,
+        "cv_mae": 0.03243976584968017,
+        "in_sample_rmse": 0.029012058201622577,
+        "outcome_sd": 0.046741350214455094,
+        "n_folds": 20,
+        "fold_rmse_median": 0.03906201496789943,
+        "fold_rmse_min": 0.01911970079479129,
+        "fold_rmse_max": 0.08595122766176218,
+        "worst_fold": 3,
+        "worst_fold_n": 4,
+        "calibration_slope": 0.7131353448659351,
+        "calibration_intercept": 0.04950831542791878,
+        "residual_morans_i_in_sample": 0.3153033018609842,
+        "residual_morans_i_cv": 0.3248519802000531,
+        "mean_n_train": 141.35099337748343,
+        "rows_with_unseen_level": 11,
+        "nearest_train_km_median": 0.0,
+        "nearest_train_km_min": 0.0,
+        "share_emissions": 0.021248601177762217,
+        "share_geography": 0.48244576553534424,
+        "share_socioeconomic": 0.06950502515757546,
+        "share_population": 0.03897162550955096,
+        "residual_share": 0.3878289826197674,
+        "fold_error_iqr": 0.033045814348516764,
+        "effective_degrees_of_freedom": 20,
+        "residual_moran_in_sample": {
+          "statistic": 0.3153033018609842,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 8.83869350808513,
+          "n_permutations": 999
+        },
+        "residual_moran_cv": {
+          "statistic": 0.3248519802000531,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 9.135456346852843,
+          "n_permutations": 999
+        },
+        "worst_region": {
+          "region": "Central Asia",
+          "rmse": 0.08595122766176218,
+          "n": 4,
+          "min_region_n": 3
+        },
+        "region_rmse": {
+          "Central Asia": 0.08595122766176218,
+          "Northern America": 0.07062953268867539,
+          "Australia and New Zealand": 0.06469727511899728,
+          "Central America": 0.06207027739582028,
+          "Melanesia": 0.059411855053504214,
+          "South-eastern Asia": 0.04545549178485114,
+          "Southern Asia": 0.04461153884245594,
+          "Northern Europe": 0.042706958755610855,
+          "Caribbean": 0.042644303155097575,
+          "Northern Africa": 0.039460890923771745,
+          "Middle Africa": 0.03866313901202713,
+          "Western Africa": 0.03636754541829857,
+          "Southern Africa": 0.03553063645081995,
+          "Eastern Europe": 0.03506085329362661,
+          "South America": 0.03484958598536835,
+          "Western Asia": 0.0345453052675782,
+          "Eastern Asia": 0.02993730709928166,
+          "Eastern Africa": 0.02773603787453091,
+          "Western Europe": 0.024303936261477643,
+          "Southern Europe": 0.01911970079479129
+        },
+        "region_bias": {
+          "Central Asia": 0.08060938126929335,
+          "Northern America": 0.061001795441421675,
+          "Australia and New Zealand": -0.06042714931605046,
+          "Central America": -0.05638647545925224,
+          "Melanesia": 0.059411855053504214,
+          "South-eastern Asia": -0.02022502090764006,
+          "Southern Asia": 0.0031624962384325266,
+          "Northern Europe": -0.0030609385310009425,
+          "Caribbean": 0.033840008978668665,
+          "Northern Africa": -0.02152019034836339,
+          "Middle Africa": -0.02821617723655018,
+          "Western Africa": 0.030865231021865842,
+          "Southern Africa": -0.029562150002975546,
+          "Eastern Europe": -0.027339522104901225,
+          "South America": -0.014106726999358965,
+          "Western Asia": -0.009376053019086932,
+          "Eastern Asia": -0.010708849681572579,
+          "Eastern Africa": 0.017072658417611124,
+          "Western Europe": 0.020349056285223363,
+          "Southern Europe": 0.011638104752411843
+        },
+        "region_mae": {
+          "Central Asia": 0.08060938126929335,
+          "Northern America": 0.061001795441421675,
+          "Australia and New Zealand": 0.06042714931605046,
+          "Central America": 0.056386475459252246,
+          "Melanesia": 0.059411855053504214,
+          "South-eastern Asia": 0.04128033979760745,
+          "Southern Asia": 0.037611407990295574,
+          "Northern Europe": 0.030641441717816086,
+          "Caribbean": 0.0348060670130076,
+          "Northern Africa": 0.03233049409273764,
+          "Middle Africa": 0.03240635529475694,
+          "Western Africa": 0.03158110733461068,
+          "Southern Africa": 0.029562150002975546,
+          "Eastern Europe": 0.031959666965978226,
+          "South America": 0.02656409626090803,
+          "Western Asia": 0.027907516842020908,
+          "Eastern Asia": 0.02388457451181954,
+          "Eastern Africa": 0.022838511778491246,
+          "Western Europe": 0.020349056285223363,
+          "Southern Europe": 0.015470345721989338
+        },
+        "worst_fold_country": null,
+        "paired_delta_vs_m0": {
+          "delta_rmse": 0.0,
+          "country_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ],
+          "resamples": 2000,
+          "seed": 0
+        }
+      },
+      "random_reference_only": {
+        "n": 151,
+        "in_sample_r2": 0.6121710173802326,
+        "cv_r2": 0.3661484744999628,
+        "cv_rmse": 0.03708960255180031,
+        "cv_mae": 0.028695728834158562,
+        "in_sample_rmse": 0.029012058201622577,
+        "outcome_sd": 0.046741350214455094,
+        "n_folds": 10,
+        "fold_rmse_median": 0.03463813540288667,
+        "fold_rmse_min": 0.028487459374980123,
+        "fold_rmse_max": 0.04602090733184861,
+        "worst_fold": 7,
+        "worst_fold_n": 15,
+        "calibration_slope": 0.759689698346492,
+        "calibration_intercept": 0.042309984557945254,
+        "residual_morans_i_in_sample": 0.3153033018609842,
+        "residual_morans_i_cv": 0.26697652201361693,
+        "mean_n_train": 135.89403973509934,
+        "rows_with_unseen_level": 0,
+        "nearest_train_km_median": 0.0,
+        "nearest_train_km_min": 0.0,
+        "share_emissions": 0.021248601177762217,
+        "share_geography": 0.48244576553534424,
+        "share_socioeconomic": 0.06950502515757546,
+        "share_population": 0.03897162550955096,
+        "residual_share": 0.3878289826197674,
+        "fold_error_iqr": 0.032602155627358076,
+        "effective_degrees_of_freedom": 20,
+        "residual_moran_in_sample": {
+          "statistic": 0.3153033018609842,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 8.83869350808513,
+          "n_permutations": 999
+        },
+        "residual_moran_cv": {
+          "statistic": 0.26697652201361693,
+          "expected": -0.006666666666666667,
+          "p_value": 0.001,
+          "z_score": 7.486921246924111,
+          "n_permutations": 999
+        },
+        "worst_region": {
+          "region": "Central Asia",
+          "rmse": 0.07591871621801113,
+          "n": 4,
+          "min_region_n": 3
+        },
+        "region_rmse": {
+          "Melanesia": 0.08792849830547564,
+          "Central Asia": 0.07591871621801113,
+          "Northern America": 0.06381702498622394,
+          "Australia and New Zealand": 0.055786766147834455,
+          "Southern Asia": 0.046430508042061315,
+          "Northern Europe": 0.04451127101335892,
+          "Northern Africa": 0.04420154217962573,
+          "South-eastern Asia": 0.041503609820729384,
+          "Central America": 0.038910798506872075,
+          "Western Asia": 0.036658652648011984,
+          "South America": 0.03506181530912607,
+          "Caribbean": 0.03470086923059834,
+          "Southern Africa": 0.03431739827402867,
+          "Middle Africa": 0.03250430683854866,
+          "Eastern Europe": 0.028391279496594306,
+          "Eastern Asia": 0.027224886208548942,
+          "Eastern Africa": 0.026932536088857886,
+          "Western Africa": 0.02660464308656961,
+          "Southern Europe": 0.01856493224309586,
+          "Western Europe": 0.01778231094971105
+        },
+        "region_bias": {
+          "Melanesia": 0.08792849830547564,
+          "Central Asia": 0.0662585316272955,
+          "Northern America": 0.04159302808586278,
+          "Australia and New Zealand": -0.012822967342215316,
+          "Southern Asia": 0.005963408165228564,
+          "Northern Europe": -0.0047403261160374,
+          "Northern Africa": -0.01946920641278908,
+          "South-eastern Asia": -0.013995706980820144,
+          "Central America": -0.026786288720298985,
+          "Western Asia": -0.008329920459881702,
+          "South America": -0.0009100200650105475,
+          "Caribbean": 0.023269008505067697,
+          "Southern Africa": -0.025595793176590515,
+          "Middle Africa": -0.019779446271995314,
+          "Eastern Europe": -0.017893107986532427,
+          "Eastern Asia": -0.014466687622742802,
+          "Eastern Africa": 0.011287737966234746,
+          "Western Africa": 0.01756602516907244,
+          "Southern Europe": 0.007220056958423293,
+          "Western Europe": 0.01329455036366245
+        },
+        "region_mae": {
+          "Melanesia": 0.08792849830547564,
+          "Central Asia": 0.0662585316272955,
+          "Northern America": 0.04840075095224204,
+          "Australia and New Zealand": 0.05429304546416279,
+          "Southern Asia": 0.037319374920266095,
+          "Northern Europe": 0.03079216296454017,
+          "Northern Africa": 0.03766920587830024,
+          "South-eastern Asia": 0.03702006179010017,
+          "Central America": 0.032028291352165936,
+          "Western Asia": 0.030249934156138466,
+          "South America": 0.02874974461791396,
+          "Caribbean": 0.02668555347331846,
+          "Southern Africa": 0.025697464107547936,
+          "Middle Africa": 0.025985311508186747,
+          "Eastern Europe": 0.026302612484801847,
+          "Eastern Asia": 0.023917250091814734,
+          "Eastern Africa": 0.02158074828927013,
+          "Western Africa": 0.020206263939355134,
+          "Southern Europe": 0.015153105387852767,
+          "Western Europe": 0.014177554047377241
+        },
+        "worst_fold_country": null,
+        "paired_delta_vs_m0": {
+          "delta_rmse": 0.0,
+          "country_bootstrap_95_interval": [
+            0.0,
+            0.0
+          ],
+          "resamples": 2000,
+          "seed": 0
+        }
+      },
+      "recorded_area_centroid_moran_in_sample": 0.3407221330484439,
+      "recorded_area_centroid_moran_cv": 0.36019803816813817,
+      "encoded_columns": [
+        "intercept",
+        "cum_co2_per_capita",
+        "abs_latitude",
+        "elevation",
+        "continentality",
+        "climate_zone=B",
+        "climate_zone=C",
+        "climate_zone=D",
+        "climate_zone=E",
+        "hemisphere=S",
+        "spatial_block=Asia",
+        "spatial_block=Europe",
+        "spatial_block=North America",
+        "spatial_block=Oceania",
+        "spatial_block=South America",
+        "income_group=Low-income countries",
+        "income_group=Lower-middle-income countries",
+        "income_group=Upper-middle-income countries",
+        "population",
+        "station_density"
+      ],
+      "matrix_columns": 20,
+      "matrix_rank": 20,
+      "levels_present": {
+        "climate_zone": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "hemisphere": [
+          "N",
+          "S"
+        ],
+        "income_group": [
+          "High-income countries",
+          "Low-income countries",
+          "Lower-middle-income countries",
+          "Upper-middle-income countries"
+        ],
+        "spatial_block": [
+          "Africa",
+          "Asia",
+          "Europe",
+          "North America",
+          "Oceania",
+          "South America"
+        ]
+      },
+      "unseen_rows_by_categorical": {
+        "primary": {
+          "climate_zone": 0,
+          "hemisphere": 0,
+          "income_group": 0,
+          "spatial_block": 0
+        },
+        "secondary": {
+          "climate_zone": 0,
+          "hemisphere": 0,
+          "income_group": 0,
+          "spatial_block": 11
+        }
+      },
+      "coefficient_sign_stability_recorded": {
+        "intercept": {
+          "full": 0.17994155261372186,
+          "same_sign_fraction": 1.0
+        },
+        "cum_co2_per_capita": {
+          "full": 0.01971662118875329,
+          "same_sign_fraction": 0.9933774834437086
+        },
+        "abs_latitude": {
+          "full": 0.0009630243632451374,
+          "same_sign_fraction": 1.0
+        },
+        "elevation": {
+          "full": -2.2992767372001056e-06,
+          "same_sign_fraction": 0.9006622516556292
+        },
+        "continentality": {
+          "full": 4.4261983838006406e-05,
+          "same_sign_fraction": 1.0
+        },
+        "population": {
+          "full": -0.0031973105725127083,
+          "same_sign_fraction": 0.9735099337748344
+        },
+        "station_density": {
+          "full": -0.0018407399682649859,
+          "same_sign_fraction": 1.0
+        },
+        "climate_zone=B": {
+          "full": -0.004439680775459659,
+          "same_sign_fraction": 0.8211920529801324
+        },
+        "climate_zone=C": {
+          "full": -0.02440904111537744,
+          "same_sign_fraction": 1.0
+        },
+        "climate_zone=D": {
+          "full": -0.011095733065947046,
+          "same_sign_fraction": 0.8874172185430463
+        },
+        "climate_zone=E": {
+          "full": -0.05057398061919419,
+          "same_sign_fraction": 0.9933774834437086
+        },
+        "hemisphere=S": {
+          "full": -0.02681798999418057,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=Asia": {
+          "full": -0.04196371122390926,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=Europe": {
+          "full": -0.05215043019432061,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=North America": {
+          "full": -0.08814568363793243,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=Oceania": {
+          "full": -0.05864463282432233,
+          "same_sign_fraction": 1.0
+        },
+        "spatial_block=South America": {
+          "full": -0.06435003800988487,
+          "same_sign_fraction": 1.0
+        },
+        "income_group=Low-income countries": {
+          "full": 0.015823752269508093,
+          "same_sign_fraction": 0.9668874172185431
+        },
+        "income_group=Lower-middle-income countries": {
+          "full": -0.0023121481354881246,
+          "same_sign_fraction": 0.7284768211920529
+        },
+        "income_group=Upper-middle-income countries": {
+          "full": -0.013020930083333871,
+          "same_sign_fraction": 1.0
+        }
+      }
+    },
+    "classification": {
+      "transfer": "no detectable change in transfer",
+      "secondary_veto_passed": false,
+      "worst_region_veto_passed": false,
+      "spatial_structure": "residual spatial autocorrelation essentially unchanged",
+      "delta_moran_in_sample": 0.04661428571924292,
+      "delta_moran_cv": 0.01925721146852033,
+      "material_change_to_conclusion": false,
+      "scientific_stability": "stable",
+      "overfitting_signal": true,
+      "in_sample_r2_gain": -0.02427498537449546,
+      "cv_r2_gain": -0.0950916304331143,
+      "summary": "neither",
+      "gate_m1a_to_m1": {
+        "genuine_improvement": false,
+        "not_worse": true,
+        "large_country_abs_errors_before": {
+          "CAN": 0.0863455685095934,
+          "BRA": 0.11473455103959766,
+          "RUS": 0.031759103062964755,
+          "DZA": 0.041881113889101707
+        },
+        "large_country_abs_errors_after": {
+          "CAN": 0.09660111904094545,
+          "BRA": 0.11475284513551862,
+          "RUS": 0.03965907889990419,
+          "DZA": 0.0040961420340733246
+        },
+        "large_country_errors_all_reduced": false
+      },
+      "countries_improved": 72,
+      "countries_worsened": 79
+    }
+  },
+  "contract": "research/model_v2/M1A_EVALUATION_CONTRACT.md"
+}

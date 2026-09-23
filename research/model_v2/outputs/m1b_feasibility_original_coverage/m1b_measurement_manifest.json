@@ -1,0 +1,101 @@
+{
+  "contract": "research/model_v2/M1B_EVALUATION_CONTRACT.md",
+  "contract_commit": "60111ae1d44bdf9da6c613852a32de541f9b2d7a",
+  "sources": {
+    "pre": {
+      "url": "https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.10/cruts.2604091129.v4.10/pre/cru_ts4.10.1901.2025.pre.dat.nc.gz",
+      "gz_bytes": 698006393,
+      "gz_sha256": "b7e7a3b74e9887db74d8db62227800708ff89ebbabeed5b11f302c99a551edaa",
+      "nc_bytes": 6220812084,
+      "nc_sha256": "efe27c453101fd8b98b0544a198f457b872cf983a9cadb791ecd8e9cddbb3eae",
+      "units": "mm/month",
+      "global_attrs": {
+        "Conventions": "CF-1.4",
+        "title": "CRU TS4.10 Precipitation",
+        "institution": "Data held at British Atmospheric Data Centre, RAL, UK.",
+        "source": "Run ID = 2604091129. Data generated from:pre.2604081855.dtb",
+        "history": "Thu  9 Apr 14:20:33 BST 2026 : User sadmin : Program makegridsauto.for called by update.for",
+        "references": "Information on the data is available at http://badc.nerc.ac.uk/data/cru/",
+        "comment": "Access to these data is available to any registered CEDA user.",
+        "contact": "support@ceda.ac.uk"
+      },
+      "window_first_last": [
+        "1920-01-16",
+        "1949-12-16"
+      ]
+    },
+    "pet": {
+      "url": "https://crudata.uea.ac.uk/cru/data/hrg/cru_ts_4.10/cruts.2604091129.v4.10/pet/cru_ts4.10.1901.2025.pet.dat.nc.gz",
+      "gz_bytes": 72951284,
+      "gz_sha256": "fcc792b090a651d9a19187acf105cd726d680171d01ee48630f0a1a10816f013",
+      "nc_bytes": 1555211692,
+      "nc_sha256": "0bc9a1319f76d93a9f8fb8517ce82399b8c5f6e59dfcf26d802f0dbbd1e00715",
+      "units": "mm/day",
+      "global_attrs": {
+        "Conventions": "CF-1.4",
+        "title": "CRU TS4.10 Potential Evapotranspiration",
+        "institution": "Data held at British Atmospheric Data Centre, RAL, UK.",
+        "source": "Run ID = 2604091129. Data generated from:PET derived from multiple gridded absolutes:, tmp.2604081855.dtb, dtr.2604081855.dtb, vap.2604081855.dtb, cld.2604081855.dtb, tmn.2604081855.dtb, tmx.2604081855.dtb",
+        "history": "Thu  9 Apr 20:12:53 BST 2026 : User sadmin : Program makegridsauto.for called by update.for",
+        "references": "Information on the data is available at http://badc.nerc.ac.uk/data/cru/",
+        "comment": "Access to these data is available to any registered CEDA user.",
+        "contact": "support@ceda.ac.uk"
+      },
+      "window_first_last": [
+        "1920-01-16",
+        "1949-12-16"
+      ]
+    }
+  },
+  "support_inputs": {
+    "m1a_cell_land_area_sha256": "642cbe5abe48457682f312884c03510c13b133a74bc083039b537f0b738466cf",
+    "m1a_geography_qa_sha256": "bdc4f1caff740fea7949b636c367afb6c68b423eccebb07c9391b357358425c8",
+    "m0_countries_sha256": "9e99b3798e91f2b7e40250921edd5e5a788e4191df3e9027dceb98fe76b43536"
+  },
+  "window": [
+    "1920-01",
+    "1949-12"
+  ],
+  "n_months": 360,
+  "formula": "x_j = log10((1/30)*sum PRE / ((1/30)*sum PET*days)); C2 = terrestrial-area-weighted mean of x_j over valid cells",
+  "coverage_min": 0.98,
+  "cells_valid_global": 66501,
+  "country_area_reproduces_m1a_max_relative_error": 1.1372014441235478e-12,
+  "hard_stops": [
+    {
+      "iso3": "PHL",
+      "rule": "coverage < 0.98",
+      "coverage": 0.9760707864233066,
+      "missing_area_km2": 7090.896333542769,
+      "reasons": {
+        "non-finite month": 7090.896334
+      }
+    },
+    {
+      "iso3": "BHS",
+      "rule": "coverage < 0.98",
+      "coverage": 0.8864754768578278,
+      "missing_area_km2": 1524.1678488736197,
+      "reasons": {
+        "non-finite month": 1524.167849
+      }
+    },
+    {
+      "iso3": "PAN",
+      "rule": "coverage < 0.98",
+      "coverage": 0.9728166280827851,
+      "missing_area_km2": 2065.123326500019,
+      "reasons": {
+        "non-finite month": 2065.123327
+      }
+    }
+  ],
+  "all_hard_stops_pass": false,
+  "code_sha256": "57cf5b64ad87fab6f6e7554ce97b163567c4b32372b513212d21f94f1f70bfee",
+  "software": {
+    "python": "3.11.12",
+    "numpy": "2.4.6",
+    "pandas": "3.0.3",
+    "xarray": "2026.4.0"
+  }
+}
