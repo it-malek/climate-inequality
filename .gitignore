@@ -29,3 +29,7 @@ kaggle.json
 .DS_Store
 .vscode/
 .idea/
+
+
+# Private study notes (not part of the repository)
+notes/

@@ -8,6 +8,8 @@ pending state if they are absent.
 
 from __future__ import annotations
 
+from src.correction_identity import summary_origin
+
 import streamlit as st
 
 from app import charts, loaders, theme
@@ -35,6 +37,11 @@ def render() -> None:
     last_year = int(trajectory["year"].max())
 
     st.title("Global temperature and radiative forcing")
+    st.caption(summary_origin(summary))
+    if summary.get("forecast_method_id"):
+        st.caption("Forecast method: " + summary["forecast_method_id"])
+    else:
+        st.caption("These saved bands have not been recomputed with the corrected conditional forecast scale.")
     st.markdown(
         "**A different statistical question.** The cross-country pages ask why warming rates "
         "differ among countries. This page asks what explains the global mean temperature "

@@ -55,5 +55,8 @@ def render() -> None:
         f"{interp['winner'].upper()} interpolation (k = {interp['k']} neighbours, "
         f"{interp['resolution_deg']:g}° grid), masked to land; ocean cells are blank "
         "because these are land stations. Leave-location-out cross-validation RMSE: "
-        f"IDW {loo['idw']:.4f} vs kriging {loo['kriging']:.4f} °C/decade."
+        f"IDW {loo['idw']:.4f} vs kriging {loo['kriging']:.4f} °C/decade. "
+        "This historical comparison is conditional on a variogram fitted to the full "
+        "field, including held-out outcomes. Coordinate-group exclusion removes "
+        "neighbor duplication, but not that fitted-parameter dependence."
     )

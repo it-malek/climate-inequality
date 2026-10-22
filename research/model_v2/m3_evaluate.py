@@ -11,6 +11,8 @@ Run with ``PYTHONHASHSEED=0 uv run python -m research.model_v2.m3_evaluate --wei
 """
 from __future__ import annotations
 
+from src.prospective import require_prospective, require_synthetic_evaluator, unadapted_evaluator
+
 import argparse
 import dataclasses
 import json
@@ -583,6 +585,7 @@ def arm_distance(frozen, weights):
     return dist
 
 
+@unadapted_evaluator(output_argument="out_dir")
 def evaluate(frozen, out_dir, *, weights, static, provenance, primary=M2_PRIMARY):
     out_dir = prov.require_fresh(out_dir)
     static_model = STATIC_MODEL[static]
@@ -684,12 +687,15 @@ def main(argv=None):
     if args.compare:
         record = reproducibility_record(*args.compare, code=prov.frozen_code_state(code_files()))
         if args.record:
+            require_prospective().destination(args.record)
             prov.write_json(record, args.record)
         print(prov.json_text({'byte_identical': record['byte_identical']}))
         return record
+    require_synthetic_evaluator()
     prov.require_hash_seed()
     code = prov.frozen_code_state(code_files())
     out_dir = prov.require_fresh(args.out or OUT[args.weights])
+    require_prospective().destination(out_dir)
     logging.getLogger('src.feature_schema').setLevel(logging.ERROR)
     m2 = verified_m2()
     station = verified_station() if args.weights == 'land' else None

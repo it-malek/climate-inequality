@@ -5,6 +5,9 @@ Only product_stability-prefixed research artifacts are written.
 """
 from __future__ import annotations
 
+from src.prospective import prospective_outputs, prospective_cli
+from src.correction_identity import correction_metadata
+
 import argparse
 import hashlib
 import tempfile
@@ -38,6 +41,15 @@ def bh_adjust(p_values):
     q = p[order] * len(order) / np.arange(1, len(order) + 1)
     result[order] = np.minimum(1, np.minimum.accumulate(q[::-1])[::-1])
     return result
+
+
+def local_moran_fdr(local):
+    """Apply FDR only to available local tests, retaining unavailable reasons."""
+    local = local.copy()
+    local['q_value'] = bh_adjust(local.p_value)
+    local['fdr_label'] = np.where(local.status == 'unavailable', 'unavailable',
+                                  np.where(local.q_value <= .05, local.quadrant, 'ns'))
+    return local
 
 
 def paired_refit(x, berkeley, era5):
@@ -97,7 +109,7 @@ def combine_arms(absolute, aligned):
 
 
 def evidence_class(b_level, e_level):
-    """Levels are 'strong', 'weak' or 'none' for the same pattern in each product."""
+    """Unavailable local tests remain unresolved, never evidence of absent clustering."""
     if b_level == e_level == 'strong':
         return 'product-robust'
     if {b_level, e_level} == {'strong', 'none'}:
@@ -106,6 +118,8 @@ def evidence_class(b_level, e_level):
 
 
 def local_level(row, weight, product, quadrant):
+    if row.get(f'{weight}_{product}_residual_status') == 'unavailable' or row.get(f'{weight}_{product}_residual_label') == 'unavailable':
+        return 'unavailable'
     if row[f'{weight}_{product}_residual_fdr_label'] == quadrant:
         return 'strong'
     return 'weak' if row[f'{weight}_{product}_residual_label'] == quadrant else 'none'
@@ -193,10 +207,10 @@ def classify_patterns(arms):
     return pd.DataFrame(rows)
 
 
-def across_arm_summary(table, region):
+def across_arm_summary(table, region, reference_dir=OUT):
     """Compare aligned outcome arm with the preserved absolute-temperature arm."""
-    previous = pd.read_csv(OUT / 'product_stability_countries.csv').set_index('iso3').loc[table.iso3]
-    old_regions = pd.read_csv(OUT / 'product_stability_regions.csv').set_index('m49_subregion')
+    previous = pd.read_csv(reference_dir / 'product_stability_countries.csv').set_index('iso3').loc[table.iso3]
+    old_regions = pd.read_csv(reference_dir / 'product_stability_regions.csv').set_index('m49_subregion')
     change = table.era5.to_numpy() - previous.era5.to_numpy()
     return {
         'aligned_minus_absolute_era5_mean': float(change.mean()),
@@ -264,12 +278,13 @@ def provenance():
             'limitation': 'Raw coordinate/time/mask inspection and code tracing; full expensive per-cell Theil-Sen rebuild not rerun.'}
 
 
-def run(n_permutations=9999, seed=0, aligned=False):
+@prospective_outputs(out_dir="diagnostics/product_stability")
+def run(n_permutations=9999, seed=0, aligned=False, *, out_dir=None):
     inequality, features, income = m0.load_inputs()
     complete = m0.m0_complete_design(inequality, features, income)
     x, names, groups = m0.design_matrix(complete)
     ids = complete.Country.map(m0.iso3_bridge(inequality))
-    era_path = (OUT / 'product_stability_aligned_era5_trends.csv' if aligned
+    era_path = (out_dir / 'product_stability_aligned_era5_trends.csv' if aligned
                 else m0.BUNDLE_DIR / 'era5_area_trends.parquet')
     era = pd.read_csv(era_path) if aligned else pd.read_parquet(era_path)
     if era.iso3.duplicated().any() or ids.duplicated().any():
@@ -302,9 +317,8 @@ def run(n_permutations=9999, seed=0, aligned=False):
         for col in ['b_minus_e', 'b_residual', 'e_residual']:
             spatial_results[weight_name][col] = asdict(spatial.morans_i(table[col].to_numpy(), w, n_permutations, seed))
             local = spatial.local_morans(table[col].to_numpy(), w, n_permutations, seed)
-            local['q_value'] = bh_adjust(local.p_value)
-            local['fdr_label'] = np.where(local.q_value <= .05, local.quadrant, 'ns')
-            for field in ['local_i', 'p_value', 'q_value', 'quadrant', 'label', 'fdr_label']:
+            local = local_moran_fdr(local)
+            for field in ['local_i', 'p_value', 'q_value', 'quadrant', 'label', 'fdr_label', 'status', 'reason']:
                 table[f'{weight_name}_{col}_{field}'] = local[field].to_numpy()
     region = table.groupby('m49_subregion', sort=True).agg(
         n=('iso3', 'size'), b_mean=('b_residual', 'mean'), e_mean=('e_residual', 'mean'),
@@ -320,6 +334,7 @@ def run(n_permutations=9999, seed=0, aligned=False):
         tails[kind] = {'k': 15, 'berkeley': sorted(a), 'era5': sorted(c),
                        'intersection': sorted(a & c), 'n_overlap': len(a & c), 'jaccard': len(a & c) / len(a | c)}
     summary = {
+        **correction_metadata(),
         'common_n': int(keep.sum()), 'm0_n': len(complete), 'era5_bundle_n': len(era),
         'excluded_m0_countries': complete.Country[~keep].tolist(),
         'design_columns': names, 'groups': groups, 'design_rank': int(np.linalg.matrix_rank(x[keep])),
@@ -345,23 +360,23 @@ def run(n_permutations=9999, seed=0, aligned=False):
         'lisa_fdr_counts': {col: table[col].value_counts().to_dict() for col in table if col.endswith('fdr_label')},
         'provenance': provenance(),
     }
-    OUT.mkdir(exist_ok=True)
+    out_dir.mkdir(parents=True, exist_ok=True)
     prefix = 'product_stability_aligned' if aligned else 'product_stability'
     if aligned:
-        summary['across_preprocessing_arms'] = across_arm_summary(table, region)
-        summary['alignment'] = json.loads((OUT / 'product_stability_aligned_preprocessing.json').read_text())
+        summary['across_preprocessing_arms'] = across_arm_summary(table, region, reference_dir=out_dir)
+        summary['alignment'] = json.loads((out_dir / 'product_stability_aligned_preprocessing.json').read_text())
         summary['aligned_outcome_sha256'] = hashlib.sha256(era_path.read_bytes()).hexdigest()
-        absolute = (pd.read_csv(OUT / 'product_stability_countries.csv'),
-                    json.loads((OUT / 'product_stability_summary.json').read_text()),
-                    pd.read_csv(OUT / 'product_stability_regions.csv').set_index('m49_subregion'))
+        absolute = (pd.read_csv(out_dir / 'product_stability_countries.csv'),
+                    json.loads((out_dir / 'product_stability_summary.json').read_text()),
+                    pd.read_csv(out_dir / 'product_stability_regions.csv').set_index('m49_subregion'))
         patterns = classify_patterns({'absolute': absolute, 'aligned': (table, summary, region)})
-        patterns.to_csv(OUT / 'product_stability_pattern_classification.csv', index=False)
+        patterns.to_csv(out_dir / 'product_stability_pattern_classification.csv', index=False)
         summary['pattern_classification_counts'] = {
             kind: group.classification.value_counts().reindex(CLASSES, fill_value=0).to_dict()
             for kind, group in patterns.groupby('pattern_type')}
-    table.to_csv(OUT / f'{prefix}_countries.csv', index=False)
-    region.to_csv(OUT / f'{prefix}_regions.csv')
-    (OUT / f'{prefix}_summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+    table.to_csv(out_dir / f'{prefix}_countries.csv', index=False)
+    region.to_csv(out_dir / f'{prefix}_regions.csv')
+    (out_dir / f'{prefix}_summary.json').write_text(json.dumps(summary, indent=2) + '\n')
     print(json.dumps({k: v for k, v in summary.items() if k not in ['provenance', 'groups', 'design_columns']}, indent=2))
     return summary
 
@@ -376,8 +391,10 @@ def monthly_anomalies(temperature):
     return temperature.groupby('time.month') - climatology
 
 
-def build_aligned_outcome():
+@prospective_outputs(out_dir="diagnostics/product_stability")
+def build_aligned_outcome(*, out_dir=None):
     """Run shared estimator on research-only deseasonalized ERA5; delete temp NC."""
+    out_dir.mkdir(parents=True, exist_ok=True)
     with xr.open_dataset(aw.BERKELEY_GRID_PATH, decode_times=False) as ds:
         baseline_metadata = str(ds.climatology.attrs['long_name'])
         if 'Jan 1951 - Dec 1980' not in baseline_metadata:
@@ -386,16 +403,16 @@ def build_aligned_outcome():
         anomalies = monthly_anomalies(ds.t2m).load()
         anomalies.attrs = {'units': 'K', 'long_name': 'ERA5 anomalies relative to 1951\u20131980 calendar-month means'}
     # tempfile is confined to research; remove after success or exception.
-    with tempfile.TemporaryDirectory(prefix='product_stability_', dir=OUT) as scratch:
+    with tempfile.TemporaryDirectory(prefix='product_stability_', dir=out_dir) as scratch:
         path = Path(scratch) / 'era5_monthly_anomalies.nc'
         anomalies.to_dataset(name='t2m').to_netcdf(path)
         mask, lats, slopes = ew.era5_cell_slopes(path)
-    np.savez_compressed(OUT / 'product_stability_aligned_cell_slopes.npz',
+    np.savez_compressed(out_dir / 'product_stability_aligned_cell_slopes.npz',
                         iso3=np.where(mask == None, '', mask).astype('U3'),  # noqa: E711
                         latitude=lats, longitude=anomalies.longitude.to_numpy(),
                         slope=slopes)
     ew.reduce_era5_slopes(mask, lats, slopes).to_csv(
-        OUT / 'product_stability_aligned_era5_trends.csv', index=False)
+        out_dir / 'product_stability_aligned_era5_trends.csv', index=False)
     metadata = {'berkeley_climatology_long_name': baseline_metadata,
                 'era5_normalization': 'Subtract own 1951\u20131980 cell/calendar-month mean before shared Theil\u2013Sen.',
                 'analysis_window': [DEFAULT_START, DEFAULT_END],
@@ -403,14 +420,14 @@ def build_aligned_outcome():
                 'selected_before_aligned_results': True,
                 'source_sha256': hashlib.sha256(ew.ERA5_GRID_PATH.read_bytes()).hexdigest(),
                 'baseline_months': 360, 'baseline_years_per_calendar_month': 30}
-    (OUT / 'product_stability_aligned_preprocessing.json').write_text(json.dumps(metadata, indent=2) + '\n')
+    (out_dir / 'product_stability_aligned_preprocessing.json').write_text(json.dumps(metadata, indent=2) + '\n')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--aligned', action='store_true')
     parser.add_argument('--build-aligned', action='store_true')
-    args = parser.parse_args()
-    if args.build_aligned:
-        build_aligned_outcome()
-    run(aligned=args.aligned or args.build_aligned)
+    with prospective_cli(parser) as (args, _):
+        if args.build_aligned:
+            build_aligned_outcome()
+        run(aligned=args.aligned or args.build_aligned)

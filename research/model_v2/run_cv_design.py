@@ -8,6 +8,8 @@ fold design. Writes ``outputs/cv_design_candidates.json`` and
 
 from __future__ import annotations
 
+from src.prospective import unadapted_evaluator
+
 import json
 
 import numpy as np
@@ -92,6 +94,7 @@ def fold_membership(table: pd.DataFrame, designs: dict[str, dict]) -> pd.DataFra
     return out
 
 
+@unadapted_evaluator()
 def main() -> None:
     table = pd.read_csv(COUNTRY_TABLE_PATH)
     inequality, city_features, income = load_inputs()

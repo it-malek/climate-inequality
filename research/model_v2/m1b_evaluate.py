@@ -13,6 +13,8 @@ column is read. Run with
 """
 from __future__ import annotations
 
+from src.prospective import require_prospective, require_synthetic_evaluator, unadapted_evaluator
+
 import argparse
 import dataclasses
 import hashlib
@@ -1031,6 +1033,7 @@ def redundancy_context_from(record):
                     'M0* design spans is geography. The diagnostic says nothing about warming.'}
 
 
+@unadapted_evaluator(output_argument="out_dir")
 def evaluate(frozen, out_dir, *, provenance, reference_cards, support_qa=None,
              redundancy_context=None):
     """Score both representations, apply the pre-specified verdict rules and write the evidence.
@@ -1139,13 +1142,16 @@ def main(argv=None):
     if args.compare:
         record = reproducibility_record(*args.compare, code=frozen_code_state())
         if args.record:
+            require_prospective().destination(args.record)
             Path(args.record).write_text(json_text(record), encoding='utf-8')
         print(json_text({'byte_identical': record['byte_identical'],
                          'differing': [n for n, v in record['artifacts'].items() if not v['identical']]}))
         return record
+    require_synthetic_evaluator()
     require_hash_seed()
     code = frozen_code_state()
     out_dir = Path(args.out)
+    require_prospective().destination(out_dir)
     if out_dir.exists():
         raise RuntimeError(f'{out_dir} already exists; a run never overwrites a prior run')
     logging.getLogger('src.feature_schema').setLevel(logging.ERROR)

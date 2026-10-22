@@ -32,7 +32,10 @@ leave-location-out cross-validation (RMSE 0.0083 vs 0.0099 °C/decade). Plain
 leave-one-row-out CV reverses the ranking (0.0057 vs 0.0160) because 2,821 of
 the 3,510 locations share grid-snapped coordinates with another city, and a
 held-out point's coordinate twin leaks its value into the fold. Holding out the
-whole coordinate group removes the leak.
+whole coordinate group removes that neighbor-duplication leak. The historical
+kriging comparison remains conditional on a variogram fitted to the full field,
+including held-out outcomes; it is not a fully training-only generalization
+comparison. The recorded rankings and numbers above are unchanged.
 
 ## 2. Country-level inequality and its decomposition
 

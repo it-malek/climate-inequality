@@ -16,6 +16,8 @@ Run with ``PYTHONHASHSEED=0 uv run python -m research.model_v2.m2_evaluate [--ou
 """
 from __future__ import annotations
 
+from src.prospective import require_prospective, require_synthetic_evaluator, unadapted_evaluator
+
 import argparse
 import dataclasses
 import itertools
@@ -1046,6 +1048,7 @@ def non_deciding_conditions(entry):
             'note': 'the per-capita representation is reported unconditionally and never determines the label'}
 
 
+@unadapted_evaluator(output_argument="out_dir")
 def evaluate(frozen, out_dir, *, provenance, reference_cards):
     out_dir = prov.require_fresh(out_dir)
     feasibility_identity = check_against_feasibility(frozen)
@@ -1171,13 +1174,16 @@ def main(argv=None):
     if args.compare:
         record = reproducibility_record(*args.compare, code=prov.frozen_code_state(code_files()))
         if args.record:
+            require_prospective().destination(args.record)
             prov.write_json(record, args.record)
         print(prov.json_text({'byte_identical': record['byte_identical'],
                               'differing': [n for n, v in record['artifacts'].items() if not v['identical']]}))
         return record
+    require_synthetic_evaluator()
     prov.require_hash_seed()
     code = prov.frozen_code_state(code_files())
     out_dir = prov.require_fresh(args.out)
+    require_prospective().destination(out_dir)
     logging.getLogger('src.feature_schema').setLevel(logging.ERROR)
     digests = verify_pins()
     frozen = build_frozen()

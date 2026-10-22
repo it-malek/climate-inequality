@@ -13,6 +13,8 @@ it to replace the committed legacy scorecard.
 
 from __future__ import annotations
 
+from src.prospective import unadapted_evaluator
+
 import json
 
 import numpy as np
@@ -31,6 +33,7 @@ MIN_REGION_N = 3  # the worst-region headline ignores sub-regions with fewer cou
 N_PERMUTATIONS = 999
 
 
+@unadapted_evaluator()
 def legacy_main() -> dict:
     table = pd.read_csv(COUNTRY_TABLE_PATH)
     inequality, city_features, income = load_inputs()
@@ -71,6 +74,7 @@ def legacy_main() -> dict:
     return out
 
 
+@unadapted_evaluator()
 def main() -> dict:
     """Current M0 scorer; legacy files are never overwritten by this entry point."""
     from research.model_v2.run_territory_correction import main as corrected_main

@@ -29,6 +29,10 @@ Sections, in execution order:
 
 from __future__ import annotations
 
+from src.correction_identity import correction_metadata
+
+from src.prospective import prospective_outputs, prospective_cli, require_prospective, require_existing_inputs
+
 import io
 import json
 import logging
@@ -228,7 +232,7 @@ def add_elevation(
         Copy of `df` with `elevation_m` (float, meters; negative = below
         sea level) added.
     """
-    download_file(ETOPO_URL, nc_path, timeout=600)
+    require_existing_inputs(nc_path)
     values = sample_static_grid(nc_path, df["Latitude"].to_numpy(), df["Longitude"].to_numpy(), var)
     return df.assign(elevation_m=values)
 
@@ -329,7 +333,7 @@ def add_koppen(
 ) -> pd.DataFrame:
     """Add `koppen`, the major Koeppen-Geiger group (A-E) at each location.
 
-    Prepares `nc_path` via :func:`prepare_koppen_grid` if missing, samples
+    Requires an already prepared `nc_path` (no implicit cache writes), samples
     raw class codes via :func:`sample_static_grid`, then collapses them via
     :func:`collapse_koppen`. Ocean/no-data cells (code 0) -> NaN; the count
     is logged.
@@ -342,7 +346,7 @@ def add_koppen(
     Returns:
         Copy of `df` with `koppen` (single-letter string or NaN) added.
     """
-    prepare_koppen_grid(out_path=nc_path, var=var)
+    require_existing_inputs(nc_path)
     codes = sample_static_grid(nc_path, df["Latitude"].to_numpy(), df["Longitude"].to_numpy(), var)
     koppen = collapse_koppen(pd.Series(codes, index=df.index))
     n_nan = int(koppen.isna().sum())
@@ -439,6 +443,7 @@ def attach_income_group(
     return country_table.assign(income_group=keys.map(income_map))
 
 
+@prospective_outputs(out_path="processed/city_features.parquet")
 def build_city_features(
     trends_path: Path = DEFAULT_TRENDS_PATH,
     out_path: Path = DEFAULT_FEATURES_PATH,
@@ -467,6 +472,7 @@ def build_city_features(
     Returns:
         The feature DataFrame, columns :data:`FEATURES_COLUMNS`.
     """
+    require_existing_inputs(trends_path, etopo_path, koppen_path)
     trends = pd.read_parquet(trends_path)[CITY_KEYS + ["slope_c_per_decade"]]
     df = add_latitude_features(trends)
 
@@ -836,6 +842,23 @@ def _extract_all_terms(fit: RegressionResultsWrapper) -> list[TermFit]:
     ]
 
 
+@dataclass(frozen=True)
+class MoranResult:
+    """Diagnostic with explicit availability; two-value unpacking is retained."""
+
+    statistic: float | None
+    p_value: float | None
+    reason: str | None = None
+
+    @property
+    def status(self) -> str:
+        return "unavailable" if self.reason else "available"
+
+    def __iter__(self):
+        yield self.statistic
+        yield self.p_value
+
+
 def morans_i(
     residuals: np.ndarray,
     lon: np.ndarray,
@@ -843,7 +866,7 @@ def morans_i(
     k: int = 8,
     n_permutations: int = 199,
     seed: int = 0,
-) -> tuple[float, float]:
+) -> MoranResult:
     """Moran's I for spatial autocorrelation in `residuals`.
 
     Uses row-standardized k-nearest-neighbor weights (each point weighted
@@ -863,23 +886,52 @@ def morans_i(
         seed: RNG seed for the permutations.
 
     Returns:
-        `(I, p_value)`. `p_value` is the two-sided permutation p-value
+        A :class:`MoranResult`, unpackable as `(I, p_value)`. Undefined cases
+        carry two None values and a reason. `p_value` is the two-sided permutation p-value
         ``(count(|I_perm| >= |I_obs|) + 1) / (n_permutations + 1)``.
     """
+    residuals, lon, lat = (np.asarray(a, dtype=float) for a in (residuals, lon, lat))
+    if any(a.ndim != 1 for a in (residuals, lon, lat)) or not (
+        len(residuals) == len(lon) == len(lat)
+    ):
+        return MoranResult(None, None, "mismatched_or_nonvector_inputs")
     n = len(residuals)
-    z = np.asarray(residuals, dtype=float) - np.mean(residuals)
+    if n < 3:
+        return MoranResult(None, None, "insufficient_samples")
+    if not all(np.isfinite(a).all() for a in (residuals, lon, lat)):
+        return MoranResult(None, None, "nonfinite_inputs")
+    if not isinstance(k, (int, np.integer)) or k < 1:
+        return MoranResult(None, None, "unusable_neighbors")
+    if not isinstance(n_permutations, (int, np.integer)) or n_permutations < 1:
+        return MoranResult(None, None, "no_permutations")
+    if np.all(residuals == residuals[0]):
+        return MoranResult(None, None, "constant_residuals")
+    with np.errstate(over="ignore", invalid="ignore", under="ignore"):
+        z = residuals - np.mean(residuals)
+        denominator = np.sum(z**2)
+    if not np.isfinite(denominator) or denominator <= 0:
+        return MoranResult(None, None, "unusable_residual_variation")
     idx = knn_indices(lon, lat, lon, lat, k=min(k + 1, n))
-    neighbor_idx = np.array([row[row != i][:k] for i, row in enumerate(idx)])
+    if idx.ndim != 2 or idx.shape[0] != n:
+        return MoranResult(None, None, "unusable_neighbors")
+    rows = [row[row != i][:k] for i, row in enumerate(idx)]
+    if any(len(row) != min(k, n - 1) or len(np.unique(row)) != len(row)
+           or np.any(row < 0) or np.any(row >= n) for row in rows):
+        return MoranResult(None, None, "unusable_neighbors")
+    neighbor_idx = np.array(rows)
 
     def _compute(zz: np.ndarray) -> float:
         neighbor_means = zz[neighbor_idx].mean(axis=1)
         return float(np.sum(zz * neighbor_means) / np.sum(zz**2))
 
-    observed = _compute(z)
-    rng = np.random.default_rng(seed)
-    perm_stats = np.array([_compute(rng.permutation(z)) for _ in range(n_permutations)])
+    with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+        observed = _compute(z)
+        rng = np.random.default_rng(seed)
+        perm_stats = np.array([_compute(rng.permutation(z)) for _ in range(n_permutations)])
+    if not np.isfinite(observed) or not np.isfinite(perm_stats).all():
+        return MoranResult(None, None, "nonfinite_statistic")
     p_value = (np.sum(np.abs(perm_stats) >= np.abs(observed)) + 1) / (n_permutations + 1)
-    return observed, float(p_value)
+    return MoranResult(observed, float(p_value))
 
 
 def partial_r2_by_feature(
@@ -930,6 +982,7 @@ class CityModelResult:
     partial_r2: dict[str, float] = field(default_factory=dict)
     moran_i: float | None = None
     moran_p: float | None = None
+    moran_reason: str | None = None
 
 
 def fit_city_model(
@@ -967,10 +1020,13 @@ def fit_city_model(
 
     moran_i_val: float | None = None
     moran_p: float | None = None
+    moran_reason = "not_requested"
     if morans_k is not None:
-        moran_i_val, moran_p = morans_i(
+        diagnostic = morans_i(
             fit.resid.to_numpy(), used["Longitude"].to_numpy(), used["Latitude"].to_numpy(), k=morans_k
         )
+        moran_i_val, moran_p = diagnostic
+        moran_reason = diagnostic.reason
 
     result = CityModelResult(
         spec_name=spec_name,
@@ -981,6 +1037,7 @@ def fit_city_model(
         partial_r2=partial_r2,
         moran_i=moran_i_val,
         moran_p=moran_p,
+        moran_reason=moran_reason,
     )
     return result, fit
 
@@ -1199,6 +1256,8 @@ def city_result_to_dict(r: CityModelResult) -> dict:
         "partial_r2": dict(r.partial_r2),
         "moran_i": r.moran_i,
         "moran_p": r.moran_p,
+        "moran_status": "available" if r.moran_i is not None else "unavailable",
+        "moran_reason": r.moran_reason,
     }
 
 
@@ -1259,12 +1318,14 @@ def build_explain_summary(
     country_specs = [country_result_to_dict(r) for r in country_results]
 
     return {
+        **correction_metadata(),
         "city_model": {
             "specs": city_specs,
             "abs_latitude_baseline": abs_lat_baseline,
             "koppen_b_full": koppen_b,
             "moran_i_full": moran_i_full,
             "moran_p_full": moran_p_full,
+            "moran_reason_full": full.moran_reason if full else "not_requested",
         },
         "country_model": {
             "specs": country_specs,
@@ -1272,6 +1333,7 @@ def build_explain_summary(
     }
 
 
+@prospective_outputs(summary_path="processed/explain_summary.json", bundle_path="processed/explain_features.parquet")
 def write_explain_summary(
     city_results: list[CityModelResult],
     country_results: list[CountryModelResult],
@@ -1322,17 +1384,11 @@ def main() -> None:
     Aborts before building `city_features.parquet` or fitting any model if
     :func:`run_geo_preflight` fails.
     """
+    require_prospective()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
-    # Fetch every external input before the preflight reads them:
-    # run_geo_preflight opens ETOPO + Koeppen (orientation/sampling) and the
-    # World Bank income table (country-join check), but ETOPO/Koeppen are
-    # otherwise downloaded only lazily inside build_city_features and the income
-    # table not at all, so a clean machine would crash at the preflight.
-    # (Mirrors validation.main()'s download-then-run pattern.)
-    download_file(ETOPO_URL, ETOPO_PATH, timeout=600)
-    prepare_koppen_grid()
-    download_file(INCOME_URL, INCOME_PATH, timeout=120)
+    # Acquisition is a separate authorized operation; prospective execution is read-only on inputs.
+    require_existing_inputs(ETOPO_PATH, KOPPEN_PATH, INCOME_PATH)
 
     if not run_geo_preflight():
         raise SystemExit("geo + data integrity preflight FAILED -- see report above")
@@ -1393,4 +1449,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    with prospective_cli():
+        main()

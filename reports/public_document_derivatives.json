@@ -1320,9 +1320,9 @@
     "research/model_v2/m4_evaluate.py": {
       "format": "utf8-python",
       "notice": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
-      "original_sha256": "ab2c54a1b3579a14ceb1ee40d56fc93a151c1d92da37d736a6e5c25d15d7e45e",
-      "public_sha256": "440d93e014895b1fb957337cecc97f3c6f18028c95ae8a2d397575e04efa16bf",
-      "protected_sha256": "0a85b3da1af78229799de23b89a114d4370b00c8a61def4489567674a9dfd49d",
+      "original_sha256": "a2d74ee479c3b34589c0f36ed942a1fc5ab0e3b1c4db7c3429d758fa5acfc04a",
+      "public_sha256": "6ad881865c4e38e972b71f3f6c64ea00393d6e619641224c36e1387ae4038c1e",
+      "protected_sha256": "4b15488171ddf2e011a53fb36de3e2cda3227695fa1f3cf18213a09d60cbd893",
       "edits": [
         {
           "original_start": 0,
@@ -1334,29 +1334,29 @@
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 38573,
-          "original_end": 38573,
+          "original_start": 38791,
+          "original_end": 38791,
           "original_value_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "public_start": 38870,
-          "public_end": 38873,
+          "public_start": 39088,
+          "public_end": 39091,
           "public_value": "rec",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 38574,
-          "original_end": 38575,
+          "original_start": 38792,
+          "original_end": 38793,
           "original_value_sha256": "50e721e49c013f00c62cf59f2163542a9d8df02464efeb615d31051b0fddc326",
-          "public_start": 38874,
-          "public_end": 38886,
+          "public_start": 39092,
+          "public_end": 39104,
           "public_value": "rded decisio",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         },
         {
-          "original_start": 38576,
-          "original_end": 38578,
+          "original_start": 38794,
+          "original_end": 38796,
           "original_value_sha256": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
-          "public_start": 38887,
-          "public_end": 38887,
+          "public_start": 39105,
+          "public_end": 39105,
           "public_value": "",
           "reason": "Labeled editorial derivative: neutral historical process wording or repaired citation; unchanged scientific content retains its original identity."
         }

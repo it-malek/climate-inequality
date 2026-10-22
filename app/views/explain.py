@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from src.correction_identity import summary_origin
+
 import pandas as pd
 import streamlit as st
 
@@ -23,6 +25,7 @@ def render() -> None:
         return
 
     e = stats["explain"]
+    st.caption(summary_origin(e))
     city = e["city_model"]
     country = e["country_model"]
     country_specs = country["specs"]
@@ -153,6 +156,10 @@ def render() -> None:
             f"Moran's I on full-model residuals = {city['moran_i_full']:.4f} "
             f"(p = {city['moran_p_full']:.3g}): spatial autocorrelation persists after "
             "controlling for geography."
+        )
+    if city.get("moran_i_full") is None:
+        caption_parts.append(
+            "Moran's I unavailable: " + str(city.get("moran_reason_full") or "not recorded")
         )
     st.caption(" ".join(caption_parts))
 

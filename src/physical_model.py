@@ -40,6 +40,10 @@ through :func:`src.data_io.write_typed_parquet` for on-platform byte-stability.
 
 from __future__ import annotations
 
+from src.correction_identity import FORECAST_METHOD_ID, correction_metadata
+
+from src.prospective import prospective_outputs, prospective_cli, require_prospective
+
 import json
 import logging
 from dataclasses import asdict, dataclass, field
@@ -492,8 +496,12 @@ def predict_trajectory(
     For a test year at horizon ``h = year - train_end`` the conditional forecast
     adds the decayed last-training residual ``rho^h * eps_t0`` to the mean and uses
     the ``h``-step forecast-error factor ``c = (1 - rho^{2h})/(1 - rho^2)``. The
-    band half-width is ``t_crit * sqrt(beta_n/alpha_n * (c + x_t^T V_n x_t))``,
-    combining innovation and parameter uncertainty under the Student-t predictive.
+    forecast design is ``z_h = x_t - rho^h x_T`` because the terminal residual
+    also depends on beta. The band half-width is
+    ``t_crit * sqrt(beta_n/alpha_n * (c + z_h^T V_n z_h))``. This is a
+    Student-t scale, not its standard deviation: variance uses beta_n/(alpha_n-1)
+    when alpha_n > 1. Rho and lambda are fixed at their fitted values. In-sample
+    bands retain their existing design x_t and stationary noise factor.
     """
     rho = fit.rho
     if not abs(rho) < 1.0:
@@ -504,7 +512,7 @@ def predict_trajectory(
     m_n, v_n = fit.m_n, fit.v_n
     df = 2.0 * fit.alpha_n
     t_crit = float(student_t.ppf(0.975, df))
-    sigma2 = fit.beta_n / fit.alpha_n
+    scale_factor = fit.beta_n / fit.alpha_n
     one_minus_rho2 = 1.0 - rho**2
 
     # Last training residual (un-whitened) anchors the AR(1) forecast.
@@ -518,12 +526,16 @@ def predict_trajectory(
         if train_mask[idx]:
             mean = mean_param
             c = 1.0 / one_minus_rho2
+            uncertainty_design = x_t
         else:
             h = int(years[idx] - train_end)
             mean = mean_param + rho**h * eps_t0
             c = (1.0 - rho ** (2 * h)) / one_minus_rho2
-        var = sigma2 * (c + float(x_t @ v_n @ x_t))
-        half = t_crit * np.sqrt(var)
+            uncertainty_design = x_t - rho**h * x_tr[-1]
+        scale_squared = scale_factor * (
+            c + float(uncertainty_design @ v_n @ uncertainty_design)
+        )
+        half = t_crit * np.sqrt(scale_squared)
         rows.append(
             {
                 "year": int(years[idx]),
@@ -649,9 +661,15 @@ def compute_physical_model(
 
 def summary_payload(result: PhysicalModelResult) -> dict:
     """JSON payload with the non-causal disclaimer, float-rounded for byte-stability."""
-    return round_floats({"interpretation": INTERPRETATION, **asdict(result)})
+    return round_floats({
+        "interpretation": INTERPRETATION,
+        "forecast_uncertainty_method": FORECAST_METHOD_ID,
+        **correction_metadata(forecast=True),
+        **asdict(result),
+    })
 
 
+@prospective_outputs(summary_path="processed/physical_summary.json", trajectory_path="processed/physical_trajectory.parquet")
 def build_physical_model(
     forcings_path=DEFAULT_FORCINGS_PATH,
     summary_path=DEFAULT_SUMMARY_PATH,
@@ -681,6 +699,7 @@ def build_physical_model(
 
 def main() -> None:
     """Fit on the real forcings table and print the hindcast headline."""
+    require_prospective()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     out = build_physical_model()
     r = out["result"]
@@ -706,4 +725,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    with prospective_cli():
+        main()

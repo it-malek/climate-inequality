@@ -28,6 +28,8 @@ not part of the project's two Kaggle datasets).
 
 from __future__ import annotations
 
+from src.prospective import prospective_outputs, prospective_cli, require_prospective
+
 import logging
 import warnings
 from pathlib import Path
@@ -291,7 +293,9 @@ def leave_one_out_cv(
 
     Each point is predicted from its k nearest *other* points, using
     :func:`idw_interpolate` and :func:`ordinary_kriging_interpolate` with a
-    single globally-fit variogram (see module docstring for why).
+    single globally-fit variogram (see module docstring for why). This historical
+    comparison conditions on full-field outcomes when fitting the variogram;
+    coordinate exclusion removes neighbor duplication, not that dependence.
 
     By default each fold is leave-*location*-out: Berkeley Earth city
     coordinates are grid-snapped, so 677 coordinate groups (2,821 of the
@@ -448,6 +452,7 @@ def mask_to_land(
     return out
 
 
+@prospective_outputs(out_dir="figures")
 def build_interpolated_surface(
     trends_path: Path = DEFAULT_TRENDS_PATH,
     out_dir: Path = OUTPUTS_DIR,
@@ -470,8 +475,8 @@ def build_interpolated_surface(
         value_col: Column of `trends_path` to interpolate.
         k: Neighborhood size for both LOO-CV and the rendered surface.
         resolution: Grid spacing in degrees (see :func:`build_grid`).
-        land: Land (multi)polygon to mask to; None downloads and loads the
-            Natural Earth polygons (tests inject a synthetic geometry).
+        land: Land (multi)polygon to mask to; None requires prepared Natural
+            Earth polygons (tests inject a synthetic geometry).
 
     Returns:
         Dict with keys `cv` (leave-location-out DataFrame, used to pick the
@@ -479,6 +484,8 @@ def build_interpolated_surface(
         `figure_path` (Path), `grid_lon`, `grid_lat`, `surface` (the
         masked 2D array).
     """
+    if land is None:
+        land = load_land_geometry()  # read-only; acquisition is a separate operation
     trends = pd.read_parquet(trends_path)
     lon = trends["Longitude"].to_numpy()
     lat = trends["Latitude"].to_numpy()
@@ -500,9 +507,6 @@ def build_interpolated_surface(
     grid_lon_1d, grid_lat_1d = build_grid(resolution=resolution)
     grid_lon, grid_lat = np.meshgrid(grid_lon_1d, grid_lat_1d)
 
-    if land is None:
-        download_land_polygons()
-        land = load_land_geometry()
     on_land = contains_xy(land, grid_lon, grid_lat)
 
     flat_values = np.full(grid_lon.size, np.nan)
@@ -545,6 +549,7 @@ def build_interpolated_surface(
 
 def main() -> None:
     """Build the surface and print the cross-validation comparison."""
+    require_prospective()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     result = build_interpolated_surface()
     print("leave-location-out CV (winner selection):")
@@ -556,4 +561,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    with prospective_cli():
+        main()

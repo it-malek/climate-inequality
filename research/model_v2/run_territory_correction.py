@@ -4,6 +4,8 @@ Never overwrites a legacy artifact. No choices depend on corrected scores.
 """
 from __future__ import annotations
 
+from src.prospective import unadapted_evaluator
+
 import json
 from dataclasses import asdict
 
@@ -58,6 +60,7 @@ def complete_score(design, table, result, *, reference=None):
     return card
 
 
+@unadapted_evaluator()
 def main():
     codes_table = pd.read_csv(OUTPUT_DIR / 'm0_countries.csv')
     codes = codes_table.iso3.tolist()

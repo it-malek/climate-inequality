@@ -11,6 +11,8 @@ variance decomposition, not significance or causation.
 
 from __future__ import annotations
 
+from src.correction_identity import summary_origin
+
 import pandas as pd
 import streamlit as st
 
@@ -55,6 +57,7 @@ def render() -> None:
         st.info(_NOT_BUILT)
         return
 
+    st.caption(summary_origin(summary))
     outcome = theme.outcome_label(summary.get("outcome_definition", "station_weighted"))
     st.markdown(
         f"How much the variance shares of **{outcome}** country warming move "
@@ -123,6 +126,9 @@ def render() -> None:
             "follows that thread."
         )
 
+    if spatial and spatial.get("morans_i") is None:
+        st.info("Residual Moran's I unavailable: " + str(spatial.get("reason") or "not recorded"))
+
     station = (summary.get("sensitivity") or {}).get(_STATION_KEY)
     if station and share and share.get("groups"):
         st.subheader("Outcome sensitivity: station-weighted")
@@ -169,5 +175,13 @@ def _comparison_table(primary: dict, station: dict) -> pd.DataFrame:
         _num((block.get("residual_spatial") or {}).get("morans_i"))
         for _, block in columns
     ]
+    if any((block.get("residual_spatial") or {}).get("reason") for _, block in columns):
+        rows["Moran availability"] = [
+            str((block.get("residual_spatial") or {}).get("reason") or (
+                "available" if (block.get("residual_spatial") or {}).get("morans_i") is not None
+                else "unavailable (reason not recorded)"
+            ))
+            for _, block in columns
+        ]
     rows["Countries"] = [str(block.get("n_countries", "n/a")) for _, block in columns]
     return pd.DataFrame(rows, index=[name for name, _ in columns]).T

@@ -173,7 +173,11 @@ class TestBundleContents:
         assert set(payload) == {
             "provenance", "trends", "interpolation", "inequality",
             "validation", "explain",
+            "correction_set_id", "evidence_schema_id", "computation_status",
         }
+        assert payload["correction_set_id"] == "prospective-corrections-2026-10-22"
+        assert payload["evidence_schema_id"] == "finite-evidence-v1"
+        assert payload["computation_status"] == "prospective-development"
         trends = payload["trends"]
         assert trends["n_locations"] == len(SYNTHETIC_CITIES)
         assert trends["n_arctic"] == 1  # only Arcticville is above 60 deg N
