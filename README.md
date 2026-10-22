@@ -7,9 +7,9 @@ spatial structure that remains?
 
 Interactive presentation: [climate-inequality.streamlit.app](https://climate-inequality.streamlit.app/)
 
-This repository is the completed, fixed snapshot of an independent research
-project. It fits a warming trend to every Berkeley Earth city record over
-1950–2013, defines national warming three ways (station-, population- and
+This independent research project examines how warming differs across countries.
+The 2.1.0 analysis fits a warming trend to every
+Berkeley Earth city-location record over 1950–2013, defines national warming three ways (station-, population- and
 area-weighted), decomposes the cross-country variance of the area-weighted
 rate among four groups of country attributes, and then investigates the
 spatially clustered residual under geographically separated validation. A
@@ -23,29 +23,32 @@ warming *aligns* with a country attribute, not what caused the warming.
 
 ## Principal findings
 
-Numbers are read from the committed result records (`app/data/` and
-`research/model_v2/outputs/`); the tables behind every claim are in
-[`docs/findings.md`](docs/findings.md).
+These findings describe the 2.1.0 analysis at this development revision.
+Historical result records remain available and are distinguished from the
+corrected results.
 
-- **Warming is universal but uneven.** All 3,510 city locations warmed over
+- **Warming in the sample is uneven.** All 3,510 city-location estimates warmed over
   1950–2013 (sample mean 0.146 °C/decade; 5th to 95th percentile 0.06 to
   0.25). Above 60°N the mean is 0.23 °C/decade; the fastest national rates are
   in Central Asia, the Iranian plateau and the Sahel rather than the Arctic.
 - **Historical responsibility and experienced warming are different axes.**
   Ranked by station-weighted warming, countries with more cumulative CO₂ per
   person warmed faster (Spearman ρ +0.36, n = 157). Ranked by area-weighted
-  warming the correlation is +0.01 under Berkeley Earth (n = 154) and −0.02
-  under anomaly-aligned ERA5 (n = 151). The shift is consistent with station-network geography, but the gridded
-  product also changes the observational representation; station siting is
-  not isolated as the cause.
+  warming the correlation is +0.01 under Berkeley Earth (n = 154) and −0.01
+  under anomaly-aligned ERA5 (n = 154). Both sampling and observational
+  representation change across these comparisons, so they do not isolate the
+  cause of the shift.
 - **Geography structures most of what a static model explains.** Over the 151
   countries with complete features, four attribute groups explain 63.6% of the
   cross-country variance in area-weighted warming. Physical geography accounts
-  for 0.519 of total variance (country-bootstrap 95% interval 0.452 to 0.630),
+  for 0.519 of total variance in the retained full-rank model (country-bootstrap
+  95% interval 0.452 to 0.630),
   socioeconomic development 0.063, population 0.042 and historical emissions
   responsibility 0.013 (0.006 to 0.035); the residual is 0.364. Geography is the
   largest group in every one of 2,000 resamples. These are descriptive
-  allocations of explained cross-country variance, not causal contributions.
+  allocations of total cross-country variance, not causal contributions. The
+  separate legacy decomposition uses the same 151 complete countries; its
+  revised bootstrap population is explained in [docs/stability.md](docs/stability.md).
 - **The residual is spatially structured, and hard to recover.** About 36% of
   the variance lies outside the static model, with residual Moran's I 0.27.
   Under leave-one-country-out validation with a 500 km territorial exclusion
@@ -54,19 +57,36 @@ Numbers are read from the committed result records (`app/data/` and
   a richer latitude functional form did not demonstrate transferable
   improvement. Spatial error and spatial lag models both improve
   geographically separated prediction under Berkeley Earth and represent
-  39–40% of the static residual as neighbour-conditional covariance; that gain
-  does not reproduce with ERA5 outcomes, while the static decomposition
+  a 39–40% in-sample reduction in static residual squared error through
+  neighbour-conditional prediction. This is covariance accounting, not a
+  physical mechanism. The predictive gain does not reproduce with ERA5 outcomes, while the static decomposition
   conclusion survives both products.
-- **The least responsible warm no less and can adapt least.** Responsibility
-  rises steeply with income (ρ +0.89) and falls with ND-GAIN vulnerability
-  (ρ −0.88), while area-weighted warming is flat across both (ρ −0.15 and
-  +0.02, neither significant).
+- **Lower responsibility aligns with greater composite vulnerability.**
+  Responsibility rises with income (ρ +0.89, n = 157) and falls with ND-GAIN
+  vulnerability (ρ −0.84, n = 155). With the official 2026 v2 release and a
+  fixed 2023 observation year, the area-warming gradient is +0.10 (n = 153;
+  country-bootstrap 95% interval −0.06 to +0.26). These comparisons use
+  different available-country samples. Neither nonsignificance nor an interval
+  spanning zero establishes equal or no-lower warming. ND-GAIN combines
+  exposure, sensitivity and adaptive capacity across six sectors; it is not a
+  standalone measure of ability to adapt.
+- **Kriging has lower error in the replacement interpolation evaluation.**
+  With matched folds and variograms fitted only to training data,
+  coordinate-group RMSE is 0.0104 °C/decade for kriging versus 0.0119 for IDW.
+  Under ten spatial folds with 250 km exclusion it is 0.0438 versus 0.0515.
+  This descriptive advantage concerns the tested designs on previously
+  examined data, rather than an untouched confirmatory holdout.
 - **The 1950–2013 trends underpredict what came after.** Against gridded
   observations through 2024, the stored lines run 0.48 °C below observed
   anomalies on average.
-- **A forcing regression reproduces the global series.** Trained through 2013,
-  it explains 91% of the annual variance and its 95% band covers 10 of the 11
-  held-out years (2014–2024).
+- **The forcing regression supports a conditional hindcast.** Its training fit
+  through 2013 explains 91% of annual variance; corrected conditional 95% bands
+  cover 10 of 11 subsequent years (2014–2024). Rolling evaluation refits at 24
+  training origins and produces 264 predictions over horizons of 1–11 years.
+  These calculations use observed future drivers. They do not demonstrate a
+  forecast available at each origin or establish interval calibration from
+  small, overlapping samples. Bands condition on the fitted AR(1) parameter
+  and ridge penalty and omit future-driver uncertainty.
 
 ## How it is built
 
@@ -76,7 +96,7 @@ Berkeley Earth city CSV -> DuckDB -> monthly anomalies -> Theil-Sen trend per ci
         +-----------------------------------------------------+------------------+
         v                                                     v                  v
   IDW / kriging surface                     country means (station / population / area weighted)
-  (leave-location-out CV)                                     |
+  (grouped / spatial CV)                                       |
                                        OWID CO2 + population, continents, income groups, ETOPO,
                                        Koppen, GPW population + national-identifier grids
                                                               |
@@ -98,7 +118,9 @@ Each pipeline stage is a module under `src/` with a `python -m src.<module>`
 entry point; every published number is produced by tested code, and the bundle
 builder refuses to publish from a stale or inconsistent pipeline state. The
 methods, parameters and integrity checks are documented in
-[`docs/reproducibility.md`](docs/reproducibility.md); the scientific rationale
+[`docs/current_validation.md`](docs/current_validation.md) for 2.1.0 and
+[`docs/reproducibility.md`](docs/reproducibility.md) for the historical pipeline;
+the scientific rationale
 for the decomposition is in
 [`docs/decomposition_design_memo.md`](docs/decomposition_design_memo.md); the
 residual investigation is documented in
@@ -116,9 +138,10 @@ python -m src.research_audit
 uv run --locked streamlit run app/streamlit_app.py
 ```
 
-Rebuilding the bundle from the raw sources takes a few hours of downloads and
-computation; the step-by-step sequence is in
-[`docs/reproducibility.md`](docs/reproducibility.md).
+Rebuilding this analysis requires the verified raw sources and offline
+computation. The step-by-step sequence is in
+[`docs/current_validation.md`](docs/current_validation.md);
+[`docs/reproducibility.md`](docs/reproducibility.md) documents the historical pipeline.
 
 ## Documentation
 
@@ -126,7 +149,8 @@ computation; the step-by-step sequence is in
 |----------|----------------|
 | [`reports/canonical_results.json`](reports/canonical_results.json) | Generated FINAL / SUPERSEDED / HISTORICAL result index with exact source pointers |
 | [`docs/findings.md`](docs/findings.md) | Results, with the numbers behind every claim above |
-| [`docs/reproducibility.md`](docs/reproducibility.md) | Data sources, pipeline stages, parameters, determinism and integrity checks |
+| [`docs/current_validation.md`](docs/current_validation.md) | 2.1.0 reconstruction, fixed settings and verification |
+| [`docs/reproducibility.md`](docs/reproducibility.md) | Historical pipeline, data sources, parameters, determinism and integrity checks |
 | [`docs/decomposition_design_memo.md`](docs/decomposition_design_memo.md) | Why a variance decomposition, why these groups, what it can and cannot support |
 | [`docs/stability.md`](docs/stability.md) | Bootstrap, leave-one-out and spatial diagnostics on the decomposition |
 | [`docs/era5_validation_results.md`](docs/era5_validation_results.md) | The area-weighting result re-tested on ERA5 reanalysis |
@@ -138,17 +162,24 @@ computation; the step-by-step sequence is in
 
 ## Limitations
 
-- **Station sampling.** Trends exist only where Berkeley Earth has city
-  records: dense in the populated mid-latitudes, sparse over the Arctic,
+- **Source-location sampling.** Distinct city labels share Berkeley Earth
+  source locations: 3,510 records have 1,366 distinct coordinate pairs. Shared
+  rounded coordinates and identical monthly values support common source-field
+  assignment, rather than independent weather-station observations. No duplicate
+  identity-month records were found. Records are retained and coincident
+  locations stay together in interpolation validation. Coverage is dense in
+  populated mid-latitudes and sparse over the Arctic,
   Sahara, Amazon and Siberia. The area-weighted outcome sets national
-  aggregation by land area, but it is not independent of the station record:
-  Berkeley Earth's gridded field is interpolated from the same stations.
+  aggregation by land area. The city series and Berkeley Earth gridded field
+  share an observational system; changing aggregation does not create an
+  independent temperature record.
 - **Products disagree.** Berkeley Earth and ERA5 differ on national
   area-weighted trends by more than the decomposition residual (rank agreement
   about 0.6), and ERA5 carries its own reanalysis error structure. The static
   conclusion holds under both; the spatial models' predictive gain does not.
-- **About a third of cross-country variance is outside the static model**,
-  and the tested extensions did not recover it in a transferable way. The
+- **About a third of cross-country variance is outside the static model.**
+  The tested static extensions did not establish transferable improvement,
+  while spatial predictive gains depend on the temperature product. The
   remaining variance may mix omitted regional physical heterogeneity, internal
   variability, functional-form limitations, product differences, spatial
   dependence, predictor measurement error, country aggregation and
@@ -158,8 +189,9 @@ computation; the step-by-step sequence is in
 - **Country aggregation and a 151-country complete-case sample** with equal
   country weighting; nothing describes variation within countries.
 - **Uncertainty is not fully propagated.** Trend uncertainty and predictor
-  measurement error do not enter the shares; resampling intervals are not
-  spatially corrected, and spatial dependence persists beyond the 500 km
+  measurement error do not enter the shares. Resampling describes stability
+  conditional on observed countries; six continent blocks do not establish
+  calibrated spatial uncertainty, and dependence persists beyond the 500 km
   exclusion used for validation.
 - **Same-data hypotheses.** Several follow-up hypotheses were motivated by the
   same outcome they were tested on.
@@ -176,7 +208,12 @@ computation; the step-by-step sequence is in
 - [Our World in Data: CO₂ and Greenhouse Gas Emissions](https://github.com/owid/co2-data), continents, and the World Bank income classification
 - [SEDAC GPW v4.11](https://sedac.ciesin.columbia.edu/data/collection/gpw-v4) population count and national identifier grids
 - [ETOPO 2022](https://www.ncei.noaa.gov/products/etopo-global-relief-model) elevation, [Beck et al. 2018](https://www.gloh2o.org/koppen/) Köppen–Geiger classes, [Natural Earth](https://www.naturalearthdata.com/) land polygons, GSHHG shorelines
-- [ND-GAIN Country Index](https://gain.nd.edu/our-work/country-index/), [NASA GISTEMP v4](https://data.giss.nasa.gov/gistemp/), [Forster et al. ERF time series](https://github.com/ClimateIndicator/forcing-timeseries), [NOAA ONI](https://www.cpc.ncep.noaa.gov/data/indices/), [ERA5](https://cds.climate.copernicus.eu/) (product check), [CRU TS v4.10](https://crudata.uea.ac.uk/cru/data/hrg/) (baseline dryness)
+- [ND-GAIN Country Index](https://gain.nd.edu/our-work/country-index/download-data/)
+  2026 release, `release_data_v2`, downloaded 22 October 2026, using the exact
+  2023 columns. This separately versioned source update preserves the historical
+  extract; its original archive could not be recovered, so exact historical
+  source reconstruction is not claimed.
+- [NASA GISTEMP v4](https://data.giss.nasa.gov/gistemp/), [Forster et al. ERF time series](https://github.com/ClimateIndicator/forcing-timeseries), [NOAA ONI](https://www.cpc.ncep.noaa.gov/data/indices/), [ERA5](https://cds.climate.copernicus.eu/) (product check), [CRU TS v4.10](https://crudata.uea.ac.uk/cru/data/hrg/) (baseline dryness)
 
 ## Author
 

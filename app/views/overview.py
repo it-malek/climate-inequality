@@ -18,6 +18,7 @@ def render() -> None:
     residual = loaders.load_residual_summary()
     coupling = loaders.load_coupling_summary()
     area = loaders.load_coupling_area_summary()
+    vulnerability = loaders.load_vulnerability_summary()
 
     st.title("Warming inequality across countries")
     st.markdown(
@@ -44,7 +45,7 @@ def render() -> None:
         residual_share = decomp["residual_share"]
 
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("City locations", f"{n_locations:,}", help="Berkeley Earth city records with a fitted 1950\u20132013 trend.")
+    c1.metric("City locations", f"{n_locations:,}", help="Berkeley Earth city records with a fitted 1950\u20132013 trend; shared source coordinates do not represent independent weather stations.")
     c2.metric("Countries decomposed", "n/a" if n_countries is None else f"{n_countries}",
               help="Complete cases in the cross-country variance decomposition.")
     c3.metric("Variance explained", _pct(r2),
@@ -57,11 +58,12 @@ def render() -> None:
         f"- **Period.** Monthly land temperatures from January 1950 to September 2013; "
         "trends are Theil\u2013Sen slopes on anomalies against each location's 1951\u20131980 climatology.\n"
         f"- **Data.** Berkeley Earth city records ({n_locations:,} locations) and the Berkeley "
-        "Earth 1° gridded land product; ERA5 reanalysis as an independent product check; "
-        "Our World in Data emissions and population; World Bank income groups; ND-GAIN vulnerability.\n"
-        "- **Unit.** The country. National warming is defined three ways (station-, "
-        "population- and area-weighted); the area-weighted rate is the primary outcome of the "
+        "Earth 1° gridded land product; ERA5 reanalysis as a second temperature product; "
+        "Our World in Data emissions and population; World Bank income groups; 2023 ND-GAIN composite vulnerability.\n"
+        "- **Unit.** The country. National warming is defined three ways (mean of city records, "
+        "population-weighted locations and area-weighted land cells); the area-weighted rate is the primary outcome of the "
         "decomposition, which uses the 151 countries with complete features.\n"
+        "- **Timing.** The 2023 vulnerability cross-section is a contemporary stratifier, not a baseline predictor of 1950\u20132013 warming.\n"
         "- **Design.** Cross-country and descriptive. Variance shares are allocations of "
         "explained cross-country variance; nothing here attributes warming to a cause or "
         "estimates the effect of a country's emissions on its own climate."
@@ -72,8 +74,8 @@ def render() -> None:
     if coupling is not None and area is not None:
         findings.append(
             f"**Responsibility and experienced warming are different axes.** Ranked by "
-            f"station-weighted warming, countries with more cumulative CO₂ per person warmed "
-            f"faster (Spearman ρ {coupling['spearman_rho']:+.2f}); ranked by area-weighted "
+            f"mean warming across city records, countries with more cumulative CO₂ per person have "
+            f"higher warming rates (Spearman ρ {coupling['spearman_rho']:+.2f}); ranked by area-weighted "
             f"warming, the correlation is {area['area_weighted_inequality']['spearman_rho']:+.2f}. "
             "CO₂ is well mixed, so a country's emissions do not preferentially warm its own territory."
         )
@@ -82,8 +84,7 @@ def render() -> None:
             f"**Geography structures most of what the static model explains.** Physical "
             f"geography accounts for {geography:.1%} of total cross-country variance, "
             f"about {geography / r2:.0%} of the {r2:.0%} the four groups explain together; "
-            "socioeconomic development, population and historical responsibility add little "
-            "independent variance. These are descriptive allocations, not causal contributions, "
+            "the other named groups receive smaller shares. These are descriptive allocations, not causal contributions, "
             "and they say nothing about how much physical warming greenhouse gases cause."
         )
     if residual_share is not None:
@@ -92,14 +93,23 @@ def render() -> None:
             "and it is spatially clustered.** Re-measuring geography over land area, a baseline "
             "dryness index and a richer latitude form did not demonstrate transferable improvement "
             "under geographically separated validation; spatial error and spatial lag models do "
-            "improve it under Berkeley Earth and represent roughly 40% of the static residual as "
-            "spatial covariance, but that gain does not reproduce with ERA5 outcomes."
+            "improve neighbour-conditional prediction under Berkeley Earth, but those gains do not "
+            "carry over to ERA5 outcomes. The spatial error accounting is not an additional causal variance share."
         )
-    findings.append(
-        "**The countries least responsible warm no less and can adapt least.** Responsibility "
-        "rises steeply with income and falls with ND-GAIN vulnerability, while area-weighted "
-        "warming is flat across both."
-    )
+    if vulnerability is not None and "ndgain" in vulnerability:
+        income_rho = vulnerability["responsibility"]["gradient_vs_income"]["rho"]
+        gradients = vulnerability["ndgain"]["gradients_vs_vulnerability"]
+        responsibility_rho = gradients["responsibility"]["rho"]
+        warming_rho = gradients["area"]["rho"]
+        if all(value is not None for value in [income_rho, responsibility_rho, warming_rho]):
+            findings.append(
+                "**Responsibility, income and vulnerability show different associations.** "
+                f"Responsibility has rank correlation {income_rho:+.2f} with income and "
+                f"{responsibility_rho:+.2f} with composite ND-GAIN vulnerability; area-weighted "
+                f"warming has correlation {warming_rho:+.2f} with vulnerability. These estimates "
+                "do not establish equal warming or measure adaptive capacity alone; sample-specific "
+                "uncertainty is reported on the income and vulnerability page."
+            )
     st.markdown("\n".join(f"- {f}" for f in findings))
 
     st.subheader("How the site is organised")
@@ -121,6 +131,6 @@ def render() -> None:
         "the sources and methods."
     )
     st.caption(
-        "Completed research snapshot. Every number on this site is read from committed "
-        "result records; nothing is downloaded or re-estimated when a page loads."
+        "The dashboard reads saved result records; nothing is downloaded or re-estimated when a page loads. "
+        "City records can share source coordinates and temperature series; they are not independent station measurements."
     )

@@ -1,0 +1,14 @@
+{
+  "bundle_sha256": "b1ce6737ab0a005e49f0354a620c7410b7044297a2d5dc987bc6563d3921291b",
+  "generator": "python -m scripts.current_validation_figures",
+  "sources": {
+    "stats.json": "70a935743ee498398cd94411c86b4fc0395f0335167f73ee98cdacf5d59d2581",
+    "physical_summary.json": "9392bb89ae43ed546f41f2259e3d78081e516bbb527eb4f6c6372011b284b5e7",
+    "vulnerability_summary.json": "ffc9136406fbb5697101fbcc39fbde89e4612e72382648abb61aea8b4057994d",
+    "stability_summary.json": "14f985f3b985dce5979a4c8d22c9163770f54471cb42b8d17264ee8bdfd06e26"
+  },
+  "figure_sha256": "0a033d20decb0fc54c4d00c5886319b2e437cddafbbf5a228cfe7cb250a668fb",
+  "generator_sha256": "cc9f7016ad6064302b317e207bd77898bb1e1413e316d915946b6af9c921c871",
+  "matplotlib": "3.11.2",
+  "scope": "Presentation only; no estimates refitted."
+}

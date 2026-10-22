@@ -25,6 +25,8 @@ ARTIFACT_NAMES = (*ev.DETERMINISTIC_ARTIFACTS, ev.RESULT_MANIFEST)
 DRIVER = '''
 import sys
 from research.model_v2 import m1b_evaluate as ev
+from src.prospective import prospective_execution
+from pathlib import Path
 
 
 def forbidden(name):
@@ -37,7 +39,8 @@ for name in ('require_hash_seed', 'verify_scoring_inputs', 'build_frozen', 'eval
              'score_model', 'support_context', 'redundancy_context_from'):
     setattr(ev, name, forbidden(name))
 ev.frozen_code_state = lambda *args, **kwargs: {'commit': 'synthetic'}
-sys.exit(ev.cli_exit_code(ev.main(sys.argv[1:])))
+with prospective_execution(scratch=Path(__file__).parent):
+    sys.exit(ev.cli_exit_code(ev.main(sys.argv[1:])))
 '''
 
 

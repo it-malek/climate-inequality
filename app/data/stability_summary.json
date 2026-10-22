@@ -1,4 +1,7 @@
 {
+  "correction_set_id": "prospective-corrections-2026-10-22",
+  "evidence_schema_id": "finite-evidence-v1",
+  "computation_status": "prospective-development",
   "interpretation": "Descriptive structural decomposition of observed warming trends across countries. Shapley/LMG group shares are a variance attribution only -- they are NOT physical or causal climate attribution, and a country's emissions share does not mean its emissions caused its warming.",
   "schema_version": "v1",
   "n_countries": 151,
@@ -11,39 +14,39 @@
     "groups": {
       "emissions": {
         "point": 0.02139283879,
-        "mean": 0.02714877735,
-        "std": 0.01174213618,
-        "ci_low": 0.00879491608,
-        "ci_high": 0.05411249989
+        "mean": 0.0276280195,
+        "std": 0.01189122072,
+        "ci_low": 0.00914154442,
+        "ci_high": 0.05438362737
       },
       "geography": {
         "point": 0.5130328657,
-        "mean": 0.5365185533,
-        "std": 0.04518558458,
-        "ci_low": 0.4470538421,
-        "ci_high": 0.6225624135,
+        "mean": 0.5359355961,
+        "std": 0.04649577665,
+        "ci_low": 0.4451391735,
+        "ci_high": 0.6240120153,
         "p_largest": 1.0
       },
       "socioeconomic": {
         "point": 0.06932302426,
-        "mean": 0.07954348894,
-        "std": 0.02430121607,
-        "ci_low": 0.03992385108,
-        "ci_high": 0.1339832772
+        "mean": 0.07983146094,
+        "std": 0.02427113513,
+        "ci_low": 0.03997090777,
+        "ci_high": 0.1336594715
       },
       "population": {
         "point": 0.032697274,
-        "mean": 0.03847635239,
-        "std": 0.01577914533,
-        "ci_low": 0.01288818559,
-        "ci_high": 0.07373468604
+        "mean": 0.03923668414,
+        "std": 0.01621287364,
+        "ci_low": 0.01293287977,
+        "ci_high": 0.07779122312
       },
       "residual": {
         "point": 0.3635539972,
-        "mean": 0.3183128281,
-        "std": 0.04355768315,
-        "ci_low": 0.2346518423,
-        "ci_high": 0.4070582107
+        "mean": 0.3173682393,
+        "std": 0.04445326942,
+        "ci_low": 0.233024572,
+        "ci_high": 0.4072848415
       }
     },
     "p_geography_largest": 1.0,
@@ -252,14 +255,29 @@
   "residual_spatial": {
     "morans_i": 0.2686890161,
     "p_value": 0.005,
+    "status": "available",
+    "reason": null,
     "n_permutations": 199,
     "k_neighbors": 8,
-    "method": "centroid kNN",
-    "n": 151
+    "method": "centroid kNN, identity-distance-ties-v1",
+    "n": 151,
+    "neighbor_policy": {
+      "policy_id": "identity-distance-ties-v1",
+      "neighbors": 8,
+      "boundary_chord_tolerance": 1e-12,
+      "permutations": 199,
+      "seed": 0,
+      "randomization": "identity-indexed",
+      "zero_distance_records": "retained",
+      "scope": "explain and stability residual diagnostics; fixed V2 model graphs unchanged"
+    }
   },
   "outcome_definition": "area_weighted",
   "sensitivity": {
     "station_weighted": {
+      "correction_set_id": "prospective-corrections-2026-10-22",
+      "evidence_schema_id": "finite-evidence-v1",
+      "computation_status": "prospective-development",
       "interpretation": "Descriptive structural decomposition of observed warming trends across countries. Shapley/LMG group shares are a variance attribution only -- they are NOT physical or causal climate attribution, and a country's emissions share does not mean its emissions caused its warming.",
       "schema_version": "v1",
       "n_countries": 151,
@@ -272,39 +290,39 @@
         "groups": {
           "emissions": {
             "point": 0.0853851894,
-            "mean": 0.08946022307,
-            "std": 0.02113497575,
-            "ci_low": 0.05174671296,
-            "ci_high": 0.1331028779
+            "mean": 0.08977000524,
+            "std": 0.02110111078,
+            "ci_low": 0.050838194,
+            "ci_high": 0.1322821773
           },
           "geography": {
             "point": 0.4578041275,
-            "mean": 0.4831634358,
-            "std": 0.04425650979,
-            "ci_low": 0.3963289575,
-            "ci_high": 0.5717929399,
+            "mean": 0.4839550492,
+            "std": 0.04419758133,
+            "ci_low": 0.3958268572,
+            "ci_high": 0.5668261348,
             "p_largest": 1.0
           },
           "socioeconomic": {
             "point": 0.06183045898,
-            "mean": 0.07263760996,
-            "std": 0.02119934594,
-            "ci_low": 0.03867050427,
-            "ci_high": 0.1183031788
+            "mean": 0.07258229724,
+            "std": 0.0212127489,
+            "ci_low": 0.03741016014,
+            "ci_high": 0.1210114647
           },
           "population": {
             "point": 0.02949359512,
-            "mean": 0.03398064978,
-            "std": 0.01470829261,
-            "ci_low": 0.009803958963,
-            "ci_high": 0.0662965259
+            "mean": 0.03421078298,
+            "std": 0.01491209934,
+            "ci_low": 0.009799931137,
+            "ci_high": 0.06709127508
           },
           "residual": {
             "point": 0.365486629,
-            "mean": 0.3207580814,
-            "std": 0.03764055714,
-            "ci_low": 0.2492655316,
-            "ci_high": 0.3938386718
+            "mean": 0.3194818654,
+            "std": 0.03848402722,
+            "ci_low": 0.2478676004,
+            "ci_high": 0.3964790823
           }
         },
         "p_geography_largest": 1.0,
@@ -340,12 +358,74 @@
       "residual_spatial": {
         "morans_i": 0.3142300978,
         "p_value": 0.005,
+        "status": "available",
+        "reason": null,
         "n_permutations": 199,
         "k_neighbors": 8,
-        "method": "centroid kNN",
-        "n": 151
+        "method": "centroid kNN, identity-distance-ties-v1",
+        "n": 151,
+        "neighbor_policy": {
+          "policy_id": "identity-distance-ties-v1",
+          "neighbors": 8,
+          "boundary_chord_tolerance": 1e-12,
+          "permutations": 199,
+          "seed": 0,
+          "randomization": "identity-indexed",
+          "zero_distance_records": "retained",
+          "scope": "explain and stability residual diagnostics; fixed V2 model graphs unchanged"
+        }
       },
-      "outcome_definition": "station_weighted"
+      "outcome_definition": "station_weighted",
+      "bootstrap_population": {
+        "policy_id": "complete-case-country-bootstrap-v1",
+        "conditional_observed_complete_countries": true,
+        "sampling_n": 151,
+        "country_seed": 0,
+        "block_seed": 1,
+        "n_attempted_each": 2000,
+        "point_and_influence_population_unchanged": true,
+        "block_action": "reuse_current_completed_block_summary_exact_retained_inputs",
+        "block_equivalence_proof": {
+          "n_verified_draws": 2000,
+          "exact_all_retained_inputs_identities_weights": true,
+          "ordered_identity_multiplicity_sha256": "b62cb5cc10eaf6c47cd361a2d1e76acd10de956bc1b2ef62f27c572f3d745622",
+          "legacy_population": 154,
+          "complete_population": 151
+        },
+        "legacy_sampling_n": 154,
+        "reused_point_influence_residual_source": "stability",
+        "limitations": "Descriptive conditional stability on observed complete countries; no missingness-mechanism correction or population extrapolation. Six heterogeneous continents limit block-bootstrap interpretation."
+      }
     }
+  },
+  "bootstrap_population": {
+    "policy_id": "complete-case-country-bootstrap-v1",
+    "conditional_observed_complete_countries": true,
+    "sampling_n": 151,
+    "country_seed": 0,
+    "block_seed": 1,
+    "n_attempted_each": 2000,
+    "point_and_influence_population_unchanged": true,
+    "block_action": "reuse_current_completed_block_summary_exact_retained_inputs",
+    "block_equivalence_proof": {
+      "n_verified_draws": 2000,
+      "exact_all_retained_inputs_identities_weights": true,
+      "ordered_identity_multiplicity_sha256": "b62cb5cc10eaf6c47cd361a2d1e76acd10de956bc1b2ef62f27c572f3d745622",
+      "legacy_population": 157,
+      "complete_population": 151
+    },
+    "legacy_sampling_n": 157,
+    "reused_point_influence_residual_source": "stability",
+    "limitations": "Descriptive conditional stability on observed complete countries; no missingness-mechanism correction or population extrapolation. Six heterogeneous continents limit block-bootstrap interpretation."
+  },
+  "neighbor_policy": {
+    "policy_id": "identity-distance-ties-v1",
+    "neighbors": 8,
+    "boundary_chord_tolerance": 1e-12,
+    "permutations": 199,
+    "seed": 0,
+    "randomization": "identity-indexed",
+    "zero_distance_records": "retained",
+    "scope": "explain and stability residual diagnostics; fixed V2 model graphs unchanged"
   }
 }

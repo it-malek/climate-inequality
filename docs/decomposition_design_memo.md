@@ -1,5 +1,8 @@
 # Design memo: variance attribution of warming inequality
 
+This historical design memo records the rationale and hypotheses that preceded
+the analysis. The [released findings](findings.md) report the completed results.
+
 Written in June 2026 while the decomposition was being built. It pairs with
 the feature schema in `src/feature_schema.py` (`SCHEMA_V1`) and governs
 `src/inequality.py` and `src/decomposition.py`. Results are in

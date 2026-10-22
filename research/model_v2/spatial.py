@@ -98,11 +98,41 @@ def contiguity_weights(
 
 @dataclass(frozen=True)
 class MoranResult:
-    statistic: float
-    expected: float
-    p_value: float
-    z_score: float
+    statistic: float | None
+    expected: float | None
+    p_value: float | None
+    z_score: float | None
     n_permutations: int
+    reason: str | None = None
+    z_score_reason: str | None = None
+
+    @property
+    def status(self) -> str:
+        return "unavailable" if self.reason else "available"
+
+
+def _autocorrelation_input_reason(values: np.ndarray, w: np.ndarray, n_permutations: int) -> str | None:
+    """Reject undefined diagnostics before a permutation comparison can fabricate p."""
+    if values.ndim != 1 or w.shape != (values.size, values.size):
+        return "mismatched_or_nonvector_inputs"
+    if len(values) < 3:
+        return "insufficient_samples"
+    if not np.isfinite(values).all():
+        return "nonfinite_values"
+    if not np.isfinite(w).all() or np.any(w < 0) or np.any(np.diag(w) != 0):
+        return "unusable_neighbors"
+    with np.errstate(over="ignore", invalid="ignore"):
+        s0 = w.sum()
+        denom = np.sum((values - values.mean())**2)
+    if not np.isfinite(s0) or s0 <= 0:
+        return "unusable_neighbors"
+    if np.all(values == values[0]):
+        return "constant_residuals"
+    if not np.isfinite(denom) or denom <= 0:
+        return "unusable_residual_variation"
+    if not isinstance(n_permutations, (int, np.integer)) or n_permutations < 1:
+        return "no_permutations"
+    return None
 
 
 def morans_i(values: np.ndarray, w: np.ndarray, n_permutations: int = 999, seed: int = 0) -> MoranResult:
@@ -111,7 +141,11 @@ def morans_i(values: np.ndarray, w: np.ndarray, n_permutations: int = 999, seed:
     Extremeness is abs(I), not distance from E[I] = -1/(n-1). This preserves
     the frozen diagnostic; do not interpret it as a null-centered two-sided tail.
     """
-    z = np.asarray(values, dtype=float) - np.mean(values)
+    values, w = np.asarray(values, dtype=float), np.asarray(w, dtype=float)
+    reason = _autocorrelation_input_reason(values, w, n_permutations)
+    if reason:
+        return MoranResult(None, None, None, None, n_permutations, reason, reason)
+    z = values - np.mean(values)
     n = len(z)
     s0 = w.sum()
     denom = float(np.sum(z**2))
@@ -119,17 +153,27 @@ def morans_i(values: np.ndarray, w: np.ndarray, n_permutations: int = 999, seed:
     def stat(zz: np.ndarray) -> float:
         return float((n / s0) * (zz @ w @ zz) / denom)
 
-    observed = stat(z)
-    rng = np.random.default_rng(seed)
-    perms = np.array([stat(rng.permutation(z)) for _ in range(n_permutations)])
+    with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+        observed = stat(z)
+        rng = np.random.default_rng(seed)
+        perms = np.array([stat(rng.permutation(z)) for _ in range(n_permutations)])
+    if not np.isfinite(observed) or not np.isfinite(perms).all():
+        return MoranResult(None, None, None, None, n_permutations, "nonfinite_statistic", "nonfinite_statistic")
     p = (np.sum(np.abs(perms) >= abs(observed)) + 1) / (n_permutations + 1)
-    zscore = (observed - perms.mean()) / perms.std(ddof=1) if perms.std(ddof=1) > 0 else np.nan
-    return MoranResult(observed, -1.0 / (n - 1), float(p), float(zscore), n_permutations)
+    permutation_sd = float(perms.std(ddof=1)) if len(perms) > 1 else 0.0
+    zscore = float((observed - perms.mean()) / permutation_sd) if permutation_sd > 0 else None
+    z_reason = None if zscore is not None and np.isfinite(zscore) else "undefined_permutation_z_score"
+    if z_reason:
+        zscore = None
+    return MoranResult(observed, -1.0 / (n - 1), float(p), zscore, n_permutations, z_score_reason=z_reason)
 
 
 def gearys_c(values: np.ndarray, w: np.ndarray, n_permutations: int = 999, seed: int = 0) -> MoranResult:
     """Geary's C (1 under no autocorrelation; < 1 positive) with a permutation p-value."""
-    x = np.asarray(values, dtype=float)
+    x, w = np.asarray(values, dtype=float), np.asarray(w, dtype=float)
+    reason = _autocorrelation_input_reason(x, w, n_permutations)
+    if reason:
+        return MoranResult(None, None, None, None, n_permutations, reason, reason)
     n = len(x)
     s0 = w.sum()
     denom = 2.0 * s0 * float(np.sum((x - x.mean()) ** 2))
@@ -138,12 +182,19 @@ def gearys_c(values: np.ndarray, w: np.ndarray, n_permutations: int = 999, seed:
         diff = xx[:, None] - xx[None, :]
         return float((n - 1) * np.sum(w * diff**2) / denom)
 
-    observed = stat(x)
-    rng = np.random.default_rng(seed)
-    perms = np.array([stat(rng.permutation(x)) for _ in range(n_permutations)])
+    with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+        observed = stat(x)
+        rng = np.random.default_rng(seed)
+        perms = np.array([stat(rng.permutation(x)) for _ in range(n_permutations)])
+    if not np.isfinite(observed) or not np.isfinite(perms).all():
+        return MoranResult(None, None, None, None, n_permutations, "nonfinite_statistic", "nonfinite_statistic")
     p = (np.sum(np.abs(perms - 1.0) >= abs(observed - 1.0)) + 1) / (n_permutations + 1)
-    zscore = (observed - perms.mean()) / perms.std(ddof=1) if perms.std(ddof=1) > 0 else np.nan
-    return MoranResult(observed, 1.0, float(p), float(zscore), n_permutations)
+    permutation_sd = float(perms.std(ddof=1)) if len(perms) > 1 else 0.0
+    zscore = float((observed - perms.mean()) / permutation_sd) if permutation_sd > 0 else None
+    z_reason = None if zscore is not None and np.isfinite(zscore) else "undefined_permutation_z_score"
+    if z_reason:
+        zscore = None
+    return MoranResult(observed, 1.0, float(p), zscore, n_permutations, z_score_reason=z_reason)
 
 
 def local_morans(values: np.ndarray, w: np.ndarray, n_permutations: int = 999, seed: int = 0) -> pd.DataFrame:
@@ -155,25 +206,45 @@ def local_morans(values: np.ndarray, w: np.ndarray, n_permutations: int = 999, s
     clusters of like values, HL/LH spatial outliers; ``label`` is the quadrant when
     ``p < 0.05`` and ``"ns"`` otherwise.
     """
-    z = np.asarray(values, dtype=float) - np.mean(values)
+    values, w = np.asarray(values, dtype=float), np.asarray(w, dtype=float)
+    reason = _autocorrelation_input_reason(values, w, n_permutations)
+    if reason:
+        unavailable = pd.DataFrame({
+            "z": np.nan, "lag": np.nan, "local_i": np.nan, "p_value": np.nan,
+            "quadrant": "unavailable", "label": "unavailable",
+            "status": "unavailable", "reason": reason,
+        }, index=range(values.size))
+        unavailable.attrs.update(status="unavailable", reason=reason)
+        return unavailable
+    z = values - np.mean(values)
     n = len(z)
     m2 = float(np.sum(z**2)) / n
     lag = w @ z
     local = z * lag / m2
     rng = np.random.default_rng(seed)
-    p = np.empty(n)
+    p = np.full(n, np.nan)
+    reasons = np.full(n, None, dtype=object)
     for i in range(n):
         others = np.delete(z, i)
         wi = np.delete(w[i], i)
         nz = np.flatnonzero(wi)
         if len(nz) == 0:
-            p[i] = np.nan
+            local[i] = np.nan
+            reasons[i] = "unusable_neighbors"
             continue
         sims = np.empty(n_permutations)
         for b in range(n_permutations):
             draw = rng.choice(others, size=len(nz), replace=False)
             sims[b] = z[i] * float(wi[nz] @ draw) / m2
+        if not np.isfinite(local[i]) or not np.isfinite(sims).all():
+            local[i] = np.nan
+            reasons[i] = "nonfinite_statistic"
+            continue
         p[i] = (np.sum(np.abs(sims) >= abs(local[i])) + 1) / (n_permutations + 1)
     quadrant = np.where(z >= 0, np.where(lag >= 0, "HH", "HL"), np.where(lag >= 0, "LH", "LL"))
     label = np.where(p < 0.05, quadrant, "ns")
-    return pd.DataFrame({"z": z, "lag": lag, "local_i": local, "p_value": p, "quadrant": quadrant, "label": label})
+    unavailable = pd.notna(reasons)
+    return pd.DataFrame({"z": z, "lag": lag, "local_i": local, "p_value": p,
+                         "quadrant": np.where(unavailable, "unavailable", quadrant),
+                         "label": np.where(unavailable, "unavailable", label),
+                         "status": np.where(unavailable, "unavailable", "available"), "reason": reasons})

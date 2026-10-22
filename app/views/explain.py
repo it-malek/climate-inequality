@@ -23,6 +23,7 @@ def render() -> None:
         return
 
     e = stats["explain"]
+    st.caption(loaders.release_caption("stats.json", section="explain"))
     city = e["city_model"]
     country = e["country_model"]
     country_specs = country["specs"]
@@ -31,11 +32,10 @@ def render() -> None:
 
     st.subheader("Does the emissions link survive a latitude control?")
     st.markdown(
-        "Within continents, station-weighted country warming rises by about "
-        "**+0.029 °C/decade per tenfold cumulative per-capita CO₂**. This section asks "
-        "whether that survives a control for the fact that historically high-emitting "
-        "countries also sit at higher latitudes, where polar amplification raises warming "
-        "regardless of emissions."
+        "These regressions compare the association between city-location-weighted "
+        "country warming and cumulative per-capita emissions, before and after adding "
+        "continent and latitude controls. They describe conditional associations and "
+        "do not identify a causal effect of national emissions on local warming."
     )
 
     pooled = next((s for s in country_specs if s["spec_name"] == "pooled"), None)
@@ -74,8 +74,8 @@ def render() -> None:
                 f"°C/decade per tenfold CO₂, with mean absolute latitude added within "
                 f"continents, HC1 standard errors. 95% interval [{em['ci_low']:+.3f}, "
                 f"{em['ci_high']:+.3f}], p = {em['p_value']:.2g}. The coefficient halves "
-                "and loses statistical significance: the within-continent link is carried "
-                "by latitude, not by emissions responsibility as such."
+                "and its interval includes zero. This weakens evidence for a conditional "
+                "association; it does not prove the association is absent."
             ),
         )
 
@@ -89,7 +89,7 @@ def render() -> None:
         "coefficient and pushes the interval to include zero."
     )
 
-    st.subheader("The spatial pattern is mostly latitude, with an arid hotspot")
+    st.subheader("Latitude, geography and remaining spatial structure")
 
     city_specs = city["specs"]
     baseline = next((s for s in city_specs if s["spec_name"] == "baseline"), None)
@@ -109,12 +109,12 @@ def render() -> None:
             "Full model R²",
             f"{full['r2']:.3f}",
             help=(
-                "OLS adding elevation, coast distance, Köppen class and station density. "
+                "OLS adding elevation, coast distance, Köppen class and city-location density. "
                 f"Moran's I on residuals = {city.get('moran_i_full', 'n/a'):.3f} "
                 f"(p = {city.get('moran_p_full', float('nan')):.3g}): significant spatial "
                 "autocorrelation remains."
                 if city.get("moran_i_full") is not None else
-                "OLS adding elevation, coast distance, Köppen class and station density."
+                "OLS adding elevation, coast distance, Köppen class and city-location density."
             ),
         )
     if interaction:
@@ -141,7 +141,8 @@ def render() -> None:
             "°C/decade per degree."
         )
     if koppen_b_info:
-        verdict = "supports" if koppen_b_info["coef"] > 0 else "does not support"
+        verdict = ("provides positive interval evidence for" if koppen_b_info["ci_low"] > 0
+                   else "does not provide clear positive interval evidence for")
         caption_parts.append(
             f"Köppen B (arid) against the reference class (full model): "
             f"{koppen_b_info['coef']:+.5f} "
@@ -154,7 +155,20 @@ def render() -> None:
             f"(p = {city['moran_p_full']:.3g}): spatial autocorrelation persists after "
             "controlling for geography."
         )
+    if city.get("moran_i_full") is None:
+        caption_parts.append(
+            "Moran's I unavailable: " + str(city.get("moran_reason_full") or "not recorded")
+        )
     st.caption(" ".join(caption_parts))
+
+    if e.get("neighbor_policy"):
+        st.caption(
+            "Residual diagnostics use identity-distance-ties-v1 with eight neighbors and "
+            "199 identity-indexed permutations. Tied neighbors are selected by persistent "
+            "identity, and colocated city records remain present. All 14 tested row orders "
+            "gave identical graphs and statistics. These city records share source locations; "
+            "they are not independent weather-station measurements."
+        )
 
     with st.expander("Full city-model coefficients"):
         for spec in city_specs:

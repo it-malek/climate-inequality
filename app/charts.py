@@ -747,7 +747,7 @@ def income_gradient_chart(summary: dict, lens: str = "area") -> go.Figure:
         )
     )
     fig.update_layout(
-        title="Responsibility rises with income; per-person warming barely moves",
+        title="Responsibility and per-person warming by income group",
         xaxis={"title": "World Bank income group (low to high)"},
         yaxis={"title": "Mean cumulative t CO₂/capita"},
         yaxis2={

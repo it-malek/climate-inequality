@@ -8,6 +8,7 @@ Run from the repository root, locally or on Streamlit Community Cloud
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -47,8 +48,10 @@ st.set_page_config(
 
 try:
     release_identity = snapshot.fingerprint(loaders.APP_DATA_DIR, require_manifest=True)
+    release_manifest = json.loads((loaders.APP_DATA_DIR / snapshot.MANIFEST).read_text())
+    release_version = release_manifest["version"]
 except (OSError, ValueError) as exc:
-    st.error(f"The published result bundle is unavailable: {exc}")
+    st.error(f"The saved result bundle is unavailable: {exc}")
     st.stop()
 
 navigation = st.navigation(
@@ -80,10 +83,10 @@ navigation = st.navigation(
 st.sidebar.caption(
     "Cross-country structure of observed land warming, 1950\u20132013. "
     "Berkeley Earth temperatures, Our World in Data emissions. "
-    "Every page reads committed result records; nothing is recomputed on load."
+    "Every page reads saved result records; nothing is recomputed on load."
 )
 
-st.sidebar.caption(f"Snapshot 2.0.0 | Bundle {release_identity[:16]}")
+st.sidebar.caption(f"Snapshot {release_version} | Bundle {release_identity[:16]}")
 
 theme.interpretation_banner()
 navigation.run()

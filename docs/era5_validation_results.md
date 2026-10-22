@@ -1,18 +1,31 @@
 # ERA5 cross-check of the area-weighting result
 
-Switching each country's warming from the mean over its stations to a
-cos-latitude area-weighted mean over the Berkeley Earth 1° grid collapses the
-warming–responsibility rank correlation from ρ = +0.36 to +0.01. Because that
-rests on one gridded product, it was re-run on ERA5, ECMWF's model-assimilated
-reanalysis, which has no station-sampling gaps and is an independent estimate
-of the same field. The collapse reproduces: the station coupling is not
-significant under either product after area weighting, and the rise in the
-inequality coefficient reproduces almost exactly.
+Version 2.1.0 compares area-weighted Berkeley Earth trends with ERA5 trends
+aligned to each product's own 1951–1980 monthly climatology. The rank
+association with responsibility is near zero under both products. The static
+geography result survives the product check, while the spatial models'
+predictive advantage does not reproduce under ERA5. This is a comparison of
+temperature products with different error structures, not independent
+observational confirmation or a causal attribution.
 
-Status: **HISTORICAL absolute-temperature sensitivity**. The final anomaly-aligned
-comparison and spatial-model replication are in
+## Released anomaly-aligned comparison
+
+| Area-weighted product | Countries | Spearman ρ versus responsibility | p-value |
+|---|---:|---:|---:|
+| Berkeley Earth | 154 | +0.011 | 0.896 |
+| ERA5, anomaly-aligned | 154 | −0.012 | 0.880 |
+
+Source: `app/data/residual_structure_summary.json`,
+`responsibility_comparison`. Nonsignificance does not establish equal warming
+or equivalence between products. The spatial-model product check is described in
 [`research/model_v2/RESULTS.md`](../research/model_v2/RESULTS.md#7-robustness).
-The tables below preserve the original construction and country set.
+
+## Historical absolute-temperature sensitivity
+
+The following tables preserve the earlier construction and country set. ERA5
+was fitted in absolute temperature, while Berkeley Earth supplied anomalies.
+Those results remain useful for showing sensitivity to the outcome definition;
+they are distinct from the released anomaly-aligned comparison above.
 
 ## Method
 
@@ -54,9 +67,9 @@ three lenses are defined), so the comparison is not a coverage artefact.
 | **ERA5** (this pipeline) | **0.222** |
 | Berkeley Earth documented global-land reference | ~0.19 |
 
-Both are in the same 0.2 °C/decade range, which validates the ERA5 ingest. ERA5
-runs about 0.03 °C/decade warmer over land than Berkeley, a known
-reanalysis-versus-station difference.
+Both are in the same 0.2 °C/decade range, a broad magnitude check rather than
+a validation of the ingest. In this historical construction, ERA5 runs about
+0.03 °C/decade warmer over land than Berkeley Earth.
 
 ## Rank agreement
 
@@ -81,10 +94,11 @@ product-dependent uncertainty.
    area-weighted trends should be read with product uncertainty in mind.
 3. ERA5's land mean runs about 0.03 °C/decade warmer than Berkeley's.
 
-The qualitative conclusion is robust to the data source; the magnitude of the
-residual coupling and the exact country rankings are product-sensitive.
+This historical sensitivity gives a weaker rank association under area
+weighting than under the city-record mean. The association and country rankings
+depend on the temperature product and outcome construction.
 
-## Reproduce
+## Historical reproduction reference
 
 ```
 uv sync --extra era5
@@ -92,7 +106,8 @@ uv run python scripts/fetch_era5.py          # ERA5 monthly 2m T, 1950–2013, 1
 uv run python -m src.era5_validation         # prints the table above
 ```
 
-The ERA5 grid needs a free Copernicus account and is not committed; the
-artifacts (`era5_area_trends.parquet`, `era5_validation_summary.json`) are
-built into `app/data/` by `python -m src.app_assets` when the grid is present
-and are shown on the dashboard's validation page.
+The ERA5 grid needs a Copernicus account and is not committed. These commands
+document the historical pipeline and its separate sensitivity artifacts. The
+released 2.1.0 reconstruction is documented in
+[`current_validation.md`](current_validation.md). The dashboard identifies the
+anomaly-aligned comparison separately from historical sensitivities.

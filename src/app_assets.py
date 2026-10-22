@@ -26,6 +26,10 @@ publish from a stale or inconsistent pipeline state.
 
 from __future__ import annotations
 
+from src.correction_identity import correction_metadata
+
+from src.prospective import prospective_outputs, prospective_cli, require_prospective
+
 import json
 import logging
 from dataclasses import asdict
@@ -332,6 +336,7 @@ def _copy_findings_parquet(src: Path, dest: Path, required: tuple[str, ...]) -> 
     from its schema must raise here, not get silently copied and break the
     app's loader at runtime.
     """
+    dest = require_prospective().destination(dest)
     frame = pd.read_parquet(src)
     missing = [c for c in required if c not in frame.columns]
     if missing:
@@ -363,6 +368,7 @@ def _merge_optional_findings(
     stage. If only one of the pair exists, raises RuntimeError to flag a
     stale pipeline.
     """
+    out_dir = require_prospective().destination(out_dir)
     for (
         phase, summary_path, bundle_path, global_path,
         asset, global_asset, key, bundle_cols, global_cols,
@@ -424,6 +430,7 @@ def _merge_optional_findings(
         logger.info("merged %s findings into bundle", phase)
 
 
+@prospective_outputs(out_dir="app_bundle", surface_out_dir="figures")
 def build_app_assets(
     db_path: Path = DEFAULT_DB_PATH,
     trends_path: Path = DEFAULT_TRENDS_PATH,
@@ -445,20 +452,21 @@ def build_app_assets(
     Recomputes the anomalies (windows read from the trends parquet itself),
     verifies them against the stored slopes, re-runs the interpolation
     cross-validation and surface (also refreshing
-    ``outputs/trend_surface.html``), and re-quantifies the emissions fits,
+    the scope's ``figures/trend_surface.html``), and re-quantifies the emissions fits,
     then writes the five core files to `out_dir`.
 
     Args:
         db_path: DuckDB database with the ingested city temperatures.
         trends_path: ``city_trends.parquet``.
         inequality_path: ``country_inequality.parquet``.
-        out_dir: Bundle destination, normally the committed ``app/data/``.
+        out_dir: Explicit prospective destination; omitted legacy defaults are
+            redirected to the execution scope's ``app_bundle/`` directory.
         surface_out_dir: Where the surface HTML figure is (re)written.
         k: Interpolation neighborhood size.
         resolution: Surface grid spacing in degrees.
         min_coverage: Coverage gate (must match the trends build).
-        land: Land geometry override for tests; None downloads Natural
-            Earth polygons.
+        land: Land geometry override for tests; None requires prepared Natural
+            Earth polygons without downloading them.
 
     Returns:
         Dict with `paths` (name -> Path), `stats` (the stats.json dict),
@@ -551,6 +559,7 @@ def build_app_assets(
         explain_bundle_path=explain_bundle_path,
     )
 
+    stats_payload.update(correction_metadata())
     paths[STATS_ASSET].write_text(
         json.dumps(stats_payload, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -567,6 +576,7 @@ def build_app_assets(
     }
 
 
+@prospective_outputs(out_dir="app_bundle")
 def build_decomposition_summaries(
     inequality_path: Path = DEFAULT_INEQUALITY_PATH,
     out_dir: Path = APP_DATA_DIR,
@@ -587,7 +597,8 @@ def build_decomposition_summaries(
 
     Args:
         inequality_path: ``country_inequality.parquet``.
-        out_dir: Bundle destination, normally the committed ``app/data/``.
+        out_dir: Explicit prospective destination; omitted legacy defaults are
+            redirected to the execution scope's ``app_bundle/`` directory.
         city_features_path: ``city_features.parquet`` override (tests);
             ``None`` uses ``src.explain.DEFAULT_FEATURES_PATH``.
         income_path: World Bank income-groups CSV override (tests); ``None``
@@ -638,6 +649,7 @@ def build_decomposition_summaries(
     return written
 
 
+@prospective_outputs(out_dir="app_bundle")
 def build_stability_summary_asset(
     inequality_path: Path = DEFAULT_INEQUALITY_PATH,
     out_dir: Path = APP_DATA_DIR,
@@ -659,7 +671,8 @@ def build_stability_summary_asset(
 
     Args:
         inequality_path: ``country_inequality.parquet``.
-        out_dir: Bundle destination, normally the committed ``app/data/``.
+        out_dir: Explicit prospective destination; omitted legacy defaults are
+            redirected to the execution scope's ``app_bundle/`` directory.
         city_features_path: ``city_features.parquet`` override (tests);
             ``None`` uses ``src.explain.DEFAULT_FEATURES_PATH``.
         income_path: World Bank income-groups CSV override (tests); ``None`` uses
@@ -715,6 +728,7 @@ def build_stability_summary_asset(
     return written
 
 
+@prospective_outputs(out_dir="app_bundle")
 def build_coupling_summary_asset(
     inequality_path: Path = DEFAULT_INEQUALITY_PATH,
     out_dir: Path = APP_DATA_DIR,
@@ -727,7 +741,8 @@ def build_coupling_summary_asset(
 
     Args:
         inequality_path: ``country_inequality.parquet``.
-        out_dir: Bundle destination, normally the committed ``app/data/``.
+        out_dir: Explicit prospective destination; omitted legacy defaults are
+            redirected to the execution scope's ``app_bundle/`` directory.
 
     Returns:
         Dict of asset-name -> written Path.
@@ -751,6 +766,7 @@ def build_coupling_summary_asset(
     return {COUPLING_ASSET: table_dest, COUPLING_SUMMARY_ASSET: summary_dest}
 
 
+@prospective_outputs(out_dir="app_bundle")
 def build_coupling_consumption_asset(
     inequality_path: Path = DEFAULT_INEQUALITY_PATH,
     out_dir: Path = APP_DATA_DIR,
@@ -765,7 +781,8 @@ def build_coupling_consumption_asset(
 
     Args:
         inequality_path: ``country_inequality.parquet``.
-        out_dir: Bundle destination, normally the committed ``app/data/``.
+        out_dir: Explicit prospective destination; omitted legacy defaults are
+            redirected to the execution scope's ``app_bundle/`` directory.
 
     Returns:
         Dict of asset-name -> written Path, or ``{}`` when the consumption lens
@@ -819,6 +836,7 @@ def build_coupling_consumption_asset(
     }
 
 
+@prospective_outputs(out_dir="app_bundle")
 def build_coupling_exposure_asset(
     inequality_path: Path = DEFAULT_INEQUALITY_PATH,
     out_dir: Path = APP_DATA_DIR,
@@ -832,7 +850,8 @@ def build_coupling_exposure_asset(
 
     Args:
         inequality_path: ``country_inequality.parquet``.
-        out_dir: Bundle destination, normally the committed ``app/data/``.
+        out_dir: Explicit prospective destination; omitted legacy defaults are
+            redirected to the execution scope's ``app_bundle/`` directory.
 
     Returns:
         Dict of asset-name -> written Path, or ``{}`` when the exposure lens
@@ -887,6 +906,7 @@ def build_coupling_exposure_asset(
     }
 
 
+@prospective_outputs(out_dir="app_bundle")
 def build_coupling_area_asset(
     inequality_path: Path = DEFAULT_INEQUALITY_PATH,
     out_dir: Path = APP_DATA_DIR,
@@ -900,7 +920,8 @@ def build_coupling_area_asset(
 
     Args:
         inequality_path: ``country_inequality.parquet``.
-        out_dir: Bundle destination, normally the committed ``app/data/``.
+        out_dir: Explicit prospective destination; omitted legacy defaults are
+            redirected to the execution scope's ``app_bundle/`` directory.
 
     Returns:
         Dict of asset-name -> written Path, or ``{}`` when the area lens cannot
@@ -953,6 +974,7 @@ def build_coupling_area_asset(
     }
 
 
+@prospective_outputs(out_dir="app_bundle")
 def build_era5_validation_asset(
     era5_grid_path: Path | None = None,
     out_dir: Path = APP_DATA_DIR,
@@ -992,6 +1014,7 @@ def build_era5_validation_asset(
     }
 
 
+@prospective_outputs(out_dir="app_bundle")
 def build_vulnerability_asset(
     income_path: Path | None = None,
     inequality_path: Path | None = None,
@@ -1017,7 +1040,8 @@ def build_vulnerability_asset(
             :data:`src.vulnerability.NDGAIN_PATH`.
         co2_path: OWID CO2 table (ISO3 bridge); ``None`` uses
             :data:`src.emissions.OWID_CO2_PATH`.
-        out_dir: Bundle destination, normally the committed ``app/data/``.
+        out_dir: Explicit prospective destination; omitted legacy defaults are
+            redirected to the execution scope's ``app_bundle/`` directory.
 
     Returns:
         Dict of asset-name -> written Path, or ``{}`` when the income CSV is absent.
@@ -1052,6 +1076,7 @@ def build_vulnerability_asset(
     }
 
 
+@prospective_outputs(out_dir="app_bundle")
 def build_physical_summary_asset(
     forcings_path: Path | None = None,
     out_dir: Path = APP_DATA_DIR,
@@ -1066,7 +1091,8 @@ def build_physical_summary_asset(
     Args:
         forcings_path: the assembled ``forcings.parquet`` (defaults to
             :data:`src.forcings.DEFAULT_FORCINGS_PATH`).
-        out_dir: Bundle destination, normally the committed ``app/data/``.
+        out_dir: Explicit prospective destination; omitted legacy defaults are
+            redirected to the execution scope's ``app_bundle/`` directory.
 
     Returns:
         Dict of asset-name -> written Path, or ``{}`` when forcings are absent.
@@ -1099,8 +1125,26 @@ def build_physical_summary_asset(
     return {PHYSICAL_TRAJECTORY_ASSET: traj_dest, PHYSICAL_SUMMARY_ASSET: summary_dest}
 
 
+def vulnerability_report(summary: dict) -> str:
+    """None-safe CLI report for candidate and legacy vulnerability summaries."""
+    responsibility = summary["responsibility"]["gradient_vs_income"]
+    area = summary["exposure"]["area"]["gradient_vs_income"]
+    verdict = summary["triple_inequality"]
+    status = verdict.get("status", "supported" if verdict["holds"] else "not_supported")
+    return (
+        f"vulnerability (income lens): n={summary['coverage']['n_countries']}, "
+        f"responsibility vs income rho {responsibility['rho']} "
+        f"(perm p={responsibility['p_permutation']}, n={responsibility.get('n')}) "
+        f"vs area-warming rho {area['rho']} "
+        f"(perm p={area['p_permutation']}, n={area.get('n')}); "
+        f"triple inequality status={status}; reasons={verdict.get('reasons', [])} "
+        "(descriptive, non-causal)"
+    )
+
+
 def main() -> None:
     """Build the default bundle and print the README sanity checks."""
+    require_prospective()
     logging.basicConfig(
         level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
     )
@@ -1277,15 +1321,7 @@ def main() -> None:
         vuln = json.loads(
             vulnerability[VULNERABILITY_SUMMARY_ASSET].read_text("utf-8")
         )
-        rg = vuln["responsibility"]["gradient_vs_income"]
-        ag = vuln["exposure"]["area"]["gradient_vs_income"]
-        ti = vuln["triple_inequality"]
-        print(
-            f"vulnerability (income lens): n={vuln['coverage']['n_countries']}, "
-            f"responsibility vs income rho {rg['rho']:+.3f} (perm p={rg['p_permutation']:.3g}) "
-            f"vs area-warming rho {ag['rho']:+.3f} (perm p={ag['p_permutation']:.3g}); "
-            f"triple inequality holds={ti['holds']} (descriptive, non-causal)"
-        )
+        print(vulnerability_report(vuln))
     else:
         print("vulnerability (income lens): skipped (income CSV not present)")
 
@@ -1316,4 +1352,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    with prospective_cli():
+        main()

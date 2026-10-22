@@ -1,0 +1,66 @@
+{
+  "spec_id": "v1-bootstrap-population-comparison-2026-10-22-v1",
+  "frozen_utc": "2026-10-22T17:54:18.769492+00:00",
+  "original_validation_spec_sha256": "5e46975d43996d3a50a9291c1fb7082accc19016a3dcb2c0dffcb416257bff9f",
+  "selection_before_new_comparison_results": {
+    "proposed_primary_policy_id": "complete-case-country-bootstrap-v1",
+    "reason": "The reported point decomposition conditions on the same observed151complete countries under both outcomes, and docs/stability.md explicitly describes resampling those151. Bootstrap these observed complete cases for conditional descriptive perturbation stability. This method choice is made before new interval results; it is not chosen to preserve historical intervals or because of floating point closeness.",
+    "legacy_policy_id": "resample-rows-then-complete-case-v1",
+    "legacy_estimand": "Bootstrap unconditional empirical rows, then condition each fit by dropping unusable rows; retained row count is random. This does not model or correct a missingness mechanism."
+  },
+  "settings": {
+    "outcomes": [
+      "area_weighted",
+      "station_weighted"
+    ],
+    "new_country_fits": {
+      "n_attempted_each": 2000,
+      "seed": 0,
+      "sample_size": 151,
+      "replacement": true,
+      "paired_outcome_sampling": "Identical ordered complete country populations, identical RNG seed0 and151draw length."
+    },
+    "legacy_country_comparator": "Use current sealed stability country summaries; reconstruct all2000 sample identities fromseed0 without refitting. Area legacy raw draw shares may be reused only under existing receipts. Station legacy raw share arrays unavailable; compare against its sealed current summary, do not invent draw arrays.",
+    "blocks": {
+      "n_attempted_each": 2000,
+      "seed": 1,
+      "replacement": true,
+      "units": "all6continents in existing first-observed order",
+      "reuse_condition": "Verify all2000draws exact ordered retainedcountry identities, multiplicityweights and all estimator input rows under both policies, plus current stability receipt/input/code equivalence. If equal, reuse current sealed block summary; otherwise rerun affected completecase block arm2000 and log all draws/failures."
+    },
+    "estimator": "Unchanged SCHEMA_V1, available features, original OLS all coalitions and Shapley weights, complete-case over all selected features and outcome before any coalition, no imputation or new weighting. Existing categorical transforms and resample-then-fit semantics preserved.",
+    "failure_handling": "Exactly2000attempts; catch original ValueError/np.linalg.LinAlgError, log failed fit reason and do not replace. Report failure counts and summarize successful share vectors with original percentile/mean/std code.",
+    "tolerances": "Identity/order/multiplicity/input/code equivalence exact; no tolerance relaxation to authorize reuse. Report negligible floating differences separately from the methodological choice.",
+    "metrics": [
+      "excluded identities and exact missing fields",
+      "perdraw sampled/retained N,unique countries,Kish multiplicity ESS,block counts,exact ordered retained identities",
+      "country share means,std,percentile95intervals,largest-axis proportions,comparison to current legacy summary",
+      "all2000block ordered retainedidentity/input equivalence proofs; reuse or explicit fallbackfits"
+    ],
+    "proposed_summary": "bootstrap-population/stability_summary_complete_case.json",
+    "limits": [
+      "Conditional descriptive stability only; no inference beyond observed completecases or missingness-mechanism adjustment.",
+      "Six heterogeneous continent blocks do not establish calibrated frequentist coverage; block intervals need not universally be wider.",
+      "The fixed full-rank M4 bootstrap is a separate151-country analysis and is unaffected.",
+      "No sealed Test, model-selection, scientific count reduction, publication, or alteration of existing results."
+    ],
+    "expected_input_rows": {
+      "area_weighted": 157,
+      "station_weighted": 154
+    }
+  },
+  "input_population_audit": "${POPULATION_INPUT_AUDIT}",
+  "documentation_evidence": {
+    "file": "docs/stability.md",
+    "country_bootstrap_description": "Resample the151complete-case countries with replacement2000times(seed0).",
+    "implementation_contradiction": "outcome_designs gives157area/154station rows; _bootstrap_shares resamples before group_lmg_shares drops missing rows."
+  },
+  "runtime_inputs": {
+    "raw_root": "${RAW_ROOT}",
+    "stability_stage": "${STABILITY_STAGE}"
+  },
+  "provenance": {
+    "original_frozen_spec_sha256": "e706b4efa42141835667760907b8fa15d51ac0898ba50adb08e7ca82f7b56780",
+    "portable_copy": "Method settings retained; runtime input identities are frozen from the explicitly selected verified stability checkpoint before new comparison outcomes."
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "analysis_id": "ndgain-2026-v2-observation-2023-update-v1",
+  "frozen_utc": "2026-10-22T17:55:35.690161+00:00",
+  "authorization": "This separately versioned source selection followed unsuccessful recovery of the earlier archive. It records the pre-outcome acquisition scope and retains the original scientific comparison year.",
+  "source": {
+    "archive": "nd_gain_country_index_2026_release_data_v2.zip",
+    "sha256": "e854c7fe6ccef8c5d24a5ef7f370b7f61d1b8c6816da19fda4cd892ca6cdf0de",
+    "download_date": "2026-10-22",
+    "official_page": "https://gain.nd.edu/our-work/country-index/download-data/",
+    "published_link": "https://gain.nd.edu/assets/647440/ndgain_countryindex_2026.zip",
+    "release": "2026 release_data_v2; bundled component timestamps2026-08-14; officialJuly15release announcement",
+    "observation_columns": [
+      1995,
+      2024
+    ]
+  },
+  "year_selection": {
+    "year": 2023,
+    "reason": "Hold the original vulnerability comparison year fixed, separating source revisions and coverage changes from the newly added2024year. No latest-year selection based on outcomes.",
+    "metrics": [
+      "vulnerability",
+      "readiness",
+      "gain"
+    ],
+    "rule": "Use exact2023column for each metric, preserve missingness, outerjoin byISO3; vulnerabilityyearfield2023 iff vulnerabilityfinite; noolderyearimputation. Retain metric-specific year fields in the source audit."
+  },
+  "definition_check": {
+    "primary": "Composite vulnerability combines exposure,sensitivity,adaptivecapacity over6sectors; same broad question, no assumption of standalone adaptivecapacity.",
+    "readiness_change": "DocumentedBusinessReady replacesDoingBusiness from2022 onward, backfilled fromcurrentdata andregionalplaceholderestimates; do not interpret revision asrealchange over time.",
+    "vulnerability_revision_cause": "No specificsource-by-sourcerevisionexplanation recovered; do notattribute toreadinesschange.",
+    "units": "vulnerability/readiness0..1;gain0..100; independentlycheckgain=(readiness-vulnerability+1)*50tol1e-8."
+  },
+  "input_audit": [
+    "exactISOids/duplicates",
+    "metric-specificyears andmissingness",
+    "oldvsnew2023 componentrevision",
+    "new2023vsnew2024 additions separately",
+    "snapshotextractvsforensiclatest<=2023 equivalence"
+  ],
+  "analysis": {
+    "warming_and_emissions": "unchangedfresh1950-2013definitions;2023vulnerabilityisdescriptivecontemporarystratifier, notcausalbaseline",
+    "primary": "existingdescriptivecriteriaandpermutation999seed0; fullavailablepairs pluscommoncomplete sample",
+    "uncertainty": "unchangedSpearman2000countryseed0/2000wholecontinentseed1; finite/undefineddrawcounts",
+    "vintage_comparison": "pairedcountryintersectionwithcompleteold+newvulnerability, income,responsibility andallwarminglenses; compareold/newrho fixedsample; reuseoldsame-datauncertaintyifexactelsecomputeexplicit",
+    "no_equivalence_claim": "nonsignificance orzero-crossingCIneverproofequal/no-lowerwarming",
+    "new2024": "inputrevisionaccountingonly; nooutcome-facing2024analysis"
+  },
+  "completion": [
+    "freshupdatedextractfromarchive",
+    "freshvulnerabilityoutputsanduncertainty",
+    "historicalvsupdatedsameyearsamecountryeffects",
+    "updatedfigures/publicnarrative withrelease/year",
+    "originalextract/resultsunchanged",
+    "independentreview"
+  ],
+  "preserved_historical_original": "Archive identityclaimedbyNOTICEbutnorawhashprovided; noexactreconstructionclaim.",
+  "runtime_inputs": {
+    "raw_root": "${RAW_ROOT}",
+    "archive_path": "${ARCHIVE_PATH}",
+    "income_draw_source_stage": "${INCOME_DRAW_SOURCE_STAGE}"
+  },
+  "provenance": {
+    "original_frozen_spec_sha256": "12754b01495d33671b92a996c38faeba3c6b5c3a16c339276420ebcc3b1d4fab",
+    "portable_copy": "Pinned archive and scientific settings retained; local runtime paths are explicit placeholders.",
+    "publication_note": "Authorization wording clarified for public presentation on 2026-10-23; scientific settings and the original frozen specification identity above are unchanged."
+  }
+}

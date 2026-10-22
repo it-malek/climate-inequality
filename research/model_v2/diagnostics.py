@@ -7,7 +7,8 @@ within-country cell-trend statistics (:mod:`research.model_v2.cells`), the ERA5
 cross-check column already in the bundle, and the M49 sub-regions
 (:mod:`research.model_v2.regions`).
 
-Outputs (``research/model_v2/outputs/``):
+Prospective outputs (under the execution scope's ``diagnostics/``; historical
+``research/model_v2/outputs/`` constants remain read-only input references):
 
 * ``m0_countries.csv`` -- one row per country: outcome, fit, residual, influence
   diagnostics, V1 features, descriptors and the local Moran's I label;
@@ -15,6 +16,9 @@ Outputs (``research/model_v2/outputs/``):
 """
 
 from __future__ import annotations
+
+from src.prospective import prospective_outputs, prospective_cli
+from src.correction_identity import correction_metadata
 
 import json
 from pathlib import Path
@@ -26,6 +30,7 @@ from scipy import stats
 from research.model_v2 import cells, geometry, regions
 from research.model_v2.m0 import OUTPUT_DIR, M0Fit, m0_country_table
 from research.model_v2.spatial import (
+    _autocorrelation_input_reason,
     contiguity_weights,
     distance_band_weights,
     gearys_c,
@@ -214,22 +219,23 @@ def weights_sensitivity(table: pd.DataFrame, resid: np.ndarray) -> dict:
         dist = haversine_matrix(lon, lat)
         for k in K_VALUES:
             r = morans_i(resid, knn_weights(dist, k), N_PERMUTATIONS, SEED)
-            out[f"knn_k{k}_{centroid}"] = {"morans_i": r.statistic, "p": r.p_value, "z": r.z_score}
+            out[f"knn_k{k}_{centroid}"] = {"morans_i": r.statistic, "p": r.p_value, "z": r.z_score, "status": r.status, "reason": r.reason, "z_score_reason": r.z_score_reason}
         for cutoff in BAND_CUTOFFS_KM:
             w, iso = distance_band_weights(dist, cutoff)
             r = morans_i(resid, w, N_PERMUTATIONS, SEED)
-            out[f"band_{cutoff}km_{centroid}"] = {"morans_i": r.statistic, "p": r.p_value, "z": r.z_score, "n_isolates_given_nearest": iso}
+            out[f"band_{cutoff}km_{centroid}"] = {"morans_i": r.statistic, "p": r.p_value, "z": r.z_score, "status": r.status, "reason": r.reason, "z_score_reason": r.z_score_reason, "n_isolates_given_nearest": iso}
         for power in (1.0, 2.0):
             r = morans_i(resid, inverse_distance_weights(dist, power, cutoff_km=3000), N_PERMUTATIONS, SEED)
-            out[f"idw_p{int(power)}_3000km_{centroid}"] = {"morans_i": r.statistic, "p": r.p_value, "z": r.z_score}
+            out[f"idw_p{int(power)}_3000km_{centroid}"] = {"morans_i": r.statistic, "p": r.p_value, "z": r.z_score, "status": r.status, "reason": r.reason, "z_score_reason": r.z_score_reason}
         if centroid == "area":
             w, n_fallback = contiguity_weights(table["iso3"].to_numpy(), adjacency, dist, fallback_k=1)
             r = morans_i(resid, w, N_PERMUTATIONS, SEED)
-            out["queen_contiguity_15min_raster"] = {"morans_i": r.statistic, "p": r.p_value, "z": r.z_score, "n_islands_given_nearest": n_fallback}
+            out["queen_contiguity_15min_raster"] = {"morans_i": r.statistic, "p": r.p_value, "z": r.z_score, "status": r.status, "reason": r.reason, "z_score_reason": r.z_score_reason, "n_islands_given_nearest": n_fallback}
             g = gearys_c(resid, knn_weights(dist, 8), N_PERMUTATIONS, SEED)
-            out["gearys_c_knn_k8_area"] = {"gearys_c": g.statistic, "p": g.p_value, "z": g.z_score}
-    values = [v["morans_i"] for v in out.values() if "morans_i" in v]
-    out["range_of_morans_i"] = {"min": float(min(values)), "max": float(max(values))}
+            out["gearys_c_knn_k8_area"] = {"gearys_c": g.statistic, "p": g.p_value, "z": g.z_score, "status": g.status, "reason": g.reason, "z_score_reason": g.z_score_reason}
+    values = [v["morans_i"] for v in out.values() if v.get("morans_i") is not None]
+    out["range_of_morans_i"] = {"min": float(min(values)), "max": float(max(values))} if values else {
+        "min": None, "max": None, "status": "unavailable", "reason": "no_available_moran_statistics"}
     return out
 
 
@@ -248,7 +254,7 @@ def correlogram(table: pd.DataFrame, resid: np.ndarray) -> dict:
             continue
         # Binary weights, general Moran's I formula (n / S0) * z'Wz / z'z.
         r = morans_i(z, w, N_PERMUTATIONS, SEED)
-        rings.append({"lo_km": lo, "hi_km": hi, "n_pairs": n_pairs, "morans_i": r.statistic, "p": r.p_value, "z": r.z_score,
+        rings.append({"lo_km": lo, "hi_km": hi, "n_pairs": n_pairs, "morans_i": r.statistic, "p": r.p_value, "z": r.z_score, "status": r.status, "reason": r.reason, "z_score_reason": r.z_score_reason,
                       "expected": -1.0 / (n - 1)})
         iu = np.triu_indices(n, 1)
         sel = w[iu] > 0
@@ -268,6 +274,8 @@ def local_structure(table: pd.DataFrame, resid: np.ndarray) -> tuple[pd.DataFram
         lisa_v1_local_i=lisa_v1["local_i"].to_numpy(), lisa_v1_p=lisa_v1["p_value"].to_numpy(),
         lisa_v1_quadrant=lisa_v1["quadrant"].to_numpy(), lisa_v1_label=lisa_v1["label"].to_numpy(),
         lisa_area_label=lisa_area["label"].to_numpy(),
+        lisa_v1_status=lisa_v1["status"].to_numpy(), lisa_v1_reason=lisa_v1["reason"].to_numpy(),
+        lisa_area_status=lisa_area["status"].to_numpy(), lisa_area_reason=lisa_area["reason"].to_numpy(),
     )
     clusters = {}
     for label in ("HH", "LL", "HL", "LH"):
@@ -276,49 +284,69 @@ def local_structure(table: pd.DataFrame, resid: np.ndarray) -> tuple[pd.DataFram
             {"country": c, "residual": float(r), "subregion": s, "p": float(p)}
             for c, r, s, p in zip(members["Country"], members["residual"], members["m49_subregion"], members["lisa_v1_p"], strict=True)
         ]
-    agreement = float(np.mean(table["lisa_v1_label"] == table["lisa_area_label"]))
+    available = (table["lisa_v1_status"] == "available") & (table["lisa_area_status"] == "available")
+    agreement = float(np.mean(table.loc[available, "lisa_v1_label"] == table.loc[available, "lisa_area_label"])) if available.any() else None
     return table, {"weights": "station-centroid kNN k=8 (V1) with conditional permutation p < 0.05", "clusters": clusters,
-                   "n_significant": int((table["lisa_v1_label"] != "ns").sum()), "label_agreement_station_vs_area_weights": agreement}
+                   "n_significant": int(table["lisa_v1_label"].isin(["HH", "LL", "HL", "LH"]).sum()),
+                   "n_available_station": int((table["lisa_v1_status"] == "available").sum()),
+                   "n_available_paired": int(available.sum()),
+                   "unavailable_reasons": sorted(set(lisa_v1["reason"].dropna()) | set(lisa_area["reason"].dropna())
+                                                 | {frame.attrs["reason"] for frame in (lisa_v1, lisa_area) if frame.attrs.get("reason")}),
+                   "label_agreement_station_vs_area_weights": agreement}
 
 
 def moran_influence(table: pd.DataFrame, resid: np.ndarray) -> dict:
     """Does a handful of countries carry the spatial pattern? Drop-k and jackknife Moran's I."""
     lon, lat = table["station_lon"].to_numpy(), table["station_lat"].to_numpy()
 
-    def moran_subset(mask: np.ndarray) -> float:
+    reasons = {}
+
+    def moran_subset(mask: np.ndarray, label: str) -> float | None:
         d = haversine_matrix(lon[mask], lat[mask])
-        return _moran_no_perm(resid[mask], knn_weights(d, 8))
+        value, reason = _moran_no_perm(resid[mask], knn_weights(d, 8))
+        if reason:
+            reasons[label] = reason
+        return value
 
     order = np.argsort(-np.abs(resid))
     drop_top = {}
     for k in (5, 10, 15, 20, 30):
         mask = np.ones(len(resid), dtype=bool)
         mask[order[:k]] = False
-        drop_top[f"drop_top_{k}_abs_residual"] = float(moran_subset(mask))
-    full = float(moran_subset(np.ones(len(resid), dtype=bool)))
+        label = f"drop_top_{k}_abs_residual"
+        drop_top[label] = moran_subset(mask, label)
+    full = moran_subset(np.ones(len(resid), dtype=bool), "full_sample_knn8_station")
     jack = np.empty(len(resid))
     for i in range(len(resid)):
         mask = np.ones(len(resid), dtype=bool)
         mask[i] = False
-        jack[i] = moran_subset(mask)
-    delta = full - jack
-    ranked = np.argsort(-np.abs(delta))[:10]
+        value = moran_subset(mask, f"jackknife:{table['Country'].iloc[i]}")
+        jack[i] = value if value is not None else np.nan
+    delta = full - jack if full is not None else np.full(len(jack), np.nan)
+    finite = np.flatnonzero(np.isfinite(delta))
+    ranked = finite[np.argsort(-np.abs(delta[finite]))[:10]]
     lisa_hh = (table["lisa_v1_label"] == "HH").to_numpy()
     lisa_ll = (table["lisa_v1_label"] == "LL").to_numpy()
     return {
         "full_sample_knn8_station": full,
         **drop_top,
-        "drop_lisa_HH_cluster": float(moran_subset(~lisa_hh)),
-        "drop_lisa_LL_cluster": float(moran_subset(~lisa_ll)),
-        "drop_both_lisa_clusters": float(moran_subset(~(lisa_hh | lisa_ll))),
-        "jackknife_max_abs_delta": float(np.max(np.abs(delta))),
+        "drop_lisa_HH_cluster": moran_subset(~lisa_hh, "drop_lisa_HH_cluster"),
+        "drop_lisa_LL_cluster": moran_subset(~lisa_ll, "drop_lisa_LL_cluster"),
+        "drop_both_lisa_clusters": moran_subset(~(lisa_hh | lisa_ll), "drop_both_lisa_clusters"),
+        "jackknife_max_abs_delta": float(np.max(np.abs(delta[finite]))) if len(finite) else None,
         "jackknife_top10": [{"country": str(table["Country"].iloc[i]), "delta_i": float(delta[i])} for i in ranked],
+        **({"unavailable_reasons": reasons} if reasons else {}),
     }
 
 
-def _moran_no_perm(values: np.ndarray, w: np.ndarray) -> float:
+def _moran_no_perm(values: np.ndarray, w: np.ndarray) -> tuple[float | None, str | None]:
+    reason = _autocorrelation_input_reason(values, w, 1)
+    if reason:
+        return None, reason
     z = values - values.mean()
-    return float((len(z) / w.sum()) * (z @ w @ z) / np.sum(z**2))
+    with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+        value = float((len(z) / w.sum()) * (z @ w @ z) / np.sum(z**2))
+    return (value, None) if np.isfinite(value) else (None, "nonfinite_statistic")
 
 
 def product_and_construction(table: pd.DataFrame) -> dict:
@@ -376,13 +404,15 @@ def _leverage_note(row: pd.Series) -> str:
     return "; ".join(notes)
 
 
-def run() -> dict:
+@prospective_outputs(out_dir="diagnostics")
+def run(out_dir: Path | None = None) -> dict:
     """Compute every diagnostic block, write the country table and the JSON."""
     table, fit = assemble_table()
     resid = table["residual"].to_numpy()
     table, lisa = local_structure(table, resid)
     lats, _, slopes, iso3 = cells.load_cell_field()
     report = {
+        **correction_metadata(),
         "m0": {"n": fit.n, "r2": fit.r2, "rank": fit.rank, "columns": fit.p, "sigma": fit.sigma,
                "outcome_sd": float(table["warming_trend"].std(ddof=1))},
         "distribution": distribution(resid),
@@ -407,9 +437,9 @@ def run() -> dict:
             "station_vs_centroid_abs_lat_gap": {"median_abs": float(table["station_lat_minus_centroid_lat"].abs().median()), "max_abs": float(table["station_lat_minus_centroid_lat"].abs().max())},
         },
     }
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    table.to_csv(COUNTRY_TABLE_PATH, index=False, float_format="%.8g")
-    DIAGNOSTICS_PATH.write_text(json.dumps(report, indent=1, default=_json_default) + "\n", encoding="utf-8")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    table.to_csv(out_dir / COUNTRY_TABLE_PATH.name, index=False, float_format="%.8g")
+    (out_dir / DIAGNOSTICS_PATH.name).write_text(json.dumps(report, indent=1, default=_json_default) + "\n", encoding="utf-8")
     return report
 
 
@@ -426,6 +456,7 @@ def _json_default(value):
 
 
 if __name__ == "__main__":
-    report = run()
+    with prospective_cli() as (_, execution):
+        report = run()
     print(json.dumps({k: report[k] for k in ("m0", "distribution", "concentration")}, indent=1)[:3000])
-    print("wrote", COUNTRY_TABLE_PATH, "and", DIAGNOSTICS_PATH)
+    print("wrote diagnostics under", execution.root / "diagnostics")

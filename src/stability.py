@@ -39,6 +39,10 @@ depends on how national warming was constructed.
 
 from __future__ import annotations
 
+from src.correction_identity import correction_metadata
+
+from src.prospective import prospective_cli, require_prospective
+
 import json
 import logging
 from dataclasses import asdict, dataclass, field
@@ -332,12 +336,14 @@ def _residual_spatial(
             "only %d countries have centroids; need > k=%d for Moran's I",
             len(resid), k,
         )
-        return {"morans_i": None, "p_value": None, **base}
-    morans, p_value = morans_i(
+        return {"morans_i": None, "p_value": None, "status": "unavailable",
+                "reason": "insufficient_samples_for_requested_neighbors", **base}
+    diagnostic = morans_i(
         np.array(resid), np.array(lon), np.array(lat),
         k=k, n_permutations=n_permutations, seed=seed,
     )
-    return {"morans_i": float(morans), "p_value": float(p_value), **base}
+    return {"morans_i": diagnostic.statistic, "p_value": diagnostic.p_value,
+            "status": diagnostic.status, "reason": diagnostic.reason, **base}
 
 
 # ---------------------------------------------------------------------
@@ -509,11 +515,11 @@ def summary_payload(
             ``sensitivity`` key; a run whose ``influence`` block is empty is
             written without it.
     """
-    payload = {"interpretation": INTERPRETATION_NOTE, **result_to_dict(result)}
+    payload = {**correction_metadata(), "interpretation": INTERPRETATION_NOTE, **result_to_dict(result)}
     if sensitivity:
         blocks = {}
         for key, alt in sensitivity.items():
-            block = {"interpretation": INTERPRETATION_NOTE, **result_to_dict(alt)}
+            block = {**correction_metadata(), "interpretation": INTERPRETATION_NOTE, **result_to_dict(alt)}
             if not block.get("influence"):
                 block.pop("influence", None)
             blocks[key] = block
@@ -523,6 +529,7 @@ def summary_payload(
 
 def main() -> None:
     """Build the design + centroids from real artifacts and write the summary."""
+    summary_path = require_prospective().path("processed/stability_summary.json")
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     from src.emissions import DEFAULT_INEQUALITY_PATH
     from src.explain import DEFAULT_FEATURES_PATH, INCOME_PATH, load_income_groups
@@ -560,13 +567,14 @@ def main() -> None:
         print(f"  residual Moran's I: {rs['morans_i']} (p={rs['p_value']}, n={rs['n']})")
     print(f"  note: {INTERPRETATION_NOTE}")
 
-    DEFAULT_SUMMARY_PATH.parent.mkdir(parents=True, exist_ok=True)
-    DEFAULT_SUMMARY_PATH.write_text(
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path.write_text(
         json.dumps(summary_payload(result, sensitivity=sensitivity), indent=2) + "\n",
         encoding="utf-8",
     )
-    print(f"wrote {DEFAULT_SUMMARY_PATH}")
+    print(f"wrote {summary_path}")
 
 
 if __name__ == "__main__":
-    main()
+    with prospective_cli():
+        main()

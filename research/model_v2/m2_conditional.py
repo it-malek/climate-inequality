@@ -15,6 +15,8 @@ Run with ``PYTHONHASHSEED=0 uv run python -m research.model_v2.m2_conditional [-
 """
 from __future__ import annotations
 
+from src.prospective import require_prospective, require_synthetic_evaluator
+
 import argparse
 import dataclasses
 import json
@@ -192,9 +194,11 @@ def main(argv=None):
     parser.add_argument('--out', default=str(DEFAULT_OUT))
     args = parser.parse_args(argv)
     started, started_utc = time.perf_counter(), datetime.now(timezone.utc).isoformat(timespec='seconds')
+    require_synthetic_evaluator()
     prov.require_hash_seed()
     code = prov.frozen_code_state(ev.code_files())
     out_dir = prov.require_fresh(args.out)
+    require_prospective().destination(out_dir)
     primary = verified_primary(Path(args.primary))
     if not primary['predictive_support']:
         out_dir.mkdir(parents=True)

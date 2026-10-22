@@ -1,5 +1,10 @@
 {
   "interpretation": "Descriptive predictive association between the global mean temperature anomaly and effective-radiative-forcing proxies, validated by out-of-sample hindcast skill. The per-driver sensitivities are model coefficients (deg C per W/m^2), NOT formal detection-and-attribution: this layer makes no deterministic causal claim about any individual forcing.",
+  "forecast_uncertainty_method": "fixed-rho-conditional-t-v1",
+  "correction_set_id": "prospective-corrections-2026-10-22",
+  "evidence_schema_id": "finite-evidence-v1",
+  "computation_status": "prospective-development",
+  "forecast_method_id": "fixed-rho-conditional-t-v1",
   "outcome": "global_temp_anomaly",
   "n_years": 74,
   "train_end": 2013,
@@ -65,5 +70,156 @@
     "test_band_coverage": 0.9090909091,
     "n_test": 11
   },
-  "forcings_hash": "9c128c0409fe5558efb6880074fe0d7a20e44fcf2715be69bda3ecdc1f7e7f71"
+  "forcings_hash": "9c128c0409fe5558efb6880074fe0d7a20e44fcf2715be69bda3ecdc1f7e7f71",
+  "rolling_origin_validation": {
+    "evaluation": "conditional retrospective rolling-origin hindcast with observed future drivers",
+    "origins": 24,
+    "n_predictions": 264,
+    "by_horizon": [
+      {
+        "horizon": 1,
+        "n": 24,
+        "rmse": 0.08586854415,
+        "mae": 0.07186445583,
+        "bias": 0.003512114829,
+        "coverage": 1.0,
+        "covered_count": 24,
+        "mean_width": 0.3781546382,
+        "min_width": 0.3483743583,
+        "max_width": 0.4779134583,
+        "interval_score": 0.3781546382
+      },
+      {
+        "horizon": 2,
+        "n": 24,
+        "rmse": 0.08821734906,
+        "mae": 0.07385092636,
+        "bias": 0.004937593129,
+        "coverage": 1.0,
+        "covered_count": 24,
+        "mean_width": 0.3821509854,
+        "min_width": 0.3489025141,
+        "max_width": 0.5053219129,
+        "interval_score": 0.3821509854
+      },
+      {
+        "horizon": 3,
+        "n": 24,
+        "rmse": 0.09088872993,
+        "mae": 0.07488719853,
+        "bias": -0.007937629618,
+        "coverage": 1.0,
+        "covered_count": 24,
+        "mean_width": 0.3824074121,
+        "min_width": 0.353012575,
+        "max_width": 0.4143643282,
+        "interval_score": 0.3824074121
+      },
+      {
+        "horizon": 4,
+        "n": 24,
+        "rmse": 0.09100135988,
+        "mae": 0.07414571198,
+        "bias": -0.01734555302,
+        "coverage": 0.9583333333,
+        "covered_count": 23,
+        "mean_width": 0.3862661214,
+        "min_width": 0.3577032911,
+        "max_width": 0.4290989161,
+        "interval_score": 0.4127056619
+      },
+      {
+        "horizon": 5,
+        "n": 24,
+        "rmse": 0.09009135761,
+        "mae": 0.07216115728,
+        "bias": -0.0199480583,
+        "coverage": 0.9583333333,
+        "covered_count": 23,
+        "mean_width": 0.3907176582,
+        "min_width": 0.3567466182,
+        "max_width": 0.4300535599,
+        "interval_score": 0.3971754839
+      },
+      {
+        "horizon": 6,
+        "n": 24,
+        "rmse": 0.08331966212,
+        "mae": 0.0684890636,
+        "bias": -0.01973917887,
+        "coverage": 1.0,
+        "covered_count": 24,
+        "mean_width": 0.3957560568,
+        "min_width": 0.360146037,
+        "max_width": 0.4350334246,
+        "interval_score": 0.3957560568
+      },
+      {
+        "horizon": 7,
+        "n": 24,
+        "rmse": 0.08327276299,
+        "mae": 0.07004401025,
+        "bias": -0.02772317151,
+        "coverage": 1.0,
+        "covered_count": 24,
+        "mean_width": 0.4002882271,
+        "min_width": 0.3669803965,
+        "max_width": 0.4464583452,
+        "interval_score": 0.4002882271
+      },
+      {
+        "horizon": 8,
+        "n": 24,
+        "rmse": 0.0858722165,
+        "mae": 0.07452525687,
+        "bias": -0.02645600844,
+        "coverage": 1.0,
+        "covered_count": 24,
+        "mean_width": 0.4053680543,
+        "min_width": 0.3692031245,
+        "max_width": 0.4548750979,
+        "interval_score": 0.4053680543
+      },
+      {
+        "horizon": 9,
+        "n": 24,
+        "rmse": 0.07937456862,
+        "mae": 0.06735373556,
+        "bias": -0.01786549489,
+        "coverage": 1.0,
+        "covered_count": 24,
+        "mean_width": 0.4122105708,
+        "min_width": 0.3685040767,
+        "max_width": 0.4636660354,
+        "interval_score": 0.4122105708
+      },
+      {
+        "horizon": 10,
+        "n": 24,
+        "rmse": 0.08287858663,
+        "mae": 0.06725424134,
+        "bias": -0.02346195965,
+        "coverage": 1.0,
+        "covered_count": 24,
+        "mean_width": 0.4199954398,
+        "min_width": 0.3747565263,
+        "max_width": 0.468431077,
+        "interval_score": 0.4199954398
+      },
+      {
+        "horizon": 11,
+        "n": 24,
+        "rmse": 0.09311907399,
+        "mae": 0.07110953165,
+        "bias": -0.03764512682,
+        "coverage": 0.9583333333,
+        "covered_count": 23,
+        "mean_width": 0.4264028974,
+        "min_width": 0.3844123423,
+        "max_width": 0.4796909316,
+        "interval_score": 0.4474013386
+      }
+    ],
+    "nonconverged_origins": []
+  }
 }
