@@ -265,12 +265,13 @@ def encoded_identity(frame, representation, encoded):
             'design_sha256': prov.array_digest(matrix)}
 
 
-def outcome_vector(table):
+def outcome_vector(table, *, pipeline_inputs=None):
+    """Bind recorded outcomes to the supplied pipeline generation, or legacy defaults."""
     frozen = pd.read_csv(ROOT / RANK_PREDICTIONS, float_precision='round_trip')
     y = (frozen[frozen.variant == 'drop_per_capita'].set_index('iso3').loc[table.iso3, 'observed']
          .to_numpy(float))
     _refuse(np.isfinite(y).all(), 'non-finite outcome')
-    design = m0_complete_design(*load_inputs())
+    design = m0_complete_design(*(load_inputs() if pipeline_inputs is None else pipeline_inputs))
     _refuse(design.Country.tolist() == table.Country.tolist(), 'the pipeline country order differs')
     _refuse(np.array_equal(design[OUTCOME_COL].to_numpy(float), y),
             'the recorded ordered outcome differs from the pipeline outcome')
@@ -313,8 +314,12 @@ def fold_identities(table, distance, folds):
             'random10_fold_sha256': prov.hashlib.sha256(folds['random10'][0].tobytes()).hexdigest()}
 
 
-def build_frozen() -> Frozen:
-    """Load the fixed 151-country scoring frames and check every identity."""
+def build_frozen(*, pipeline_inputs=None) -> Frozen:
+    """Load the fixed scoring frames and check every identity.
+
+    Prospective diagnostics may supply verified pipeline frames explicitly.
+    This changes only input routing; every historical identity assertion remains.
+    """
     table = pd.read_csv(ROOT / COUNTRY_TABLE, usecols=TABLE_COLUMNS, float_precision='round_trip')[TABLE_COLUMNS]
     _refuse(len(table) == 151 and table.iso3.is_unique, 'the country table is not the fixed 151 countries')
     labels = table[['iso3']].merge(m49_table(), on='iso3', how='left', validate='one_to_one')
@@ -322,7 +327,7 @@ def build_frozen() -> Frozen:
             and (labels.m49_subregion.to_numpy() == table.m49_subregion.to_numpy()).all(),
             'M49 labels differ from the recorded definition')
     encoded = pd.read_csv(ROOT / ENCODED_DESIGN, float_precision='round_trip')
-    y = outcome_vector(table)
+    y = outcome_vector(table, pipeline_inputs=pipeline_inputs)
     frames, identity = {}, {'n': len(table), 'outcome_vector_sha256': prov.array_digest(y),
                             'outcome_binding': 'rank_audit_country_predictions.csv drop_per_capita observed; '
                                                'equal to the M0 pipeline and the committed M1b record',

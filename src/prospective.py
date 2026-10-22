@@ -7,6 +7,7 @@ No environment variable silently opts a process into prospective execution.
 from __future__ import annotations
 
 import argparse
+import re
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
@@ -76,15 +77,25 @@ def require_prospective() -> ProspectiveExecution:
 
 
 @contextmanager
-def prospective_execution(*, scratch: Path | None = None):
+def prospective_execution(*, scratch: Path | None = None, run_id: str | None = None):
     """Opt in to the configured namespace, or an OS-temp synthetic test scope.
+
+    A run_id confines writers to one named child of the correction namespace.
+    Selecting a scope does not create it; the orchestrator must create a fresh
+    directory exclusively and verify checkpoints before any resumption.
 
     Scratch is deliberately limited to temporary directories. It is not a way
     to redirect production output into another checkout or an archived bundle.
     The caller must still supply synthetic inputs; this API cannot infer data provenance.
     """
+    if scratch is not None and run_id is not None:
+        raise ProspectiveExecutionRequired("run_id and synthetic scratch are mutually exclusive")
+    if run_id is not None and not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,79}", run_id):
+        raise ProspectiveExecutionRequired("run_id must be a simple directory name")
     if scratch is None:
         root = PROSPECTIVE_OUTPUT_ROOT.absolute()
+        if run_id is not None:
+            root = root / run_id
         if root.resolve() != root:
             raise ProspectiveExecutionRequired("Configured prospective namespace contains a symlink")
     else:
