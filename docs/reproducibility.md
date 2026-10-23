@@ -321,3 +321,10 @@ of resolving silently. `app/requirements.txt` is the generated deployment export
 specification; CI checks it byte-for-byte against the lock export. This repository is an application and
 research workspace, not an installable library: run module commands from its root.
 There is no distribution build or editable-install claim.
+
+Public historical documents and metadata use the explicitly labeled derivatives
+described in [the provenance notes](public_provenance.md). Original result
+identities remain unchanged. The archival audit separately verifies the two
+descriptive inventory derivatives; all numerical artifacts retain strict byte
+checks. Historical execution gates retain their original requirements, so exact
+original-run verification needs the privately preserved original records.

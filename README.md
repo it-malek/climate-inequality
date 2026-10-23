@@ -128,8 +128,9 @@ residual investigation is documented in
 
 ## Running it
 
-The dashboard and the test suite need no data download: the app reads only the
-committed bundle, and the tests run on synthetic fixtures.
+The dashboard and default software checks need no data download. The app reads
+the committed bundle; optional integration checks also use pinned local inputs
+when they are available.
 
 ```bash
 uv sync --locked --extra dev
@@ -142,6 +143,10 @@ Rebuilding the released analysis requires the verified raw sources and offline
 computation. The step-by-step sequence is in
 [`docs/current_validation.md`](docs/current_validation.md);
 [`docs/reproducibility.md`](docs/reproducibility.md) documents the historical pipeline.
+
+Historical execution metadata is provided as [labeled public derivatives](docs/public_provenance.md).
+Their public hashes and unchanged scientific values are checked separately from
+the privately preserved original records.
 
 ## Documentation
 

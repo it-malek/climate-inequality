@@ -11,11 +11,33 @@ import json
 from pathlib import Path
 
 from src.snapshot import fingerprint
-from src.evidence import MANIFEST, evidence_path
+from src.evidence import MANIFEST, verify_evidence_digest, verify_public_derivatives, verify_public_documents, verify_public_document_digest
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUTS = "research/model_v2/outputs"
 INVENTORY = "reports/canonical_results.json"
+# Descriptive inventories have labeled public copies; numerical outputs do not.
+PUBLIC_INVENTORIES = frozenset({
+    "research/model_v2/outputs/m4_final/m4_inventory_status.json",
+    "research/model_v2/outputs/m4_final_verification/reproducibility_run_b/m4_inventory_status.json",
+})
+
+
+def verify_result_artifact(root: Path, path: Path, expected: str) -> bool:
+    """Return True only for an explicitly labeled descriptive inventory derivative.
+
+    Scientific execution gates and original result-manifest identities are unchanged.
+    All other deterministic artifacts require their original exact bytes.
+    """
+    relative = path.relative_to(root).as_posix()
+    try:
+        verify_digest(path, expected)
+        return False
+    except ValueError:
+        if relative not in PUBLIC_INVENTORIES:
+            raise
+    return verify_public_document_digest(relative, expected, root,
+                                         required_format="utf8-json") == "public derivative"
 
 
 def read_json(root: Path, name: str) -> dict:
@@ -33,17 +55,20 @@ def verify_evidence(root: Path = ROOT) -> dict:
     identity = fingerprint(root / "app/data", require_manifest=True)
     recovered = read_json(root, MANIFEST)
     for entry in recovered["documents"].values():
-        verify_digest(root / entry["path"], entry["sha256"])
+        verify_evidence_digest(entry["path"], entry["sha256"], root)
     final = read_json(root, f"{OUTPUTS}/v2_final/v2_final_record.json")
     for collection in ("sources", "verification"):
         for entry in final[collection].values():
-            verify_digest(evidence_path(entry["path"], root), entry["sha256"])
+            verify_evidence_digest(entry["path"], entry["sha256"], root)
     manifests = sorted((root / OUTPUTS).rglob("*_result_manifest.json"))
+    inventory_derivatives_checked = 0
     for path in manifests:
         manifest = json.loads(path.read_text(encoding="utf-8"))
         for name, digest in manifest["artifact_sha256"].items():
-            verify_digest(path.parent / name, digest)
-    return {"bundle_sha256": identity, "result_manifests_checked": len(manifests),
+            inventory_derivatives_checked += verify_result_artifact(root, path.parent / name, digest)
+    derivatives_checked = verify_public_derivatives(root)
+    documents_checked = verify_public_documents(root)
+    return {"descriptive_inventory_derivatives_checked": inventory_derivatives_checked, "public_document_derivatives_checked": documents_checked, "public_derivatives_checked": derivatives_checked, "bundle_sha256": identity, "result_manifests_checked": len(manifests),
             "historical_documents_checked": len(recovered["documents"])}
 
 

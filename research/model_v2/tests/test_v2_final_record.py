@@ -5,7 +5,7 @@ import pytest
 
 from research.model_v2 import v2_final_record as vf
 from research.model_v2 import v2_provenance as prov
-from src.evidence import evidence_path
+from src.evidence import evidence_path, verify_evidence_digest
 
 
 @pytest.fixture(scope='module')
@@ -17,7 +17,7 @@ def record():
 
 
 def test_every_cited_source_matches_its_recorded_digest(record):
-    """Every historical citation must resolve and retain its exact digest."""
+    """Every citation retains its original identity or a labeled public derivative."""
     import os
     from pathlib import Path
 
@@ -31,7 +31,12 @@ def test_every_cited_source_matches_its_recorded_digest(record):
                 f"Missing historical evidence: {entry['path']}. "
                 "Set CLIMATE_RESEARCH_ARCHIVE to the preserved research checkout."
             )
-            assert prov.sha256(path) == entry['sha256'], name
+            if path.is_relative_to(vf.ROOT.resolve()):
+                assert verify_evidence_digest(entry['path'], entry['sha256'], vf.ROOT) in (
+                    'original', 'public derivative'
+                ), name
+            else:
+                assert prov.sha256(path) == entry['sha256'], name
             if collection == 'verification':
                 assert entry['passes'] is True, name
 
