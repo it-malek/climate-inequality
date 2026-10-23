@@ -1,0 +1,247 @@
+{
+  "status": "released 2.1.0 analysis",
+  "historical_evidence": "research/model_v2/outputs and the historical research audit retain their original semantics; these are comparison records, not substitutes for fresh computations",
+  "bundle": {
+    "schema_version": 1,
+    "version": "2.1.0",
+    "analysis_period": "1950-01-01..2013-09-01",
+    "bundle_sha256": "b1ce6737ab0a005e49f0354a620c7410b7044297a2d5dc987bc6563d3921291b",
+    "files": {
+      "city_anomalies.parquet": "a517e11941b1458342f42bc1e7bb1207cb906649074e711a07dc86ac60038da9",
+      "city_trends.parquet": "72c2fb2a2f3c6ef6b4884e3c67dd46bc14eff8a7f7aa45d9823bd5b1a903bcbe",
+      "country_inequality.parquet": "46cc3216aebf8625e0fe734354ba30bbdac8d5445897c7964022b296a48aef27",
+      "coupling.parquet": "47b3891bd9aeb8beee6765d72d0d6663e91b1ef8fb0c8ce0f338086e9bf5df05",
+      "coupling_area.parquet": "97dd6e7c07e2679c9f40d00e9334cc8e7ea4c6ada690782d0872be16583b8f8c",
+      "coupling_area_summary.json": "da7a6c2c54b0eaa1e671fce432757a242b231723eff67fc93069ee81d39b0b22",
+      "coupling_consumption.parquet": "45fc106e927ac3c36856a2ce6b51227be7a02f7a0bee31ac664a4ecebc7ca6c9",
+      "coupling_consumption_summary.json": "b62f715e297eff79a1c9ecf4949a6d260812c5f408bef75edc08654276ea958b",
+      "coupling_exposure.parquet": "0f4001d83b99f0a1e9a3d9e0921c6dcbc921c127407ad4569ffebae1a67091ce",
+      "coupling_exposure_summary.json": "6cd7d65d5c7b5508ffa18825ccbffe4621d81f484229c635d0c3781b05a08e22",
+      "coupling_summary.json": "d88b20ea6ea306834cc7798e1244b3f47821caa6a95ad480d039093d0b6d902b",
+      "decomposition_summary.json": "cd6f9ba7098a3f9b5ed251d8f57b9359342d5cc21a19e4e5dfed7dec16141974",
+      "era5_area_trends.parquet": "5a18ccbaea44bfef09788b7261ea081a132ff794295e382fc504d459b982a43c",
+      "era5_validation_summary.json": "95a4488d8212088830807a103231433b994878fe3e37f0d356f089c913afd2bd",
+      "explain_features.parquet": "ad6b8fb969a4bc21a48603101bf43b739428e8d5a76f42736155880714911e6f",
+      "inequality_summary.json": "70244e6728aec66e697a649046871c1a3378a67c7e77ac7f2496e7a24d9282c0",
+      "national_warming.parquet": "e55ad576550eca5fab30b357d3a683bd0eabc6cade085ad4b13eb4c92eac126d",
+      "physical_summary.json": "9392bb89ae43ed546f41f2259e3d78081e516bbb527eb4f6c6372011b284b5e7",
+      "physical_trajectory.parquet": "4fc16a238ea3a3daf431b65b46012d4b4928c9cd00c6e54cea16faef929233bf",
+      "residual_structure_summary.json": "34b5728d5a37e8b65233831a6c11384c8ca2972f2563aeab14650d3ba2270c97",
+      "stability_summary.json": "14f985f3b985dce5979a4c8d22c9163770f54471cb42b8d17264ee8bdfd06e26",
+      "stats.json": "70a935743ee498398cd94411c86b4fc0395f0335167f73ee98cdacf5d59d2581",
+      "trend_surface.parquet": "26ec476969468bb984c184eda9c78bc9b1cbed624b308f8b0f50a4ba4db77ccc",
+      "validation.parquet": "22af71e4fec81bce0e6d6f257eb0fcc937eb212777c731d453784617a53c0106",
+      "validation_global.parquet": "2b13cc60843a29d0db450d460045b62c82102b0a4d11edc1347ec01165e379d0",
+      "vulnerability_strata.parquet": "0f5259d0ea420c08877a2fb21d73795df7308b80ba2c8a169877506fa065aa01",
+      "vulnerability_summary.json": "ffc9136406fbb5697101fbcc39fbde89e4612e72382648abb61aea8b4057994d"
+    }
+  },
+  "assets": {
+    "city_trends.parquet": {
+      "source": "core/city_trends.parquet",
+      "source_sha256": "72c2fb2a2f3c6ef6b4884e3c67dd46bc14eff8a7f7aa45d9823bd5b1a903bcbe",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "72c2fb2a2f3c6ef6b4884e3c67dd46bc14eff8a7f7aa45d9823bd5b1a903bcbe"
+    },
+    "city_anomalies.parquet": {
+      "source": "core/city_anomalies.parquet",
+      "source_sha256": "a517e11941b1458342f42bc1e7bb1207cb906649074e711a07dc86ac60038da9",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "a517e11941b1458342f42bc1e7bb1207cb906649074e711a07dc86ac60038da9"
+    },
+    "trend_surface.parquet": {
+      "source": "core/trend_surface.parquet",
+      "source_sha256": "26ec476969468bb984c184eda9c78bc9b1cbed624b308f8b0f50a4ba4db77ccc",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "26ec476969468bb984c184eda9c78bc9b1cbed624b308f8b0f50a4ba4db77ccc"
+    },
+    "country_inequality.parquet": {
+      "source": "core/country_inequality.parquet",
+      "source_sha256": "46cc3216aebf8625e0fe734354ba30bbdac8d5445897c7964022b296a48aef27",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "46cc3216aebf8625e0fe734354ba30bbdac8d5445897c7964022b296a48aef27"
+    },
+    "stats.json": {
+      "source": "core/stats.json",
+      "source_sha256": "685d62c0e0a4674e46b63e61816d4eaf2a9a0f5de253ea919d4e679d35d27823",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": true,
+      "public_sha256": "70a935743ee498398cd94411c86b4fc0395f0335167f73ee98cdacf5d59d2581"
+    },
+    "validation.parquet": {
+      "source": "city-validation/validation.parquet",
+      "source_sha256": "22af71e4fec81bce0e6d6f257eb0fcc937eb212777c731d453784617a53c0106",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "22af71e4fec81bce0e6d6f257eb0fcc937eb212777c731d453784617a53c0106"
+    },
+    "validation_global.parquet": {
+      "source": "city-validation/validation_global.parquet",
+      "source_sha256": "2b13cc60843a29d0db450d460045b62c82102b0a4d11edc1347ec01165e379d0",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "2b13cc60843a29d0db450d460045b62c82102b0a4d11edc1347ec01165e379d0"
+    },
+    "explain_features.parquet": {
+      "source": "explain/explain_features.parquet",
+      "source_sha256": "ad6b8fb969a4bc21a48603101bf43b739428e8d5a76f42736155880714911e6f",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "ad6b8fb969a4bc21a48603101bf43b739428e8d5a76f42736155880714911e6f"
+    },
+    "inequality_summary.json": {
+      "source": "comparisons/inequality_summary.json",
+      "source_sha256": "70244e6728aec66e697a649046871c1a3378a67c7e77ac7f2496e7a24d9282c0",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "70244e6728aec66e697a649046871c1a3378a67c7e77ac7f2496e7a24d9282c0"
+    },
+    "decomposition_summary.json": {
+      "source": "comparisons/decomposition_summary.json",
+      "source_sha256": "cd6f9ba7098a3f9b5ed251d8f57b9359342d5cc21a19e4e5dfed7dec16141974",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "cd6f9ba7098a3f9b5ed251d8f57b9359342d5cc21a19e4e5dfed7dec16141974"
+    },
+    "coupling.parquet": {
+      "source": "comparisons/coupling.parquet",
+      "source_sha256": "47b3891bd9aeb8beee6765d72d0d6663e91b1ef8fb0c8ce0f338086e9bf5df05",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "47b3891bd9aeb8beee6765d72d0d6663e91b1ef8fb0c8ce0f338086e9bf5df05"
+    },
+    "coupling_summary.json": {
+      "source": "comparisons/coupling_summary.json",
+      "source_sha256": "d88b20ea6ea306834cc7798e1244b3f47821caa6a95ad480d039093d0b6d902b",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "d88b20ea6ea306834cc7798e1244b3f47821caa6a95ad480d039093d0b6d902b"
+    },
+    "coupling_consumption.parquet": {
+      "source": "comparisons/coupling_consumption.parquet",
+      "source_sha256": "45fc106e927ac3c36856a2ce6b51227be7a02f7a0bee31ac664a4ecebc7ca6c9",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "45fc106e927ac3c36856a2ce6b51227be7a02f7a0bee31ac664a4ecebc7ca6c9"
+    },
+    "coupling_consumption_summary.json": {
+      "source": "comparisons/coupling_consumption_summary.json",
+      "source_sha256": "b62f715e297eff79a1c9ecf4949a6d260812c5f408bef75edc08654276ea958b",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "b62f715e297eff79a1c9ecf4949a6d260812c5f408bef75edc08654276ea958b"
+    },
+    "coupling_exposure.parquet": {
+      "source": "comparisons/coupling_exposure.parquet",
+      "source_sha256": "0f4001d83b99f0a1e9a3d9e0921c6dcbc921c127407ad4569ffebae1a67091ce",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "0f4001d83b99f0a1e9a3d9e0921c6dcbc921c127407ad4569ffebae1a67091ce"
+    },
+    "coupling_exposure_summary.json": {
+      "source": "comparisons/coupling_exposure_summary.json",
+      "source_sha256": "6cd7d65d5c7b5508ffa18825ccbffe4621d81f484229c635d0c3781b05a08e22",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "6cd7d65d5c7b5508ffa18825ccbffe4621d81f484229c635d0c3781b05a08e22"
+    },
+    "coupling_area.parquet": {
+      "source": "comparisons/coupling_area.parquet",
+      "source_sha256": "97dd6e7c07e2679c9f40d00e9334cc8e7ea4c6ada690782d0872be16583b8f8c",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "97dd6e7c07e2679c9f40d00e9334cc8e7ea4c6ada690782d0872be16583b8f8c"
+    },
+    "coupling_area_summary.json": {
+      "source": "comparisons/coupling_area_summary.json",
+      "source_sha256": "da7a6c2c54b0eaa1e671fce432757a242b231723eff67fc93069ee81d39b0b22",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "da7a6c2c54b0eaa1e671fce432757a242b231723eff67fc93069ee81d39b0b22"
+    },
+    "stability_summary.json": {
+      "source": "bootstrap-population/stability_summary_complete_case.json",
+      "source_sha256": "91f992a491fea9c355328cde1dc4f9d30cbdb3578ad9c4f78b16afe0667cebc8",
+      "mode": "fresh complete-case country bootstrap; exactly equivalent completed block draws reused; fresh point/influence/residual fits retained",
+      "derived_in_assembly": true,
+      "public_sha256": "14f985f3b985dce5979a4c8d22c9163770f54471cb42b8d17264ee8bdfd06e26"
+    },
+    "era5_area_trends.parquet": {
+      "source": "era5/era5_area_trends.parquet",
+      "source_sha256": "5a18ccbaea44bfef09788b7261ea081a132ff794295e382fc504d459b982a43c",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "5a18ccbaea44bfef09788b7261ea081a132ff794295e382fc504d459b982a43c"
+    },
+    "era5_validation_summary.json": {
+      "source": "era5/era5_validation_summary.json",
+      "source_sha256": "95a4488d8212088830807a103231433b994878fe3e37f0d356f089c913afd2bd",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "95a4488d8212088830807a103231433b994878fe3e37f0d356f089c913afd2bd"
+    },
+    "vulnerability_strata.parquet": {
+      "source": "vulnerability-updated/vulnerability_strata.parquet",
+      "source_sha256": "0f5259d0ea420c08877a2fb21d73795df7308b80ba2c8a169877506fa065aa01",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "0f5259d0ea420c08877a2fb21d73795df7308b80ba2c8a169877506fa065aa01"
+    },
+    "vulnerability_summary.json": {
+      "source": "vulnerability-updated/vulnerability_summary.json",
+      "source_sha256": "1953a9ebe8113b2d733c2f94566519e1e091af8af10263d8298b4534912491d3",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": true,
+      "public_sha256": "ffc9136406fbb5697101fbcc39fbde89e4612e72382648abb61aea8b4057994d"
+    },
+    "physical_trajectory.parquet": {
+      "source": "physical_attempt2/physical_trajectory.parquet",
+      "source_sha256": "4fc16a238ea3a3daf431b65b46012d4b4928c9cd00c6e54cea16faef929233bf",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "4fc16a238ea3a3daf431b65b46012d4b4928c9cd00c6e54cea16faef929233bf"
+    },
+    "physical_summary.json": {
+      "source": "physical_attempt2/physical_summary.json",
+      "source_sha256": "f07225e1ed4571edcf4191895d565e2464f770512e39c40a3d5f7caaadb28c5c",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": true,
+      "public_sha256": "9392bb89ae43ed546f41f2259e3d78081e516bbb527eb4f6c6372011b284b5e7"
+    },
+    "national_warming.parquet": {
+      "source": "v2_public_attempt2/national_warming.parquet",
+      "source_sha256": "e55ad576550eca5fab30b357d3a683bd0eabc6cade085ad4b13eb4c92eac126d",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": false,
+      "public_sha256": "e55ad576550eca5fab30b357d3a683bd0eabc6cade085ad4b13eb4c92eac126d"
+    },
+    "residual_structure_summary.json": {
+      "source": "v2_public_attempt2/residual_structure_summary.json",
+      "source_sha256": "cec109381a6623b086ccbd8097cbffff0e9ca51116851dc591360869cbc926ab",
+      "mode": "fresh calculation from verified inputs",
+      "derived_in_assembly": true,
+      "public_sha256": "34b5728d5a37e8b65233831a6c11384c8ca2972f2563aeab14650d3ba2270c97"
+    }
+  },
+  "scientific_specifications": [
+    "docs/current_validation_spec.json",
+    "docs/bootstrap_population_spec.json",
+    "docs/ndgain_updated_source_spec.json"
+  ],
+  "source_recovery_limits": [
+    "Original ND-GAIN archive unavailable; explicitly approved updated 2026v2 source at fixed2023 used.",
+    "Original M1a measurement specification text unavailable; retained implementation, raw pins, manifests and available gates verified."
+  ],
+  "methods": [
+    "Fresh input preprocessing and all public estimates; no saved V2 predictions reused.",
+    "Training-only variograms; coordinate groups intact;250km buffered spatial validation.",
+    "identity-distance-ties-v1 for explain/stability diagnostics, historical V2 graphs retained.",
+    "24 rolling origins, observed future drivers, fixed predeclared lags.",
+    "Complete-case V1 country bootstrap; exact-equivalent continent draws reused.",
+    "Updated-source ND-GAIN plus original-version and matched-country comparisons."
+  ]
+}

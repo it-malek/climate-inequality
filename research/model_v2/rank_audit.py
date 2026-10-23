@@ -5,6 +5,8 @@ minimal deletions span the choices of two out of three redundant log columns.
 """
 from __future__ import annotations
 
+from src.prospective import unadapted_evaluator
+
 import json
 import logging
 
@@ -62,6 +64,7 @@ def audit_identity(design):
     }
 
 
+@unadapted_evaluator()
 def main():
     # Missing schema features are deliberate registered deletions, not data loss.
     logging.getLogger('src.feature_schema').setLevel(logging.ERROR)

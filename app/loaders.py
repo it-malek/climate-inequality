@@ -20,6 +20,20 @@ from src.bundle import APP_DATA_DIR  # noqa: F401  (tests point this at a synthe
 from src.cleaning import parse_window
 
 
+def release_caption(asset_name: str, *, section: str | None = None) -> str:
+    """Describe publication using the verified manifest, preserving execution metadata."""
+    snapshot.fingerprint(APP_DATA_DIR, require_manifest=True)
+    manifest = json.loads((APP_DATA_DIR / snapshot.MANIFEST).read_text())
+    if asset_name not in manifest["files"]:
+        raise ValueError("Result record is not covered by the release manifest")
+    summary = json.loads((APP_DATA_DIR / asset_name).read_text())
+    if section is not None:
+        summary = summary[section]
+    if summary.get("correction_set_id"):
+        return f"Released analysis {manifest['version']}."
+    return f"Historical saved summary included in release {manifest['version']}."
+
+
 @st.cache_data(show_spinner=False, max_entries=128)
 def _cached_load(name, identity, args, kwargs, _loader):
     return _loader(*args, **kwargs)

@@ -122,8 +122,8 @@ def render() -> None:
         st.caption(
             f"Points are the Shapley shares of total cross-country variance; bars are 95% "
             f"intervals from {static['n_bootstrap']:,} country-bootstrap resamples, and the "
-            "faint bands are the wider continent-block bootstrap, which respects spatial "
-            f"correlation within continents. Geography is the largest group in "
+            "faint bands resample whole continents. With few heterogeneous blocks, these "
+            f"are a sensitivity analysis rather than a full spatial correction. Geography is the largest group in "
             f"{p_country:.0%} of country resamples and {p_block:.0%} of block resamples."
         )
     else:

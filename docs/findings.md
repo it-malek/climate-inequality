@@ -1,12 +1,13 @@
 # Findings
 
-Every number here is read from the committed `app/data/` bundle and is
-reproduced by the pipeline described in [`reproducibility.md`](reproducibility.md).
+These are the results of the released 2.1.0 analysis, reconstructed using the
+[recorded validation workflow](current_validation.md). Historical research
+records remain preserved and are identified separately from corrected results.
 All results are descriptive: they measure how observed warming aligns with
 country attributes, never a causal effect of a country's emissions on its own
 climate.
 
-## 1. Warming at the station level
+## 1. Warming at city locations
 
 3,510 Berkeley Earth city-locations with at least 90% monthly coverage over
 1950-01 to 2013-09, each fit with a Theil–Sen slope on anomalies relative to
@@ -14,25 +15,31 @@ its own 1951–1980 monthly climatology.
 
 | Statistic | Value |
 |---|---|
-| Land mean trend | 0.146 °C/decade |
+| City-location sample mean trend | 0.146 °C/decade |
 | Interquartile range | 0.11–0.18 °C/decade |
 | 5th / 95th percentile | 0.06 / 0.25 °C/decade |
 | Locations with the whole 95% CI above zero | 99.1% |
-| Mean above 60°N (25 locations) | 0.228 °C/decade (1.56× the land mean) |
+| Mean above 60°N (25 locations) | 0.228 °C/decade (1.56× the city-location mean) |
 
-The ratio to the land mean is lower than the textbook Arctic amplification of
+The ratio to the city-location mean is lower than the textbook Arctic amplification of
 about 2× because that figure is measured against the land-plus-ocean global
-mean, and because only 25 stations sit above 60°N. The fastest-warming cluster
+mean, and because only 25 sampled locations sit above 60°N. The fastest-warming cluster
 is the Iranian plateau and Central Asia (Mashhad, Herat, Ashgabat, up to
 0.34 °C/decade), alongside Norilsk in Siberia (0.33). The slowest warming is on
 the southern coast of China (0.02–0.03 °C/decade).
 
-Interpolation: inverse-distance weighting beats local ordinary kriging under
-leave-location-out cross-validation (RMSE 0.0083 vs 0.0099 °C/decade). Plain
-leave-one-row-out CV reverses the ranking (0.0057 vs 0.0160) because 2,821 of
-the 3,510 locations share grid-snapped coordinates with another city, and a
-held-out point's coordinate twin leaks its value into the fold. Holding out the
-whole coordinate group removes the leak.
+The 3,510 city records occupy 1,366 source-coordinate groups. Shared
+coordinates are consistent with source-grid assignment and rounding; they are
+not 3,510 independent weather stations. No city identities were removed.
+
+Training-only interpolation validation now holds coordinate groups together and
+fits each variogram only on training data. Group-weighted RMSE is 0.01194 for
+IDW versus 0.01039 for local kriging in five grouped folds, and 0.05145 versus
+0.04383 in ten spatial folds with a 250 km exclusion buffer. Kriging has lower
+descriptive error in both protocols. These previously examined data are not an
+untouched confirmatory holdout. The older full-field-variogram ranking is
+withdrawn as a generalization claim. The fixed IDW display surface remains a
+visual aid, chosen before the new scores were examined.
 
 ## 2. Country-level inequality and its decomposition
 
@@ -137,10 +144,11 @@ depends on which correlated controls enter, which is why the decomposition
 reports shares rather than a coefficient.
 
 Stability ([`stability.md`](stability.md)): over 2,000 country-bootstrap
-resamples geography is the largest group every time (95% interval 0.45–0.62
-in the original representation; 0.40–0.57 under the station-weighted
-outcome). The responsibility share's interval is 0.01–0.05 area-weighted
-against 0.05–0.13 station-weighted; the two touch only at the boundary.
+resamples geography is the largest group every time (95% interval 0.445–0.624
+in the original representation; 0.396–0.567 under the station-weighted
+outcome). The responsibility share's interval is 0.009–0.054 area-weighted
+against 0.051–0.132 station-weighted. They overlap narrowly; this comparison
+is not a test of equality or of a difference between the shares.
 Moran's I on the full-model residual is 0.27 (permutation p = 0.005, k = 8
 nearest country centroids; 0.31 station-weighted): the unexplained 36% is
 regionally clustered rather than noise. Section 7 follows that residual.
@@ -158,18 +166,20 @@ curve and the diagonal; 0 means aligned, 1 maximally divergent).
 | Station-weighted (mean over city-locations) | 157 | +0.359 | 4×10⁻⁶ | 0.563 | |
 | People-weighted (GPW v4 population at each station) | 157 | +0.342 | | 0.566 | 0.988 |
 | Area-weighted (per-cell trend on the Berkeley 1° grid, cos-latitude) | 154 | **+0.011** | 0.90 | 0.607 | 0.807 |
-| Area-weighted, ERA5 reanalysis (common 153-country set) | 153 | +0.118 | 0.15 | 0.603 | 0.639 |
+| Area-weighted, ERA5 anomaly-aligned (released 2.1.0) | 154 | −0.012 | 0.88 | | |
+| Historical absolute-temperature ERA5 sensitivity (common 153-country set) | 153 | +0.118 | 0.15 | 0.603 | 0.639 |
 
-People-weighting barely changes anything because people live near stations.
-Area-weighting changes a great deal: the significant station-based coupling
-disappears under Berkeley Earth and is weak and non-significant under ERA5,
-while the inequality coefficient rises. The world land mean of the
+Population weights at the same city locations leave the rank association
+similar. Under area weighting the association is weak for both Berkeley Earth
+and anomaly-aligned ERA5. Neither nonsignificance nor a near-zero estimate
+establishes equality. The historical absolute-temperature sensitivity is
+retained separately in the last row; it uses a different construction and
+country set. The inequality coefficient rises under area weighting. The world land mean of the
 area-weighted Berkeley trend is 0.193 °C/decade, matching Berkeley Earth's
 published global-land figure of about 0.19, against a station mean of 0.146:
 cities cluster in slower-warming temperate mid-latitudes and under-sample the
 fast-warming Sahel, Sahara and Central Asian interiors. Details of the ERA5
-comparison, including the caveat that the two gridded products agree on
-country ranking only at ρ = 0.62, are in
+comparison and its historical absolute-temperature sensitivity are in
 [`era5_validation_results.md`](era5_validation_results.md).
 
 Consumption-based accounting (OWID `consumption_co2`, available from 1990 for
@@ -187,15 +197,19 @@ income group and by the ND-GAIN vulnerability score
 |---|:-:|:-:|
 | Responsibility vs income rank (157 countries) | +0.885 | 0.001 |
 | Area-weighted warming vs income rank (154) | −0.145 | 0.06 |
-| Responsibility vs ND-GAIN vulnerability (155) | −0.882 | 0.001 |
-| Area-weighted warming vs ND-GAIN vulnerability (153) | +0.019 | 0.80 |
+| Responsibility vs ND-GAIN vulnerability (155) | −0.844 | 0.001 |
+| Area-weighted warming vs ND-GAIN vulnerability (153) | +0.100 | 0.241 |
 
 Mean cumulative CO₂ per capita rises from 7 t (low income) to 493 t (high
-income), and falls from 537 t in the least vulnerable ND-GAIN quartile to 8 t
-in the most vulnerable. Population-weighted area warming by income tier is
+income). ND-GAIN uses the updated 2026 release_data_v2 at fixed observation
+year 2023, compared descriptively with warming over 1950–2013. Population-weighted area warming by income tier is
 0.205 (low), 0.146 (lower-middle), 0.168 (upper-middle) and 0.182 (high)
 °C/decade. Under the station-weighted definition, warming instead rises with
-income (ρ = +0.17, p = 0.03), one more face of the station-siting effect.
+income (ρ = +0.17, p = 0.03), another sensitivity to the national warming definition.
+The updated vulnerability–warming country-bootstrap interval is −0.060 to
++0.257; the six-continent block interval is −0.569 to +0.592. Nonsignificance
+does not establish equal or no-lower warming. Pair-specific and matched-sample
+comparisons are reported separately on the dashboard.
 
 ## 5. Out-of-sample check of the trends
 
@@ -225,7 +239,7 @@ AR(1) error, trained through 2013 ([`physical_model.md`](physical_model.md)):
 |---|---|
 | Train R² (1951–2013) | 0.91 |
 | Test RMSE (2014–2024) | 0.10 °C |
-| 95% band coverage on the 11 test years | 91% |
+| 95% conditional band coverage on 11 evaluation years | 10/11 |
 | AR(1) ρ | −0.03 |
 | CO₂ sensitivity | 0.37 °C per W/m² (95% interval 0.06–0.68) |
 | ONI sensitivity | 0.064 °C per index unit (0.03–0.10) |
@@ -235,6 +249,11 @@ coefficients are only partly identified; the N₂O point estimate (3.2 °C per
 W/m², interval −0.1 to 6.6) is an artefact of that collinearity and carries no
 physical meaning on its own. The volcanic and ENSO terms are the tightly
 estimated ones.
+All reported predictions use observed future drivers and retrospective source
+vintages. The 24 rolling origins (1990–2013) yield 264 predictions: coverage
+is 23/24 or 24/24 per horizon, RMSE 0.079–0.093 °C and mean interval width
+0.378–0.426 °C. Overlapping predictions are dependent; neither these counts
+nor the unchanged 10/11 coverage establishes calibration.
 The model describes the global trajectory and is kept apart from the
 cross-country analysis: a global signal has no cross-country variance to
 explain.
@@ -244,7 +263,8 @@ explain.
 The 36% of cross-country variance outside the static model was investigated
 under geographically separated validation: leave-one-country-out with every
 country whose territory lies within 500 km of the held-out country removed
-from training, so that no prediction borrows from a neighbour. Full detail is
+from training, so every training territory clears that buffer. Spatial predictions still
+condition on outcomes in the remaining training countries. Full detail is
 in [`research/model_v2/RESULTS.md`](../research/model_v2/RESULTS.md); the
 protocol and decision rules are in
 [`research/model_v2/VALIDATION_PROTOCOL.md`](../research/model_v2/VALIDATION_PROTOCOL.md).

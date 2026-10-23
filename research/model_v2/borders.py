@@ -16,7 +16,11 @@ to ``outputs/country_border_distance_km.csv``.
 
 from __future__ import annotations
 
+from src.prospective import prospective_outputs, prospective_cli, require_prospective
+from src.correction_identity import correction_metadata
+
 import json
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -56,7 +60,8 @@ def border_distance_matrix(iso_order: list[str]) -> pd.DataFrame:
     return pd.DataFrame(out, index=iso_order, columns=iso_order)
 
 
-def load_or_build(table: pd.DataFrame) -> np.ndarray:
+@prospective_outputs(out_path="diagnostics/country_border_distance_km.csv")
+def load_or_build(table: pd.DataFrame, out_path: Path | None = None) -> np.ndarray:
     """Border-distance matrix in the row order of ``table`` (built and cached on first use)."""
     order = table["iso3"].tolist()
     if BORDER_DISTANCE_PATH.exists():
@@ -64,7 +69,8 @@ def load_or_build(table: pd.DataFrame) -> np.ndarray:
         if list(frame.index) == order:
             return frame.to_numpy()
     frame = border_distance_matrix(order)
-    frame.to_csv(BORDER_DISTANCE_PATH, float_format="%.1f")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    frame.to_csv(out_path, float_format="%.1f")
     return frame.to_numpy()
 
 
@@ -80,21 +86,24 @@ def border_correlogram(resid: np.ndarray, dist: np.ndarray) -> list[dict]:
         if n_pairs == 0:
             continue
         r = morans_i(z, w, N_PERMUTATIONS, SEED)
-        rings.append({"lo_km": lo, "hi_km": hi, "n_pairs": n_pairs, "morans_i": r.statistic, "p": r.p_value, "z": r.z_score})
+        rings.append({"lo_km": lo, "hi_km": hi, "n_pairs": n_pairs, "morans_i": r.statistic, "p": r.p_value, "z": r.z_score, "status": r.status, "reason": r.reason, "z_score_reason": r.z_score_reason})
     return rings
 
 
 def main() -> None:
+    out_path = require_prospective().path("diagnostics/border_distance_correlogram.json")
     table = pd.read_csv(COUNTRY_TABLE_PATH)
     dist = load_or_build(table)
     resid = table["residual"].to_numpy()
     rings = border_correlogram(resid, dist)
-    BORDER_CORRELOGRAM_PATH.write_text(json.dumps({"rings": rings}, indent=1) + "\n", encoding="utf-8")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps({**correction_metadata(), "rings": rings}, indent=1) + "\n", encoding="utf-8")
     off = dist[np.triu_indices(len(dist), 1)]
     print(f"border distances: {len(dist)} countries; min {off.min():.0f} km, median {np.median(off):.0f} km; pairs < 200 km: {(off < 200).sum()}")
     for r in rings:
-        print(f"  [{r['lo_km']:>5},{r['hi_km']:>5}) km  pairs {r['n_pairs']:>5}  I {r['morans_i']:+.3f}  p {r['p']:.3f}")
+        print(f"  [{r['lo_km']:>5},{r['hi_km']:>5}) km  pairs {r['n_pairs']:>5}  I {r['morans_i']}  p {r['p']}  reason {r.get('reason')}")
 
 
 if __name__ == "__main__":
-    main()
+    with prospective_cli():
+        main()

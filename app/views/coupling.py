@@ -58,8 +58,8 @@ def render() -> None:
         )
         st.caption(
             "Same responsibility axis in every panel; the sample changes with the definition "
-            "(three countries have no 1° land cell, and the ERA5 comparison uses the 151 "
-            "decomposition countries). The two area-weighted definitions come from different "
+            "(157 countries for the city-location definitions and 154 for each area-weighted "
+            "definition in this release). The two area-weighted definitions come from different "
             "observational products and agree on a weak, non-significant rank "
             "correlation."
         )

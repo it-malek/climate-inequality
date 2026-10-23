@@ -6,6 +6,8 @@ this refuses to score. Writes only ``outputs/m1a_*``.
 """
 from __future__ import annotations
 
+from src.prospective import unadapted_evaluator
+
 import json
 import logging
 
@@ -150,6 +152,7 @@ def classify(c0, m1a, errors):
     }
 
 
+@unadapted_evaluator()
 def main():
     logging.getLogger('src.feature_schema').setLevel(logging.ERROR)
     design = m0_complete_design(*load_inputs())

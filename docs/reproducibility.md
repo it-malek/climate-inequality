@@ -1,5 +1,15 @@
 # Reproducibility
 
+The [2.1.0 reconstruction workflow](current_validation.md) documents the
+released analysis. The pipeline and determinism records below describe the
+historical 2.0.0 workflow.
+
+The corrected writers require explicit `--prospective` execution and write
+to a separate correction-set namespace. Historical evaluator entrypoints
+remain guarded so a reconstruction cannot overwrite frozen artifacts.
+The [numerical correction reference](prospective_corrections_2026-10-22.md)
+explains the implementation and its provenance.
+
 How every published number is produced, the choices made along the way, and
 the checks that keep a rebuild honest.
 
@@ -99,7 +109,7 @@ YAML mirrors of the feature schema and projection registry in `docs/`.
 |---|---|---|---|---|
 | Ingest | `data_io` | `climate.duckdb` | hemisphere-suffixed coordinates → signed floats; keyed on (City, Country, Lat, Lon) | row count preserved; 3,510 locations |
 | Trends | `trends` | `city_trends.parquet` | baseline 1951–1980; window 1950-01 to 2013-09; ≥ 90% coverage; Theil–Sen with 95% CI, OLS alongside | land mean ≈ 0.146; > 60°N ≈ 0.228 °C/decade |
-| Interpolation | `interpolate` | `trend_surface.html` | IDW power 2 vs local ordinary kriging (spherical variogram fit once globally); k = 30; 2° grid; leave-location-out CV | IDW RMSE 0.0083 vs 0.0099 |
+| Interpolation | `interpolate` | `trend_surface.html` | IDW power 2 vs local ordinary kriging (conditional on a spherical variogram fitted once to the full field, including held-out outcomes); k = 30; 2° grid; leave-location-out CV | IDW RMSE 0.0083 vs 0.0099 |
 | Country table | `emissions` | `country_inequality.parquet` | cumulative CO₂ through 2013 ÷ 2013 population; Spearman and OLS with HC1; people weights from GPW 2020 counts; area weights cos(lat) on the Berkeley grid | 157 countries; ρ ≈ +0.36 |
 | Features | `explain` | `city_features.parquet`, `explain_*` | ETOPO elevation, coast distance, Köppen class, station density (k = 50 within 100 km); preflight gate | latitude baseline R² ≈ 0.32 |
 | Validation | `validation` | `validation_*` | forecast from 2013-10; agreement gate r ≥ 0.80; El Niño sensitivity from 2023 | positive residuals (acceleration) |

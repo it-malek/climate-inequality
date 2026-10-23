@@ -8,6 +8,7 @@ pending state if they are absent.
 
 from __future__ import annotations
 
+import pandas as pd
 import streamlit as st
 
 from app import charts, loaders, theme
@@ -35,6 +36,11 @@ def render() -> None:
     last_year = int(trajectory["year"].max())
 
     st.title("Global temperature and radiative forcing")
+    st.caption(loaders.release_caption("physical_summary.json"))
+    if summary.get("forecast_method_id"):
+        st.caption("Forecast method: " + summary["forecast_method_id"])
+    else:
+        st.caption("These saved bands have not been recomputed with the corrected conditional forecast scale.")
     st.markdown(
         "**A different statistical question.** The cross-country pages ask why warming rates "
         "differ among countries. This page asks what explains the global mean temperature "
@@ -84,8 +90,31 @@ def render() -> None:
         st.markdown(
             "The 95% predictive band over the out-of-sample years spans roughly "
             f"±{half_width.mean():.2f} °C (±{half_width.max():.2f} °C at its widest): the "
-            "model's uncertainty about warming it was not fitted on."
+            "conditional uncertainty with observed drivers and fitted AR(1) and penalty parameters held fixed."
         )
+
+    rolling = summary.get("rolling_origin_validation")
+    if rolling:
+        st.subheader("Rolling-origin conditional hindcasts")
+        st.markdown(
+            "The model was refitted at 24 annual origins from 1990 through 2013, "
+            "using training years only for scaling and parameter estimation. Each origin "
+            "was evaluated at horizons 1 through 11 with observed future drivers. These "
+            "are retrospective conditional hindcasts, using revised source records."
+        )
+        table = pd.DataFrame(rolling["by_horizon"])
+        st.dataframe(table, width="stretch", hide_index=True)
+        st.download_button("Download rolling-origin metrics", table.to_csv(index=False).encode("utf-8"),
+                           file_name="rolling_origin_metrics.csv", mime="text/csv")
+        st.caption(
+            "Each horizon has 24 overlapping predictions. Coverage is descriptive and "
+            "does not establish calibration. The bands omit uncertainty from estimating "
+            "rho and lambda and from predicting future drivers. A real-time forecast "
+            "requires a separate driver and parameter uncertainty model."
+        )
+        if rolling.get("nonconverged_origins"):
+            st.warning("Parameter iteration did not converge at origins: " +
+                       str(rolling["nonconverged_origins"]))
 
     with st.expander("Trajectory table"):
         st.dataframe(trajectory, width="stretch", hide_index=True)

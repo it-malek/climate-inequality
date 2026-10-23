@@ -45,15 +45,16 @@ T(t) = b₀ + Σᵢ bᵢ Fᵢ(t − ℓᵢ) + εₜ,   εₜ = ρ εₜ₋₁ + 
 - Predictions are Student-t with 2αₙ degrees of freedom. In-sample years use
   the stationary AR(1) variance factor 1/(1 − ρ²); an out-of-sample year at
   horizon h adds ρʰ times the last training residual to the mean and uses the
-  h-step forecast-error factor (1 − ρ²ʰ)/(1 − ρ²). Parameter uncertainty enters
-  through xᵀVₙx.
+  h-step forecast-error factor (1 − ρ²ʰ)/(1 − ρ²). Conditional coefficient uncertainty enters through
+  (xₕ − ρʰx_T)ᵀVₙ(xₕ − ρʰx_T), where T is the final training year.
+  The fitted ρ and λ remain fixed in this formula.
 
 No sampler is used anywhere, so the fit is deterministic; the summary records
 the SHA-256 of the forcings table it was fit on.
 
 ## Fit
 
-Training window 1951–2013 (63 years), test window 2014–2024 (11 years).
+Training window 1951–2013 (63 years), conditional evaluation window 2014–2024 (11 years), supplied with observed future drivers.
 
 | Quantity | Value |
 |---|:-:|
@@ -99,3 +100,29 @@ MAGICC, two-layer energy-balance models) solve the inverse of this problem,
 producing temperature from forcing, and would belong in a separate artifact if
 the project ever needed a physical simulator; MCMC frameworks were rejected
 because a conjugate posterior needs no sampler.
+
+## Rolling-origin validation and uncertainty scope
+
+The 2.1.0 validation refits at each of 24 annual origins, 1990–2013.
+Training-only moments, AR(1) parameter and evidence-selected ridge precision
+are recomputed, with the original fixed lags. All fits converge. There are
+24 predictions at each horizon from one to eleven years: 264 in total.
+Coverage is 23/24 at horizons 4, 5 and 11 and 24/24 elsewhere. Horizon RMSE
+ranges from 0.079 to 0.093 °C; mean 95% interval width ranges from 0.378 to
+0.426 °C. The downloadable dashboard table gives every horizon separately.
+
+This is a conditional retrospective hindcast using observed future drivers,
+not a forecast available at the origin. Outcomes and origins overlap, and
+source vintages are retrospective. The finite coverage counts do not establish
+calibration. Coefficient and innovation uncertainty are included conditionally;
+uncertainty in fitted ρ, selected λ, future forcing and ENSO is not fully
+propagated. That limits the bands to conditional model uncertainty.
+
+A concrete extension for a separate scientific decision is a parametric
+bootstrap that simulates complete training and future AR(1) paths under the
+fitted model, refits standardization, ρ and λ for every replicate, and scores
+future prediction errors under fixed supplied drivers. Its assumptions and
+coverage evaluation would be fixed before execution. This would assess
+parameter-selection uncertainty; uncertain future drivers would still require
+a separately specified scenario or predictive model. Neither extension is
+included in this analysis.

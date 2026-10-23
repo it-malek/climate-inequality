@@ -1,0 +1,223 @@
+{
+  "public_derivative_note": "Public historical document derivative, prepared 2026-10-23. Original bytes are preserved privately. Decisions and timing remain those of this revision; unchanged passages reproduce the historical source. Exact edits and both identities are recorded in reports/public_document_derivatives.json.",
+  "validation_id": "current-public-scientific-validation-2026-10-22-v1",
+  "frozen_utc": "2026-10-22T17:16:51.343371+00:00",
+  "base_commit": "b41ff6061faf4d2717ce9ba2216a097616fb937e",
+  "scope": "Fresh reconstruction of all27 public assets and applicable fixed V2 claims; new finite validation below. Prior results comparison-only except explicitly verified completed V1 bootstrap and fixed geometric/fold definitions. No sealed Test, new model family selection, paid compute or publication.",
+  "questions": [
+    "Can all current public quantities be reproduced from available verified inputs?",
+    "Does training-only interpolation performance support its historical ranking under matched spatial and coordinate-group validation?",
+    "Are kNN inference and conclusions stable to row order, zero distances and identity-aligned randomization?",
+    "What is conditional rolling-origin performance by horizon with training-only parameter fitting?",
+    "What do finite effect sizes and uncertainty support about vulnerability and cross-sample comparisons?"
+  ],
+  "inputs": {
+    "raw_root": "${RAW_ROOT}",
+    "previous_run": "${PREVIOUS_RUN}",
+    "versions": "existing recorded raw hashes and pinned releases; original ND-GAIN2026zip and Beck V1zip reconstructed where recoverable; no silent latest-version substitution",
+    "identity_checks": [
+      "sha256 before/after",
+      "units",
+      "coordinate/grid orientation",
+      "row keys and duplicates",
+      "missingness",
+      "analysis and baseline months",
+      "aggregation rules"
+    ]
+  },
+  "dependency_order": [
+    "source provenance and conversions",
+    "fresh ingestion/city trends/country aggregation/features/forcings",
+    "fresh legacy and anomaly-aligned ERA5; core anomalies/intercepts",
+    "V2 fixed raw measurement transforms and refits",
+    "interpolation/neighbor/rolling/vulnerability validation on fresh inputs",
+    "bootstrap design equivalence and justified reuse or rerun",
+    "fresh public27assets and all narratives",
+    "regressions, numeric/UI checks, independent review, candidate"
+  ],
+  "main_reconstruction": {
+    "temperature_window": [
+      "1950-01-01",
+      "2013-09-01"
+    ],
+    "baseline": [
+      "1951-01-01",
+      "1980-12-01"
+    ],
+    "coverage": 0.9,
+    "methods": "existing fixed Theil-Sen, population/area weights, emissions vintages, lags and definitions; no changed estimator",
+    "stability_reuse": "Verify exact country identities/order, all predictor/outcome values including NaN mask, schema, categorical encoding, estimator and resample-then-drop behavior against previous157/154row designs. Tiny platform differences reported; if not byte/numeric exact, rerun affected arms with2000draws per kind, seeds0/1."
+  },
+  "v2": {
+    "specifications": [
+      "M0 historical and M0* full-rank",
+      "M1a existing geographic measurement sensitivity",
+      "M1b baseline C2 dryness",
+      "M2 fixed latitude basis",
+      "M3 SEM and SAR, station and land-centroid graphs",
+      "M4 fixed buffer sensitivities and absolute/aligned ERA5 product refits"
+    ],
+    "representations": [
+      "primary_total_co2",
+      "per_capita"
+    ],
+    "folds": "existing151country membership definitions; corrected footprint-certified500km LOCO; M49-subregion leaveout; random10fold seed0;1000km territorial and1500km centroid sensitivities where public",
+    "fitting": "Existing per-fold training encoders, spline state, graph and optimizer definitions unchanged. Reestimate parameters from fresh inputs, never reuse fitted predictions. Preserve stage selection decisions and conditional-stage stop rules; recomputed conditions reported without activating rejected branches.",
+    "bootstraps": "M4 full-rank existing2000country/2000block per2representations seeds0/1; paired RMSE2000country seed0. Distinct from V1 completed8k."
+  },
+  "interpolation": {
+    "target": "1950-2013city-location slopes; evaluation on previously examined data, not independent confirmatory holdout",
+    "canonical_order": [
+      "Country",
+      "City",
+      "Latitude",
+      "Longitude"
+    ],
+    "groups": "Exact signed source-coordinate pairs kept together; retain all city records; no response-based aggregation",
+    "protocols": [
+      {
+        "name": "coordinate_group_5fold",
+        "assignment": "canonical sorted unique coordinate groups; numpy.default_rng(0).permutation; cyclic5fold assignment",
+        "buffer_km": 0
+      },
+      {
+        "name": "spatial_region_10fold_250km",
+        "assignment": "unit-sphere coordinates of unique groups; existing cv.folds_kmeans k10 seed0 n_restarts20; labels from coordinates only",
+        "buffer_km": 250
+      }
+    ],
+    "methods": {
+      "idw": {
+        "power": 2,
+        "k": 30
+      },
+      "kriging": {
+        "variogram": "spherical",
+        "k": 30,
+        "fit": "fit variogram per training fold only; PyKrige existing geographic defaults and pseudo-inverse"
+      }
+    },
+    "training_preprocessing": "Every response-dependent transform and variogram fitted exclusively to training rows. No global response-tuned parameter. Same folds/training rows for both methods.",
+    "metrics": [
+      "coordinate-group-weighted RMSE(primary), MAE,bias",
+      "city-row-weighted RMSE,MAE,bias",
+      "paired per-group squared/absolute loss difference",
+      "per-fold scores, coverage and failures"
+    ],
+    "inference": "descriptive performance with10/5dependent spatial folds; no i.i.d. significance claim or winner-based retuning",
+    "surface": "Fresh IDW at existing2degree resolution retained for continuity, independent of new scores; evaluation ranking reported separately. No optional exactLOO added."
+  },
+  "neighbor_order": {
+    "identities": "full Country/City/signedLatitude/Longitude source key; self excluded by identity",
+    "orders": [
+      "serialized",
+      "country_first",
+      "identity_sorted",
+      "reverse_identity",
+      "seeded permutations0..9"
+    ],
+    "variants": [
+      "historical cKDTree selection",
+      "prospective identity-distance-ties-v1"
+    ],
+    "tie_policy": "All candidates with chord distance <= kth distance +1e-12 considered at boundary; all strictly closer than kth-1e-12 retained, remaining boundary choices sorted by persistent identity. No zero-distance record dropped; k8, self excluded by identity. Canonicalize summation order for comparisons.",
+    "statistics": "all3city specifications and two country stability residuals; k8;199permutations seed0; alpha0.05",
+    "randomization": "same199identity-indexed residual permutations for graph-only comparison; separately replay existing positional permutations to isolate randomization-sequence effects",
+    "metrics": [
+      "neighbor-set overlap and changed rows",
+      "zero-distance/tie counts and source lineage",
+      "Moran I,p,alpha decision range",
+      "max graph/statistic/inference differences under deterministic variant"
+    ],
+    "acceptance": "deterministic graph identical after identity alignment, I absolute tolerance1e-12, p exact; report any historical sensitivity without selecting favorable order"
+  },
+  "forecast": {
+    "origins": [
+      1990,
+      1991,
+      1992,
+      1993,
+      1994,
+      1995,
+      1996,
+      1997,
+      1998,
+      1999,
+      2000,
+      2001,
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013
+    ],
+    "horizons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "expected_predictions": 264,
+    "outcome_end": 2024,
+    "training": "Explicit year<=origin mask replaces hardcoded2013; standardization, rho and evidence-selected lambda refit using training rows only; fixed predeclared lags unchanged; final training residual/design at origin",
+    "baseline": "1951-1980 known before all origins; cached source vintages are retrospective",
+    "convergence": "Record original iteration path/RHO_TOL/MAX_ITERS; no automatic retuning or increased iteration acceptance; flag nonconvergence",
+    "drivers": "observed future drivers: conditional retrospective hindcast, not real-time forecast",
+    "metrics": [
+      "n by horizon",
+      "RMSE,MAE,bias",
+      "95percent interval coverage and mean/min/max width",
+      "95percent interval score",
+      "origin/target-year error table, rho/lambda/convergence paths"
+    ],
+    "uncertainty": "24overlapping predictions per horizon; descriptive coverage only, no independent-binomial calibration assertion. Keep fixed-parameter formula separate. Assess limitations; one concrete refit-parametric-bootstrap extension may be proposed but not executed."
+  },
+  "interpretation": {
+    "vulnerability": "Preserve original descriptive criteria; additionally show finite-pair Spearman effect sizes with2000country/bootstrap and whole-continent block percentile intervals, seeds0/1, on original pair-specific and common-complete samples. No equivalence test or invented margin. Country/block uncertainty limitations explicit.",
+    "comparison": "Report sample counts/identities for all national warming/CO2definitions; distinguish composite ND-GAIN from capacity alone; hardcoded prose checked against fresh numeric results."
+  },
+  "numerical_tolerances": {
+    "raw_pins": "exact SHA256",
+    "identity_folds_missingness": "exact",
+    "reconstruction_float_atol": 1e-10,
+    "reconstruction_float_rtol": 1e-09,
+    "independent_formula_atol": 1e-12,
+    "parameters_and_predictions": "report any differences; do not weaken gates to force agreement",
+    "bootstrap_saved_precision": "exact where reused; raw-design equivalence separately recorded"
+  },
+  "resources": {
+    "hardware": "Apple M2,16GB,8CPUcores",
+    "blas_threads": 1,
+    "max_independent_workers": 2,
+    "heavy_grid_variogram_workers": 1,
+    "gpu": false,
+    "pilot": "First fixed interpolation fold and representative existing V2fit; record runtime/maxRSS before rest. No pilot-score-based scope/parameter changes. Full fixed scope continues if feasible; if projected>4hours or peakRSS>8GB record bottleneck and optimize equivalent computation, not counts."
+  },
+  "completion": [
+    "all27 assets freshly generated or each explicitly blocked/reuse justified",
+    "V2claims supported by fresh fixed-spec predictions",
+    "new evaluation results including failures/negative outcomes reported",
+    "independent review of methods/leakage and actual values",
+    "all private run scripts/source/input hashes captured before stage execution",
+    "old run/artifacts and originalcheckout unchanged",
+    "Assemble a coherent 2.1.0 analysis bundle; publication is outside this historical computation."
+  ],
+  "provenance": {
+    "original_frozen_spec_sha256": "5e46975d43996d3a50a9291c1fb7082accc19016a3dcb2c0dffcb416257bff9f",
+    "portable_copy": "Scientific settings unchanged; machine-specific input paths use explicit placeholders."
+  }
+}

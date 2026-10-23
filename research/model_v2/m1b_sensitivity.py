@@ -14,6 +14,8 @@ Results are descriptive and cannot change either verdict level. Run with
 """
 from __future__ import annotations
 
+from src.prospective import require_synthetic_evaluator, unadapted_evaluator
+
 import argparse
 import dataclasses
 import json
@@ -302,6 +304,7 @@ def evidence_frames(results):
     return pd.concat(predictions, ignore_index=True), pd.concat(coefficients, ignore_index=True)
 
 
+@unadapted_evaluator(output_argument="out_dir")
 def run(primary_dir=DEFAULT_PRIMARY, out_dir=DEFAULT_OUT, *, package_dir=OUTPUT_DIR):
     out_dir = Path(out_dir)
     if out_dir.exists():
@@ -368,6 +371,7 @@ def main(argv=None):
     parser.add_argument('--primary', default=str(DEFAULT_PRIMARY), help='committed primary result directory')
     parser.add_argument('--out', default=str(DEFAULT_OUT), help='fresh output root (never overwritten)')
     args = parser.parse_args(argv)
+    require_synthetic_evaluator()
     started, started_utc = time.perf_counter(), datetime.now(timezone.utc).isoformat(timespec='seconds')
     ev.require_hash_seed()
     ev.frozen_code_state()

@@ -253,7 +253,7 @@ class TestVulnerabilityPage:
     def test_renders_metrics_and_gradient(self, bundle_dir):
         # The synthetic bundle carries the income x vulnerability artifacts.
         at = run_page("app.views.vulnerability")
-        assert at.title[0].value == "Who emitted least, warms no less, and can adapt least"
+        assert at.title[0].value == "Income, warming exposure and responsibility"
         labels = [m.label for m in at.metric]
         assert "Responsibility vs income ρ" in labels
         assert "Area-weighted warming vs income ρ" in labels

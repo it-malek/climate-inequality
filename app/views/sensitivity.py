@@ -55,6 +55,7 @@ def render() -> None:
         st.info(_NOT_BUILT)
         return
 
+    st.caption(loaders.release_caption("stability_summary.json"))
     outcome = theme.outcome_label(summary.get("outcome_definition", "station_weighted"))
     st.markdown(
         f"How much the variance shares of **{outcome}** country warming move "
@@ -77,12 +78,13 @@ def render() -> None:
         st.caption(
             "Country bootstrap: resample the countries with replacement and recompute the "
             "decomposition. Bars are 95% percentile intervals of each share; the faint band "
-            "is the continent block bootstrap, which respects spatial correlation within "
-            "continents, so the gap between the two is the spatial-dependence correction. "
+            "is the continent block bootstrap, which keeps countries within a continent "
+            "together during resampling. With few heterogeneous blocks, it is a sensitivity "
+            "analysis rather than a complete correction for spatial dependence. "
             "These intervals were computed under the original representation of the model "
             "(responsibility measured by per-capita and total cumulative CO₂); the "
-            "full-rank intervals on the decomposition page differ by under one percentage "
-            "point."
+            "full-rank intervals on the decomposition page allocate responsibility and "
+            "population differently; compare the two representations explicitly."
         )
 
     influence = summary.get("influence") or {}
@@ -119,22 +121,26 @@ def render() -> None:
             "Moran's I on the full-model country residuals with k-nearest-neighbour "
             "weights on country centroids. A positive, significant value means the "
             "residual is regionally clustered rather than white noise: the unexplained "
-            "share is structured, not measurement noise. The residual-structure page "
+            "share is structured. Spatially correlated measurement or product errors remain "
+            "possible. The residual-structure page "
             "follows that thread."
         )
+
+    if spatial and spatial.get("morans_i") is None:
+        st.info("Residual Moran's I unavailable: " + str(spatial.get("reason") or "not recorded"))
 
     station = (summary.get("sensitivity") or {}).get(_STATION_KEY)
     if station and share and share.get("groups"):
         st.subheader("Outcome sensitivity: station-weighted")
         st.markdown(
             "The same bootstrap on the same countries with each country's warming taken as "
-            "the unweighted mean of its station trends. Point estimates with the 95% "
+            "the unweighted mean of its city-location trends. Point estimates with the 95% "
             "country-bootstrap interval; the last row is the residual Moran's I."
         )
         st.dataframe(_comparison_table(summary, station), width="stretch")
         st.caption(
-            "Where the two intervals overlap, the share does not depend on how national "
-            "warming was constructed; where they separate, it does. The gap is consistent "
+            "The point estimates and intervals describe sensitivity to national warming "
+            "construction; interval overlap does not establish equivalence. Differences are consistent "
             "with station-network geography, but the comparison also changes the "
             "observational product (a gridded field versus station means), so it does not "
             "isolate siting as the sole cause."
@@ -169,5 +175,13 @@ def _comparison_table(primary: dict, station: dict) -> pd.DataFrame:
         _num((block.get("residual_spatial") or {}).get("morans_i"))
         for _, block in columns
     ]
+    if any((block.get("residual_spatial") or {}).get("reason") for _, block in columns):
+        rows["Moran availability"] = [
+            str((block.get("residual_spatial") or {}).get("reason") or (
+                "available" if (block.get("residual_spatial") or {}).get("morans_i") is not None
+                else "unavailable (reason not recorded)"
+            ))
+            for _, block in columns
+        ]
     rows["Countries"] = [str(block.get("n_countries", "n/a")) for _, block in columns]
     return pd.DataFrame(rows, index=[name for name, _ in columns]).T

@@ -1,5 +1,5 @@
 {
-  "note": "Values copied from the committed research records under research/model_v2/outputs; shares are descriptive allocations of explained cross-country variance, not causal contributions, and spatial accounting represents covariance, not mechanism.",
+  "note": "Fresh reconstruction from verified inputs under fixed specifications. Shares describe cross-country variance; spatial accounting describes covariance. Neither establishes causation.",
   "static": {
     "n": 151,
     "in_sample_r2": 0.6364460028,
@@ -21,6 +21,13 @@
     "residual_morans_i_out_of_fold": 0.3215471677,
     "calibration_slope": 0.609411497,
     "shares": {
+      "emissions": {
+        "point": 0.01313372054,
+        "mean": 0.01706044995,
+        "sd": 0.007613843961,
+        "ci_low": 0.005856827388,
+        "ci_high": 0.03502766432
+      },
       "geography": {
         "point": 0.5188374534,
         "mean": 0.5423446822,
@@ -42,13 +49,6 @@
         "ci_low": 0.02096017759,
         "ci_high": 0.0897546658
       },
-      "emissions": {
-        "point": 0.01313372054,
-        "mean": 0.01706044995,
-        "sd": 0.007613843961,
-        "ci_low": 0.005856827388,
-        "ci_high": 0.03502766432
-      },
       "residual": {
         "point": 0.3635539972,
         "mean": 0.3173682393,
@@ -58,6 +58,13 @@
       }
     },
     "block_shares": {
+      "emissions": {
+        "point": 0.01313372054,
+        "mean": 0.03560365181,
+        "sd": 0.03076524802,
+        "ci_low": 0.007864528304,
+        "ci_high": 0.1156169371
+      },
       "geography": {
         "point": 0.5188374534,
         "mean": 0.5088245742,
@@ -78,13 +85,6 @@
         "sd": 0.02507876364,
         "ci_low": 0.0153089603,
         "ci_high": 0.1172641269
-      },
-      "emissions": {
-        "point": 0.01313372054,
-        "mean": 0.03560365181,
-        "sd": 0.03076524802,
-        "ci_low": 0.007864528304,
-        "ci_high": 0.1156169371
       },
       "residual": {
         "point": 0.3635539972,
@@ -111,7 +111,7 @@
     {
       "key": "geography_measurement",
       "label": "Area-consistent geography measurement",
-      "verdict": "not promoted; kept as a measurement sensitivity",
+      "verdict": "neither",
       "primary_cv_r2": 0.05798828253,
       "primary_cv_rmse": 0.04521541924,
       "m49_cv_rmse": 0.04058265245,
@@ -128,7 +128,39 @@
         "socioeconomic": 0.06264789057,
         "population": 0.04800484774,
         "residual": 0.3878289826
-      }
+      },
+      "registered_classification": {
+        "transfer": "no detectable change in transfer",
+        "secondary_veto_passed": false,
+        "worst_region_veto_passed": false,
+        "spatial_structure": "residual spatial autocorrelation essentially unchanged",
+        "delta_moran_in_sample": 0.04661428572,
+        "delta_moran_cv": 0.01925721147,
+        "material_change_to_conclusion": false,
+        "scientific_stability": "stable",
+        "overfitting_signal": true,
+        "in_sample_r2_gain": -0.02427498537,
+        "cv_r2_gain": -0.09509163043,
+        "summary": "neither",
+        "gate_m1a_to_m1": {
+          "genuine_improvement": false,
+          "not_worse": true,
+          "large_country_abs_errors_before": {
+            "CAN": 0.08634556851,
+            "BRA": 0.114734551,
+            "RUS": 0.03175910306,
+            "DZA": 0.04188111389
+          },
+          "large_country_abs_errors_after": {
+            "CAN": 0.09660111904,
+            "BRA": 0.1147528451,
+            "RUS": 0.0396590789,
+            "DZA": 0.004096142034
+          },
+          "large_country_errors_all_reduced": false
+        }
+      },
+      "historical_decision": "not promoted; measurement sensitivity"
     },
     {
       "key": "baseline_dryness",
@@ -149,6 +181,7 @@
         "geography": 0.4839997395,
         "socioeconomic": 0.05933837621,
         "population": 0.03622325531,
+        "hydroclimate": 0.04582647403,
         "residual": 0.3635434331
       }
     },
@@ -187,7 +220,7 @@
         -0.005917629985,
         -0.0002240479591
       ],
-      "in_sample_r2": null,
+      "in_sample_r2": 0.7795065174,
       "allocation": null
     },
     {
@@ -203,7 +236,7 @@
         -0.0079013269,
         -0.001537071523
       ],
-      "in_sample_r2": null,
+      "in_sample_r2": 0.7828599911,
       "allocation": null
     }
   ],
@@ -219,13 +252,13 @@
         "m49_rmse_change": -0.001923697125,
         "worst_region_rmse_change": -0.007954514477,
         "theta": 0.8324306232,
-        "qualifies": true,
         "accounting": {
           "a_static": 0.6364460028,
           "a_dependence": 0.1430605147,
           "a_innovation": 0.2204934826
         },
         "oof_morans_i": 0.2590692963,
+        "qualifies": true,
         "primary_cv_r2": 0.2713088155
       },
       "land_centroid": {
@@ -237,13 +270,13 @@
         "m49_rmse_change": 0.007943999851,
         "worst_region_rmse_change": -0.008503918344,
         "theta": 0.9713383275,
-        "conditions_hold": false,
         "accounting": {
           "a_static": 0.6364460028,
           "a_dependence": 0.1922292654,
           "a_innovation": 0.1713247319
         },
-        "oof_morans_i": 0.2726732904
+        "oof_morans_i": 0.2726732904,
+        "conditions_hold": false
       }
     },
     "spatial_lag": {
@@ -257,13 +290,13 @@
         "m49_rmse_change": -0.003002190306,
         "worst_region_rmse_change": -0.004725280421,
         "theta": 0.7352995509,
-        "qualifies": true,
         "accounting": {
           "a_static": 0.6364460028,
           "a_dependence": 0.1464139883,
           "a_innovation": 0.2171400089
         },
         "oof_morans_i": 0.2562050486,
+        "qualifies": true,
         "primary_cv_r2": 0.3308508888
       },
       "land_centroid": {
@@ -275,13 +308,13 @@
         "m49_rmse_change": -0.003750684153,
         "worst_region_rmse_change": -0.00877538266,
         "theta": 0.8078447527,
-        "conditions_hold": true,
         "accounting": {
           "a_static": 0.6364460028,
           "a_dependence": 0.1739930041,
           "a_innovation": 0.1895609932
         },
-        "oof_morans_i": 0.2615683642
+        "oof_morans_i": 0.2615683642,
+        "conditions_hold": true
       }
     }
   },
@@ -289,7 +322,7 @@
     {
       "key": "berkeley_station",
       "product": "Berkeley Earth",
-      "label": "Berkeley Earth, station-centroid graph, 500 km (primary)",
+      "label": "Berkeley Earth, station centroid graph, 500 km",
       "spatial_error": {
         "delta_rmse": -0.00310490875,
         "interval": [
@@ -310,7 +343,7 @@
     {
       "key": "berkeley_land",
       "product": "Berkeley Earth",
-      "label": "Berkeley Earth, land-centroid graph, 500 km",
+      "label": "Berkeley Earth, land centroid graph, 500 km",
       "spatial_error": {
         "delta_rmse": -0.00482646715,
         "interval": [
@@ -371,18 +404,18 @@
       "product": "ERA5",
       "label": "ERA5, anomaly-aligned construction",
       "spatial_error": {
-        "delta_rmse": 0.001458683263,
+        "delta_rmse": 0.0014586833,
         "interval": [
-          -0.001071850482,
-          0.004107825114
+          -0.001071850439,
+          0.004107825144
         ],
         "theta": 0.4848001079
       },
       "spatial_lag": {
-        "delta_rmse": 7.52611371e-05,
+        "delta_rmse": 7.52610224e-05,
         "interval": [
-          -0.001581068891,
-          0.001778457498
+          -0.001581068873,
+          0.001778457421
         ],
         "theta": 0.3767925351
       }
@@ -415,9 +448,9 @@
       "primary_cv_r2": 0.05322946894,
       "primary_cv_rmse": 0.0672321111,
       "share_geography": 0.4059450873,
-      "share_emissions": 0.007794081058,
       "share_socioeconomic": 0.02044214255,
       "share_population": 0.03118435171,
+      "share_emissions": 0.007794081058,
       "residual_agreement_with_berkeley": {
         "pearson": 0.3337363475,
         "spearman": 0.3259881492,
@@ -433,9 +466,9 @@
       "primary_cv_r2": 0.1263117179,
       "primary_cv_rmse": 0.07111977358,
       "share_geography": 0.4444047013,
-      "share_emissions": 0.01499332479,
       "share_socioeconomic": 0.01628371056,
       "share_population": 0.02465886756,
+      "share_emissions": 0.01499332479,
       "residual_agreement_with_berkeley": {
         "pearson": 0.3624769795,
         "spearman": 0.3548762635,
@@ -446,18 +479,6 @@
         "responsibility_exceeds_0_10": false
       }
     }
-  },
-  "final": {
-    "retained_static_specification": "M0*",
-    "qualifying_spatial_extensions": [
-      "M3-SEM(M0*)",
-      "M3-SAR(M0*)"
-    ],
-    "final_primary_predictive_model": null,
-    "static_stopping_indicator_fires": false,
-    "static_stopping_best_delta": -0.002952085788,
-    "static_stopping_threshold": -0.002,
-    "material_change_to_conclusion": false
   },
   "responsibility_comparison": [
     {
@@ -484,43 +505,67 @@
     {
       "column": "trend_era5_aligned",
       "label": "Area-weighted (ERA5, anomaly-aligned)",
-      "n": 151,
-      "spearman_rho": -0.01742767515,
-      "spearman_p": 0.8318017002
+      "n": 154,
+      "spearman_rho": -0.01228057205,
+      "spearman_p": 0.8798479662
     }
   ],
+  "final": {
+    "retained_static_specification": "M0*",
+    "qualifying_spatial_extensions": [
+      "M3-SEM(M0*)",
+      "M3-SAR(M0*)"
+    ],
+    "historical_qualifying_spatial_extensions": [
+      "M3-SEM(M0*)",
+      "M3-SAR(M0*)"
+    ],
+    "final_primary_predictive_model": null,
+    "selection_status": "Historical fixed decisions retained; fresh qualification conditions reported alongside.",
+    "static_stopping_indicator_fires": false,
+    "static_stopping_best_delta": -0.002952085788,
+    "static_stopping_threshold": -0.002,
+    "material_change_to_conclusion": false
+  },
   "sources": {
-    "consolidated_table": {
-      "path": "research/model_v2/outputs/m4_final/m4_consolidated_table.json",
-      "sha256": "8b899c0e8e55a66b5539ee9d53aa9bd1c9484d88232631074d08394c9a112e10"
+    "v2_static_attempt2_scorecards.json": {
+      "path": "reports/current_validation/v2_static_attempt2/scorecards.json",
+      "sha256": "442409a87da95ec4bc48434a0b3ca2bd73e1fc5a566b502ad9531f3b9be0086e"
     },
-    "bootstrap_summary": {
-      "path": "research/model_v2/outputs/m4_final/m4_bootstrap_summary.json",
+    "v2_spatial_scorecards.json": {
+      "path": "reports/current_validation/v2_spatial/scorecards.json",
+      "sha256": "b58b47c369f73a78106a14d870b912c56178ee910ec2d236cf60c1553775a03e"
+    },
+    "v2_final_checks_bootstrap_summary.json": {
+      "path": "reports/current_validation/v2_final_checks/bootstrap_summary.json",
       "sha256": "c1e54795e68b95d77643f3bb57722c07f5f26137573b470188b5ccd5987bf2d7"
     },
-    "sensitivities": {
-      "path": "research/model_v2/outputs/m4_final/m4_sensitivities.json",
-      "sha256": "f31760210d75c0f56df19036182f14cde265d5557741ff68079ac3b2fee83358"
+    "v2_final_checks_sensitivities.json": {
+      "path": "reports/current_validation/v2_final_checks/sensitivities.json",
+      "sha256": "e5014875b230a0a1ad4ba2bdf8b21db2cca5df0b5d8e1c19bceb474dd92921c6"
     },
-    "products": {
-      "path": "research/model_v2/outputs/m4_final/m4_products.json",
-      "sha256": "46b4e64519a5b8d58a8f39c8ab48ff7432283e35a949f1ab6a3fe4c8ad0219f7"
+    "v2_final_checks_products.json": {
+      "path": "reports/current_validation/v2_final_checks/products.json",
+      "sha256": "a8bdceaae56df190afa8a917b81fe31e895f41a988aa015222c433fa018c2660"
     },
-    "final_record": {
-      "path": "research/model_v2/outputs/v2_final/v2_final_record.json",
-      "sha256": "3e017dc77a3f1e0d47a51ffa061332ca929a0fb8c47093e23530b1ef51856a55"
+    "preprocessing_country_inequality.parquet": {
+      "path": "reports/current_validation/preprocessing/country_inequality.parquet",
+      "sha256": "e3d539aacf4abc8ee7319b8ca13421f9b4db53b2074a4a13afb258b3e1a9ee50"
     },
-    "static_scorecard": {
-      "path": "research/model_v2/outputs/m0_scorecard_territory_corrected.json",
-      "sha256": "396a6a6099db789c99a2e415c5bf5cae46d93e67b2f5a63d57c8f5efc89c7311"
+    "v2_static_attempt2_fresh_country_design.csv": {
+      "path": "reports/current_validation/v2_static_attempt2/fresh_country_design.csv",
+      "sha256": "30b72aefea668c7ab6a004757845481bd0783ed493f845c10520ce70dab1b3f3"
     },
-    "static_countries": {
-      "path": "research/model_v2/outputs/m0_countries.csv",
-      "sha256": "9e99b3798e91f2b7e40250921edd5e5a788e4191df3e9027dceb98fe76b43536"
-    },
-    "era5_aligned_countries": {
-      "path": "research/model_v2/outputs/product_stability_aligned_countries.csv",
-      "sha256": "f50e24ea55e958fae1f697c7942d3561222c59f9ad564d862e4d2b1cf43f6bc5"
+    "era5_aligned_era5_trends.csv": {
+      "path": "reports/current_validation/era5/aligned_era5_trends.csv",
+      "sha256": "23c96aeaf400433fea773903ede12fa593f549acf16a7286362b1f6078294922"
+    }
+  },
+  "national_comparison_scope": "Each warming lens uses every finite country pair, independent of model-predictor missingness. V2 fits retain their fixed151-country sample.",
+  "input_sources": {
+    "owid_iso_bridge": {
+      "path": "data/raw/owid/owid-co2-data.csv",
+      "sha256": "7f78e2b218ce4bb8c538bbec04fdc9a7982e8d40bff972e650df603899edd5f6"
     }
   }
 }

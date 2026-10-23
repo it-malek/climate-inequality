@@ -18,6 +18,8 @@ Run with ``PYTHONHASHSEED=0 uv run python -m research.model_v2.m4_evaluate``.
 """
 from __future__ import annotations
 
+from src.prospective import require_prospective, require_synthetic_evaluator
+
 import argparse
 import dataclasses
 import json
@@ -473,12 +475,15 @@ def main(argv=None):
             value['identical'] = value['run_a_sha256'] == value['run_b_sha256']
         record['byte_identical'] = all(v['identical'] for v in record['artifacts'].values())
         if args.record:
+            require_prospective().destination(args.record)
             prov.write_json(record, args.record)
         print(prov.json_text({'byte_identical': record['byte_identical']}))
         return record
+    require_synthetic_evaluator()
     prov.require_hash_seed()
     code = prov.frozen_code_state(code_files())
     out_dir = prov.require_fresh(args.out)
+    require_prospective().destination(out_dir)
     logging.getLogger('src.feature_schema').setLevel(logging.ERROR)
     pre = verified_prerequisites()
     digests = ev.verify_pins()

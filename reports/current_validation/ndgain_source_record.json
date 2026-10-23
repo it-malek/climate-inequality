@@ -1,0 +1,131 @@
+{
+  "analysis_id": "ndgain-2026-v2-observation-2023-update-v1",
+  "release": {
+    "archive": "nd_gain_country_index_2026_release_data_v2.zip",
+    "sha256": "e854c7fe6ccef8c5d24a5ef7f370b7f61d1b8c6816da19fda4cd892ca6cdf0de",
+    "download_date": "2026-10-22",
+    "official_page": "https://gain.nd.edu/our-work/country-index/download-data/",
+    "published_link": "https://gain.nd.edu/assets/647440/ndgain_countryindex_2026.zip",
+    "release": "2026 release_data_v2; bundled component timestamps2026-08-14; officialJuly15release announcement",
+    "observation_columns": [
+      1995,
+      2024
+    ]
+  },
+  "selected_observation_year": 2023,
+  "extraction": {
+    "archive_sha256": "e854c7fe6ccef8c5d24a5ef7f370b7f61d1b8c6816da19fda4cd892ca6cdf0de",
+    "observation_year": 2023,
+    "components": {
+      "vulnerability": {
+        "member": "resources 2/vulnerability/vulnerability.csv",
+        "sha256": "f84225e5a2e406de2b94afc2ffb7813843b47010b944964031077c5a61f25a6b",
+        "year": 2023,
+        "rows": 192,
+        "finite": 190,
+        "missing_iso3": [
+          "LIE",
+          "SMR"
+        ]
+      },
+      "readiness": {
+        "member": "resources 2/readiness/readiness.csv",
+        "sha256": "2b5190cbe9ef19f759abba3ef9bd6a3854912834a5bd5834cba12892a76f4990",
+        "year": 2023,
+        "rows": 192,
+        "finite": 192,
+        "missing_iso3": []
+      },
+      "gain": {
+        "member": "resources 2/gain/gain.csv",
+        "sha256": "c3748b1828755da164e1fa8facbdc165248d5c3ffadbaba8da62150c100d3356",
+        "year": 2023,
+        "rows": 192,
+        "finite": 190,
+        "missing_iso3": [
+          "LIE",
+          "SMR"
+        ]
+      }
+    },
+    "gain_formula_max_abs_error": 5.684341886080802e-14
+  },
+  "latest_year_not_selected": {
+    "archive_sha256": "e854c7fe6ccef8c5d24a5ef7f370b7f61d1b8c6816da19fda4cd892ca6cdf0de",
+    "observation_year": 2024,
+    "components": {
+      "vulnerability": {
+        "member": "resources 2/vulnerability/vulnerability.csv",
+        "sha256": "f84225e5a2e406de2b94afc2ffb7813843b47010b944964031077c5a61f25a6b",
+        "year": 2024,
+        "rows": 192,
+        "finite": 190,
+        "missing_iso3": [
+          "LIE",
+          "SMR"
+        ]
+      },
+      "readiness": {
+        "member": "resources 2/readiness/readiness.csv",
+        "sha256": "2b5190cbe9ef19f759abba3ef9bd6a3854912834a5bd5834cba12892a76f4990",
+        "year": 2024,
+        "rows": 192,
+        "finite": 192,
+        "missing_iso3": []
+      },
+      "gain": {
+        "member": "resources 2/gain/gain.csv",
+        "sha256": "c3748b1828755da164e1fa8facbdc165248d5c3ffadbaba8da62150c100d3356",
+        "year": 2024,
+        "rows": 192,
+        "finite": 190,
+        "missing_iso3": [
+          "LIE",
+          "SMR"
+        ]
+      }
+    },
+    "gain_formula_max_abs_error": 5.684341886080802e-14
+  },
+  "historical_latest_rule_same_as_exact2023_for_this_archive": true,
+  "comparison": {
+    "vulnerability": {
+      "existing_values_revised": 187,
+      "newly_available": [
+        "AND",
+        "KNA",
+        "MCO"
+      ],
+      "now_missing": [],
+      "max_abs_revision": 0.09673913596467698
+    },
+    "readiness": {
+      "existing_values_revised": 192,
+      "newly_available": [],
+      "now_missing": [],
+      "max_abs_revision": 0.197177560199301
+    },
+    "gain": {
+      "existing_values_revised": 187,
+      "newly_available": [
+        "AND",
+        "KNA",
+        "MCO"
+      ],
+      "now_missing": [],
+      "max_abs_revision": 10.064860751378504
+    }
+  },
+  "methodology": {
+    "primary": "Composite vulnerability combines exposure,sensitivity,adaptivecapacity over6sectors; same broad question, no assumption of standalone adaptivecapacity.",
+    "readiness_change": "DocumentedBusinessReady replacesDoingBusiness from2022 onward, backfilled fromcurrentdata andregionalplaceholderestimates; do not interpret revision asrealchange over time.",
+    "vulnerability_revision_cause": "No specificsource-by-sourcerevisionexplanation recovered; do notattribute toreadinesschange.",
+    "units": "vulnerability/readiness0..1;gain0..100; independentlycheckgain=(readiness-vulnerability+1)*50tol1e-8."
+  },
+  "official_sources": [
+    "https://gain.nd.edu/news/nd-gain-country-index-2026-world-bank-business-ready-integration/",
+    "https://gain.nd.edu/our-work/country-index/methodology/",
+    "https://gain.nd.edu/assets/581554/nd_gain_countryindex_technicalreport_2024.pdf"
+  ],
+  "historical_recovery": "Original June-documented archive not found in knownlocaldownloads/projects/code/documents/recovery snapshots; officialcurrentlink delivers revisedv2; officialdata portal certificate mismatch was not bypassed. Historical filename andretrievalmonth are documented butbyteidentity notverified. No historicalcomponentrevisionlog explainingallvulnerabilitychanges located."
+}
