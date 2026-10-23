@@ -12,5 +12,5 @@ stale outputs.
 | `02_explanatory.ipynb` | Exploratory explanatory-variable analysis (a precursor to `src/explain.py`). |
 
 **Source of truth:** `src/` (modules) + `tests/` (synthetic-fixture tests) +
-`docs/reproducibility.md`. If a notebook and the pipeline disagree, the pipeline
-is correct.
+`docs/reproducibility.md`. Published claims should be checked against the versioned result records
+and their documented methods; an exploratory notebook is not release evidence.

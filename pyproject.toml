@@ -1,6 +1,6 @@
 [project]
 name = "climate-inequality"
-version = "2.0.0"
+version = "2.1.0"
 description = "Cross-country structure of observed land warming, 1950-2013: geography, historical emissions responsibility, development, population, and the spatial residual"
 requires-python = ">=3.11"
 dependencies = [
